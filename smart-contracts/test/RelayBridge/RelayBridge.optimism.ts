@@ -224,6 +224,9 @@ describe('RelayBridge', function () {
           messenger,
           transmitter,
           usdc: assets.usdc,
+          replayPoolChainId: 1,
+          relayPool,
+          l1BridgeProxy,
         },
       }
       const { bridge: cctpProxyBridge } = await ignition.deploy(

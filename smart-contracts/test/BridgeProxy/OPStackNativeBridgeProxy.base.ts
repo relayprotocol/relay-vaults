@@ -12,6 +12,9 @@ const {
 } = networks[1]
 const { assets: baseAssets } = networks[8453]
 
+const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+
 describe('OPStackNativeBridgeProxy:Base', function () {
   describe('bridge', function () {
     it('should work for the base sequence using ETH', async () => {
@@ -21,6 +24,9 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy: op.portalProxy,
+          replayPoolChainId: 1,
+          relayPool,
+          l1BridgeProxy,
         },
       }
       const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
@@ -47,18 +53,10 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       const l2ToL1MessagePasserNextNonce =
         await l2ToL1MessagePasser.messageNonce()
 
-      const tx = await bridge.bridge(
-        recipient,
-        1, // chain
-        recipient,
-        ethers.ZeroAddress,
-        amount,
-        '0x',
-        {
-          value: amount,
-          gasLimit: 30000000,
-        }
-      )
+      const tx = await bridge.bridge(amount, recipient, '0x', {
+        value: amount,
+        gasLimit: 30000000,
+      })
       const receipt = await tx.wait()
 
       expect(receipt.logs.length).to.equal(5)

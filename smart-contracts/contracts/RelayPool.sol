@@ -11,8 +11,6 @@ import {HyperlaneMessage} from "./Types.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
-import "hardhat/console.sol";
-
 struct OriginSettings {
   address curator;
   uint256 maxDebt;

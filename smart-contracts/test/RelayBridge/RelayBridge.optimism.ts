@@ -106,9 +106,10 @@ describe('RelayBridge', function () {
         expect(event.args[0]).to.equal(nonce)
         expect(event.args[1]).to.equal(recipient)
         expect(event.args[2]).to.equal(recipient)
-        expect(event.args[3]).to.equal(ethers.ZeroAddress)
-        expect(event.args[4]).to.equal(amount)
-        expect(event.args[5]).to.equal(opProxyBridgeAddress)
+        expect(event.args[3]).to.equal(ethers.ZeroAddress) // l2 asset
+        expect(event.args[4]).to.equal(ethers.ZeroAddress) // l1 asset
+        expect(event.args[5]).to.equal(amount)
+        expect(event.args[6]).to.equal(opProxyBridgeAddress)
       }
     })
   })
@@ -206,8 +207,9 @@ describe('RelayBridge', function () {
         expect(event.args[1]).to.equal(recipient)
         expect(event.args[2]).to.equal(recipient)
         expect(event.args[3]).to.equal(assets.udt)
-        expect(event.args[4]).to.equal(amount)
-        expect(event.args[5]).to.equal(opProxyBridgeAddress)
+        expect(event.args[4]).to.equal(networks[1].assets.udt)
+        expect(event.args[5]).to.equal(amount)
+        expect(event.args[6]).to.equal(opProxyBridgeAddress)
       }
     })
   })

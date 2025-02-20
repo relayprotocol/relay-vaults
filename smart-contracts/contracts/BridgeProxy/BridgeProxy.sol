@@ -48,7 +48,6 @@ contract BridgeProxy {
   ) external onlyRelayPool returns (uint256 balance) {
     if (currency == address(0)) {
       balance = address(this).balance;
-      console.log(balance);
       (bool success, ) = RELAY_POOL.call{value: balance}("");
       if (!success) {
         revert TRANSFER_FAILED(balance);

@@ -445,7 +445,6 @@ contract RelayPool is ERC4626, Ownable {
     uint amount = BridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset)
     );
-    console.log(amount);
 
     // We should have received funds
     decreaseOutStandingDebt(amount, origin);

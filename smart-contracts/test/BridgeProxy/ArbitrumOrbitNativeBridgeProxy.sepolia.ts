@@ -101,7 +101,7 @@ const bridgeParams = abiCoder.encode(
   args
 )
 
-describe.skip('ArbitrumOrbitNativeBridgeProxy', function () {
+describe('ArbitrumOrbitNativeBridgeProxy', function () {
   let bridge: ArbitrumOrbitNativeBridgeProxy
 
   before(async () => {
@@ -124,7 +124,7 @@ describe.skip('ArbitrumOrbitNativeBridgeProxy', function () {
   })
 
   describe('claim using BridgeProxy directly', () => {
-    it.skip('works using native', async () => {
+    it('works using native', async () => {
       // https://arbiscan.io/tx/0x650570bd55b1bf54cd64d8882b4cc8b58f06c475ec17fdba93f2fbfa23fca340
       // const originTxHash =
       //   '0x650570bd55b1bf54cd64d8882b4cc8b58f06c475ec17fdba93f2fbfa23fca340'

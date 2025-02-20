@@ -439,7 +439,7 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedOrigin(chainId, bridge);
     }
 
-    // We need to claim the funds from the bridge
+    // We need to claim the funds from the bridge proxy contract 
     uint amount = BridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset)
     );

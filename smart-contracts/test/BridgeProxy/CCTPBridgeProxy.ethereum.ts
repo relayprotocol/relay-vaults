@@ -23,11 +23,11 @@ const amount = ethers.parseUnits('0.1', 6)
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
-describe.skip('CCTPBridgeProxy', function () {
+describe('CCTPBridgeProxy', function () {
   let bridge: CCTPBridgeProxy
   let receipt: TransactionReceipt | null
   let balanceBefore: bigint
-  describe('claim', function () {
+  describe.skip('claim', function () {
     before(async () => {
       // deploy using ignition
       const parameters = {

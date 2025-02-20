@@ -56,7 +56,7 @@ contract RelayBridge is IRelayBridge {
     nonce = transferNonce++;
 
     // Encode the data for the cross-chain message
-    // No need to pass the asset since the pool is asset-specific
+    // No need to pass the asset since the bridge and the pool are asset-specific
     bytes memory data = abi.encode(nonce, recipient, amount, block.timestamp);
 
     uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());

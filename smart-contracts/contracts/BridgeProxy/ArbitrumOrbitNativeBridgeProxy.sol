@@ -55,9 +55,6 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
         revert AssetMismatch(l2token, asset);
       }
 
-      // Take the ERC20 tokens from the sender
-      IERC20(l2token).transferFrom(sender, address(this), amount);
-
       // here we have to pass empty data as data has been disabled in the default
       // gateway (see EXTRA_DATA_DISABLED in Arbitrum's L2GatewayRouter.sol)
       ROUTER.outboundTransfer(l1Currency, L1_BRIDGE_PROXY, amount, "");

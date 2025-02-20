@@ -22,7 +22,7 @@ describe('OPStackNativeBridgeProxy: Ethereum', function () {
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy: op.portalProxy,
-          replayPoolChainId: 1,
+          relayPoolChainId: 1,
           relayPool,
           l1BridgeProxy,
         },

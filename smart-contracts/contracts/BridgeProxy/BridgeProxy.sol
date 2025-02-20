@@ -17,13 +17,17 @@ contract BridgeProxy {
   address public immutable L1_BRIDGE_PROXY;
 
   constructor(
-    uint256 replayPoolChainId,
+    uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy
   ) {
-    RELAY_POOL_CHAIN_ID = replayPoolChainId;
+    RELAY_POOL_CHAIN_ID = relayPoolChainId;
     RELAY_POOL = relayPool;
-    L1_BRIDGE_PROXY = l1BridgeProxy;
+    if (block.chainid == relayPoolChainId) {
+      L1_BRIDGE_PROXY = address(this);
+    } else {
+      L1_BRIDGE_PROXY = l1BridgeProxy;
+    }
   }
 
   // This should be called as delegateCall from the Bridging contract

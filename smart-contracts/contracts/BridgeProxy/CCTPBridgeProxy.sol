@@ -24,10 +24,10 @@ contract CCTPBridgeProxy is BridgeProxy {
     address messenger,
     address transmitter,
     address usdc,
-    uint256 replayPoolChainId,
+    uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy
-  ) BridgeProxy(replayPoolChainId, relayPool, l1BridgeProxy) {
+  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     MESSENGER = ITokenMessenger(messenger);
     TRANSMITTER = IMessageTransmitter(transmitter);
     USDC = usdc;

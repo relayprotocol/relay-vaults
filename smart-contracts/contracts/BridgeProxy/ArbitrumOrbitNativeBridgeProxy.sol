@@ -27,10 +27,10 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
   constructor(
     address routerGateway,
     address outbox,
-    uint256 replayPoolChainId,
+    uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy
-  ) BridgeProxy(replayPoolChainId, relayPool, l1BridgeProxy) {
+  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     ROUTER = IL2GatewayRouter(routerGateway);
     OUTBOX = IOutbox(outbox);
   }

@@ -21,6 +21,8 @@ const recipient = '0x246A13358Fb27523642D86367a51C2aEB137Ac6C'
 
 const amount = ethers.parseUnits('0.1', 6)
 
+const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+
 describe('CCTPBridgeProxy', function () {
   let bridge: CCTPBridgeProxy
   let receipt: TransactionReceipt | null
@@ -33,6 +35,9 @@ describe('CCTPBridgeProxy', function () {
           messenger,
           transmitter,
           usdc: USDC,
+          relayPoolChainId: 1,
+          relayPool,
+          l1BridgeProxy: ethers.ZeroAddress, // we are deploying on an L1 so this can be 0
         },
       }
 

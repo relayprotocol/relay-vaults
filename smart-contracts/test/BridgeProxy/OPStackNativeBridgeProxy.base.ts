@@ -24,7 +24,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy: op!.portalProxy,
-          replayPoolChainId: 1,
+          relayPoolChainId: 1,
           relayPool,
           l1BridgeProxy,
         },
@@ -214,7 +214,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy: op!.portalProxy,
-          replayPoolChainId: 1,
+          relayPoolChainId: 1,
           relayPool,
           l1BridgeProxy,
         },

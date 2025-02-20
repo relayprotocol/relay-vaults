@@ -15,10 +15,10 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
 
   constructor(
     address portalProxy,
-    uint256 replayPoolChainId,
+    uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy
-  ) BridgeProxy(replayPoolChainId, relayPool, l1BridgeProxy) {
+  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     PORTAL_PROXY = portalProxy;
   }
 

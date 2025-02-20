@@ -32,7 +32,7 @@ describe('RelayBridge', function () {
         parameters: {
           OPStackNativeBridgeProxy: {
             portalProxy: ethers.ZeroAddress,
-            replayPoolChainId: 1,
+            relayPoolChainId: 1,
             relayPool,
             l1BridgeProxy,
           },
@@ -122,7 +122,7 @@ describe('RelayBridge', function () {
         parameters: {
           OPStackNativeBridgeProxy: {
             portalProxy: ethers.ZeroAddress,
-            replayPoolChainId: 1,
+            relayPoolChainId: 1,
             relayPool,
             l1BridgeProxy,
           },
@@ -224,7 +224,7 @@ describe('RelayBridge', function () {
           messenger,
           transmitter,
           usdc: assets.usdc,
-          replayPoolChainId: 1,
+          relayPoolChainId: 1,
           relayPool,
           l1BridgeProxy,
         },

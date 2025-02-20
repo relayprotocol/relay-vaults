@@ -34,7 +34,7 @@ describe('CCTPBridgeProxy', function () {
         messenger,
         transmitter,
         usdc: assets.usdc,
-        replayPoolChainId: 1,
+        relayPoolChainId: 1,
         relayPool,
         l1BridgeProxy,
       },

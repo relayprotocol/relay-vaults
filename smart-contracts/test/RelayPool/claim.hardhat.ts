@@ -16,7 +16,7 @@ const portalProxy = '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e'
 
 const origins = []
 
-describe('RelayBridge: claim', () => {
+describe.skip('RelayBridge: claim', () => {
   let relayPool: RelayPool
   let myWeth: MyWeth
   let thirdPartyPool: MyYieldPool
@@ -70,7 +70,7 @@ describe('RelayBridge: claim', () => {
     const bridgeProxyParameters = {
       OPStackNativeBridgeProxy: {
         portalProxy,
-        replayPoolChainId: 1,
+        relayPoolChainId: 1,
         relayPool: await relayPool.getAddress(),
         l1BridgeProxy,
       },

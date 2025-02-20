@@ -23,6 +23,7 @@ const amount = ethers.parseUnits('0.1', 6)
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 
+// TODO: change these tests (they will not use our contracts but are usuful to test our libraries in forks)
 describe('CCTPBridgeProxy', function () {
   let bridge: CCTPBridgeProxy
   let receipt: TransactionReceipt | null

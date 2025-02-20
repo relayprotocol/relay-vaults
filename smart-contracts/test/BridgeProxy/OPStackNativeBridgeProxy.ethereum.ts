@@ -16,6 +16,7 @@ const {
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
+// TODO: change these tests (they will not use our contracts but are usuful to test our libraries in forks)
 describe('OPStackNativeBridgeProxy: Ethereum', function () {
   describe.skip('claim', function () {
     it('should work for the base sequence using ETH', async () => {

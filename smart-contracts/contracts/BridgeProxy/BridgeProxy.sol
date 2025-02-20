@@ -3,6 +3,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import "hardhat/console.sol";
+
 contract BridgeProxy {
   // errors
   error TOKEN_NOT_BRIDGED(address token);
@@ -46,6 +48,7 @@ contract BridgeProxy {
   ) external onlyRelayPool returns (uint256 balance) {
     if (currency == address(0)) {
       balance = address(this).balance;
+      console.log(balance);
       (bool success, ) = RELAY_POOL.call{value: balance}("");
       if (!success) {
         revert TRANSFER_FAILED(balance);

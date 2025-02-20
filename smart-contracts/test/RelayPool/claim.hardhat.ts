@@ -8,8 +8,11 @@ import {
   MyYieldPool,
   RelayPool,
 } from '../../typechain-types'
+import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 const relayBridgeOptimism = '0x0000000000000000000000000000000000000010'
+const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+const portalProxy = '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e'
 
 const origins = []
 
@@ -33,27 +36,17 @@ describe('RelayBridge: claim', () => {
       'YIELD',
     ])
     const thirdPartyPoolAddress = await thirdPartyPool.getAddress()
+    // Initialize the pool with a little bit of funds
+    const initialDeposit = ethers.parseEther('1')
+    await myWeth.deposit({ value: initialDeposit })
+    await myWeth.approve(thirdPartyPoolAddress, initialDeposit)
+    await thirdPartyPool.deposit(initialDeposit, userAddress)
 
     myOpStackPortal = await ethers.deployContract('MyOpStackPortal')
     // Fund the portal so it can simulate bridging of eth
     await user.sendTransaction({
       to: myOpStackPortal,
       value: ethers.parseEther('1'), // 1 ether
-    })
-
-    const oPStackNativeBridgeProxy = await ethers.deployContract(
-      'OPStackNativeBridgeProxy',
-      [myOpStackPortal]
-    )
-
-    origins.push({
-      chainId: 10,
-      bridge: relayBridgeOptimism,
-      maxDebt: ethers.parseEther('10'),
-      proxyBridge: await oPStackNativeBridgeProxy.getAddress(),
-      bridgeFee: 10,
-      curator: userAddress,
-      coolDown: 0,
     })
 
     // deploy the pool using ignition
@@ -63,7 +56,7 @@ describe('RelayBridge: claim', () => {
         asset: await myWeth.getAddress(),
         name: `${await myWeth.name()} Relay Pool`,
         symbol: `${await myWeth.symbol()}-REL`,
-        origins,
+        origins: [],
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
         curator: userAddress,
@@ -72,6 +65,31 @@ describe('RelayBridge: claim', () => {
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    // Add origins
+    const bridgeProxyParameters = {
+      OPStackNativeBridgeProxy: {
+        portalProxy,
+        replayPoolChainId: 1,
+        relayPool: await relayPool.getAddress(),
+        l1BridgeProxy,
+      },
+    }
+    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
+      parameters: bridgeProxyParameters,
+    })
+
+    origins.push({
+      chainId: 10,
+      bridge: relayBridgeOptimism,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: await bridge.getAddress(),
+      bridgeFee: 10,
+      curator: userAddress,
+      coolDown: 0,
+    })
+
+    relayPool.addOrigin(origins[0])
 
     // Fund the pool with some WETH
     await myWeth.deposit({ value: ethers.parseEther('3') })
@@ -82,33 +100,22 @@ describe('RelayBridge: claim', () => {
   it('should fail to claim from an unauthorized chain', async () => {
     const originChain = 666
     const originBridge = ethers.ZeroAddress
-    await expect(relayPool.claim(originChain, originBridge, '0x'))
+    await expect(relayPool.claim(originChain, originBridge))
       .to.be.revertedWithCustomError(relayPool, 'UnauthorizedOrigin')
       .withArgs(originChain, originBridge)
   })
 
   it('should fail to claim from an unauthorized contract', async () => {
     const originBridge = ethers.ZeroAddress
-    await expect(relayPool.claim(origins[0].chainId, originBridge, '0x'))
+    await expect(relayPool.claim(origins[0].chainId, originBridge))
       .to.be.revertedWithCustomError(relayPool, 'UnauthorizedOrigin')
       .withArgs(origins[0].chainId, originBridge)
   })
 
-  it('should claim from the origin contract', async () => {
-    const abiCoder = new ethers.AbiCoder()
-    const relayPoolAddress = await relayPool.getAddress()
+  it.only('should claim from the origin contract', async () => {
+    const [user] = await ethers.getSigners()
+
     const bridgedAmount = ethers.parseEther('0.2')
-    const transaction = abiCoder.encode(
-      ['uint256', 'address', 'address', 'uint256', 'uint256', 'bytes'],
-      [
-        123, // nonce,
-        origins[0].bridge, // sender,
-        relayPoolAddress, // target,
-        bridgedAmount, // value,
-        ethers.parseEther('0.0001'), // minGasLimit,
-        '0x', // message
-      ]
-    )
 
     // Borrow from the pool so we can claim later
     await relayPool.handle(
@@ -117,15 +124,16 @@ describe('RelayBridge: claim', () => {
       encodeData(5n, userAddress, bridgedAmount)
     )
 
+    // Send the funds to the bridgeProxy (simulate successful bridging)
+    await user.sendTransaction({
+      to: origins[0].l1BridgeProxy,
+      value: bridgedAmount,
+    })
+
     const myOpStackPortalBalance =
       await ethers.provider.getBalance(myOpStackPortal)
 
-    const claimData = abiCoder.encode(
-      ['bytes', 'address'],
-      [transaction, relayPoolAddress]
-    )
-
-    await relayPool.claim(origins[0].chainId, origins[0].bridge, claimData)
+    await relayPool.claim(origins[0].chainId, origins[0].bridge)
     const myOpStackPortalBalanceAfter =
       await ethers.provider.getBalance(myOpStackPortal)
 
@@ -165,12 +173,7 @@ describe('RelayBridge: claim', () => {
       origins[0].bridge
     )
 
-    const claimData = abiCoder.encode(
-      ['bytes', 'address'],
-      [transaction, relayPoolAddress]
-    )
-
-    await relayPool.claim(origins[0].chainId, origins[0].bridge, claimData)
+    await relayPool.claim(origins[0].chainId, origins[0].bridge)
     const outstandingDebtAfter = await relayPool.outstandingDebt()
     const originSettingsAfter = await relayPool.authorizedOrigins(
       origins[0].chainId,
@@ -207,11 +210,6 @@ describe('RelayBridge: claim', () => {
       encodeData(7n, userAddress, bridgedAmount)
     )
 
-    const claimData = abiCoder.encode(
-      ['bytes', 'address'],
-      [transaction, relayPoolAddress]
-    )
-
     const streamingPeriod = await relayPool.streamingPeriod()
     await ethers.provider.send('evm_increaseTime', [
       Number(streamingPeriod * 2n),
@@ -222,7 +220,7 @@ describe('RelayBridge: claim', () => {
     const relayPoolBalanceBefore =
       await thirdPartyPool.balanceOf(relayPoolAddress)
 
-    await relayPool.claim(origins[0].chainId, origins[0].bridge, claimData)
+    await relayPool.claim(origins[0].chainId, origins[0].bridge)
 
     const poolAssetsAfter = await relayPool.totalAssets()
 

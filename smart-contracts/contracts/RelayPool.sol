@@ -11,6 +11,8 @@ import {HyperlaneMessage} from "./Types.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
+import "hardhat/console.sol";
+
 struct OriginSettings {
   address curator;
   uint256 maxDebt;
@@ -42,12 +44,7 @@ error TooMuchDebtFromOrigin(
   address recipient,
   uint256 amount
 );
-error ClaimingFailed(
-  uint32 chainId,
-  address bridge,
-  address proxyBridge,
-  bytes claimParams
-);
+
 error NotAWethPool();
 error MessageTooRecent(
   uint32 chainId,
@@ -448,6 +445,7 @@ contract RelayPool is ERC4626, Ownable {
     uint amount = BridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset)
     );
+    console.log(amount);
 
     // We should have received funds
     decreaseOutStandingDebt(amount, origin);
@@ -531,12 +529,11 @@ contract RelayPool is ERC4626, Ownable {
     depositAssetsInYieldPool(assets);
   }
 
+  // Needed to receive ETH from WETH for the `handle` function
   receive() external payable {
     if (address(asset) != WETH) {
       revert NotAWethPool();
     }
-    if (msg.sender != WETH) {
-      IWETH(WETH).deposit{value: address(this).balance}();
-    }
+    if (msg.sender != WETH) {}
   }
 }

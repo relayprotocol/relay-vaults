@@ -68,7 +68,7 @@ const tokenSwapBehavior = async (
   ).to.be.equal(0)
 }
 
-describe('RelayPool / Swap and Deposit', () => {
+describe.only('RelayPool / Swap and Deposit', () => {
   let relayPool: RelayPool
   let myToken: MyToken
   let thirdPartyPool: MyYieldPool

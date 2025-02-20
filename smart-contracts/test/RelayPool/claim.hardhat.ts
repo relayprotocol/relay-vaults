@@ -112,7 +112,7 @@ describe('RelayBridge: claim', () => {
       .withArgs(origins[0].chainId, originBridge)
   })
 
-  it.only('should claim from the origin contract', async () => {
+  it('should claim from the origin contract', async () => {
     const [user] = await ethers.getSigners()
 
     const bridgedAmount = ethers.parseEther('0.2')

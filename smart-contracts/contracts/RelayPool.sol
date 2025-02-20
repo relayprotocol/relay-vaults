@@ -534,6 +534,8 @@ contract RelayPool is ERC4626, Ownable {
     if (address(asset) != WETH) {
       revert NotAWethPool();
     }
-    if (msg.sender != WETH) {}
+    if (msg.sender != WETH) {
+      IWETH(WETH).deposit{value: address(this).balance}();
+    }
   }
 }

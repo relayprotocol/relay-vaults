@@ -9,6 +9,7 @@ import {ITokenSwap} from "./interfaces/ITokenSwap.sol";
 import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
 struct OriginSettings {
   address curator;
@@ -41,12 +42,7 @@ error TooMuchDebtFromOrigin(
   address recipient,
   uint256 amount
 );
-error ClaimingFailed(
-  uint32 chainId,
-  address bridge,
-  address proxyBridge,
-  bytes claimParams
-);
+
 error NotAWethPool();
 error MessageTooRecent(
   uint32 chainId,
@@ -102,7 +98,7 @@ contract RelayPool is ERC4626, Ownable {
     uint32 chainId,
     address indexed bridge,
     uint256 amount,
-    bytes claimParams
+    uint256 fees
   );
 
   event OutstandingDebtChanged(
@@ -437,27 +433,16 @@ contract RelayPool is ERC4626, Ownable {
   // This function is called externally to claim funds from a bridge.
   // The funds are immediately added to the yieldPool
   // TODO: handle cases where the origin might have been removed/changed (fees, etc.)
-  // TODO: handle cases where someone *else* triggers the settlement. Can we recover by calling this? to make sure things are settled?
-  function claim(
-    uint32 chainId,
-    address bridge,
-    bytes calldata claimParams
-  ) external {
+  function claim(uint32 chainId, address bridge) external {
     OriginSettings storage origin = authorizedOrigins[chainId][bridge];
     if (origin.proxyBridge == address(0)) {
       revert UnauthorizedOrigin(chainId, bridge);
     }
 
-    (bool success, bytes memory result) = origin.proxyBridge.delegatecall(
-      abi.encodeWithSignature("claim(address,bytes)", asset, claimParams)
+    // We need to claim the funds from the bridge proxy contract 
+    uint amount = BridgeProxy(origin.proxyBridge).claim(
+      address(asset) == WETH ? address(0) : address(asset)
     );
-
-    if (!success) {
-      revert ClaimingFailed(chainId, bridge, origin.proxyBridge, claimParams);
-    }
-
-    // Decode the result
-    uint256 amount = abi.decode(result, (uint256));
 
     // We should have received funds
     decreaseOutStandingDebt(amount, origin);
@@ -471,7 +456,7 @@ contract RelayPool is ERC4626, Ownable {
     // We need to account for it in a streaming fashion
     addToStreamingAssets(feeAmount);
 
-    emit BridgeCompleted(chainId, bridge, amount, claimParams);
+    emit BridgeCompleted(chainId, bridge, amount, feeAmount);
   }
 
   // Internal function to send funds to a recipient,
@@ -541,6 +526,7 @@ contract RelayPool is ERC4626, Ownable {
     depositAssetsInYieldPool(assets);
   }
 
+  // Needed to receive ETH from WETH for the `handle` function
   receive() external payable {
     if (address(asset) != WETH) {
       revert NotAWethPool();

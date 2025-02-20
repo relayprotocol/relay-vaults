@@ -4,7 +4,7 @@ import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { MyWeth } from '../../typechain-types'
 
-describe('RelayBridge: receive', () => {
+describe('RelayPool: receive', () => {
   let myWeth: MyWeth
 
   before(async () => {

@@ -4,8 +4,6 @@ pragma solidity ^0.8.28;
 import {IWETH} from "./interfaces/IWETH.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
-// import "hardhat/console.sol";
-
 error ethTransferFailed();
 error onlyWethCanSendEth();
 

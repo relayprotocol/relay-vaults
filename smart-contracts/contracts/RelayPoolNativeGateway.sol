@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import {IWETH} from "./interfaces/IWETH.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
-error ethTransferFailed();
-error onlyWethCanSendEth();
+error EthTransferFailed();
+error OnlyWethCanSendEth();
 
 contract RelayPoolNativeGateway {
   IWETH public immutable WETH;
@@ -101,13 +101,13 @@ contract RelayPoolNativeGateway {
   function _safeTransferETH(address to, uint256 value) internal {
     (bool success, ) = to.call{value: value}(new bytes(0));
     if (!success) {
-      revert ethTransferFailed();
+      revert EthTransferFailed();
     }
   }
 
   receive() external payable {
     if (msg.sender != address(WETH)) {
-      revert onlyWethCanSendEth();
+      revert OnlyWethCanSendEth();
     }
   }
 }

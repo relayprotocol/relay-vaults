@@ -1,12 +1,7 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
 import networks from '@relay-protocol/networks'
-import {
-  MyToken,
-  MyYieldPool,
-  RelayPool,
-  RelayPoolFactory,
-} from '../../typechain-types'
+import { MyToken, MyYieldPool, RelayPool } from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 import { getEvent } from '@relay-protocol/helpers'
 
@@ -70,7 +65,6 @@ describe('RelayPool: inflation attack', () => {
       await myToken.getAddress(),
       `${await myToken.name()} Relay Pool`,
       `${await myToken.symbol()}-REL`,
-      [],
       await thirdPartyPool.getAddress(),
       60 * 60 * 24 * 7,
       initialDeposit

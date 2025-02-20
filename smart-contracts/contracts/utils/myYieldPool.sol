@@ -4,8 +4,6 @@ pragma solidity ^0.8.28;
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {ERC4626} from "solmate/src/tokens/ERC4626.sol";
 
-import "hardhat/console.sol";
-
 contract MyYieldPool is ERC4626 {
   uint256 public maxPoolDeposit = type(uint256).max;
   uint256 public maxPoolWithdraw = type(uint256).max;

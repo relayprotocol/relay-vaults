@@ -56,6 +56,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       const tx = await bridge.bridge(
         recipient,
         ethers.ZeroAddress,
+        ethers.ZeroAddress,
         amount,
         '0x',
         {
@@ -245,6 +246,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       const tx = await bridge.bridge(
         recipient, // sender
         baseAssets.udt,
+        networks[1].assets.udt,
         amount,
         '0x',
         {

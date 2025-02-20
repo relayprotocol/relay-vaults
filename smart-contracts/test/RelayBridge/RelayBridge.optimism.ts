@@ -56,7 +56,7 @@ describe('RelayBridge', function () {
     const recipient = await user.getAddress()
     const amount = ethers.parseEther('1')
     const nonce = await bridge.transferNonce()
-    const tx = await bridge.bridge(amount, recipient, {
+    const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
       value: amount * 2n,
       gasLimit: 30000000,
     })
@@ -154,7 +154,7 @@ describe('RelayBridge', function () {
 
     const nonce = await bridge.transferNonce()
 
-    const tx = await bridge.bridge(amount, recipient, {
+    const tx = await bridge.bridge(amount, recipient, networks[1].assets.udt, {
       value: amount * 2n,
       gasLimit: 30000000,
     })
@@ -252,12 +252,18 @@ describe('RelayBridge', function () {
       const erc20Contract = await ethers.getContractAt(ERC20, assets.usdc)
       await erc20Contract.approve(bridgeAddress, amount)
 
-      const nonce = await bridge.transferNonce()
-      const tx = await bridge.bridge(amount, recipient, {
-        value: ethers.parseEther('0.02'), // mailbox fee
-        gasLimit: 30000000,
-      })
+      const nonceBefore = await bridge.transferNonce()
+      const tx = await bridge.bridge(
+        amount,
+        recipient,
+        networks[1].assets.usdc,
+        {
+          value: ethers.parseEther('0.02'), // mailbox fee
+          gasLimit: 30000000,
+        }
+      )
       receipt = await tx.wait()
+      expect(await bridge.transferNonce()).to.equal(nonceBefore + 1n)
       expect(receipt.logs.length).to.equal(12)
     })
 

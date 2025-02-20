@@ -9,6 +9,7 @@ error BridgingFailed(
   BridgeProxy bridgeProxy,
   address sender,
   address asset,
+  address l1Asset,
   uint256 amount,
   bytes data
 );
@@ -16,7 +17,8 @@ error BridgingFailed(
 interface IRelayBridge {
   function bridge(
     uint256 amount,
-    address recipient
+    address recipient,
+    address l1Asset
   ) external payable returns (uint256 nonce);
 }
 
@@ -33,6 +35,7 @@ contract RelayBridge is IRelayBridge {
     address indexed sender,
     address recipient,
     address asset,
+    address l1Asset,
     uint256 amount,
     BridgeProxy bridgeProxy
   );
@@ -50,7 +53,8 @@ contract RelayBridge is IRelayBridge {
 
   function bridge(
     uint256 amount,
-    address recipient
+    address recipient,
+    address l1Asset
   ) external payable returns (uint256 nonce) {
     // Associate the withdrawal to a unique id
     nonce = transferNonce++;
@@ -74,15 +78,23 @@ contract RelayBridge is IRelayBridge {
     // Issue transfer on the bridge
     (bool success, ) = address(bridgeProxy).delegatecall(
       abi.encodeWithSignature(
-        "bridge(address,address,uint256,bytes)",
+        "bridge(address,address,address,uint256,bytes)",
         msg.sender,
         asset,
+        l1Asset,
         amount,
         data
       )
     );
     if (!success)
-      revert BridgingFailed(bridgeProxy, msg.sender, asset, amount, data);
+      revert BridgingFailed(
+        bridgeProxy,
+        msg.sender,
+        asset,
+        l1Asset,
+        amount,
+        data
+      );
 
     // Send the message, with the right fee
     IHyperlaneMailbox(hyperlaneMailbox).dispatch{value: hyperlaneFee}(
@@ -97,6 +109,7 @@ contract RelayBridge is IRelayBridge {
       msg.sender,
       recipient,
       asset,
+      l1Asset,
       amount,
       bridgeProxy
     );

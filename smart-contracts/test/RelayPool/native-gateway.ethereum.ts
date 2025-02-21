@@ -388,7 +388,7 @@ describe('RelayPoolNativeGateway', () => {
         .connect(secondUser)
         .mint(relayPoolAddress, userAddress, { value: amount })
 
-      // reddem the shares
+      // redeem the shares
       const shares = await relayPool.balanceOf(userAddress)
       await (
         await relayPool

@@ -377,7 +377,7 @@ describe('RelayPoolNativeGateway', () => {
       )
     })
 
-    it('should not allow any balance to get lock into the contract', async () => {
+    it('should not allow any balance to get locked in the contract', async () => {
       const [, secondUser] = await ethers.getSigners()
       const userAddress = await secondUser.getAddress()
 

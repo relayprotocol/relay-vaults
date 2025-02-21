@@ -18,6 +18,9 @@ const {
   assets,
 } = networks[chainId]
 
+const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+
 describe('CCTPBridgeProxy', function () {
   let bridge: CCTPBridgeProxy
   let recipient: Signer
@@ -31,6 +34,9 @@ describe('CCTPBridgeProxy', function () {
         messenger,
         transmitter,
         usdc: assets.usdc,
+        relayPoolChainId: 1,
+        relayPool,
+        l1BridgeProxy,
       },
     }
     ;({ bridge } = await ignition.deploy(CCTPBridgeProxyModule, { parameters }))
@@ -45,9 +51,8 @@ describe('CCTPBridgeProxy', function () {
       await reverts(
         bridge.bridge(
           await recipient.getAddress(),
-          destinationChainId,
-          await recipient.getAddress(),
-          assets.udt,
+          networks[10].assets.udt,
+          networks[1].assets.udt,
           parseUnits('100', 6),
           '0x' //empty data
         ),
@@ -77,15 +82,15 @@ describe('CCTPBridgeProxy', function () {
       // send message to the bridge
       const tx = await bridge.bridge(
         await recipient.getAddress(),
-        destinationChainId,
-        await recipient.getAddress(),
-        assets.usdc,
+        networks[10].assets.usdc,
+        networks[1].assets.usdc,
         amount,
         '0x' //empty data
       )
 
       receipt = await tx.wait()
     })
+
     it('burnt the balance', async () => {
       expect(
         await getBalance(

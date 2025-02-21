@@ -7,7 +7,6 @@ export default buildModule('RelayPool', (m) => {
 
   const name = m.getParameter('name')
   const symbol = m.getParameter('symbol')
-  const origins = m.getParameter('origins')
   const thirdPartyPool = m.getParameter('thirdPartyPool')
   const weth = m.getParameter('weth')
   const curator = m.getParameter('curator')
@@ -17,7 +16,6 @@ export default buildModule('RelayPool', (m) => {
     asset,
     name,
     symbol,
-    origins,
     thirdPartyPool,
     weth,
     curator,

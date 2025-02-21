@@ -46,7 +46,6 @@ describe('RelayBridge: use Aave yield pool (USDC)', () => {
         asset: await usdc.getAddress(),
         name: `${await usdc.name()} Relay Pool`,
         symbol: `${await usdc.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: await staticAaveUsdc.getAddress(),
         weth,
         curator: userAddress,

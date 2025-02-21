@@ -3,14 +3,13 @@ pragma solidity ^0.8.28;
 
 import {IHyperlaneMailbox} from "./interfaces/IHyperlaneMailbox.sol";
 import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
-// import "hardhat/console.sol";
+import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
 error BridgingFailed(
-  address proxyBridge,
+  BridgeProxy bridgeProxy,
   address sender,
-  uint32 poolChainId,
-  address pool,
   address asset,
+  address l1Asset,
   uint256 amount,
   bytes data
 );
@@ -19,8 +18,7 @@ interface IRelayBridge {
   function bridge(
     uint256 amount,
     address recipient,
-    uint32 poolChainId,
-    address pool
+    address l1Asset
   ) external payable returns (uint256 nonce);
 }
 
@@ -29,7 +27,7 @@ contract RelayBridge is IRelayBridge {
 
   uint256 public transferNonce;
   address public asset;
-  address public proxyBridge;
+  BridgeProxy public bridgeProxy;
   address public hyperlaneMailbox;
 
   event BridgeInitiated(
@@ -37,59 +35,62 @@ contract RelayBridge is IRelayBridge {
     address indexed sender,
     address recipient,
     address asset,
+    address l1Asset,
     uint256 amount,
-    uint32 poolChainId,
-    address indexed pool,
-    address proxyBridge
+    BridgeProxy bridgeProxy
   );
 
-  constructor(address _asset, address _proxyBridge, address _hyperlaneMailbox) {
-    transferNonce = 0;
+  constructor(
+    address _asset,
+    BridgeProxy _bridgeProxy,
+    address _hyperlaneMailbox
+  ) {
     asset = _asset;
-    proxyBridge = _proxyBridge;
+    bridgeProxy = _bridgeProxy;
     hyperlaneMailbox = _hyperlaneMailbox;
   }
 
   function bridge(
     uint256 amount,
     address recipient,
-    uint32 poolChainId,
-    address pool
+    address l1Asset
   ) external payable returns (uint256 nonce) {
     // Associate the withdrawal to a unique id
     nonce = transferNonce++;
 
     // Encode the data for the cross-chain message
-    // No need to pass the asset since the pool is asset-specific
+    // No need to pass the asset since the bridge and the pool are asset-specific
     bytes memory data = abi.encode(nonce, recipient, amount, block.timestamp);
+
+    uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
+
+    bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
 
     // Get the fee for the cross-chain message
     uint256 hyperlaneFee = IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
       poolChainId,
-      bytes32(uint256(uint160(pool))),
+      poolId,
       data,
       StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
     );
 
     // Issue transfer on the bridge
-    (bool success, ) = proxyBridge.delegatecall(
+    (bool success, ) = address(bridgeProxy).delegatecall(
       abi.encodeWithSignature(
-        "bridge(address,uint32,address,address,uint256,bytes)",
+        "bridge(address,address,address,uint256,bytes)",
         msg.sender,
-        poolChainId,
-        pool,
         asset,
+        l1Asset,
         amount,
         data
       )
     );
     if (!success)
       revert BridgingFailed(
-        proxyBridge,
+        bridgeProxy,
         msg.sender,
-        poolChainId,
-        pool,
         asset,
+        l1Asset,
         amount,
         data
       );
@@ -97,7 +98,7 @@ contract RelayBridge is IRelayBridge {
     // Send the message, with the right fee
     IHyperlaneMailbox(hyperlaneMailbox).dispatch{value: hyperlaneFee}(
       poolChainId,
-      bytes32(uint256(uint160(pool))),
+      poolId,
       data,
       StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
     );
@@ -107,10 +108,9 @@ contract RelayBridge is IRelayBridge {
       msg.sender,
       recipient,
       asset,
+      l1Asset,
       amount,
-      poolChainId,
-      pool,
-      proxyBridge
+      bridgeProxy
     );
 
     // refund extra value to msg sender

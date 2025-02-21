@@ -34,17 +34,6 @@ describe('Fees', () => {
         asset: await myToken.getAddress(),
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
-        origins: [
-          {
-            chainId: 10,
-            bridge: relayBridgeOptimism,
-            maxDebt: ethers.parseEther('10'),
-            proxyBridge: oPStackNativeBridgeProxy,
-            bridgeFee: 5, // (0.05%)
-            curator: userAddress,
-            coolDown: 0,
-          },
-        ],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
         curator: userAddress,
@@ -53,6 +42,16 @@ describe('Fees', () => {
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    await relayPool.addOrigin({
+      chainId: 10,
+      bridge: relayBridgeOptimism,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: oPStackNativeBridgeProxy,
+      bridgeFee: 5, // (0.05%)
+      curator: userAddress,
+      coolDown: 0,
+    })
 
     const liquidity = ethers.parseUnits('100', 18)
     await myToken.connect(user).mint(liquidity)

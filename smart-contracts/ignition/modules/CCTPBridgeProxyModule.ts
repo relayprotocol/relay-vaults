@@ -5,7 +5,17 @@ export default buildModule('CCTPBridgeProxy', (m) => {
   const USDC = m.getParameter('usdc')
   const messenger = m.getParameter('messenger')
   const transmitter = m.getParameter('transmitter')
+  const relayPoolChainId = m.getParameter('relayPoolChainId')
+  const relayPool = m.getParameter('relayPool')
+  const l1BridgeProxy = m.getParameter('l1BridgeProxy')
 
-  const bridge = m.contract('CCTPBridgeProxy', [messenger, transmitter, USDC])
+  const bridge = m.contract('CCTPBridgeProxy', [
+    messenger,
+    transmitter,
+    USDC,
+    relayPoolChainId,
+    relayPool,
+    l1BridgeProxy,
+  ])
   return { bridge }
 })

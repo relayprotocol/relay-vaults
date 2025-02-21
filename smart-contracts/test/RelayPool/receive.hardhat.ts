@@ -4,7 +4,7 @@ import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { MyWeth } from '../../typechain-types'
 
-describe('RelayBridge: receive', () => {
+describe('RelayPool: receive', () => {
   let myWeth: MyWeth
 
   before(async () => {
@@ -30,7 +30,6 @@ describe('RelayBridge: receive', () => {
         asset: await myWeth.getAddress(),
         name: `${await myWeth.name()} Relay Pool`,
         symbol: `${await myWeth.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
         curator: userAddress,
@@ -72,7 +71,6 @@ describe('RelayBridge: receive', () => {
         asset: await myToken.getAddress(),
         name: `${await myWeth.name()} Relay Pool`,
         symbol: `${await myWeth.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
         curator: userAddress,

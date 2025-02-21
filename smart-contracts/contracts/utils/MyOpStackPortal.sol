@@ -1,8 +1,6 @@
 // PDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.28;
 
-// import "hardhat/console.sol";
-
 // https://github.com/ethereum-optimism/optimism/blob/08daf8dbd38c9ffdbd18fc9a211c227606cdb0ad/packages/contracts-bedrock/src/libraries/Types.sol#L62-L69
 /// @title Types
 /// @notice Contains various types used throughout the Optimism contract system.

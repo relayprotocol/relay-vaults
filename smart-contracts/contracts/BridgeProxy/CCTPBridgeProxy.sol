@@ -23,8 +23,11 @@ contract CCTPBridgeProxy is BridgeProxy {
   constructor(
     address messenger,
     address transmitter,
-    address usdc
-  ) BridgeProxy() {
+    address usdc,
+    uint256 relayPoolChainId,
+    address relayPool,
+    address l1BridgeProxy
+  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     MESSENGER = ITokenMessenger(messenger);
     TRANSMITTER = IMessageTransmitter(transmitter);
     USDC = usdc;
@@ -32,9 +35,8 @@ contract CCTPBridgeProxy is BridgeProxy {
 
   function bridge(
     address sender,
-    uint32 /*destinationChainId*/,
-    address recipient,
     address currency,
+    address /* l1Asset */,
     uint256 amount,
     bytes calldata /*data*/
   ) external payable override {
@@ -49,26 +51,12 @@ contract CCTPBridgeProxy is BridgeProxy {
     IUSDC(USDC).approve(address(MESSENGER), amount);
 
     // burn USDC on that side of the chain
-    bytes32 targetAddressBytes32 = bytes32(uint256(uint160(recipient)));
+    bytes32 targetAddressBytes32 = bytes32(uint256(uint160(L1_BRIDGE_PROXY)));
     MESSENGER.depositForBurn(
       amount,
       0, // mainnet domain is zero
       targetAddressBytes32,
       USDC
     );
-  }
-
-  function claim(
-    address, // currency
-    bytes calldata bridgeParams
-  ) external override returns (uint256) {
-    uint256 balanceBefore = IUSDC(USDC).balanceOf(address(this));
-    (bytes memory messageBytes, bytes memory attestation) = abi.decode(
-      bridgeParams,
-      (bytes, bytes)
-    );
-    TRANSMITTER.receiveMessage(messageBytes, attestation);
-    uint256 balanceAfter = IUSDC(USDC).balanceOf(address(this));
-    return balanceAfter - balanceBefore;
   }
 }

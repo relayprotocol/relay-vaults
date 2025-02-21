@@ -26,10 +26,11 @@ contract RelayPoolFactory {
     address indexed asset,
     string name,
     string symbol,
-    OriginParam[] origins,
     address thirdPartyPool,
     address timelock
   );
+
+  error InsufficientInitialDeposit(uint deposit);
 
   constructor(address hMailbox, address weth, address timelock) {
     hyperlaneMailbox = hMailbox;
@@ -41,10 +42,15 @@ contract RelayPoolFactory {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    OriginParam[] memory origins,
     address thirdPartyPool,
-    uint timelockDelay
+    uint timelockDelay,
+    uint256 initialDeposit
   ) public returns (address) {
+    // We require an initial deposit of 1 unit
+    uint8 decimals = ERC20(asset).decimals();
+    if (initialDeposit < 10 ** decimals) {
+      revert InsufficientInitialDeposit(initialDeposit);
+    }
     address[] memory curator = new address[](1);
     curator[0] = msg.sender;
 
@@ -62,7 +68,6 @@ contract RelayPoolFactory {
       asset,
       name,
       symbol,
-      origins,
       thirdPartyPool,
       wrappedEth,
       timelock
@@ -74,10 +79,14 @@ contract RelayPoolFactory {
       address(asset),
       name,
       symbol,
-      origins,
       thirdPartyPool,
       timelock
     );
+
+    // Transfer initial deposit to the pool to prevent inflation attack
+    asset.transferFrom(msg.sender, address(this), initialDeposit);
+    asset.approve(address(pool), initialDeposit);
+    pool.deposit(initialDeposit, timelock);
 
     return address(pool);
   }

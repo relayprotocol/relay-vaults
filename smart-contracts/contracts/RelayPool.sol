@@ -9,6 +9,7 @@ import {ITokenSwap} from "./interfaces/ITokenSwap.sol";
 import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
 struct OriginSettings {
   address curator;
@@ -41,12 +42,8 @@ error TooMuchDebtFromOrigin(
   address recipient,
   uint256 amount
 );
-error ClaimingFailed(
-  uint32 chainId,
-  address bridge,
-  address proxyBridge,
-  bytes claimParams
-);
+error FailedTransfer(address recipient, uint256 amount);
+
 error NotAWethPool();
 error MessageTooRecent(
   uint32 chainId,
@@ -55,7 +52,6 @@ error MessageTooRecent(
   uint256 timestamp,
   uint32 coolDown
 );
-
 
 contract RelayPool is ERC4626, Ownable {
   // The address of the Hyperlane mailbox
@@ -103,7 +99,7 @@ contract RelayPool is ERC4626, Ownable {
     uint32 chainId,
     address indexed bridge,
     uint256 amount,
-    bytes claimParams
+    uint256 fees
   );
 
   event OutstandingDebtChanged(
@@ -136,20 +132,12 @@ contract RelayPool is ERC4626, Ownable {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    OriginParam[] memory origins,
     address thirdPartyPool,
     address wrappedEth,
     address curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
-    // TODO: can we verify that the asset is an ERC20?
-
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
-
-    // Set the authorized origins
-    for (uint256 i = 0; i < origins.length; i++) {
-      addOrigin(origins[i]);
-    }
 
     // set the yieldPool
     yieldPool = thirdPartyPool;
@@ -272,7 +260,7 @@ contract RelayPool is ERC4626, Ownable {
   // We cap the maxRedeem of any owner to the maxRedeem of the yield pool for us
   function maxRedeem(
     address owner
-  ) public view override returns (uint256 maxAssets) {
+  ) public view override returns (uint256 maxShares) {
     uint256 maxWithdrawInYieldPool = maxWithdraw(owner);
     return ERC4626.previewWithdraw(maxWithdrawInYieldPool);
   }
@@ -392,7 +380,6 @@ contract RelayPool is ERC4626, Ownable {
     // We only send the amount net of fees
     sendFunds(message.amount - feeAmount, message.recipient);
 
-    // TODO: handle insufficient funds?
     emit LoanEmitted(
       message.nonce,
       message.recipient,
@@ -441,27 +428,16 @@ contract RelayPool is ERC4626, Ownable {
   // This function is called externally to claim funds from a bridge.
   // The funds are immediately added to the yieldPool
   // TODO: handle cases where the origin might have been removed/changed (fees, etc.)
-  // TODO: handle cases where someone *else* triggers the settlement. Can we recover by calling this? to make sure things are settled?
-  function claim(
-    uint32 chainId,
-    address bridge,
-    bytes calldata claimParams
-  ) external {
+  function claim(uint32 chainId, address bridge) external {
     OriginSettings storage origin = authorizedOrigins[chainId][bridge];
     if (origin.proxyBridge == address(0)) {
       revert UnauthorizedOrigin(chainId, bridge);
     }
 
-    (bool success, bytes memory result) = origin.proxyBridge.delegatecall(
-      abi.encodeWithSignature("claim(address,bytes)", asset, claimParams)
+    // We need to claim the funds from the bridge proxy contract
+    uint amount = BridgeProxy(origin.proxyBridge).claim(
+      address(asset) == WETH ? address(0) : address(asset)
     );
-
-    if (!success) {
-      revert ClaimingFailed(chainId, bridge, origin.proxyBridge, claimParams);
-    }
-
-    // Decode the result
-    uint256 amount = abi.decode(result, (uint256));
 
     // We should have received funds
     decreaseOutStandingDebt(amount, origin);
@@ -475,8 +451,7 @@ contract RelayPool is ERC4626, Ownable {
     // We need to account for it in a streaming fashion
     addToStreamingAssets(feeAmount);
 
-    // TODO: include more details about the origin of the funds
-    emit BridgeCompleted(chainId, bridge, amount, claimParams);
+    emit BridgeCompleted(chainId, bridge, amount, feeAmount);
   }
 
   // Internal function to send funds to a recipient,
@@ -485,8 +460,10 @@ contract RelayPool is ERC4626, Ownable {
     if (address(asset) == WETH) {
       withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
-      (bool s, ) = recipient.call{value: amount}("");
-      require(s);
+      (bool success, ) = recipient.call{value: amount}("");
+      if (!success) {
+        revert FailedTransfer(recipient, amount);
+      }
     } else {
       withdrawAssetsFromYieldPool(amount, recipient);
     }
@@ -546,6 +523,7 @@ contract RelayPool is ERC4626, Ownable {
     depositAssetsInYieldPool(assets);
   }
 
+  // Needed to receive ETH from WETH for the `handle` function
   receive() external payable {
     if (address(asset) != WETH) {
       revert NotAWethPool();

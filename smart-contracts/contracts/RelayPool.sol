@@ -42,6 +42,7 @@ error TooMuchDebtFromOrigin(
   address recipient,
   uint256 amount
 );
+error FailedTransfer(address recipient, uint256 amount);
 
 error NotAWethPool();
 error MessageTooRecent(
@@ -259,7 +260,7 @@ contract RelayPool is ERC4626, Ownable {
   // We cap the maxRedeem of any owner to the maxRedeem of the yield pool for us
   function maxRedeem(
     address owner
-  ) public view override returns (uint256 maxAssets) {
+  ) public view override returns (uint256 maxShares) {
     uint256 maxWithdrawInYieldPool = maxWithdraw(owner);
     return ERC4626.previewWithdraw(maxWithdrawInYieldPool);
   }
@@ -459,8 +460,10 @@ contract RelayPool is ERC4626, Ownable {
     if (address(asset) == WETH) {
       withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
-      (bool s, ) = recipient.call{value: amount}("");
-      require(s);
+      (bool success, ) = recipient.call{value: amount}("");
+      if (!success) {
+        revert FailedTransfer(recipient, amount);
+      }
     } else {
       withdrawAssetsFromYieldPool(amount, recipient);
     }

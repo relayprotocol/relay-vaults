@@ -47,17 +47,7 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
         asset: await myToken.getAddress(),
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
-        origins: [
-          {
-            chainId: 10,
-            bridge: relayBridgeOptimism,
-            maxDebt: ethers.parseEther('10'),
-            proxyBridge: oPStackNativeBridgeProxy,
-            bridgeFee: 0,
-            curator: userAddress,
-            coolDown: 10, // 10 seconds!
-          },
-        ],
+
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
         curator: userAddress,
@@ -66,6 +56,16 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    await relayPool.addOrigin({
+      chainId: 10,
+      bridge: relayBridgeOptimism,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: oPStackNativeBridgeProxy,
+      bridgeFee: 0,
+      curator: userAddress,
+      coolDown: 10, // 10 seconds!
+    })
 
     const liquidity = ethers.parseUnits('100', 18)
     await myToken.connect(user).mint(liquidity)
@@ -284,8 +284,7 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
     expect(loanEmittedEvent.args.recipient).to.equal(userAddress)
     expect(loanEmittedEvent.args.asset).to.equal(await myToken.getAddress())
     expect(loanEmittedEvent.args.amount).to.equal(amount)
-    expect(loanEmittedEvent.args.bridgeChainId).to.equal(10)
-    expect(loanEmittedEvent.args.bridge).to.equal(relayBridgeOptimism)
+    expect(loanEmittedEvent.args.origin[3]).to.equal(relayBridgeOptimism)
     const { event: outstandingDebtChanged } = await getEvent(
       receipt,
       'OutstandingDebtChanged',
@@ -346,17 +345,7 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
         asset: await myWeth.getAddress(),
         name: 'WETH RELAY POOL',
         symbol: 'WETH-REL',
-        origins: [
-          {
-            chainId: 10,
-            bridge: relayBridgeOptimism,
-            maxDebt: ethers.parseEther('10'),
-            proxyBridge: oPStackNativeBridgeProxy,
-            bridgeFee: 0,
-            curator: userAddress,
-            coolDown: 0,
-          },
-        ],
+
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
         curator: userAddress,
@@ -365,6 +354,16 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    await relayPool.addOrigin({
+      chainId: 10,
+      bridge: relayBridgeOptimism,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: oPStackNativeBridgeProxy,
+      bridgeFee: 0,
+      curator: userAddress,
+      coolDown: 0,
+    })
 
     const liquidity = ethers.parseUnits('1', 18)
     await myWeth.connect(user).approve(await relayPool.getAddress(), liquidity)

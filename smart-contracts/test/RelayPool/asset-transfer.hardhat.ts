@@ -30,7 +30,6 @@ describe('RelayPool: asset transfers', () => {
         asset: await myToken.getAddress(),
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
-        origins: [],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
         curator: userAddress,

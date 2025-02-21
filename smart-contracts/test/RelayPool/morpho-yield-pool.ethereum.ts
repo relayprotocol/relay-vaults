@@ -41,7 +41,6 @@ describe('RelayBridge: use Morpho yield pool (WETH)', () => {
         asset: await usdc.getAddress(),
         name: `${await usdc.name()} Relay Pool`,
         symbol: `${await usdc.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: USDC_MORPHO_POOL,
         weth,
         curator: userAddress,

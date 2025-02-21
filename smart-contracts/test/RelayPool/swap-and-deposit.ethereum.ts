@@ -3,6 +3,7 @@ import { ethers, ignition } from 'hardhat'
 import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { mintUSDC, stealERC20 } from '../utils/hardhat'
+import { reverts } from '../utils/errors'
 
 import {
   MyToken,
@@ -76,9 +77,10 @@ describe('RelayPool / Swap and Deposit', () => {
   let curatorAddress: string
   let user: Signer
   let userAddress: string
+  let attacker: Signer
 
   before(async () => {
-    ;[user, curator] = await ethers.getSigners()
+    ;[curator, user, attacker] = await ethers.getSigners()
     curatorAddress = await curator.getAddress()
     userAddress = await user.getAddress()
     myToken = await ethers.getContractAt('MyToken', myTokenAddress)
@@ -97,7 +99,6 @@ describe('RelayPool / Swap and Deposit', () => {
         asset: await myToken.getAddress(),
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: WETH,
         bridgeFee: 0,
@@ -124,6 +125,13 @@ describe('RelayPool / Swap and Deposit', () => {
   it('has correct constructor params', async () => {
     expect(await tokenSwap.uniswapUniversalRouter()).to.equal(
       universalRouterAddress
+    )
+  })
+
+  it('can only be called by contract owner', async () => {
+    await reverts(
+      relayPool.connect(attacker).swapAndDeposit(ZeroAddress, 1000, 1000, 1000),
+      `OwnableUnauthorizedAccount("${await attacker.getAddress()}")`
     )
   })
 
@@ -167,7 +175,7 @@ describe('RelayPool / Swap and Deposit', () => {
 
       // get some WETH
       const weth = await ethers.getContractAt('IWETH', WETH)
-      await weth.deposit({ value: amount })
+      await weth.connect(user).deposit({ value: amount })
       await weth.connect(user).transfer(relayPoolAddress, amount)
     })
 
@@ -188,8 +196,6 @@ describe('RelayPool / Swap and Deposit', () => {
     let relayPoolAddress: string
 
     before(async () => {
-      const [user] = await ethers.getSigners()
-      const userAddress = await user.getAddress()
       relayPoolAddress = await relayPool.getAddress()
 
       // get some USDC

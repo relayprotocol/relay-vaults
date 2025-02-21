@@ -42,6 +42,7 @@ error TooMuchDebtFromOrigin(
   address recipient,
   uint256 amount
 );
+error FailedTransfer(address recipient, uint256 amount);
 
 error NotAWethPool();
 error MessageTooRecent(
@@ -439,7 +440,7 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedOrigin(chainId, bridge);
     }
 
-    // We need to claim the funds from the bridge proxy contract 
+    // We need to claim the funds from the bridge proxy contract
     uint amount = BridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset)
     );
@@ -465,8 +466,10 @@ contract RelayPool is ERC4626, Ownable {
     if (address(asset) == WETH) {
       withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
-      (bool s, ) = recipient.call{value: amount}("");
-      require(s);
+      (bool success, ) = recipient.call{value: amount}("");
+      if (!success) {
+        revert FailedTransfer(recipient, amount);
+      }
     } else {
       withdrawAssetsFromYieldPool(amount, recipient);
     }

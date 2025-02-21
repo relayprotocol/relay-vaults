@@ -22,6 +22,8 @@ struct BridgeTransaction {
   uint256 nonce;
   address sender;
   address recipient;
+  address asset;
+  address l1Asset;
   uint256 amount;
   uint256 timestamp;
   bytes data;
@@ -78,22 +80,14 @@ contract RelayBridge is IRelayBridge {
     (bool success, ) = address(bridgeProxy).delegatecall(
       abi.encodeWithSignature(
         "bridge(address,address,address,uint256,bytes)",
-        msg.sender,
-        asset,
-        l1Asset,
-        amount,
-        data
+        transaction.sender,
+        transaction.asset,
+        transaction.l1Asset,
+        transaction.amount,
+        transaction.data
       )
     );
-    if (!success)
-      revert BridgingFailed(
-        bridgeProxy,
-        msg.sender,
-        asset,
-        l1Asset,
-        amount,
-        data
-      );
+    if (!success) revert BridgingFailed(nonce);
 
     transaction.status = RelayBridgeTransactionStatus.EXECUTED;
     emit BridgeExecuted(nonce);
@@ -139,6 +133,8 @@ contract RelayBridge is IRelayBridge {
       nonce: nonce,
       sender: msg.sender,
       recipient: recipient,
+      asset: asset,
+      l1Asset: l1Asset,
       amount: amount,
       timestamp: block.timestamp,
       data: data,

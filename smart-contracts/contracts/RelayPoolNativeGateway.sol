@@ -97,7 +97,7 @@ contract RelayPoolNativeGateway {
 
     // make sure no ETH is left in the contract
     if (address(this).balance != 0) {
-      revert remainingEth();
+      revert RemainingEth();
     }
 
     //emit event

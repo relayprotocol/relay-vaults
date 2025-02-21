@@ -6,20 +6,9 @@ import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-<<<<<<< HEAD
-error BridgingFailed(
-  BridgeProxy bridgeProxy,
-  address sender,
-  address asset,
-  address l1Asset,
-  uint256 amount,
-  bytes data
-);
-=======
 error BridgingFailed(uint256 nonce);
 
 error BridgingTransactionNotReady(uint256 nonce);
->>>>>>> c6e2a13 (wip)
 
 interface IRelayBridge {
   function bridge(
@@ -71,7 +60,6 @@ contract RelayBridge is IRelayBridge {
     BridgeProxy _bridgeProxy,
     address _hyperlaneMailbox
   ) {
-    transferNonce = 0;
     asset = _asset;
     bridgeProxy = _bridgeProxy;
     hyperlaneMailbox = _hyperlaneMailbox;
@@ -89,17 +77,23 @@ contract RelayBridge is IRelayBridge {
     // Issue transfer on the bridge
     (bool success, ) = address(bridgeProxy).delegatecall(
       abi.encodeWithSignature(
-        "bridge(address,address,uint256,bytes)",
-        transaction.sender,
+        "bridge(address,address,address,uint256,bytes)",
+        msg.sender,
         asset,
-        transaction.amount,
-        transaction.data
+        l1Asset,
+        amount,
+        data
       )
     );
-
-    if (!success) {
-      revert BridgingFailed(nonce);
-    }
+    if (!success)
+      revert BridgingFailed(
+        bridgeProxy,
+        msg.sender,
+        asset,
+        l1Asset,
+        amount,
+        data
+      );
 
     transaction.status = RelayBridgeTransactionStatus.EXECUTED;
     emit BridgeExecuted(nonce);
@@ -150,5 +144,15 @@ contract RelayBridge is IRelayBridge {
       data: data,
       status: RelayBridgeTransactionStatus.INITIATED
     });
+
+    emit BridgeInitiated(
+      nonce,
+      msg.sender,
+      recipient,
+      asset,
+      l1Asset,
+      amount,
+      bridgeProxy
+    );
   }
 }

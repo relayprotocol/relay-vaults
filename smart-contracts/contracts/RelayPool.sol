@@ -42,6 +42,7 @@ error TooMuchDebtFromOrigin(
   address recipient,
   uint256 amount
 );
+error FailedTransfer(address recipient, uint256 amount);
 
 error NotAWethPool();
 error MessageTooRecent(
@@ -131,18 +132,12 @@ contract RelayPool is ERC4626, Ownable {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    OriginParam[] memory origins,
     address thirdPartyPool,
     address wrappedEth,
     address curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
-
-    // Set the authorized origins
-    for (uint256 i = 0; i < origins.length; i++) {
-      addOrigin(origins[i]);
-    }
 
     // set the yieldPool
     yieldPool = thirdPartyPool;
@@ -265,7 +260,7 @@ contract RelayPool is ERC4626, Ownable {
   // We cap the maxRedeem of any owner to the maxRedeem of the yield pool for us
   function maxRedeem(
     address owner
-  ) public view override returns (uint256 maxAssets) {
+  ) public view override returns (uint256 maxShares) {
     uint256 maxWithdrawInYieldPool = maxWithdraw(owner);
     return ERC4626.previewWithdraw(maxWithdrawInYieldPool);
   }
@@ -439,7 +434,7 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedOrigin(chainId, bridge);
     }
 
-    // We need to claim the funds from the bridge proxy contract 
+    // We need to claim the funds from the bridge proxy contract
     uint amount = BridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset)
     );
@@ -465,8 +460,10 @@ contract RelayPool is ERC4626, Ownable {
     if (address(asset) == WETH) {
       withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
-      (bool s, ) = recipient.call{value: amount}("");
-      require(s);
+      (bool success, ) = recipient.call{value: amount}("");
+      if (!success) {
+        revert FailedTransfer(recipient, amount);
+      }
     } else {
       withdrawAssetsFromYieldPool(amount, recipient);
     }

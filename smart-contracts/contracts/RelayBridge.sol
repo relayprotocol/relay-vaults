@@ -114,7 +114,7 @@ contract RelayBridge is IRelayBridge {
     );
 
     // refund extra value to msg sender
-    iunt258 spent = (l1Asset == address(0) ? amount : 0) + hyperlaneFee;
+    uint256 spent = (l1Asset == address(0) ? amount : 0) + hyperlaneFee;
     if (msg.value > spent) {
       payable(msg.sender).transfer(msg.value - spent);
     }

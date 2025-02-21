@@ -56,7 +56,7 @@ describe('RelayBridge', function () {
     const recipient = await user.getAddress()
     const amount = ethers.parseEther('1')
     const nonce = await bridge.transferNonce()
-    const tx = await bridge.bridge(amount, recipient, {
+    const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
       value: amount * 2n,
       gasLimit: 30000000,
     })
@@ -106,9 +106,10 @@ describe('RelayBridge', function () {
         expect(event.args[0]).to.equal(nonce)
         expect(event.args[1]).to.equal(recipient)
         expect(event.args[2]).to.equal(recipient)
-        expect(event.args[3]).to.equal(ethers.ZeroAddress)
-        expect(event.args[4]).to.equal(amount)
-        expect(event.args[5]).to.equal(opProxyBridgeAddress)
+        expect(event.args[3]).to.equal(ethers.ZeroAddress) // l2 asset
+        expect(event.args[4]).to.equal(ethers.ZeroAddress) // l1 asset
+        expect(event.args[5]).to.equal(amount)
+        expect(event.args[6]).to.equal(opProxyBridgeAddress)
       }
     })
   })
@@ -154,7 +155,7 @@ describe('RelayBridge', function () {
 
     const nonce = await bridge.transferNonce()
 
-    const tx = await bridge.bridge(amount, recipient, {
+    const tx = await bridge.bridge(amount, recipient, networks[1].assets.udt, {
       value: amount * 2n,
       gasLimit: 30000000,
     })
@@ -206,8 +207,9 @@ describe('RelayBridge', function () {
         expect(event.args[1]).to.equal(recipient)
         expect(event.args[2]).to.equal(recipient)
         expect(event.args[3]).to.equal(assets.udt)
-        expect(event.args[4]).to.equal(amount)
-        expect(event.args[5]).to.equal(opProxyBridgeAddress)
+        expect(event.args[4]).to.equal(networks[1].assets.udt)
+        expect(event.args[5]).to.equal(amount)
+        expect(event.args[6]).to.equal(opProxyBridgeAddress)
       }
     })
   })
@@ -252,12 +254,18 @@ describe('RelayBridge', function () {
       const erc20Contract = await ethers.getContractAt(ERC20, assets.usdc)
       await erc20Contract.approve(bridgeAddress, amount)
 
-      const nonce = await bridge.transferNonce()
-      const tx = await bridge.bridge(amount, recipient, {
-        value: ethers.parseEther('0.02'), // mailbox fee
-        gasLimit: 30000000,
-      })
+      const nonceBefore = await bridge.transferNonce()
+      const tx = await bridge.bridge(
+        amount,
+        recipient,
+        networks[1].assets.usdc,
+        {
+          value: ethers.parseEther('0.02'), // mailbox fee
+          gasLimit: 30000000,
+        }
+      )
       receipt = await tx.wait()
+      expect(await bridge.transferNonce()).to.equal(nonceBefore + 1n)
       expect(receipt.logs.length).to.equal(12)
     })
 

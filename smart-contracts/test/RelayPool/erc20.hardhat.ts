@@ -29,7 +29,6 @@ describe('RelayBridge: when using an ERC20', () => {
         asset: await myToken.getAddress(),
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: ethers.ZeroAddress, // Not used in this test
         curator: userAddress,

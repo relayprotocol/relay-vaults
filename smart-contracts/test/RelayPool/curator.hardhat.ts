@@ -34,7 +34,6 @@ describe('RelayPool: curator', () => {
         asset: await myToken.getAddress(),
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: ethers.ZeroAddress,
         curator: userAddress,

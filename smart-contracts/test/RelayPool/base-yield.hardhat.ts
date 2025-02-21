@@ -35,7 +35,6 @@ describe('RelayBridge: base yield', () => {
         asset: await myToken.getAddress(),
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: thirdPartyPoolAddress,
         weth: ethers.ZeroAddress, // Not used in this test
         curator: userAddress,

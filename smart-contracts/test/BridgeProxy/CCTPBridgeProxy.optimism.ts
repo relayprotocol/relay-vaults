@@ -51,7 +51,8 @@ describe('CCTPBridgeProxy', function () {
       await reverts(
         bridge.bridge(
           await recipient.getAddress(),
-          assets.udt,
+          networks[10].assets.udt,
+          networks[1].assets.udt,
           parseUnits('100', 6),
           '0x' //empty data
         ),
@@ -81,7 +82,8 @@ describe('CCTPBridgeProxy', function () {
       // send message to the bridge
       const tx = await bridge.bridge(
         await recipient.getAddress(),
-        assets.usdc,
+        networks[10].assets.usdc,
+        networks[1].assets.usdc,
         amount,
         '0x' //empty data
       )

@@ -22,6 +22,7 @@ contract ZkSyncBridgeProxy is BridgeProxy {
   function bridge(
     address sender,
     address currency,
+    address /* l1Asset */,
     uint256 amount,
     bytes calldata /*data*/
   ) external payable override {

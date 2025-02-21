@@ -265,7 +265,7 @@ contract RelayPool is ERC4626, Ownable {
   // We cap the maxRedeem of any owner to the maxRedeem of the yield pool for us
   function maxRedeem(
     address owner
-  ) public view override returns (uint256 maxAssets) {
+  ) public view override returns (uint256 maxShares) {
     uint256 maxWithdrawInYieldPool = maxWithdraw(owner);
     return ERC4626.previewWithdraw(maxWithdrawInYieldPool);
   }

@@ -45,7 +45,6 @@ contract RelayBridge is IRelayBridge {
     BridgeProxy _bridgeProxy,
     address _hyperlaneMailbox
   ) {
-    transferNonce = 0;
     asset = _asset;
     bridgeProxy = _bridgeProxy;
     hyperlaneMailbox = _hyperlaneMailbox;

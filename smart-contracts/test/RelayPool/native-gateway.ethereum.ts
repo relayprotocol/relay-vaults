@@ -41,7 +41,6 @@ describe('RelayPoolNativeGateway', () => {
           asset: WETH,
           name: 'WETH RELAY POOL',
           symbol: 'WETH-REL',
-          origins: [],
           thirdPartyPool: thirdPartyPoolAddress,
           weth: WETH,
           curator: userAddress,

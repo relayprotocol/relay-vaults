@@ -132,18 +132,12 @@ contract RelayPool is ERC4626, Ownable {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    OriginParam[] memory origins,
     address thirdPartyPool,
     address wrappedEth,
     address curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
-
-    // Set the authorized origins
-    for (uint256 i = 0; i < origins.length; i++) {
-      addOrigin(origins[i]);
-    }
 
     // set the yieldPool
     yieldPool = thirdPartyPool;

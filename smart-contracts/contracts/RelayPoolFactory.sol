@@ -26,7 +26,6 @@ contract RelayPoolFactory {
     address indexed asset,
     string name,
     string symbol,
-    OriginParam[] origins,
     address thirdPartyPool,
     address timelock
   );
@@ -43,7 +42,6 @@ contract RelayPoolFactory {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    OriginParam[] memory origins,
     address thirdPartyPool,
     uint timelockDelay,
     uint256 initialDeposit
@@ -70,7 +68,6 @@ contract RelayPoolFactory {
       asset,
       name,
       symbol,
-      origins,
       thirdPartyPool,
       wrappedEth,
       timelock
@@ -82,7 +79,6 @@ contract RelayPoolFactory {
       address(asset),
       name,
       symbol,
-      origins,
       thirdPartyPool,
       timelock
     );

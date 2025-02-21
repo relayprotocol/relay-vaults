@@ -77,7 +77,6 @@ describe('RelayPoolFactory: deployment', () => {
         await myToken.getAddress(),
         'Test Vault',
         'RELAY',
-        [],
         await thirdPartyPool.getAddress(),
         60 * 60 * 24 * 7,
         initialDeposit
@@ -102,7 +101,6 @@ describe('RelayPoolFactory: deployment', () => {
       await myToken.getAddress(),
       'Test Vault',
       'RELAY',
-      [],
       await thirdPartyPool.getAddress(),
       60 * 60 * 24 * 7,
       initialDeposit

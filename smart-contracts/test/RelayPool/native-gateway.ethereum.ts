@@ -377,5 +377,30 @@ describe('RelayPoolNativeGateway', () => {
         'onlyWethCanSendEth()'
       )
     })
+
+    it('should not allow any balance to get lock into the contract', async () => {
+      const [, secondUser] = await ethers.getSigners()
+      const userAddress = await secondUser.getAddress()
+
+      const amount = ethers.parseUnits('1', 18)
+
+      // Deposit tokens to the RelayPool
+      await nativeGateway
+        .connect(secondUser)
+        .mint(relayPoolAddress, userAddress, { value: amount })
+
+      // reddem the shares
+      const shares = await relayPool.balanceOf(userAddress)
+      await (
+        await relayPool
+          .connect(secondUser)
+          .approve(await nativeGateway.getAddress(), shares)
+      ).wait()
+      await nativeGateway
+        .connect(secondUser)
+        .redeem(relayPoolAddress, shares, userAddress)
+
+      expect(await weth.balanceOf(await nativeGateway.getAddress())).to.equal(0)
+    })
   })
 })

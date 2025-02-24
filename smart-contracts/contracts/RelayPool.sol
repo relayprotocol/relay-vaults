@@ -126,7 +126,11 @@ contract RelayPool is ERC4626, Ownable {
     address proxyBridge
   );
 
-  // Warning: the owner of the pool should always be a timelock address with a significant delay to reduce the risk of stolen funds
+  // Warning: the owner of the pool should always be a timelock address
+  // with a significant delay to reduce the risk of stolen funds.
+  // The delay should also be longer than the slowest bridge so that an malicious
+  // curator is not able to steal funds that are "in transit" without an opportunity
+  // for the recipient to withdraw them.
   constructor(
     address hyperlaneMailbox,
     ERC20 asset,
@@ -391,7 +395,7 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   // Compute the streaming fees
-  // If the last fee collection was more than 7 days ago, we have nothing left to stream
+  // If the last fee collection was more than end of the stream, we have nothing left to stream
   // Otherwise, we return the time-based pro-rata of what remains to stream.
   function remainsToStream() internal view returns (uint256) {
     if (block.timestamp > endOfStream) {

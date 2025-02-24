@@ -3,13 +3,20 @@ import { expect } from 'chai'
 import { mintUSDC, stealERC20 } from '../utils/hardhat'
 import { getBalance, getEvent } from '@relay-protocol/helpers'
 
-import { Mailbox, ERC20 } from '@relay-protocol/helpers/abis'
+import {
+  Mailbox,
+  ERC20,
+  L2ToL1MessagePasser,
+  L2CrossDomainMessenger,
+  L2StandardBridge,
+} from '@relay-protocol/helpers/abis'
 import { ContractTransactionReceipt, Log } from 'ethers'
 
 import { networks } from '@relay-protocol/networks'
 import RelayBridgeModule from '../../ignition/modules/RelayBridgeModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
+import { RelayBridge } from '../../typechain-types'
 
 const {
   hyperlaneMailbox: HYPERLANE_MAILBOX_ON_OPTIMISM,
@@ -23,35 +30,40 @@ const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
 describe('RelayBridge', function () {
+  let bridge: RelayBridge
+  let opProxyBridgeAddress: string
+  before(async () => {
+    const { bridge: opProxyBridge } = await ignition.deploy(
+      OPStackNativeBridgeProxyModule,
+      {
+        parameters: {
+          OPStackNativeBridgeProxy: {
+            portalProxy: ethers.ZeroAddress,
+            relayPoolChainId: 1,
+            relayPool,
+            l1BridgeProxy,
+          },
+        },
+      }
+    )
+    opProxyBridgeAddress = await opProxyBridge.getAddress()
+
+    const parameters = {
+      RelayBridge: {
+        asset: ethers.ZeroAddress,
+        bridgeProxy: opProxyBridgeAddress,
+        hyperlaneMailbox: HYPERLANE_MAILBOX_ON_OPTIMISM,
+      },
+    }
+    const deployment = await ignition.deploy(RelayBridgeModule, {
+      parameters,
+    })
+    bridge = deployment.bridge
+  })
+
   describe('bridge', () => {
     it('should work for the base sequence using ETH', async () => {
       const [user] = await ethers.getSigners()
-
-      const { bridge: opProxyBridge } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
-        {
-          parameters: {
-            OPStackNativeBridgeProxy: {
-              portalProxy: ethers.ZeroAddress,
-              relayPoolChainId: 1,
-              relayPool,
-              l1BridgeProxy,
-            },
-          },
-        }
-      )
-      const opProxyBridgeAddress = await opProxyBridge.getAddress()
-
-      const parameters = {
-        RelayBridge: {
-          asset: ethers.ZeroAddress,
-          bridgeProxy: opProxyBridgeAddress,
-          hyperlaneMailbox: HYPERLANE_MAILBOX_ON_OPTIMISM,
-        },
-      }
-      const { bridge } = await ignition.deploy(RelayBridgeModule, {
-        parameters,
-      })
 
       const bridgeAddress = await bridge.getAddress()
       const recipient = await user.getAddress()
@@ -60,7 +72,6 @@ describe('RelayBridge', function () {
       const balanceBefore = await getBalance(recipient, ethers.provider)
       const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
         value: amount * 2n,
-        gasLimit: 30000000,
       })
       const receipt = await tx.wait()
 
@@ -112,6 +123,27 @@ describe('RelayBridge', function () {
           expect(event.args[6]).to.equal(opProxyBridgeAddress)
         }
       })
+
+      // Check the transaction obect
+      const transaction = await bridge.transactions(nonce)
+
+      expect(transaction.nonce).to.equal(nonce)
+      expect(transaction.sender).to.equal(recipient)
+      expect(transaction.recipient).to.equal(recipient)
+      expect(transaction.asset).to.equal(ethers.ZeroAddress)
+      expect(transaction.l1Asset).to.equal(ethers.ZeroAddress)
+      expect(transaction.amount).to.equal(amount)
+      const blockNumber = await ethers.provider.getBlockNumber()
+      const block = await ethers.provider.getBlock(blockNumber)
+      expect(Number(transaction.timestamp)).to.be.equal(block!.timestamp)
+      const encoder = new ethers.AbiCoder()
+      expect(transaction.data).to.equal(
+        encoder.encode(
+          ['uint256', 'address', 'uint256', 'uint256'],
+          [nonce, recipient, amount, block!.timestamp]
+        )
+      )
+      expect(transaction.status).to.equal(1) // Not sure how to encode Enums in Hardhat
 
       // make sure excess value refund has been issued
       expect(await getBalance(recipient, ethers.provider)).to.be.greaterThan(
@@ -227,87 +259,158 @@ describe('RelayBridge', function () {
         balanceBefore - amount * 2n
       )
     })
+  })
 
-    describe('should work for the base sequence using USDC', () => {
-      let receipt: ContractTransactionReceipt
-      const amount = ethers.parseUnits('10', 6)
+  describe('executeBridge', () => {
+    it('should fail of if the transaction is not in the correct state', async () => {
+      await expect(bridge.executeBridge(1337))
+        .to.be.revertedWithCustomError(bridge, 'BridgingTransactionNotReady')
+        .withArgs(1337)
+    })
 
-      before(async () => {
-        const [user] = await ethers.getSigners()
-        // deploy using ignition
-        const parameters = {
-          CCTPBridgeProxy: {
-            messenger,
-            transmitter,
-            usdc: assets.usdc,
-            relayPoolChainId: 1,
-            relayPool,
-            l1BridgeProxy,
-          },
+    it('should update the transaction state and emit the bridge executed event', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount * 2n,
         }
-        const { bridge: cctpProxyBridge } = await ignition.deploy(
-          CCTPBridgeProxyModule,
-          {
-            parameters,
-          }
-        )
-        const cctpProxyBridgeAddress = await cctpProxyBridge.getAddress()
-        const bridge = await ethers.deployContract('RelayBridge', [
-          assets.usdc,
-          cctpProxyBridgeAddress,
-          HYPERLANE_MAILBOX_ON_OPTIMISM,
+      )
+      await bridgeTx.wait()
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      // Let's now issue the executeBridge
+      const tx = await bridge.executeBridge(transaction.nonce)
+      const receipt = await tx.wait()
+      const updatedTransaction = await bridge.transactions(transaction.nonce)
+      expect(updatedTransaction.status).to.equal(2)
+      const event = await getEvent(receipt, 'BridgeExecuted', bridge.interface)
+      expect(event.args.nonce).to.equal(transaction.nonce)
+    })
+
+    it('should have called the native bridge to perform the transfer with native ETH', async () => {
+      const [user] = await ethers.getSigners()
+
+      const l2ToL1MessagePasser = new ethers.Contract(
+        '0x4200000000000000000000000000000000000016',
+        L2ToL1MessagePasser,
+        user
+      )
+
+      const l2ToL1MessagePasserNextNonce =
+        await l2ToL1MessagePasser.messageNonce()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+      const bridgeAddress = await bridge.getAddress()
+      const nonce = await bridge.transferNonce()
+
+      await (
+        await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
+          value: amount * 2n,
+        })
+      ).wait()
+      const transaction = await bridge.transactions(nonce)
+      const tx = await bridge.executeBridge(nonce)
+      const receipt = (await tx.wait())!
+
+      expect(receipt.logs.length).to.equal(6)
+      receipt.logs.forEach((log: Log) => {
+        expect(log.address).to.be.oneOf([
+          bridgeAddress,
+          '0x4200000000000000000000000000000000000016', // L2ToL1MessagePasser,
+          '0x4200000000000000000000000000000000000007', // L2CrossDomainMessenger,
+          '0x4200000000000000000000000000000000000010', // L2StandardBridge
         ])
-
-        const bridgeAddress = await bridge.getAddress()
-        const recipient = await user.getAddress()
-
-        // Get some USDC to sender/recipient
-        await mintUSDC(assets.usdc, recipient, amount)
-
-        // Approve
-        const erc20Contract = await ethers.getContractAt(ERC20, assets.usdc)
-        await erc20Contract.approve(bridgeAddress, amount)
-
-        const nonceBefore = await bridge.transferNonce()
-        const tx = await bridge.bridge(
-          amount,
-          recipient,
-          networks[1].assets.usdc,
-          {
-            value: ethers.parseEther('0.02'), // mailbox fee
-            gasLimit: 30000000,
+        if (log.address === bridgeAddress) {
+          const event = bridge.interface.parseLog(log)
+          expect(event.name).to.equal('BridgeExecuted')
+          expect(event.args[0]).to.equal(nonce)
+        } else if (
+          log.address === '0x4200000000000000000000000000000000000016'
+        ) {
+          const iface = new ethers.Interface(L2ToL1MessagePasser)
+          const event = iface.parseLog(log)
+          expect(event.name).to.be.equal('MessagePassed')
+          expect(event.args.nonce).to.be.equal(l2ToL1MessagePasserNextNonce)
+          expect(event.args.sender).to.be.equal(
+            '0x4200000000000000000000000000000000000007' // L2CrossDomainMessenger
+          )
+          expect(event.args.target).to.be.equal(
+            '0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1' // L1CrossDomainMessengerProxy
+          )
+          expect(event.args.value).to.be.equal(amount)
+          expect(event.args.gasLimit).to.be.equal(492846)
+          expect(event.args.withdrawalHash).to.be.not.equal(null)
+        } else if (
+          log.address === '0x4200000000000000000000000000000000000007'
+        ) {
+          const iface = new ethers.Interface(L2CrossDomainMessenger)
+          const event = iface.parseLog(log)
+          expect(event.name).to.be.oneOf([
+            'SentMessage',
+            'SentMessageExtension1',
+          ])
+          if (event.name === 'SentMessage') {
+            expect(event.args.target).to.equal(
+              '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+            )
+            expect(event.args.sender).to.equal(
+              '0x4200000000000000000000000000000000000010'
+            )
+            // message : TODO: parse
+            // expect(event.args.message).to.equal(
+            //   "0x0166a07a00000000000000000000000090de74265a416e1393a450752175aed98fe11517000000000000000000000000c709c9116dbf29da9c25041b13a07a0e68ac5d2d00000000000000000000000067ad6ea566ba6b0fc52e97bc25ce46120fdac04c000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000"
+            // );
+            expect(event.args.messageNonce).to.greaterThan(
+              '1766847064778384329583297500742918515827483896875618958121606201292642353'
+            )
+            expect(event.args.gasLimit).to.equal('200000')
+          } else if (event.name === 'SentMessageExtension1') {
+            expect(event.args.sender).to.equal(
+              '0x4200000000000000000000000000000000000010'
+            )
+            expect(event.args.value).to.equal(amount)
+          } else {
+            throw new Error('Unknown event')
           }
-        )
-        receipt = await tx.wait()
-        expect(await bridge.transferNonce()).to.equal(nonceBefore + 1n)
-        expect(receipt.logs.length).to.equal(6)
-      })
-
-      it.skip('fire CCTP DepositForBurn event', async () => {
-        // parse interface to decode logs
-        const { interface: iface } = await ethers.getContractAt(
-          'ITokenMessenger',
-          ethers.ZeroAddress
-        )
-        const { event } = await getEvent(receipt!, 'DepositForBurn', iface)
-        expect(event).to.not.be.equal(undefined)
-        const { args } = event
-        expect(args?.burnToken).to.be.equal(networks[10].assets.usdc)
-        expect(args?.amount).to.be.equal(amount)
-        expect(args?.destinationDomain).to.be.equal(
-          networks[1].bridges.cctp.domain
-        )
-      })
-
-      it.skip('fire MessageSent event', async () => {
-        // parse interface to decode logs
-        const { interface: iface } = await ethers.getContractAt(
-          'IMessageTransmitter',
-          ethers.ZeroAddress
-        )
-        const { event } = await getEvent(receipt!, 'MessageSent', iface)
-        expect(event).to.not.be.equal(undefined)
-        expect(event?.args.message).to.not.be.equal(undefined)
+        } else if (
+          log.address === '0x4200000000000000000000000000000000000010'
+        ) {
+          const iface = new ethers.Interface(L2StandardBridge)
+          const event = iface.parseLog(log)
+          expect(event.name).to.be.oneOf([
+            'WithdrawalInitiated',
+            'ETHBridgeInitiated',
+          ])
+          if (event.name === 'WithdrawalInitiated') {
+            expect(event.args.l1Token).to.equal(
+              '0x0000000000000000000000000000000000000000' // Native token
+            )
+            expect(event.args.l2Token).to.equal(
+              '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000' // ERC-20: : Ether
+            )
+            expect(event.args.from).to.equal(bridgeAddress)
+            expect(event.args.to).to.equal(l1BridgeProxy)
+            expect(event.args.amount).to.equal(amount)
+            expect(event.args.extraData).to.equal(transaction.data)
+          } else if (event.name === 'ETHBridgeInitiated') {
+            expect(event.args.from).to.equal(bridgeAddress)
+            expect(event.args.to).to.equal(l1BridgeProxy)
+            expect(event.args.amount).to.equal(amount)
+            expect(event.args.extraData).to.equal(transaction.data)
+          }
+        } else {
+          throw new Error('Unknown event')
+        }
       })
     })
   })

@@ -7,6 +7,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IOptimismPortal, Types} from "../interfaces/IOptimismPortal.sol";
 import {IOptimismMintableERC20} from "../interfaces/IOptimismMintableERC20.sol";
 
+import "hardhat/console.sol";
+
 contract OPStackNativeBridgeProxy is BridgeProxy {
   address public constant STANDARD_BRIDGE =
     address(0x4200000000000000000000000000000000000010);

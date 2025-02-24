@@ -6,6 +6,8 @@ import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+import "hardhat/console.sol";
+
 error BridgingFailed(uint256 nonce);
 
 error BridgingTransactionNotReady(uint256 nonce);
@@ -31,6 +33,7 @@ struct BridgeTransaction {
 }
 
 enum RelayBridgeTransactionStatus {
+  NONE,
   INITIATED,
   EXECUTED
 }
@@ -72,15 +75,17 @@ contract RelayBridge is IRelayBridge {
   function executeBridge(uint256 nonce) external {
     BridgeTransaction storage transaction = transactions[nonce];
 
-    if (transaction.status != RelayBridgeTransactionStatus.INITIATED) {
+    if (
+      transaction.nonce != nonce ||
+      transaction.status != RelayBridgeTransactionStatus.INITIATED
+    ) {
       revert BridgingTransactionNotReady(nonce);
     }
 
     // Issue transfer on the bridge
     (bool success, ) = address(bridgeProxy).delegatecall(
       abi.encodeWithSignature(
-        "bridge(address,address,address,uint256,bytes)",
-        transaction.sender,
+        "bridge(address,address,uint256,bytes)",
         transaction.asset,
         transaction.l1Asset,
         transaction.amount,

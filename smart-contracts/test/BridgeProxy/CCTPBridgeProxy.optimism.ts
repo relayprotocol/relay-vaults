@@ -50,7 +50,6 @@ describe('CCTPBridgeProxy', function () {
     it('fails if using sth that is not USDC', async () => {
       await reverts(
         bridge.bridge(
-          await recipient.getAddress(),
           networks[10].assets.udt,
           networks[1].assets.udt,
           parseUnits('100', 6),
@@ -77,11 +76,10 @@ describe('CCTPBridgeProxy', function () {
 
       // approve bridge to manipulate our usdc tokens
       const usdc = await ethers.getContractAt('IUSDC', assets.usdc)
-      await usdc.connect(recipient).approve(await bridge.getAddress(), amount)
+      usdc.connect(recipient).transfer(await bridge.getAddress(), amount)
 
       // send message to the bridge
       const tx = await bridge.bridge(
-        await recipient.getAddress(),
         networks[10].assets.usdc,
         networks[1].assets.usdc,
         amount,

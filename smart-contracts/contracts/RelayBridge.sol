@@ -6,8 +6,6 @@ import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "hardhat/console.sol";
-
 error BridgingFailed(uint256 nonce);
 
 error BridgingTransactionNotReady(uint256 nonce);

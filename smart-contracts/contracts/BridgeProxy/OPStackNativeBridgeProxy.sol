@@ -23,7 +23,6 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
   }
 
   function bridge(
-    address sender,
     address currency,
     address /* l1Asset */,
     uint256 amount,
@@ -39,15 +38,9 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
       // First, check that this is a "bridged ERC20" token
       address l1Token = IOptimismMintableERC20(currency).remoteToken();
       if (l1Token == address(0)) {
-        revert TOKEN_NOT_BRIDGED(currency);
+        revert TokenNotBridged(currency);
       }
 
-      // Take the ERC20 tokens from the sender
-      IOptimismMintableERC20(currency).transferFrom(
-        sender,
-        address(this),
-        amount
-      );
       // Bridge!
       L2StandardBridge(STANDARD_BRIDGE).bridgeERC20To(
         currency,

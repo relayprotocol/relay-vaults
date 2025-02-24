@@ -33,7 +33,6 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     })
     const bridgeAddress = await bridge.getAddress()
 
-    const recipient = await user.getAddress()
     const amount = ethers.parseEther('1')
 
     const crossDomainMessenger = new ethers.Contract(
@@ -53,7 +52,6 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       await l2ToL1MessagePasser.messageNonce()
 
     const tx = await bridge.bridge(
-      recipient,
       ethers.ZeroAddress,
       ethers.ZeroAddress,
       amount,
@@ -219,13 +217,12 @@ describe('OPStackNativeBridgeProxy:Base', function () {
 
     const bridgeAddress = await bridge.getAddress()
 
-    const recipient = await user.getAddress()
     const amount = ethers.parseEther('1') // 1 ethereumAssets.udt
-    // Transfer ethereumAssets.udt to sender/recipient
+    // Transfer ethereumAssets.udt to the bridge
     await stealERC20(
       baseAssets.udt,
       '0x12be7322070cFA75E2f001C6B3d6Ac8C2efEF5Ea',
-      recipient,
+      bridgeAddress,
       amount
     )
 
@@ -234,7 +231,6 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     await erc20Contract.approve(bridgeAddress, amount)
 
     const tx = await bridge.bridge(
-      recipient, // sender
       baseAssets.udt,
       networks[1].assets.udt,
       amount,
@@ -245,7 +241,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     )
     const receipt = await tx.wait()
 
-    expect(receipt.logs.length).to.equal(9)
+    expect(receipt.logs.length).to.equal(7)
     receipt.logs.forEach((log: Log) => {
       expect(log.address).to.be.oneOf([
         baseAssets.udt,

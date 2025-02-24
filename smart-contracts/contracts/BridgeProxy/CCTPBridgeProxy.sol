@@ -34,18 +34,14 @@ contract CCTPBridgeProxy is BridgeProxy {
   }
 
   function bridge(
-    address sender,
     address currency,
     address /* l1Asset */,
     uint256 amount,
     bytes calldata /*data*/
   ) external payable override {
     if (currency != USDC) {
-      revert TOKEN_NOT_BRIDGED(currency);
+      revert TokenNotBridged(currency);
     }
-
-    // transfer token to this contract first
-    IUSDC(USDC).transferFrom(sender, address(this), amount);
 
     // approve messenger to manipulate USDC tokens
     IUSDC(USDC).approve(address(MESSENGER), amount);

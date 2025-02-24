@@ -1,7 +1,7 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
 import { mintUSDC, stealERC20 } from '../utils/hardhat'
-import { getEvent } from '@relay-protocol/helpers'
+import { getBalance, getEvent } from '@relay-protocol/helpers'
 
 import { Mailbox, ERC20 } from '@relay-protocol/helpers/abis'
 import { ContractTransactionReceipt, Log } from 'ethers'
@@ -56,6 +56,7 @@ describe('RelayBridge', function () {
     const recipient = await user.getAddress()
     const amount = ethers.parseEther('1')
     const nonce = await bridge.transferNonce()
+    const balanceBefore = await getBalance(recipient, ethers.provider)
     const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
       value: amount * 2n,
       gasLimit: 30000000,
@@ -112,6 +113,11 @@ describe('RelayBridge', function () {
         expect(event.args[6]).to.equal(opProxyBridgeAddress)
       }
     })
+
+    // make sure excess value refund has been issued
+    expect(await getBalance(recipient, ethers.provider)).to.be.greaterThan(
+      balanceBefore - amount * 2n
+    )
   })
 
   it('should work for the base sequence using an ERC20', async () => {
@@ -154,6 +160,7 @@ describe('RelayBridge', function () {
     await erc20Contract.approve(bridgeAddress, amount)
 
     const nonce = await bridge.transferNonce()
+    const balanceBefore = await getBalance(recipient, ethers.provider)
 
     const tx = await bridge.bridge(amount, recipient, networks[1].assets.udt, {
       value: amount * 2n,
@@ -212,6 +219,11 @@ describe('RelayBridge', function () {
         expect(event.args[6]).to.equal(opProxyBridgeAddress)
       }
     })
+
+    // make sure excess value refund has been issued
+    expect(await getBalance(recipient, ethers.provider)).to.be.greaterThan(
+      balanceBefore - amount * 2n
+    )
   })
 
   describe('should work for the base sequence using USDC', () => {

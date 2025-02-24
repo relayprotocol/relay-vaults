@@ -16,7 +16,7 @@ struct OriginSettings {
   uint256 maxDebt;
   uint256 outstandingDebt;
   address proxyBridge;
-  uint8 bridgeFee; // basis points
+  uint16 bridgeFee; // basis points
   uint32 coolDown; // in seconds
 }
 
@@ -26,7 +26,7 @@ struct OriginParam {
   address bridge;
   address proxyBridge;
   uint256 maxDebt;
-  uint8 bridgeFee; // basis points
+  uint16 bridgeFee; // basis points
   uint32 coolDown; // in seconds
 }
 

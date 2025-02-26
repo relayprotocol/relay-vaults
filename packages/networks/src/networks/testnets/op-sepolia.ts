@@ -7,7 +7,9 @@ export const opSepolia: L2NetworkConfig = {
   isTestnet: true,
   l1ChainId: 11155111,
   name: 'OP Sepolia',
-  rpc: [process.env.RPC_11155420],
+  rpc: process.env.RPC_11155420
+    ? [process.env.RPC_11155420]
+    : ['https://optimism-sepolia.gateway.tenderly.co'],
   slug: 'op-sepolia',
   bridges: {
     op: {

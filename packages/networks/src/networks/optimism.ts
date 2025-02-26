@@ -23,5 +23,7 @@ export const optimism: L2NetworkConfig = {
     usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
     weth: '0x4200000000000000000000000000000000000006',
   },
-  rpc: [process.env.RPC_10],
+  rpc: process.env.RPC_10
+    ? [process.env.RPC_10]
+    : ['https://gateway.tenderly.co/public/optimism'],
 }

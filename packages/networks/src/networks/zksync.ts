@@ -23,5 +23,7 @@ export const zksync: L2NetworkConfig = {
     dai: '0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656',
     eth: '0x000000000000000000000000000000000000800A',
   },
-  rpc: [process.env.RPC_324],
+  rpc: process.env.RPC_324
+    ? [process.env.RPC_324]
+    : ['https://mainnet.era.zksync.io'],
 }

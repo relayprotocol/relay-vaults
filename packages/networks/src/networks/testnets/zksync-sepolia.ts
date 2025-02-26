@@ -8,7 +8,7 @@ export const zkSyncSepolia: L2NetworkConfig = {
   isTestnet: true,
   name: 'ZKsync Sepolia Testnet',
   slug: 'zksync-sepolia',
-  rpc: [process.env.300],
+  rpc: [process.env.RPC_300],
   bridges: {
     zksync: {
       l1SharedDefaultBridge: '0x3E8b2fe58675126ed30d0d12dea2A9bda72D18Ae',

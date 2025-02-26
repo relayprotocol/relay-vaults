@@ -7,7 +7,7 @@ export const opSepolia: L2NetworkConfig = {
   isTestnet: true,
   l1ChainId: 11155111,
   name: 'OP Sepolia',
-  rpc: [process.env.11155420],
+  rpc: [process.env.RPC_11155420],
   slug: 'op-sepolia',
   bridges: {
     op: {

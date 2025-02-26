@@ -22,5 +22,5 @@ export const base: L2NetworkConfig = {
     usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     udt: '0xD7eA82D19f1f59FF1aE95F1945Ee6E6d86A25B96',
   },
-  rpc: ['https://rpc.unlock-protocol.com/8453'],
+  rpc: [process.env.RPC_8453],
 }

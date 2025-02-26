@@ -38,5 +38,5 @@ export const ethereum: L1NetworkConfig = {
   uniswapV3: {
     universalRouterAddress: '0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B',
   },
-  rpc: ['https://rpc.unlock-protocol.com/1'],
+  rpc: [process.env.RPC_1],
 }

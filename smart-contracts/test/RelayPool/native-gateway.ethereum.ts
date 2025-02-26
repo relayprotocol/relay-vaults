@@ -10,6 +10,7 @@ const {
   hyperlaneMailbox,
 } = networks[1]
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
+import { ZeroAddress } from 'ethers'
 
 let weth: IWETH
 let relayPool: RelayPool
@@ -400,6 +401,48 @@ describe('RelayPoolNativeGateway', () => {
         .redeem(relayPoolAddress, shares, userAddress)
 
       expect(await weth.balanceOf(await nativeGateway.getAddress())).to.equal(0)
+    })
+
+    it('should make sure assets deposited directly dont break redeem', async () => {
+      const [, secondUser] = await ethers.getSigners()
+      const userAddress = await secondUser.getAddress()
+      const amount = ethers.parseUnits('0.1', 18)
+      const initAmount = ethers.parseUnits('0.0001', 18)
+
+      const getGatewayBalance = async () =>
+        await getBalance(
+          await nativeGateway.getAddress(),
+          ZeroAddress,
+          ethers.provider
+        )
+
+      // send funds to gateway contract
+      await ethers.deployContract(
+        'SelfDestructible',
+        [await nativeGateway.getAddress()],
+        {
+          value: initAmount,
+        }
+      )
+      const initBalance = await getGatewayBalance()
+      expect(initBalance).to.equal(initAmount)
+
+      // Deposit tokens to the RelayPool
+      await nativeGateway
+        .connect(secondUser)
+        .mint(relayPoolAddress, userAddress, { value: amount })
+
+      // redeem the shares
+      const shares = await relayPool.balanceOf(userAddress)
+      await (
+        await relayPool
+          .connect(secondUser)
+          .approve(await nativeGateway.getAddress(), shares)
+      ).wait()
+      await nativeGateway
+        .connect(secondUser)
+        .redeem(relayPoolAddress, shares, userAddress)
+      expect(await getGatewayBalance()).to.equal(initAmount)
     })
   })
 })

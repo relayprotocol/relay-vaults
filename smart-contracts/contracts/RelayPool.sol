@@ -226,9 +226,9 @@ contract RelayPool is ERC4626, Ownable {
     OriginSettings storage origin
   ) internal {
     uint256 currentOriginOutstandingDebt = origin.outstandingDebt;
-    origin.outstandingDebt -= amount;
+    origin.outstandingDebt -= Math.min(amount, currentOriginOutstandingDebt);
     uint256 currentOutstandingDebt = outstandingDebt;
-    outstandingDebt -= amount;
+    outstandingDebt -= Math.min(amount, currentOutstandingDebt);
     emit OutstandingDebtChanged(
       currentOutstandingDebt,
       outstandingDebt,
@@ -451,7 +451,7 @@ contract RelayPool is ERC4626, Ownable {
     // The amount is the amount that was loaned + the fees
     // TODO: what happens if the bridgeFee was changed?
     uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
-    pendingBridgeFees -= feeAmount;
+    pendingBridgeFees -= Math.min(feeAmount, pendingBridgeFees);
     // We need to account for it in a streaming fashion
     addToStreamingAssets(feeAmount);
 

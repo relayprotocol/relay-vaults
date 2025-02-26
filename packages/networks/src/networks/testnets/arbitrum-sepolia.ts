@@ -18,7 +18,9 @@ export const arbSepolia: L2NetworkConfig = {
   isTestnet: true,
   l1ChainId: 11155111,
   name: 'Arbitrum Sepolia',
-  rpc: ['https://sepolia-rollup.arbitrum.io/rpc'],
+  rpc: process.env.RPC_421614
+    ? [process.env.RPC_421614]
+    : ['https://sepolia-rollup.arbitrum.io/rpc'],
   slug: 'arbitrum-sepolia',
   assets: {
     udt: '0xeCf77F1D5bB9d40BCc79343DB16ACB86795050fC',

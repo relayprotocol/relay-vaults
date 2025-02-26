@@ -37,7 +37,9 @@ export const sepolia: L1NetworkConfig = {
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
     weth: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
   },
-  rpc: ['https://rpc.unlock-protocol.com/11155111'],
+  rpc: process.env.RPC_11155111
+    ? [process.env.RPC_11155111]
+    : ['https://sepolia.gateway.tenderly.co'],
   uniswapV3: {
     universalRouterAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
   },

@@ -21,5 +21,7 @@ export const baseSepolia: L2NetworkConfig = {
   assets: {
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
   },
-  rpc: ['https://rpc.unlock-protocol.com/84532'],
+  rpc: process.env.RPC_84532
+    ? [process.env.RPC_84532]
+    : ['https://base-sepolia.gateway.tenderly.co'],
 }

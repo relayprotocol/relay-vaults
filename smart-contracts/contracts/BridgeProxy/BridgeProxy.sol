@@ -1,4 +1,5 @@
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
@@ -46,16 +47,17 @@ contract BridgeProxy {
   // "Finalization" of the bridge can be triggered by anyone (and should probably
   // have been triggered before calling this.)
   function claim(
-    address currency
+    address currency,
+    uint256 amount
   ) external onlyRelayPool returns (uint256 balance) {
     if (currency == address(0)) {
-      balance = address(this).balance;
+      balance = Math.min(address(this).balance, amount);
       (bool success, ) = RELAY_POOL.call{value: balance}("");
       if (!success) {
         revert TransferFailed(balance);
       }
     } else {
-      balance = IERC20(currency).balanceOf(address(this));
+      balance = Math.min(IERC20(currency).balanceOf(address(this)), amount);
       IERC20(currency).transfer(RELAY_POOL, balance);
     }
   }

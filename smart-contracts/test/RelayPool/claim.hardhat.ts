@@ -213,6 +213,37 @@ describe('RelayPool: claim for native ETH', () => {
         bridgedAmount
       )
     })
+
+    it('should not fail if there are extra funds in the bridge proxy contract', async () => {
+      const [user] = await ethers.getSigners()
+
+      // Borrow from the pool so we can claim later
+      await relayPool.handle(
+        origin.chainId,
+        ethers.zeroPadValue(origin.bridge, 32),
+        encodeData(8n, userAddress, bridgedAmount)
+      )
+
+      const streamingPeriod = await relayPool.streamingPeriod()
+      await ethers.provider.send('evm_increaseTime', [
+        Number(streamingPeriod * 2n),
+      ])
+      await relayPool.updateStreamedAssets()
+
+      const outstandingDebtBefore = await relayPool.outstandingDebt()
+      expect(outstandingDebtBefore).to.equal(bridgedAmount)
+
+      // Send more funds funds to the bridgeProxy (simulate successful bridging and more!)
+      await user.sendTransaction({
+        to: origin.proxyBridge,
+        value: bridgedAmount * 2n,
+      })
+
+      await relayPool.claim(origin.chainId, origin.bridge)
+
+      const outstandingDebtAfter = await relayPool.outstandingDebt()
+      expect(outstandingDebtAfter).to.equal(0)
+    })
   })
 })
 

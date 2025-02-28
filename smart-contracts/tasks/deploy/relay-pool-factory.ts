@@ -1,10 +1,12 @@
 import { task } from 'hardhat/config'
+import { Select, Input } from 'enquirer'
 
 import { networks } from '@relay-protocol/networks'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 
-task('deploy:pool-factory', 'Deploy a relay pool factory').setAction(
-  async (_params, { ethers, ignition, run, ...rest }) => {
+task('deploy:pool-factory', 'Deploy a relay pool factory')
+  .addOptionalParam('timelock', 'The Timelock contract to use')
+  .setAction(async (_params, { ethers, ignition, run }) => {
     // get args value
     const { chainId } = await ethers.provider.getNetwork()
     const {
@@ -35,5 +37,4 @@ task('deploy:pool-factory', 'Deploy a relay pool factory').setAction(
       address: poolFactoryAddress,
       constructorArguments: [hyperlaneMailbox, weth],
     })
-  }
-)
+  })

@@ -8,8 +8,8 @@ import {IWETH} from "./interfaces/IWETH.sol";
 import {ITokenSwap} from "./interfaces/ITokenSwap.sol";
 import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 struct OriginSettings {
   address curator;
@@ -226,9 +226,9 @@ contract RelayPool is ERC4626, Ownable {
     OriginSettings storage origin
   ) internal {
     uint256 currentOriginOutstandingDebt = origin.outstandingDebt;
-    origin.outstandingDebt -= Math.min(amount, currentOriginOutstandingDebt);
+    origin.outstandingDebt -= amount;
     uint256 currentOutstandingDebt = outstandingDebt;
-    outstandingDebt -= Math.min(amount, currentOutstandingDebt);
+    outstandingDebt -= amount;
     emit OutstandingDebtChanged(
       currentOutstandingDebt,
       outstandingDebt,
@@ -440,7 +440,8 @@ contract RelayPool is ERC4626, Ownable {
 
     // We need to claim the funds from the bridge proxy contract
     uint amount = BridgeProxy(origin.proxyBridge).claim(
-      address(asset) == WETH ? address(0) : address(asset)
+      address(asset) == WETH ? address(0) : address(asset),
+      outstandingDebt
     );
 
     // We should have received funds
@@ -451,7 +452,7 @@ contract RelayPool is ERC4626, Ownable {
     // The amount is the amount that was loaned + the fees
     // TODO: what happens if the bridgeFee was changed?
     uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
-    pendingBridgeFees -= Math.min(feeAmount, pendingBridgeFees);
+    pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion
     addToStreamingAssets(feeAmount);
 

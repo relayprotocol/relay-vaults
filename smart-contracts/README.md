@@ -27,6 +27,8 @@ For all deployments you need a private key:
 export DEPLOYER_PRIVATE_KEY=...
 ```
 
+The deployment tasks do include contract verifications.
+
 ### Deploy the factories
 
 The factories are not strictly necessary for the protocol to operate but they provide convenience to identify deployed contracts. These addresses are added to the `../backend` application.
@@ -41,8 +43,6 @@ yarn run hardhat deploy:bridge-factory --network op-sepolia
 # Pool factory (deployed on L1)
 yarn run hardhat deploy:pool-factory --network sepolia
 ```
-
-Note: You can verify the pools with a command like
 
 ```
 yarn run hardhat ignition verify <name of deployment from ignition/deployments/>

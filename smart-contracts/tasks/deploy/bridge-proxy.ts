@@ -6,13 +6,13 @@ import { AutoComplete } from 'enquirer'
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
-import { getZkSyncBridgeContracts, deployContract } from '../../lib/zksync'
+import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
   .setAction(async (_, hre) => {
-    const { ethers, ignition, network } = hre
+    const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
 
     const { bridges, isZKsync } = networks[chainId.toString()]
@@ -56,7 +56,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       proxyBridgeAddress = await proxyBridge.getAddress()
 
       // verify!
-      await run('verify:verify', {
+      await run('deploy:verify', {
         address: proxyBridgeAddress,
         constructorArguments: [messenger, transmitter, USDC],
       })
@@ -80,7 +80,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       proxyBridgeAddress = await proxyBridge.getAddress()
 
       // verify!
-      await run('verify:verify', {
+      await run('deploy:verify', {
         address: proxyBridgeAddress,
         constructorArguments: [portalProxy],
       })
@@ -107,7 +107,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       proxyBridgeAddress = await proxyBridge.getAddress()
 
       // verify!
-      await run('verify:verify', {
+      await run('deploy:verify', {
         address: proxyBridgeAddress,
         constructorArguments: [routerGateway, outbox],
       })
@@ -144,7 +144,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         console.log(
           `Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
         )
-        await run('verify:verify', {
+        await run('deploy:verify', {
           address: proxyBridgeAddress,
           constructorArguments: [routerGateway, outbox],
         })

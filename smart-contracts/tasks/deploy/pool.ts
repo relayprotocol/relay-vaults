@@ -161,32 +161,18 @@ task('deploy:pool', 'Deploy a relay pool')
 
       const poolAddress = event.args.pool
       console.log(`relayPool deployed to: ${poolAddress}`)
-      let verified = false
-      let attempts = 0
-      while (!verified) {
-        attempts += 1
-        await tx.wait(attempts)
-        await run('verify:verify', {
-          address: poolAddress,
-          constructorArguments: [
-            await factoryContract.hyperlaneMailbox(),
-            asset,
-            name,
-            symbol,
-            authorizedOrigins,
-            yieldPool,
-            await factoryContract.wrappedEth(),
-            await user.getAddress(),
-          ],
-        })
-          .then(() => {
-            verified = true
-          })
-          .catch((e) => {
-            if (attempts >= 10) {
-              throw e
-            }
-          })
-      }
+      await run('deploy:verify', {
+        address: poolAddress,
+        constructorArguments: [
+          await factoryContract.hyperlaneMailbox(),
+          asset,
+          name,
+          symbol,
+          authorizedOrigins,
+          yieldPool,
+          await factoryContract.wrappedEth(),
+          await user.getAddress(),
+        ],
+      })
     }
   )

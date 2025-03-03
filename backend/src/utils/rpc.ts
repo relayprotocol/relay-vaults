@@ -8,7 +8,6 @@ import networks from '@relay-protocol/networks'
  */
 const getRpcUrl = (chainId: number): string => {
   const url = networks[chainId].rpc[0]
-  console.log(url)
   if (!url) {
     throw new Error(`Unsupported chain ID: ${chainId}`)
   }

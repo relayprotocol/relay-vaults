@@ -1,7 +1,6 @@
 import { task } from 'hardhat/config'
 import TimelockModule from '../../ignition/modules/TimelockModule'
 
-// deploy a simple ERC4626 pool for testing purposes
 task('deploy:timelock', 'Deploy a timelock contract').setAction(
   async (_, { ethers, ignition }) => {
     const { chainId } = await ethers.provider.getNetwork()

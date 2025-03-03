@@ -1,6 +1,5 @@
 import { task } from 'hardhat/config'
 
-// deploy a simple ERC4626 pool for testing purposes
 task(
   'deploy:verify',
   'Verifies a contract utility, includes retries and wait times'

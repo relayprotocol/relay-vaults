@@ -1,16 +1,22 @@
 import { task } from 'hardhat/config'
+import TimelockModule from '../../ignition/modules/TimelockModule'
 
 // deploy a simple ERC4626 pool for testing purposes
 task('deploy:timelock', 'Deploy a timelock contract').setAction(
-  async (_, { ethers }) => {
-    const TimelockController = await ethers.getContractFactory(
-      'TimelockControllerUpgradeable'
-    )
-    const timelockTemplate = await TimelockController.deploy()
-    await timelockTemplate.waitForDeployment()
+  async (_, { ethers, ignition }) => {
+    const { chainId } = await ethers.provider.getNetwork()
+
+    const deploymentId = `Timelock-${chainId.toString()}`
+    const { timelock } = await ignition.deploy(TimelockModule, {
+      deploymentId,
+    })
+
+    const poolFactoryAddress = await timelock.getAddress()
+
+    console.log(`timelock deployed to: ${poolFactoryAddress}`)
 
     return run('deploy:verify', {
-      address: await timelockTemplate.getAddress(),
+      address: await timelock.getAddress(),
     })
   }
 )

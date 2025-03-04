@@ -148,7 +148,7 @@ contract RelayBridge is IRelayBridge {
       IERC20(asset).transferFrom(msg.sender, address(this), amount);
     } else {
       // We need to check that the msg.value matches the amount
-      if (msg.value <= hyperlaneFee + amount) {
+      if (msg.value < hyperlaneFee + amount) {
         revert InsufficientValue(msg.value, hyperlaneFee, amount);
       }
     }

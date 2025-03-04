@@ -70,8 +70,9 @@ describe('RelayBridge', function () {
       const amount = ethers.parseEther('1')
       const nonce = await bridge.transferNonce()
       const balanceBefore = await getBalance(recipient, ethers.provider)
+      const fee = await bridge.getFee(amount, recipient)
       const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
-        value: amount * 2n,
+        value: amount + fee,
       })
       const receipt = await tx.wait()
 
@@ -261,6 +262,21 @@ describe('RelayBridge', function () {
         balanceBefore - amount * 2n
       )
     })
+
+    it('should fail if the msg.value does not match the amount', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+      const fee = await bridge.getFee(amount, recipient)
+      await expect(
+        bridge.bridge(amount, recipient, ethers.ZeroAddress, {
+          value: fee,
+        })
+      )
+        .to.be.revertedWithCustomError(bridge, 'InsufficientValue')
+        .withArgs(fee, fee, amount)
+    })
   })
 
   describe('executeBridge', () => {
@@ -275,12 +291,14 @@ describe('RelayBridge', function () {
 
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')
+      const fee = await bridge.getFee(amount, recipient)
+
       const bridgeTx = await bridge.bridge(
         amount,
         recipient,
         ethers.ZeroAddress,
         {
-          value: amount * 2n,
+          value: amount + fee,
         }
       )
       await bridgeTx.wait()
@@ -314,10 +332,11 @@ describe('RelayBridge', function () {
       const amount = ethers.parseEther('1')
       const bridgeAddress = await bridge.getAddress()
       const nonce = await bridge.transferNonce()
+      const fee = await bridge.getFee(amount, recipient)
 
       await (
         await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
-          value: amount * 2n,
+          value: amount + fee,
         })
       ).wait()
       const transaction = await bridge.transactions(nonce)

@@ -15,7 +15,7 @@ import networks from '@relay-protocol/networks'
 const deployedAddresses = getAddresses()
 
 const earliestBlocks = {
-  sepolia: 7500000,
+  sepolia: 7820000,
   opSepolia: 22000000,
   baseSepolia: 21000000,
   arbSepolia: 115000000,

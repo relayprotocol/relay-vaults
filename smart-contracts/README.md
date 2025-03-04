@@ -50,18 +50,6 @@ yarn run hardhat ignition verify <name of deployment from ignition/deployments/>
 
 ### Deploy protocol contracts
 
-#### Deploy a bridge on an L2
-
-We start with it because we need to provide "origin" addresses on the L1 pool when we will deploy it.
-
-```
-# Deploy a bridge proxy on an L2: here we should OP-sepolia, of type op and sending funds to Sepolia (11155111)
-yarn hardhat deploy:bridge-proxy --network op-sepolia
-
-# Deploy a relay bridge on the same L2
-yarn hardhat deploy:relay-bridge --network op-sepolia
-```
-
 #### Deploy the pool on the L1
 
 We start by deploying the pool without any origin configured.
@@ -94,7 +82,8 @@ https://repo.sourcify.dev/contracts/full_match/11155111/0x794dE8b61567D0dE557CE6
 
 #### Adding origins
 
-TK
+Now that the pool has been deployed on the L1, we need to add origins to it.
+First, we need to deploy the L2 Bridge contract on the L2.
 
 ```
 # Deploy a bridge proxy on an L1

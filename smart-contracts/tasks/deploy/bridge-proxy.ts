@@ -8,14 +8,65 @@ import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNative
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
+import { L2NetworkConfig } from '@relay-protocol/types'
+import { getAddresses } from '@relay-protocol/addresses'
+import { GET_ALL_POOLS, RelayVaultService } from '@relay-protocol/client'
+
+// We must deployed on the L1 first!
+// So we need to
 
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
-  .setAction(async (_, hre) => {
+  .addOptionalParam(
+    'poolAddress',
+    'the relay pool address where the funds are eventually sent'
+  )
+  .setAction(async ({ type, poolAddress }, hre) => {
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
+    const networkConfig = networks[chainId.toString()]
+    const { bridges, isZKsync } = networkConfig
 
-    const { bridges, isZKsync } = networks[chainId.toString()]
+    let { l1ChainId } = networkConfig as L2NetworkConfig
+    let l1BridgeProxy
+    let relayPool
+
+    if (!l1ChainId) {
+      // We are deploying the BridgeProxy on an L1 chain on the L1
+      l1ChainId = chainId
+      // relayPool get it from the deployed contracts?
+      l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
+
+      const vaultService = new RelayVaultService(
+        'https://relay-protocol-production.up.railway.app/' // TODO: add to config?
+      )
+
+      let pool
+
+      if (!poolAddress) {
+        const { relayPools } = await vaultService.query(GET_ALL_POOLS)
+        if (relayPools.items.length === 0) {
+          throw new Error(`No pools found!`)
+        }
+        const poolName = await new Select({
+          message:
+            'Which pool do you want this bridge proxy to send its funds to?',
+          choices: relayPools.items.map((pool) => pool.name),
+        }).run()
+        pool = relayPools.items.find((pool) => pool.name === poolName)
+        console.log(pool)
+      }
+    } else {
+      // We are deploying the BridgeProxy on an L2 chain
+      // relayPool = // get it from the deployed contracts on the L1
+      // l1BridgeProxy = // Get it from the deployed contracts on the L1
+    }
+
+    const l1DeployedContracts = (await getAddresses())[l1ChainId.toString()]
+    console.log(l1DeployedContracts)
+
+    // Let's get the pools on l1ChainId so we can get relayPool
+    // Also, we must deploy the l1 proxyBridge first...
 
     if (!type) {
       type = await new AutoComplete({
@@ -33,6 +84,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
     // deploy bridge proxy
     let proxyBridge: BaseContract
+
     if (type === 'cctp') {
       const {
         bridges: {
@@ -66,6 +118,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy,
+          relayPoolChainId: l1ChainId,
+          relayPool,
+          l1BridgeProxy,
         },
       }
       const deploymentId = `BridgeProxy-op-${chainId.toString()}`

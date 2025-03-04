@@ -193,12 +193,14 @@ describe('RelayBridge', function () {
       const nonce = await bridge.transferNonce()
       const balanceBefore = await getBalance(recipient, ethers.provider)
 
+      const value = await bridge.getFee(amount, recipient)
+
       const tx = await bridge.bridge(
         amount,
         recipient,
         networks[1].assets.udt,
         {
-          value: amount * 2n,
+          value,
           gasLimit: 30000000,
         }
       )

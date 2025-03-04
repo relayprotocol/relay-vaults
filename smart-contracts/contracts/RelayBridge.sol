@@ -7,7 +7,7 @@ import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 error BridgingFailed(uint256 nonce);
-
+error InsufficientValue(uint256 value, uint256 hyperlaneFee, uint256 amount);
 error BridgingTransactionNotReady(uint256 nonce);
 
 interface IRelayBridge {
@@ -96,6 +96,30 @@ contract RelayBridge is IRelayBridge {
     emit BridgeExecuted(nonce);
   }
 
+  /// @notice Convenience function which returns the Hyperlane fee to be passed as msg.value in `bridge`.
+  function getFee(
+    uint256 amount,
+    address recipient
+  ) external view returns (uint256 fee) {
+    bytes memory data = abi.encode(
+      transferNonce, // use the currenct transferNonce
+      recipient,
+      amount,
+      block.timestamp
+    );
+    uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
+    bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
+
+    // Get the fee for the cross-chain message
+    return
+      IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
+        poolChainId,
+        poolId,
+        data,
+        StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
+      );
+  }
+
   function bridge(
     uint256 amount,
     address recipient,
@@ -103,12 +127,6 @@ contract RelayBridge is IRelayBridge {
   ) external payable returns (uint256 nonce) {
     // Associate the withdrawal to a unique id
     nonce = transferNonce++;
-
-    // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
-    if (asset != address(0)) {
-      // Take the ERC20 tokens from the sender
-      IERC20(asset).transferFrom(msg.sender, address(this), amount);
-    }
 
     // Encode the data for the cross-chain message
     // No need to pass the asset since the bridge and the pool are asset-specific
@@ -123,6 +141,17 @@ contract RelayBridge is IRelayBridge {
       data,
       StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
     );
+
+    // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
+    if (asset != address(0)) {
+      // Take the ERC20 tokens from the sender
+      IERC20(asset).transferFrom(msg.sender, address(this), amount);
+    } else {
+      // We need to check that the msg.value matches the amount
+      if (msg.value <= hyperlaneFee + amount) {
+        revert InsufficientValue(msg.value, hyperlaneFee, amount);
+      }
+    }
 
     // Send the message, with the right fee
     IHyperlaneMailbox(hyperlaneMailbox).dispatch{value: hyperlaneFee}(
@@ -155,7 +184,7 @@ contract RelayBridge is IRelayBridge {
     );
 
     // refund extra value to msg sender
-    uint256 spent = (l1Asset == address(0) ? amount : 0) + hyperlaneFee;
+    uint256 spent = (asset == address(0) ? amount : 0) + hyperlaneFee;
     if (msg.value > spent) {
       payable(msg.sender).transfer(msg.value - spent);
     }

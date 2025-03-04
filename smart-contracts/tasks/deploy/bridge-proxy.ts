@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { type BaseContract } from 'ethers'
-import { AutoComplete } from 'enquirer'
+import { AutoComplete, Select } from 'enquirer'
 
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
@@ -9,8 +9,8 @@ import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/Arbitru
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { L2NetworkConfig } from '@relay-protocol/types'
-import { getAddresses } from '@relay-protocol/addresses'
 import { GET_ALL_POOLS, RelayVaultService } from '@relay-protocol/client'
+import { getAddresses } from '@relay-protocol/addresses'
 
 // We must deployed on the L1 first!
 // So we need to
@@ -29,51 +29,49 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
     let { l1ChainId } = networkConfig as L2NetworkConfig
     let l1BridgeProxy
-    let relayPool
 
-    if (!l1ChainId) {
-      // We are deploying the BridgeProxy on an L1 chain on the L1
-      l1ChainId = chainId
-      // relayPool get it from the deployed contracts?
-      l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
+    const vaultService = new RelayVaultService(
+      'https://relay-protocol-production.up.railway.app/' // TODO: add to config?
+    )
 
-      const vaultService = new RelayVaultService(
-        'https://relay-protocol-production.up.railway.app/' // TODO: add to config?
-      )
-
-      let pool
-
-      if (!poolAddress) {
-        const { relayPools } = await vaultService.query(GET_ALL_POOLS)
-        if (relayPools.items.length === 0) {
-          throw new Error(`No pools found!`)
-        }
-        const poolName = await new Select({
-          message:
-            'Which pool do you want this bridge proxy to send its funds to?',
-          choices: relayPools.items.map((pool) => pool.name),
-        }).run()
-        pool = relayPools.items.find((pool) => pool.name === poolName)
-        console.log(pool)
+    if (!poolAddress) {
+      const { relayPools } = await vaultService.query(GET_ALL_POOLS)
+      if (relayPools.items.length === 0) {
+        throw new Error('No pools found!')
       }
-    } else {
-      // We are deploying the BridgeProxy on an L2 chain
-      // relayPool = // get it from the deployed contracts on the L1
-      // l1BridgeProxy = // Get it from the deployed contracts on the L1
+      const poolName = await new Select({
+        message:
+          'Which pool do you want this bridge proxy to send its funds to?',
+        choices: relayPools.items.map((pool) => pool.name),
+      }).run()
+      const pool = relayPools.items.find((pool) => pool.name === poolName)
+      poolAddress = pool.contractAddress
     }
-
-    const l1DeployedContracts = (await getAddresses())[l1ChainId.toString()]
-    console.log(l1DeployedContracts)
 
     // Let's get the pools on l1ChainId so we can get relayPool
     // Also, we must deploy the l1 proxyBridge first...
-
+    const types = ['cctp', 'op', 'arb', 'zksync']
     if (!type) {
       type = await new AutoComplete({
         name: 'type',
         message: 'Please choose a proxy type?',
-        choices: Object.keys(bridges),
+        choices: types,
       }).run()
+    }
+
+    if (!l1ChainId) {
+      // We are deploying the BridgeProxy on an L1 chain on the L1
+      l1ChainId = chainId
+      l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
+    } else {
+      const l1DeployedAddresses = getAddresses()[l1ChainId]
+      if (!l1DeployedAddresses.BridgeProxy[type]) {
+        throw new Error(
+          `There is no ${type} bridge proxy deployed on L1! Please deploy it first! Don't forget to run yarn run generate in packages/addresses`
+        )
+      }
+      // We are deploying the BridgeProxy on an L2 chain
+      l1BridgeProxy = l1DeployedAddresses.BridgeProxy[type]
     }
 
     // get args value
@@ -85,6 +83,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     // deploy bridge proxy
     let proxyBridge: BaseContract
 
+    const deploymentId = `BridgeProxy-${type}-${chainId.toString()}`
     if (type === 'cctp') {
       const {
         bridges: {
@@ -99,7 +98,6 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
           usdc: USDC,
         },
       }
-      const deploymentId = `BridgeProxy-cctp-${chainId.toString()}`
       // deploy CCTP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(CCTPBridgeProxyModule, {
         parameters,
@@ -119,11 +117,10 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         OPStackNativeBridgeProxy: {
           portalProxy,
           relayPoolChainId: l1ChainId,
-          relayPool,
+          relayPool: poolAddress,
           l1BridgeProxy,
         },
       }
-      const deploymentId = `BridgeProxy-op-${chainId.toString()}`
       // deploy OP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
         OPStackNativeBridgeProxyModule,
@@ -137,7 +134,12 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       // verify!
       await run('deploy:verify', {
         address: proxyBridgeAddress,
-        constructorArguments: [portalProxy],
+        constructorArguments: [
+          portalProxy,
+          l1ChainId,
+          poolAddress,
+          l1BridgeProxy,
+        ],
       })
       console.log(`OPStack bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'arb') {
@@ -150,7 +152,6 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
           outbox,
         },
       }
-      const deploymentId = `BridgeProxy-arb-${chainId.toString()}`
       // deploy ARB bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
         ArbitrumOrbitNativeBridgeProxyModule,
@@ -192,7 +193,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
           ZkSyncBridgeProxyModule,
           {
             parameters,
-            deploymentId: `BridgeProxy-ZkSync-${chainId.toString()}`,
+            deploymentId,
           }
         ))
         proxyBridgeAddress = await proxyBridge.getAddress()

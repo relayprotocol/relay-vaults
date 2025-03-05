@@ -3,6 +3,7 @@ import { ethers, ignition } from 'hardhat'
 import { MyToken, MyYieldPool, RelayPoolFactory } from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 import { getEvent } from '@relay-protocol/helpers'
+import TimelockTemplateModule from '../../ignition/modules/TimelockTemplateModule'
 
 describe('RelayPoolFactory: deployment', () => {
   let relayPoolFactory: RelayPoolFactory
@@ -39,11 +40,7 @@ describe('RelayPoolFactory: deployment', () => {
     expect(await myToken.totalSupply()).to.equal('1000000000000000000000000000')
 
     // Deploy an "empty" timelock for the Pool Factory
-    const TimelockController = await ethers.getContractFactory(
-      'TimelockControllerUpgradeable'
-    )
-    timelockTemplate = await TimelockController.deploy()
-    await timelockTemplate.waitForDeployment()
+    const { timelockTemplate } = await ignition.deploy(TimelockTemplateModule)
 
     // Deploy the factory
     ;({ relayPoolFactory } = await ignition.deploy(RelayPoolFactoryModule, {

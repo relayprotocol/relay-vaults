@@ -431,7 +431,6 @@ contract RelayPool is ERC4626, Ownable {
 
   // This function is called externally to claim funds from a bridge.
   // The funds are immediately added to the yieldPool
-  // TODO: handle cases where the origin might have been removed/changed (fees, etc.)
   function claim(uint32 chainId, address bridge) external {
     OriginSettings storage origin = authorizedOrigins[chainId][bridge];
     if (origin.proxyBridge == address(0)) {
@@ -450,7 +449,6 @@ contract RelayPool is ERC4626, Ownable {
     depositAssetsInYieldPool(amount);
 
     // The amount is the amount that was loaned + the fees
-    // TODO: what happens if the bridgeFee was changed?
     uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion

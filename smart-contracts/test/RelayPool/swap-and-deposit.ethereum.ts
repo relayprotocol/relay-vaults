@@ -41,12 +41,16 @@ const tokenSwapBehavior = async (
   )
   expect(balanceBefore).to.be.equal(amount)
 
+  // compute deadline 5 minutes from now
+  const deadline = Math.floor(Date.now() / 1000) + 300
+
   // swap that amount
   const tx = await relayPool.swapAndDeposit(
     token,
     amount,
     tokenPoolFee,
-    assetPoolFee
+    assetPoolFee,
+    deadline
   )
 
   const receipt = await tx.wait()
@@ -123,14 +127,22 @@ describe('RelayPool / Swap and Deposit', () => {
   })
 
   it('has correct constructor params', async () => {
-    expect(await tokenSwap.uniswapUniversalRouter()).to.equal(
+    expect(await tokenSwap.UNISWAP_UNIVERSAL_ROUTER()).to.equal(
       universalRouterAddress
     )
   })
 
   it('can only be called by contract owner', async () => {
     await reverts(
-      relayPool.connect(attacker).swapAndDeposit(ZeroAddress, 1000, 1000, 1000),
+      relayPool
+        .connect(attacker)
+        .swapAndDeposit(
+          ZeroAddress,
+          1000,
+          1000,
+          1000,
+          Math.floor(Date.now() / 1000) + 300
+        ),
       `OwnableUnauthorizedAccount("${await attacker.getAddress()}")`
     )
   })

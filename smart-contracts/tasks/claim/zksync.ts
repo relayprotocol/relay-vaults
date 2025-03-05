@@ -3,13 +3,19 @@ import { Wallet, Provider, types } from 'zksync-ethers'
 
 task('claim:zksync', 'Claim ARB from bridge')
   .addParam('txHash', 'Tx hash on origin chain')
-  .addParam('origin', 'Origin chain id')
+  .addOptionalParam('origin', 'Origin chain id (default to zksync era mainnet)')
   .addParam('bridge', 'The proxy bridge contract on dest chain')
   .addParam('pool', 'The pool on dest chain')
   .addOptionalParam('l1', 'The id of L1 chain')
   .setAction(
     async (
-      { txHash, origin, pool: poolAddress, bridge, l1 = types.Network.Sepolia },
+      {
+        txHash,
+        origin = 324,
+        pool: poolAddress,
+        bridge,
+        l1 = types.Network.Mainnet,
+      },
       { ethers }
     ) => {
       // get zksync wallet to fetch proof
@@ -22,7 +28,6 @@ task('claim:zksync', 'Claim ARB from bridge')
       )
       const params = await wallet.finalizeWithdrawalParams(txHash)
       console.log(params)
-
       const {
         l1BatchNumber,
         l2MessageIndex,

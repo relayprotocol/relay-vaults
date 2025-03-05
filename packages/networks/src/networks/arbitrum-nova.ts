@@ -7,7 +7,7 @@ export const arbitrumNova: L2NetworkConfig = {
   isTestnet: false,
   name: 'Arbitrum Nova',
   slug: 'arb-nova',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '0x3a867fCfFeC2B790970eeBDC9023E75B0a172aa7',
   bridges: {
     arb: {
       arbSys: '0x0000000000000000000000000000000000000064',

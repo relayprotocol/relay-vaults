@@ -7,7 +7,7 @@ export const redstone: L2NetworkConfig = {
   isTestnet: false,
   name: 'Redstone',
   slug: 'redstone',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   bridges: {
     op: {
       messagePasser: '0x4200000000000000000000000000000000000016',

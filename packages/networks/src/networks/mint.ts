@@ -7,7 +7,7 @@ export const mint: L2NetworkConfig = {
   isTestnet: false,
   name: 'Mint',
   slug: 'mint',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   bridges: {
     op: {
       messagePasser: '0x4200000000000000000000000000000000000016',

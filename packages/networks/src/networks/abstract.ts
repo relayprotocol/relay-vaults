@@ -7,7 +7,7 @@ export const abstract: L2NetworkConfig = {
   isTestnet: false,
   name: 'Abstract',
   slug: 'abstract',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '0x9BbDf86b272d224323136E15594fdCe487F40ce7',
   bridges: {
     op: {
       messagePasser: '0x4200000000000000000000000000000000000016',

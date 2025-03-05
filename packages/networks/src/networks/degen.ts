@@ -7,7 +7,7 @@ export const degen: L2NetworkConfig = {
   isTestnet: false,
   name: 'Degen',
   slug: 'degen',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   bridges: {
     op: {
       messagePasser: '0x4200000000000000000000000000000000000016',

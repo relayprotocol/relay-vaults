@@ -74,11 +74,13 @@ contract TokenSwap {
    *
    * @notice The default route is token > WETH > asset.
    * If `uniswapWethPoolFeeAsset` is set to null, then we do a direct swap token > asset
+   * @param deadline The deadline for the swap transaction
    */
   function swap(
     address tokenAddress,
     uint24 uniswapWethPoolFeeToken,
-    uint24 uniswapWethPoolFeeAsset
+    uint24 uniswapWethPoolFeeAsset,
+    uint48 deadline
   ) public payable returns (uint256 amountOut) {
     // get info from pool
     address pool = msg.sender;
@@ -108,7 +110,7 @@ contract TokenSwap {
       tokenAddress,
       UNISWAP_UNIVERSAL_ROUTER,
       tokenAmount.toUint160(),
-      uint48(block.timestamp + 60) // expires after 1min
+      deadline
     );
 
     // parse the path
@@ -136,7 +138,7 @@ contract TokenSwap {
     IUniversalRouter(UNISWAP_UNIVERSAL_ROUTER).execute(
       commands,
       inputs,
-      block.timestamp + 60 // expires after 1min
+      uint256(deadline)
     );
 
     // check if assets have actually been swapped

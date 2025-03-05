@@ -154,14 +154,13 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         await checkAllowance(asset, bridgeAddress, amount, userAddress)
       }
 
-      // TODO: estimate fee correctly
-      const hyperlaneFee = ethers.parseEther('0.01')
+      const bridge = await ethers.getContractAt('RelayBridge', bridgeAddress)
+      const hyperlaneFee = bridge.getFee(amount, recipient)
       const value =
         assetAddress === rawEthers.ZeroAddress
           ? BigInt(amount) + hyperlaneFee
           : hyperlaneFee
 
-      const bridge = await ethers.getContractAt('RelayBridge', bridgeAddress)
       const tx = await bridge.bridge(
         amount,
         recipient,

@@ -32,7 +32,7 @@ contract TokenSwap {
     0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
   // required by Uniswap Universal Router
-  address public uniswapUniversalRouter;
+  address public immutable uniswapUniversalRouter;
 
   // specified in https://docs.uniswap.org/contracts/universal-router/technical-reference#v3_swap_exact_in
   uint256 internal constant V3_SWAP_EXACT_IN = 0x00;

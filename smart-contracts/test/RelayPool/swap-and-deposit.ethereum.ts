@@ -127,7 +127,7 @@ describe('RelayPool / Swap and Deposit', () => {
   })
 
   it('has correct constructor params', async () => {
-    expect(await tokenSwap.uniswapUniversalRouter()).to.equal(
+    expect(await tokenSwap.UNISWAP_UNIVERSAL_ROUTER()).to.equal(
       universalRouterAddress
     )
   })

@@ -32,7 +32,7 @@ contract TokenSwap {
     0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
   // required by Uniswap Universal Router
-  address public uniswapUniversalRouter;
+  address public immutable UNISWAP_UNIVERSAL_ROUTER;
 
   // specified in https://docs.uniswap.org/contracts/universal-router/technical-reference#v3_swap_exact_in
   uint256 internal constant V3_SWAP_EXACT_IN = 0x00;
@@ -58,7 +58,7 @@ contract TokenSwap {
    * @param _uniswapUniversalRouter the address of Uniswap Universal Router
    */
   constructor(address _uniswapUniversalRouter) {
-    uniswapUniversalRouter = _uniswapUniversalRouter;
+    UNISWAP_UNIVERSAL_ROUTER = _uniswapUniversalRouter;
   }
 
   /**
@@ -98,7 +98,7 @@ contract TokenSwap {
     // Approve the router to spend src ERC20
     TransferHelper.safeApprove(
       tokenAddress,
-      uniswapUniversalRouter,
+      UNISWAP_UNIVERSAL_ROUTER,
       tokenAmount
     );
 
@@ -108,7 +108,7 @@ contract TokenSwap {
     // issue PERMIT2 Allowance
     IPermit2(PERMIT2_ADDRESS).approve(
       tokenAddress,
-      uniswapUniversalRouter,
+      UNISWAP_UNIVERSAL_ROUTER,
       tokenAmount.toUint160(),
       deadline
     );
@@ -135,7 +135,7 @@ contract TokenSwap {
     );
 
     // Executes the swap.
-    IUniversalRouter(uniswapUniversalRouter).execute(
+    IUniversalRouter(UNISWAP_UNIVERSAL_ROUTER).execute(
       commands,
       inputs,
       uint256(deadline)
@@ -145,7 +145,7 @@ contract TokenSwap {
     amountOut = getBalance(asset) - assetAmountBefore;
     if (amountOut == 0) {
       revert TokenSwappedFailed(
-        uniswapUniversalRouter,
+        UNISWAP_UNIVERSAL_ROUTER,
         tokenAddress,
         tokenAmount
       );

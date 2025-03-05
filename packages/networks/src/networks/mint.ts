@@ -3,7 +3,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 export const mint: L2NetworkConfig = {
   stack: 'op',
   l1ChainId: 1,
-  chainId: 1337,
+  chainId: 185,
   isTestnet: false,
   name: 'Mint',
   slug: 'mint',

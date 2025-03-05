@@ -3,7 +3,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 export const soneium: L2NetworkConfig = {
   stack: 'op',
   l1ChainId: 1,
-  chainId: 1337,
+  chainId: 1868,
   isTestnet: false,
   name: 'Soneium',
   slug: 'soneium',

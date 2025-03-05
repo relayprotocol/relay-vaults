@@ -3,7 +3,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 export const game7: L2NetworkConfig = {
   stack: 'op',
   l1ChainId: 1,
-  chainId: 1337,
+  chainId: 2187,
   isTestnet: false,
   name: 'Game7',
   slug: 'game7',

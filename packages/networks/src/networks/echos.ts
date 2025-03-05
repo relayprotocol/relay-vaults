@@ -3,7 +3,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 export const echos: L2NetworkConfig = {
   stack: 'op',
   l1ChainId: 1,
-  chainId: 17777,
+  chainId: 4321,
   isTestnet: false,
   name: 'Echos',
   slug: 'echos',

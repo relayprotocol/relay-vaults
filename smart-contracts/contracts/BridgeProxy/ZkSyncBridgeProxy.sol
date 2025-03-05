@@ -24,7 +24,7 @@ contract ZkSyncBridgeProxy is BridgeProxy {
     address /* l1Asset */,
     uint256 amount,
     bytes calldata /*data*/
-  ) external payable override {
+  ) external override {
     // withdraw to L1
     L2_SHARED_BRIDGE.withdraw(L1_BRIDGE_PROXY, currency, amount);
   }

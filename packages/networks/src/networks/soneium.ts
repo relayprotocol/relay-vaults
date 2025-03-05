@@ -17,7 +17,5 @@ export const soneium: L2NetworkConfig = {
     usdc: '', // TODO: Add USDC address
     weth: '0x4200000000000000000000000000000000000006',
   },
-  rpc: process.env.RPC_1337
-    ? [process.env.RPC_1337]
-    : ['https://rpc.soneium.com'],
+  rpc: ['https://rpc.soneium.org'],
 }

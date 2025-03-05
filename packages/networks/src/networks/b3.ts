@@ -19,5 +19,5 @@ export const b3: L2NetworkConfig = {
   },
   rpc: process.env.RPC_84531
     ? [process.env.RPC_84531]
-    : ['https://b3.rpc.thirdweb.com'],
+    : ['https://mainnet-rpc.b3.fun'],
 }

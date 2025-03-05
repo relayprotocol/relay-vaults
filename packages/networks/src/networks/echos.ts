@@ -14,7 +14,7 @@ export const echos: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
+    usdc: '0x9c5e286e1eB95e8BEeE3058bc0CE642B9f798a41',
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_17777

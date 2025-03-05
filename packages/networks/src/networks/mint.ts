@@ -14,7 +14,7 @@ export const mint: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
+    usdc: '0xb62F35B9546A908d11c5803ecBBA735AbC3E3eaE',
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_1337

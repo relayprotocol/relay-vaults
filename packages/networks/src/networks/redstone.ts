@@ -14,7 +14,7 @@ export const redstone: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
+    usdc: '0xD5d59fC063e7548b6015A36fEb10B875924A19be',
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_690

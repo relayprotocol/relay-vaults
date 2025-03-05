@@ -1,21 +1,17 @@
 import { L2NetworkConfig } from '@relay-protocol/types'
 
 export const zero: L2NetworkConfig = {
-  stack: 'op',
+  stack: 'zksync',
   l1ChainId: 1,
   chainId: 543210,
   isTestnet: false,
   name: 'Zero',
   slug: 'zero',
+  isZKsync: true,
   hyperlaneMailbox: '0xd7b351D2dE3495eA259DD10ab4b9300A378Afbf3',
-  bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
-    },
-  },
   assets: {
     usdc: '', // TODO: Add USDC address
-    weth: '0x4200000000000000000000000000000000000006',
+    weth: '', // TODO: Add WETH address
   },
-  rpc: process.env.RPC_1337 ? [process.env.RPC_1337] : ['https://rpc.zero.com'],
+  rpc: ['https://zero.drpc.org'],
 }

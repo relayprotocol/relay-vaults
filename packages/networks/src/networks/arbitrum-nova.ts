@@ -15,8 +15,8 @@ export const arbitrumNova: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
-    weth: '0x722E8BdD2ce80A4422E880164f2079488e115365',
+    usdc: '0x750ba8b76187092B0D1E87E28daaf484d1b5273b',
+    weth: '0x765277EebeCA2e31912C9946eAe1021199B39C61',
   },
   rpc: process.env.RPC_42170
     ? [process.env.RPC_42170]

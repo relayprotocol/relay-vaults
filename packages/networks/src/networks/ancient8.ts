@@ -17,7 +17,5 @@ export const ancient8: L2NetworkConfig = {
     usdc: '', // TODO: Add USDC address
     weth: '0x4200000000000000000000000000000000000006',
   },
-  rpc: process.env.RPC_28122024
-    ? [process.env.RPC_28122024]
-    : ['https://rpc.ancient8.gg'],
+  rpc: ['https://rpc.ancient8.gg'],
 }

@@ -14,7 +14,7 @@ export const cyber: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
+    usdc: '0x81759AdbF5520aD94da10991DfA29Ff147d3337b',
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_7560

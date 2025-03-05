@@ -1,0 +1,23 @@
+import { L2NetworkConfig } from '@relay-protocol/types'
+
+export const b3: L2NetworkConfig = {
+  stack: 'op',
+  l1ChainId: 1,
+  chainId: 84531,
+  isTestnet: false,
+  name: 'B3',
+  slug: 'b3',
+  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  bridges: {
+    op: {
+      messagePasser: '0x4200000000000000000000000000000000000016',
+    },
+  },
+  assets: {
+    usdc: '', // TODO: Add USDC address
+    weth: '0x4200000000000000000000000000000000000006',
+  },
+  rpc: process.env.RPC_84531
+    ? [process.env.RPC_84531]
+    : ['https://b3.rpc.thirdweb.com'],
+}

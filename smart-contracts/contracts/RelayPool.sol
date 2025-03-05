@@ -485,7 +485,8 @@ contract RelayPool is ERC4626, Ownable {
     address token,
     uint256 amount,
     uint24 uniswapWethPoolFeeToken,
-    uint24 uniswapWethPoolFeeAsset
+    uint24 uniswapWethPoolFeeAsset,
+    uint48 deadline
   ) public onlyOwner {
     if (token == address(asset)) {
       revert UnauthorizedSwap(token);
@@ -495,7 +496,8 @@ contract RelayPool is ERC4626, Ownable {
     ITokenSwap(tokenSwapAddress).swap(
       token,
       uniswapWethPoolFeeToken,
-      uniswapWethPoolFeeAsset
+      uniswapWethPoolFeeAsset,
+      deadline
     );
     collectNonDepositedAssets();
   }

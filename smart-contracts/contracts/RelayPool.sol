@@ -528,6 +528,30 @@ contract RelayPool is ERC4626, Ownable {
     depositAssetsInYieldPool(assets);
   }
 
+  // @notice This function is used to handle failed (fast) messages manually
+  //  It provides a mechanism for the pool curator to recover funds from a
+  //  solver who have arrived thru the bridge but for which the hyperlane message was never processed
+  // @param recipient The address of the recipient
+  // @param amount The amount of assets to transfer
+  function processFailedHandler(
+    uint32 chainId,
+    address bridge,
+    bytes calldata data
+  ) public onlyOwner {
+    HyperlaneMessage memory message = abi.decode(data, (HyperlaneMessage));
+
+    // Check if message was already processed
+    if (messages[chainId][bridge][message.nonce].length > 0) {
+      revert MessageAlreadyProcessed(chainId, bridge, message.nonce);
+    }
+
+    // Mark the message as processed to avoid double processing (if the hyperlane message eventually makes it)
+    messages[chainId][bridge][message.nonce] = data;
+
+    // Send the funds to the recipient (we should not take fees because the funds have taken more time to arrive...)
+    sendFunds(message.amount, message.recipient);
+  }
+
   // Needed to receive ETH from WETH for the `handle` function
   receive() external payable {
     if (address(asset) != WETH) {

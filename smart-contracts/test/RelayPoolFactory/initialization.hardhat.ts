@@ -1,14 +1,18 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import { MyToken, MyYieldPool, RelayPoolFactory } from '../../typechain-types'
+import {
+  MyToken,
+  MyYieldPool,
+  RelayPoolFactory,
+  TimelockControllerUpgradeable,
+} from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 import { getEvent } from '@relay-protocol/helpers'
-import TimelockTemplateModule from '../../ignition/modules/TimelockTemplateModule'
 
 describe('RelayPoolFactory: deployment', () => {
   let relayPoolFactory: RelayPoolFactory
   let myToken: MyToken
-  let timelockTemplate: any
+  let timelockTemplate: TimelockControllerUpgradeable
   const hyperlaneMailbox = '0x1000000000000000000000000000000000000000'
   const weth = '0x2000000000000000000000000000000000000000'
   let thirdPartyPool: MyYieldPool
@@ -39,20 +43,19 @@ describe('RelayPoolFactory: deployment', () => {
     // Check that there are shares!
     expect(await myToken.totalSupply()).to.equal('1000000000000000000000000000')
 
-    // Deploy an "empty" timelock for the Pool Factory
-    const { timelockTemplate } = await ignition.deploy(TimelockTemplateModule)
-
     // Deploy the factory
-    ;({ relayPoolFactory } = await ignition.deploy(RelayPoolFactoryModule, {
-      parameters: {
-        RelayPoolFactory: {
-          hyperlaneMailbox,
-          weth,
-          timelock: await timelockTemplate.getAddress(),
+    ;({ relayPoolFactory, timelockTemplate } = await ignition.deploy(
+      RelayPoolFactoryModule,
+      {
+        parameters: {
+          RelayPoolFactory: {
+            hyperlaneMailbox,
+            weth,
+          },
         },
-      },
-      deploymentId: 'RelayPoolFactory',
-    }))
+        deploymentId: 'RelayPoolFactory',
+      }
+    ))
   })
 
   it('should have deployed the factory', async () => {

@@ -4,7 +4,6 @@ import networks from '@relay-protocol/networks'
 import { MyToken, MyYieldPool, RelayPool } from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 import { getEvent } from '@relay-protocol/helpers'
-import TimelockTemplateModule from '../../ignition/modules/TimelockTemplateModule'
 
 describe('RelayPool: inflation attack', () => {
   let relayPool: RelayPool
@@ -38,16 +37,12 @@ describe('RelayPool: inflation attack', () => {
     // Check that there are shares!
     expect(await myToken.totalSupply()).to.equal('1000000000000000000000000000')
 
-    // Deploy an "empty" timelock for the Pool Factory
-    const { timelockTemplate } = await ignition.deploy(TimelockTemplateModule)
-
     // Deploy the factory
     const { relayPoolFactory } = await ignition.deploy(RelayPoolFactoryModule, {
       parameters: {
         RelayPoolFactory: {
           hyperlaneMailbox: networks[1].hyperlaneMailbox,
           weth: ethers.ZeroAddress,
-          timelock: await timelockTemplate.getAddress(),
         },
       },
       deploymentId: 'RelayPoolFactory',

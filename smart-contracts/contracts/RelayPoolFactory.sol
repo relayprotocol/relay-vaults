@@ -34,7 +34,7 @@ contract RelayPoolFactory {
 
   constructor(address hMailbox, address weth, address timelock) {
     HYPERLANE_MAILBOX = hMailbox;
-    WRAPPED_ETH = weth;
+    WETH = weth;
     TIMELOCK_TEMPLATE = timelock;
   }
 
@@ -69,7 +69,7 @@ contract RelayPoolFactory {
       name,
       symbol,
       thirdPartyPool,
-      WRAPPED_ETH,
+      WETH,
       timelock
     );
 

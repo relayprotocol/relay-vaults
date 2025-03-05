@@ -12,6 +12,7 @@ import {
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 const relayBridgeOptimism = '0x0000000000000000000000000000000000000010'
+const relayBridgeBase = '0x0000000000000000000000000000000000008453'
 const portalProxy = '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e'
 
 describe('RelayPool: claim for native ETH', () => {
@@ -68,7 +69,7 @@ describe('RelayPool: claim for native ETH', () => {
   })
 
   describe('authorized claims', () => {
-    let origin, bridgedAmount: bigint
+    let origin, anotherOrigin, bridgedAmount: bigint
     before(async () => {
       // Add origins (we use and OPStack origin here)
       const bridgeProxyParameters = {
@@ -79,21 +80,43 @@ describe('RelayPool: claim for native ETH', () => {
           l1BridgeProxy: ethers.ZeroAddress,
         },
       }
-      const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
-        parameters: bridgeProxyParameters,
-      })
+      const { bridge: opBridgeProxy } = await ignition.deploy(
+        OPStackNativeBridgeProxyModule,
+        {
+          parameters: bridgeProxyParameters,
+        }
+      )
 
       origin = {
         chainId: 10,
         bridge: relayBridgeOptimism, // should not matter
         maxDebt: ethers.parseEther('10'),
-        proxyBridge: await bridge.getAddress(),
+        proxyBridge: await opBridgeProxy.getAddress(),
         bridgeFee: 10,
         curator: userAddress,
         coolDown: 0,
       }
 
       relayPool.addOrigin(origin)
+
+      const { bridge: baseBridgeProxy } = await ignition.deploy(
+        OPStackNativeBridgeProxyModule,
+        {
+          parameters: bridgeProxyParameters,
+        }
+      )
+
+      anotherOrigin = {
+        chainId: 8453,
+        bridge: relayBridgeBase, // should not matter
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: await baseBridgeProxy.getAddress(),
+        bridgeFee: 10,
+        curator: userAddress,
+        coolDown: 0,
+      }
+
+      relayPool.addOrigin(anotherOrigin)
 
       // Fund the pool with some WETH
       await myWeth.deposit({ value: ethers.parseEther('3') })
@@ -243,6 +266,43 @@ describe('RelayPool: claim for native ETH', () => {
 
       const outstandingDebtAfter = await relayPool.outstandingDebt()
       expect(outstandingDebtAfter).to.equal(0)
+    })
+
+    it('should not fail if there are extra funds in the bridge proxy contract on multiple origins', async () => {
+      const [user] = await ethers.getSigners()
+
+      // Borrow from the pool so we can claim later
+      await relayPool.handle(
+        origin.chainId,
+        ethers.zeroPadValue(origin.bridge, 32),
+        encodeData(9n, userAddress, bridgedAmount)
+      )
+
+      await relayPool.handle(
+        anotherOrigin.chainId,
+        ethers.zeroPadValue(anotherOrigin.bridge, 32),
+        encodeData(10n, userAddress, bridgedAmount)
+      )
+
+      const streamingPeriod = await relayPool.streamingPeriod()
+      await ethers.provider.send('evm_increaseTime', [
+        Number(streamingPeriod * 2n),
+      ])
+      await relayPool.updateStreamedAssets()
+
+      const outstandingDebtBefore = await relayPool.outstandingDebt()
+      expect(outstandingDebtBefore).to.equal(bridgedAmount * 2n)
+
+      // Send more funds funds to the bridgeProxy (simulate successful bridging and more!)
+      await user.sendTransaction({
+        to: origin.proxyBridge,
+        value: bridgedAmount * 2n,
+      })
+
+      await relayPool.claim(origin.chainId, origin.bridge)
+
+      const outstandingDebtAfter = await relayPool.outstandingDebt()
+      expect(outstandingDebtAfter).to.equal(bridgedAmount)
     })
   })
 })

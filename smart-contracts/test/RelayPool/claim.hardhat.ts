@@ -293,16 +293,24 @@ describe('RelayPool: claim for native ETH', () => {
       const outstandingDebtBefore = await relayPool.outstandingDebt()
       expect(outstandingDebtBefore).to.equal(bridgedAmount * 2n)
 
-      // Send more funds funds to the bridgeProxy (simulate successful bridging and more!)
+      // Send funds funds to the bridgeProxy (simulate successful bridging twice!)
       await user.sendTransaction({
         to: origin.proxyBridge,
         value: bridgedAmount * 2n,
       })
 
+      await user.sendTransaction({
+        to: anotherOrigin.proxyBridge,
+        value: bridgedAmount,
+      })
+
       await relayPool.claim(origin.chainId, origin.bridge)
 
-      const outstandingDebtAfter = await relayPool.outstandingDebt()
-      expect(outstandingDebtAfter).to.equal(bridgedAmount)
+      expect(await relayPool.outstandingDebt()).to.equal(bridgedAmount)
+
+      await relayPool.claim(anotherOrigin.chainId, anotherOrigin.bridge)
+
+      expect(await relayPool.outstandingDebt()).to.equal(0)
     })
   })
 })

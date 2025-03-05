@@ -1,4 +1,4 @@
-import { ethers, ignition } from 'hardhat'
+import { ethers, zksyncEthers, ignition } from 'hardhat'
 import { AbiCoder, Interface } from 'ethers'
 import { expect } from 'chai'
 
@@ -17,27 +17,31 @@ const {
   assets: { weth: USDC },
 } = networks[ETH_CHAIN_ID.toString()]
 
-// USDC bridge tx on Sepolia
+// Native bridge tx on Zksync/ethereum
+// https://era.zksync.network/tx/0x44ee1a78cded74543cae05e70dd936043bbae441ec2c7f968af4a6e888ccb07f
+
+// TODO: USDC bridge tx on Mainnet
 // https://sepolia-era.zksync.network/tx/0x94372eed4202154a87527eed4f24ec1cabd77630db7b7172ea82a52fe1608274
 const recipientAddress = '0x246A13358Fb27523642D86367a51C2aEB137Ac6C'
 const amount = 1000n
 
-// construct the actual proof
+// construct the actual proof usinc cli
+// ZK_SYNC=1 yarn hardhat claim:zksync --tx-hash 0x44ee1a78cded74543cae05e70dd936043bbae441ec2c7f968af4a6e888ccb07f --network zksync
 // NB: to retrieve the actual proof, we use the `ethers-zksync` method `wallet.finalizeWithdrawalParams()`
 // as demonstrated in `smart-contracts/tasks/claim/zksync.ts`
 // https://sdk.zksync.io/js/ethers/api/v6/accounts/wallet#finalizewithdrawal
 const returnedProof = {
-  l1BatchNumber: 13523,
-  l2MessageIndex: 6,
-  l2TxNumberInBlock: 240,
+  l1BatchNumber: 497156,
+  l2MessageIndex: 1,
+  l2TxNumberInBlock: 2167,
   message:
-    '0x11a2ccc1246a13358fb27523642d86367a51c2aeb137ac6c1c7d4b196cb0c7b01d743fbc6116a902379c723800000000000000000000000000000000000000000000000000000000000003e8',
-  sender: '0x681A1AFdC2e06776816386500D2D461a6C96cB45',
+    '0x6c0960f9246a13358fb27523642d86367a51c2aeb137ac6c00000000000000000000000000000000000000000000000000005af3107a4000',
+  sender: '0x000000000000000000000000000000000000800A',
   proof: [
-    '0x2bfb4d4babd077f13ab7b723da6266962f6977c7d02be162c6f8afb67e0bf6d7',
-    '0x1edd6057bcbda3e1e1cfd2c845644248272f0cb3255541eb9ec63ee6fd89f46e',
-    '0x80f27360c37f8896f3d29ca5ccef8da115ec7d613ef8d8b624705df61a097dd7',
-    '0x60d24c3ddd85d8e7ed957465a52bd9e1e4d9d26b72c6fb50dfc7a6e24e28dbb1',
+    '0x2a2fc476929fb8931053b5fa78f90a04be9eedfb59414f3106577d467079f59b',
+    '0x3652191e0bc321081da56af84ae0af0674501378707a1e794a37f5b4da459eb3',
+    '0xe3697c7f33c31a9b0f0aeb8542287d0d21e8c4cf82163d0c44c7a98aa11aa111',
+    '0x199cc5812543ddceeddd0fc82807646a4899444240db2c0d2f20c3cceb5f51fa',
     '0xe4733f281f18ba3ea8775dd62d2fcd84011c8c938f16ea5790fd29a03bf8db89',
     '0x1798a1fd9c8fbb818c98cff190daa7cc10b6e5ac9716b4a2649f7c2ebcef2272',
     '0x66d7c5983afe44cf15ea8cf565b34c6c31ff0cb4dd744524f7842b942d08770d',
@@ -68,6 +72,9 @@ const bridgeParams = abiCoder.encode(
   args
 )
 
+const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+
 describe('ZkSyncBridgeProxy', function () {
   let bridge: ZkSyncBridgeProxy
 
@@ -76,7 +83,9 @@ describe('ZkSyncBridgeProxy', function () {
     const parameters = {
       ZkSyncBridgeProxy: {
         l2SharedDefaultBridge,
-        l1SharedDefaultBridge,
+        relayPoolChainId: 1,
+        relayPool,
+        l1BridgeProxy,
       },
     }
 
@@ -87,11 +96,36 @@ describe('ZkSyncBridgeProxy', function () {
 
   it('constructor values are correct', async () => {
     expect(await bridge.L2_SHARED_BRIDGE()).to.be.equal(l2SharedDefaultBridge)
-    expect(await bridge.L1_SHARED_BRIDGE()).to.be.equal(l1SharedDefaultBridge)
   })
 
-  describe('claim using BridgeProxy directly', () => {
-    it('works with ERC20 (USDC)', async () => {
+  describe('claim using BridgeProxy', () => {
+    it('works with native tokens', async () => {
+      const balanceBefore = await getBalance(
+        recipientAddress,
+        ethers.ZeroAddress,
+        ethers.provider
+      )
+      const amount = ethers.parseEther('0.01')
+      const tx = await bridge.claim(ethers.ZeroAddress, amount)
+      const balanceAfter = await getBalance(
+        recipientAddress,
+        ethers.ZeroAddress,
+        ethers.provider
+      )
+
+      const receipt = await tx.wait()
+
+      // weth transfer happened
+      const { event: erc20TransferEvent } = await getEvent(
+        receipt!,
+        'Transfer',
+        new Interface(ERC20_ABI)
+      )
+      expect(erc20TransferEvent.args.to).to.equals(recipientAddress)
+      expect(erc20TransferEvent.args.value).to.equals(amount.toString())
+    })
+
+    it.skip('works with ERC20 (USDC)', async () => {
       const balanceBefore = await getBalance(
         recipientAddress,
         USDC!,

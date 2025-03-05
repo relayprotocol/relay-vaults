@@ -62,6 +62,8 @@ contract RelayPoolNativeGateway {
     uint256 assets,
     address receiver
   ) external virtual returns (uint256) {
+    uint256 balanceBefore = address(this).balance;
+
     // withdraw from pool
     uint256 shares = IERC4626(pool).withdraw(assets, address(this), msg.sender);
 
@@ -70,7 +72,7 @@ contract RelayPoolNativeGateway {
     _safeTransferETH(receiver, assets);
 
     // make sure no ETH is left in the contract
-    if (address(this).balance != 0) {
+    if (address(this).balance - balanceBefore > 0) {
       revert RemainingEth();
     }
 
@@ -88,6 +90,7 @@ contract RelayPoolNativeGateway {
     uint256 shares,
     address receiver
   ) external virtual returns (uint256) {
+    uint256 balanceBefore = address(this).balance;
     // withdraw from pool
     uint256 assets = IERC4626(pool).redeem(shares, address(this), msg.sender);
 
@@ -96,7 +99,7 @@ contract RelayPoolNativeGateway {
     _safeTransferETH(receiver, assets);
 
     // make sure no ETH is left in the contract
-    if (address(this).balance != 0) {
+    if (address(this).balance - balanceBefore > 0) {
       revert RemainingEth();
     }
 

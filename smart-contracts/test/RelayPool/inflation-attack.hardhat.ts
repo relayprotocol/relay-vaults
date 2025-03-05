@@ -93,7 +93,7 @@ describe('RelayPool: inflation attack', () => {
     // Then send a LARGE amount of tokens to the third party pool
     const attackAmount = ethers.parseUnits('100', await myToken.decimals())
     myToken.connect(attacker).mint(attackAmount)
-    myToken
+    await myToken
       .connect(attacker)
       .approve(await thirdPartyPool.getAddress(), attackAmount)
     await thirdPartyPool

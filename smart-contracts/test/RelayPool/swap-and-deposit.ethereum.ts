@@ -41,12 +41,16 @@ const tokenSwapBehavior = async (
   )
   expect(balanceBefore).to.be.equal(amount)
 
+  // compute deadline 5 minutes from now
+  const deadline = Math.floor(Date.now() / 1000) + 300
+
   // swap that amount
   const tx = await relayPool.swapAndDeposit(
     token,
     amount,
     tokenPoolFee,
-    assetPoolFee
+    assetPoolFee,
+    deadline
   )
 
   const receipt = await tx.wait()

@@ -134,7 +134,15 @@ describe('RelayPool / Swap and Deposit', () => {
 
   it('can only be called by contract owner', async () => {
     await reverts(
-      relayPool.connect(attacker).swapAndDeposit(ZeroAddress, 1000, 1000, 1000),
+      relayPool
+        .connect(attacker)
+        .swapAndDeposit(
+          ZeroAddress,
+          1000,
+          1000,
+          1000,
+          Math.floor(Date.now() / 1000) + 300
+        ),
       `OwnableUnauthorizedAccount("${await attacker.getAddress()}")`
     )
   })

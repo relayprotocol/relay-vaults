@@ -5,6 +5,7 @@ interface ITokenSwap {
   function swap(
     address pool,
     uint24 uniswapWethPoolFeeToken,
-    uint24 uniswapWethPoolFeeAsset
+    uint24 uniswapWethPoolFeeAsset,
+    uint48 deadline
   ) external payable returns (uint amount);
 }

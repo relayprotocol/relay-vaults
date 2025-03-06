@@ -1,6 +1,6 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
-import { mintUSDC, stealERC20 } from '../utils/hardhat'
+import { stealERC20 } from '../utils/hardhat'
 import { getBalance, getEvent } from '@relay-protocol/helpers'
 
 import {
@@ -10,12 +10,11 @@ import {
   L2CrossDomainMessenger,
   L2StandardBridge,
 } from '@relay-protocol/helpers/abis'
-import { ContractTransactionReceipt, Log } from 'ethers'
+import { Log } from 'ethers'
 
 import { networks } from '@relay-protocol/networks'
 import RelayBridgeModule from '../../ignition/modules/RelayBridgeModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
-import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import { RelayBridge } from '../../typechain-types'
 
 const {
@@ -143,14 +142,7 @@ describe('RelayBridge', function () {
       const nonce = await bridge.transferNonce()
       const balanceBefore = await erc20Contract.balanceOf(recipient)
 
-      const tx = await bridge.bridge(
-        amount,
-        recipient,
-        networks[1].assets.udt,
-        {
-          gasLimit: 30000000,
-        }
-      )
+      const tx = await bridge.bridge(amount, recipient, networks[1].assets.udt)
       const receipt = await tx.wait()
 
       expect(receipt.logs.length).to.equal(3)
@@ -478,12 +470,12 @@ describe('RelayBridge', function () {
         .withArgs(await another.getAddress(), await user.getAddress())
     })
 
-    it('should updathe the status of the transaction and prevents it from being executed', async () => {
+    it('should update the status of the transaction and prevents it from being executed', async () => {
       const [user] = await ethers.getSigners()
 
       const recipient = await user.getAddress()
-      const amount = ethers.parseEther('1')
-
+      const amount = ethers.parseEther('100')
+      const balanceBefore = await getBalance(recipient, ethers.provider)
       const bridgeTx = await bridge.bridge(
         amount,
         recipient,
@@ -492,7 +484,9 @@ describe('RelayBridge', function () {
           value: amount,
         }
       )
-      await bridgeTx.wait()
+      const balanceAfterBridge = await getBalance(recipient, ethers.provider)
+      expect(balanceAfterBridge).to.be.lessThan(balanceBefore - amount)
+
       // Let's get the nonce!
       const nonce = await bridge.transferNonce()
       const transaction = await bridge.transactions(nonce - 1n)
@@ -510,9 +504,62 @@ describe('RelayBridge', function () {
       )
       expect(event.args.nonce).to.equal(transaction.nonce)
 
+      expect(await getBalance(recipient, ethers.provider)).to.greaterThan(
+        balanceAfterBridge
+      )
+
       await expect(bridge.executeBridge(transaction.nonce))
         .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
         .withArgs(transaction.nonce, 3, 1)
+    })
+
+    it('should allow for ERC20 cancellation', async () => {
+      const [user] = await ethers.getSigners()
+
+      const { bridge: opProxyBridge } = await ignition.deploy(
+        OPStackNativeBridgeProxyModule,
+        {
+          parameters: {
+            OPStackNativeBridgeProxy: {
+              portalProxy: ethers.ZeroAddress,
+              relayPoolChainId: 1,
+              relayPool,
+              l1BridgeProxy,
+            },
+          },
+        }
+      )
+      const opProxyBridgeAddress = await opProxyBridge.getAddress()
+
+      const bridge = await ethers.deployContract('RelayBridge', [
+        assets.udt,
+        opProxyBridgeAddress,
+        HYPERLANE_MAILBOX_ON_OPTIMISM,
+      ])
+      const bridgeAddress = await bridge.getAddress()
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+
+      // Transfer UDT to sender/recipient
+      await stealERC20(
+        assets.udt,
+        '0x99b1348a9129ac49c6de7F11245773dE2f51fB0c',
+        recipient,
+        amount
+      )
+
+      // Approve
+      const erc20Contract = await ethers.getContractAt(ERC20, assets.udt)
+      await erc20Contract.approve(bridgeAddress, amount)
+
+      const nonce = await bridge.transferNonce()
+      const balanceBefore = await erc20Contract.balanceOf(recipient)
+      await bridge.bridge(amount, recipient, networks[1].assets.udt)
+      const balanceAfterBridge = await erc20Contract.balanceOf(recipient)
+      expect(balanceAfterBridge).to.be.equal(balanceBefore - amount)
+      await bridge.cancelBridge(nonce)
+      const balanceAfterCancellation = await erc20Contract.balanceOf(recipient)
+      expect(balanceAfterCancellation).to.be.equal(balanceBefore)
     })
   })
 })

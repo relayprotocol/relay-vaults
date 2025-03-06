@@ -7,6 +7,7 @@ import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 error BridgingFailed(uint256 nonce);
+error CancelationFailed(uint256 nonce);
 error InsufficientValue(uint256 received, uint256 expected);
 error UnexpectedTransactionState(
   uint256 nonce,
@@ -155,6 +156,15 @@ contract RelayBridge is IRelayBridge {
 
     transaction.status = RelayBridgeTransactionStatus.CANCELLED;
     emit BridgeCancelled(nonce);
+
+    // And refund the user
+    if (asset != address(0)) {
+      // Take the ERC20 tokens from the sender
+      IERC20(asset).transfer(transaction.sender, transaction.amount);
+    } else {
+      (bool success, ) = transaction.sender.call{value: transaction.amount}("");
+      if (!success) revert CancelationFailed(nonce);
+    }
   }
 
   /// @notice Convenience function which returns the Hyperlane fee to be passed as msg.value in `bridge`.

@@ -77,7 +77,7 @@ if (forkUrl) {
     const chainId = parseInt(forkUrl.split('/').pop())
     ;({ isZKsync } = nets[chainId])
   } catch (error) {
-    // fail silently if it couldnt parse chain id
+    console.log(`Failed to parse chain id from rpc ${forkUrl}`)
   }
 
   networks.hardhat = {

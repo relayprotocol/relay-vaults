@@ -235,5 +235,6 @@ contract RelayBridge is IRelayBridge {
       amount,
       bridgeProxy
     );
+    return nonce;
   }
 }

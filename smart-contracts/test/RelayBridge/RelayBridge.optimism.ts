@@ -405,6 +405,21 @@ describe('RelayBridge', function () {
         }
       })
     })
+
+    it('should require the executeBridge transaction to be delayed from the bridge transaction', async () => {
+      // We deploy a malicious contract that combibes bridge and executeBridge in a single transaction
+      const malicious = await ethers.deployContract('MaliciousContract', [])
+      const amount = ethers.parseEther('1')
+
+      await expect(
+        malicious.attackBridge(
+          bridge.getAddress(),
+          amount,
+          ethers.ZeroAddress,
+          { value: amount }
+        )
+      ).to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+    })
   })
 
   describe('cancelBridge', () => {

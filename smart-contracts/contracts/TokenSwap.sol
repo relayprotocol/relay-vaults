@@ -75,12 +75,14 @@ contract TokenSwap {
    * @notice The default route is token > WETH > asset.
    * If `uniswapWethPoolFeeAsset` is set to null, then we do a direct swap token > asset
    * @param deadline The deadline for the swap transaction
+   * @param amountOutMinimum The minimum amount of output tokens that must be received for the transaction not to revert
    */
   function swap(
     address tokenAddress,
     uint24 uniswapWethPoolFeeToken,
     uint24 uniswapWethPoolFeeAsset,
-    uint48 deadline
+    uint48 deadline,
+    uint256 amountOutMinimum
   ) public payable returns (uint256 amountOut) {
     // get info from pool
     address pool = msg.sender;
@@ -129,7 +131,7 @@ contract TokenSwap {
     inputs[0] = abi.encode(
       address(this), // recipient is this contract
       tokenAmount, // amountIn
-      0, // amountOutMinimum
+      amountOutMinimum, // amountOutMinimum
       path,
       true // funds are not coming from PERMIT2
     );

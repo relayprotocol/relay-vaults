@@ -139,9 +139,6 @@ contract RelayBridge is IRelayBridge {
 
   function cancelBridge(uint256 nonce) external {
     BridgeTransaction storage transaction = transactions[nonce];
-    if (msg.sender != transaction.sender) {
-      revert Unauthorized(msg.sender, transaction.sender);
-    }
     if (
       transaction.nonce != nonce ||
       transaction.status != RelayBridgeTransactionStatus.INITIATED
@@ -151,6 +148,9 @@ contract RelayBridge is IRelayBridge {
         transaction.status,
         RelayBridgeTransactionStatus.INITIATED
       );
+    }
+    if (msg.sender != transaction.sender) {
+      revert Unauthorized(msg.sender, transaction.sender);
     }
 
     transaction.status = RelayBridgeTransactionStatus.CANCELLED;

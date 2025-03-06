@@ -414,4 +414,105 @@ describe('RelayBridge', function () {
       })
     })
   })
+
+  describe('cancelBridge', () => {
+    it('should fail if the transaction is not in the pending state', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+      const fee = await bridge.getFee(amount, recipient)
+
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount,
+        }
+      )
+      await bridgeTx.wait()
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      // Let's now issue the executeBridge
+      await bridge.executeBridge(transaction.nonce, {
+        value: fee,
+      })
+
+      await expect(bridge.cancelBridge(transaction.nonce))
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(transaction.nonce, 2, 1)
+    })
+
+    it('should fail if the transaction does not exist', async () => {
+      await expect(bridge.cancelBridge(13378n))
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(13378n, 0, 1)
+    })
+
+    it('should fail if the transaction was sent by another user', async () => {
+      const [user, another] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount,
+        }
+      )
+      await bridgeTx.wait()
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      await expect(bridge.connect(another).cancelBridge(transaction.nonce))
+        .to.be.revertedWithCustomError(bridge, 'Unauthorized')
+        .withArgs(await another.getAddress(), await user.getAddress())
+    })
+
+    it('should updathe the status of the transaction and prevents it from being executed', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount,
+        }
+      )
+      await bridgeTx.wait()
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      const receipt = await (
+        await bridge.cancelBridge(transaction.nonce)
+      ).wait()
+
+      expect((await bridge.transactions(nonce - 1n)).status).to.equal(3)
+      const event = await getEvent(
+        receipt!,
+        'BridgeCancelled',
+        bridge.interface
+      )
+      expect(event.args.nonce).to.equal(transaction.nonce)
+
+      await expect(bridge.executeBridge(transaction.nonce))
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(transaction.nonce, 3, 1)
+    })
+  })
 })

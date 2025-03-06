@@ -75,7 +75,7 @@ contract RelayPoolFactory {
       timelock
     );
 
-    poolsByAsset[asset].push(address(pool));
+    poolsByAsset[address(asset)].push(address(pool));
 
     emit PoolDeployed(
       address(pool),

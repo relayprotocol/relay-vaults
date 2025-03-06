@@ -25,6 +25,7 @@ import './tasks/networks'
 import './tasks/deploy/native-gateway'
 import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
+import './tasks/utils/zksync-contracts.ts'
 
 // get pk from shell
 const { DEPLOYER_PRIVATE_KEY } = process.env

@@ -169,13 +169,13 @@ task('deploy:pool', 'Deploy a relay pool')
         await run('verify:verify', {
           address: poolAddress,
           constructorArguments: [
-            await factoryContract.hyperlaneMailbox(),
+            await factoryContract.HYPERLANE_MAILBOX(),
             asset,
             name,
             symbol,
             authorizedOrigins,
             yieldPool,
-            await factoryContract.wrappedEth(),
+            await factoryContract.WETH(),
             await user.getAddress(),
           ],
         })

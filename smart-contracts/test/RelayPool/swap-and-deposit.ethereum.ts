@@ -228,5 +228,33 @@ describe('RelayPool / Swap and Deposit', () => {
         0
       )
     })
+    describe('swap minimum amount out is not reached', () => {
+      it('fails when attempting to swap (direct SWAP USDC > DAI)', async () => {
+        const amount = ethers.parseUnits('1000', 6)
+        const relayPoolAddress = await relayPool.getAddress()
+
+        // get some USDC
+        await mintUSDC(USDC, userAddress, amount)
+        const usdc = await ethers.getContractAt('IUSDC', USDC)
+
+        // send some USDC to the pool
+        await usdc.connect(user).transfer(relayPoolAddress, amount)
+
+        // compute deadline 5 minutes from now
+        const deadline = Math.floor(Date.now() / 1000) + 300
+
+        // swap that amount
+        await reverts(
+          relayPool.swapAndDeposit(
+            USDC,
+            amount,
+            3000,
+            30000,
+            deadline,
+            ethers.parseUnits('100000', 6) //
+          )
+        )
+      })
+    })
   })
 })

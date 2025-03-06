@@ -85,7 +85,7 @@ contract RelayBridge is IRelayBridge {
     if (
       transaction.nonce != nonce ||
       transaction.status != RelayBridgeTransactionStatus.INITIATED ||
-      block.timestamp == transaction.timestamp
+      block.timestamp <= transaction.timestamp
     ) {
       revert UnexpectedTransactionState(
         nonce,

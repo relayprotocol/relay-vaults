@@ -59,9 +59,11 @@ describe('RelayPoolFactory: deployment', () => {
   })
 
   it('should have deployed the factory', async () => {
-    expect(await relayPoolFactory.hyperlaneMailbox()).to.equal(hyperlaneMailbox)
-    expect(await relayPoolFactory.wrappedEth()).to.equal(weth)
-    expect(await relayPoolFactory.timelockTemplate()).to.equal(
+    expect(await relayPoolFactory.HYPERLANE_MAILBOX()).to.equal(
+      hyperlaneMailbox
+    )
+    expect(await relayPoolFactory.WETH()).to.equal(weth)
+    expect(await relayPoolFactory.TIMELOCK_TEMPLATE()).to.equal(
       await timelockTemplate.getAddress()
     )
   })

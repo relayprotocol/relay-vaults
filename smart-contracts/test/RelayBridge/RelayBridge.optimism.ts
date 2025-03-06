@@ -263,7 +263,7 @@ describe('RelayBridge', function () {
       expect(event.args.nonce).to.equal(transaction.nonce)
     })
 
-    it.only('should have called the native bridge to perform the transfer with native ETH', async () => {
+    it('should have called the native bridge to perform the transfer with native ETH', async () => {
       const [user] = await ethers.getSigners()
 
       const l2ToL1MessagePasser = new ethers.Contract(
@@ -292,28 +292,7 @@ describe('RelayBridge', function () {
       })
       const receipt = (await tx.wait())!
 
-      // receipt.logs.forEach((log: Log) => {
-      //   expect(log.address).to.be.oneOf([
-      //     HYPERLANE_MAILBOX_ON_OPTIMISM,
-      //     '0x68eE9bec9B4dbB61f69D9D293Ae26a5AACb2e28f', // Merkle Tree Hook https://docs.hyperlane.xyz/docs/reference/contract-addresses#merkle-tree-hook
-      //     '0xD8A76C4D91fCbB7Cc8eA795DFDF870E48368995C', // Interchain Gas Paymaster https://docs.hyperlane.xyz/docs/reference/contract-addresses#interchain-gas-paymaster-hook
-      //     bridgeAddress,
-      //   ])
-      //  if (log.address === bridgeAddress) {
-      //     const event = bridge.interface.parseLog(log)
-      //     expect(event.name).to.equal('BridgeInitiated')
-      //     expect(event.args[0]).to.equal(nonce)
-      //     expect(event.args[1]).to.equal(recipient)
-      //     expect(event.args[2]).to.equal(recipient)
-      //     expect(event.args[3]).to.equal(ethers.ZeroAddress) // l2 asset
-      //     expect(event.args[4]).to.equal(ethers.ZeroAddress) // l1 asset
-      //     expect(event.args[5]).to.equal(amount)
-      //     expect(event.args[6]).to.equal(opProxyBridgeAddress)
-      //   }
-      // })
-
       // Check the transaction obect
-
       expect(receipt.logs.length).to.equal(10)
       receipt.logs.forEach((log: Log) => {
         expect(log.address).to.be.oneOf([
@@ -431,8 +410,6 @@ describe('RelayBridge', function () {
             expect(event.args.amount).to.equal(amount)
             expect(event.args.extraData).to.equal(transaction.data)
           }
-        } else {
-          throw new Error(`Unknown event from ${log.address}`)
         }
       })
     })

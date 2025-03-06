@@ -72,12 +72,13 @@ Object.keys(nets).forEach((id) => {
 const forkUrl = process.env.RPC_URL
 if (forkUrl) {
   // reocgnize if fork is zksync from chain id
-  let chainId
   let isZKsync = false
   try {
-    chainId = parseInt(forkUrl.split('/').pop())
+    const chainId = parseInt(forkUrl.split('/').pop())
     ;({ isZKsync } = nets[chainId])
-  } catch (error) {}
+  } catch (error) {
+    // fail silently if it couldnt parse chain id
+  }
 
   networks.hardhat = {
     zksync: isZKsync,

@@ -20,6 +20,8 @@ contract RelayPoolFactory {
   address public immutable WETH;
   address public immutable TIMELOCK_TEMPLATE;
 
+  mapping(address => address[]) public poolsByAsset; // Keeping track of pools by asset.
+
   event PoolDeployed(
     address indexed pool,
     address indexed creator,
@@ -72,6 +74,8 @@ contract RelayPoolFactory {
       WETH,
       timelock
     );
+
+    poolsByAsset[asset].push(address(pool));
 
     emit PoolDeployed(
       address(pool),

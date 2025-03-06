@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-export const reverts = async (call: Promise<T>, msg: string) => {
+export const reverts = async (call: Promise<T>, msg?: string) => {
   let hasReverted = false
   try {
     await call

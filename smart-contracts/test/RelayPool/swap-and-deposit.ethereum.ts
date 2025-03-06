@@ -50,7 +50,8 @@ const tokenSwapBehavior = async (
     amount,
     tokenPoolFee,
     assetPoolFee,
-    deadline
+    deadline,
+    0 // amountOutMinimum - setting to 0 for tests since we're not concerned with slippage
   )
 
   const receipt = await tx.wait()
@@ -134,15 +135,14 @@ describe('RelayPool / Swap and Deposit', () => {
 
   it('can only be called by contract owner', async () => {
     await reverts(
-      relayPool
-        .connect(attacker)
-        .swapAndDeposit(
-          ZeroAddress,
-          1000,
-          1000,
-          1000,
-          Math.floor(Date.now() / 1000) + 300
-        ),
+      relayPool.connect(attacker).swapAndDeposit(
+        ZeroAddress,
+        1000,
+        1000,
+        1000,
+        Math.floor(Date.now() / 1000) + 300,
+        0 // amountOutMinimum
+      ),
       `OwnableUnauthorizedAccount("${await attacker.getAddress()}")`
     )
   })

@@ -71,7 +71,16 @@ Object.keys(nets).forEach((id) => {
 // parse fork URL for tests
 const forkUrl = process.env.RPC_URL
 if (forkUrl) {
+  // reocgnize if fork is zksync from chain id
+  let chainId
+  let isZKsync = false
+  try {
+    chainId = parseInt(forkUrl.split('/').pop())
+    ;({ isZKsync } = nets[chainId])
+  } catch (error) {}
+
   networks.hardhat = {
+    zksync: isZKsync,
     forking: {
       url: forkUrl,
     },
@@ -142,6 +151,14 @@ const config: HardhatUserConfig = {
   etherscan,
   sourcify: {
     enabled: true,
+  },
+  zksolc: {
+    settings: {
+      // for '<address payable>.send/transfer(<X>)'
+      // contracts/RelayBridge.sol:189:5
+      suppressedErrors: ['sendtransfer'],
+      contractsToCompile: ['contracts/BridgeProxy/ZkSyncBridgeProxy.sol'],
+    },
   },
   solidity: {
     compilers: [

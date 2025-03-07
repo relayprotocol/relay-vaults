@@ -7,7 +7,6 @@ import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 error BridgingFailed(uint256 nonce);
-error CancelationFailed(uint256 nonce);
 error InsufficientValue(uint256 received, uint256 expected);
 error UnexpectedTransactionState(
   uint256 nonce,
@@ -95,7 +94,7 @@ contract RelayBridge is IRelayBridge {
     }
 
     // Issue transfer on the bridge
-    (bool success, ) = address(bridgeProxy).delegatecall(
+    (bool bridgeSuccess, ) = address(bridgeProxy).delegatecall(
       abi.encodeWithSignature(
         "bridge(address,address,uint256,bytes)",
         transaction.asset,
@@ -104,7 +103,8 @@ contract RelayBridge is IRelayBridge {
         transaction.data
       )
     );
-    if (!success) {
+    if (!bridgeSuccess) {
+      // If bridging failed, let's cancel the tx and return the funds to the sender.
       transaction.status = RelayBridgeTransactionStatus.CANCELLED;
       emit BridgeCancelled(nonce);
 
@@ -113,17 +113,18 @@ contract RelayBridge is IRelayBridge {
         // Take the ERC20 tokens from the sender
         IERC20(asset).transfer(transaction.sender, transaction.amount);
       } else {
-        (bool success, ) = transaction.sender.call{value: transaction.amount}(
-          ""
-        );
-        if (!success) revert CancelationFailed(nonce);
+        (bool successRefund, ) = transaction.sender.call{
+          value: transaction.amount
+        }("");
+        if (!successRefund) revert BridgingFailed(nonce);
       }
       // Return Hyperlane fee to msg.sender
-      payable(msg.sender).transfer(msg.value);
+      (bool successGasRefund, ) = msg.sender.call{value: msg.value}("");
+      if (!successGasRefund) revert BridgingFailed(nonce);
     } else {
+      // Bridging successfuly initiated! Let's send the message to the Hyperlane
       uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
       bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
-
       // Get the fee for the cross-chain message
       uint256 hyperlaneFee = IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
         poolChainId,

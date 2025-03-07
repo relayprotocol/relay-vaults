@@ -9,7 +9,7 @@
     "build": "yarn hardhat compile",
     "build:abis": "yarn hardhat export:abis",
     "test": "yarn run test:optimism && yarn run test:base && yarn run test:hardhat && yarn run test:ethereum",
-    "test:base": "RPC_URL=https://gateway.tenderly.co/public/mainnet yarn hardhat test test/**/*.base.ts",
+    "test:base": "RPC_URL=https://gateway.tenderly.co/public/base yarn hardhat test test/**/*.base.ts",
     "test:hardhat": "yarn hardhat test test/**/*.hardhat.ts",
     "test:ethereum": "RPC_URL=https://mainnet.gateway.tenderly.co yarn hardhat test test/**/*.ethereum.ts",
     "test:optimism": "RPC_URL=https://gateway.tenderly.co/public/optimism yarn hardhat test test/**/*.optimism.ts",

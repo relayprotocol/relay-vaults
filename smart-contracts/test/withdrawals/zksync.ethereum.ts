@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ethers } from 'hardhat'
+import { ethers, zksyncEthers } from 'hardhat'
 import { finalizeZksyncWithdrawal } from '@relay-protocol/helpers'
 import { getBalance, getEvent } from '@relay-protocol/helpers'
 import { JsonRpcSigner, ZeroAddress } from 'ethers'
@@ -11,32 +11,24 @@ const amount = 100000000000000n
 const withdrawalHash =
   '0x44ee1a78cded74543cae05e70dd936043bbae441ec2c7f968af4a6e888ccb07f'
 
-describe.skip('ZkSync withdrawal finalization', () => {
-  it('should finalize withdrawal', async () => {
-    const [signer] = await ethers.getSigners()
+describe('ZkSync withdrawal finalization', () => {
+  it('should work with native tokens', async () => {
+    // const [signer] = await ethers.getSigners()
+    const [signer] = zksyncEthers.getSigners()
 
     const balanceBefore = await getBalance(
       account,
       ZeroAddress,
       ethers.provider
     )
+    await signer
+      .finalizeWithdrawal(withdrawalHash)
+      // const tx = await finalizeZksyncWithdrawal(signer, withdrawalHash)
+      // const receipt = await tx.wait()
 
-    const tx = await finalizeZksyncWithdrawal(
-      signer as JsonRpcSigner,
-      withdrawalHash
-    )
-    expect(await getBalance(account, ZeroAddress, ethers.provider)).to.equal(
-      balanceBefore + amount
-    )
-
-    // weth transfer happened
-    const { event: wethTransferEvent } = await getEvent(
-      receipt!,
-      'Transfer',
-      new Interface(WETH_ABI)
-    )
-
-    const receipt = await tx.wait()
-    await getE
+      .expect(await getBalance(account, ZeroAddress, ethers.provider))
+      .to.equal(balanceBefore + amount)
   })
+
+  it.skip('should work with ERC20 tokens', async () => {})
 })

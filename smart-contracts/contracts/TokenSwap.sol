@@ -32,7 +32,7 @@ contract TokenSwap {
     0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
   // required by Uniswap Universal Router
-  address public uniswapUniversalRouter;
+  address public immutable UNISWAP_UNIVERSAL_ROUTER;
 
   // specified in https://docs.uniswap.org/contracts/universal-router/technical-reference#v3_swap_exact_in
   uint256 internal constant V3_SWAP_EXACT_IN = 0x00;
@@ -58,7 +58,7 @@ contract TokenSwap {
    * @param _uniswapUniversalRouter the address of Uniswap Universal Router
    */
   constructor(address _uniswapUniversalRouter) {
-    uniswapUniversalRouter = _uniswapUniversalRouter;
+    UNISWAP_UNIVERSAL_ROUTER = _uniswapUniversalRouter;
   }
 
   /**
@@ -74,11 +74,15 @@ contract TokenSwap {
    *
    * @notice The default route is token > WETH > asset.
    * If `uniswapWethPoolFeeAsset` is set to null, then we do a direct swap token > asset
+   * @param deadline The deadline for the swap transaction
+   * @param amountOutMinimum The minimum amount of output tokens that must be received for the transaction not to revert
    */
   function swap(
     address tokenAddress,
     uint24 uniswapWethPoolFeeToken,
-    uint24 uniswapWethPoolFeeAsset
+    uint24 uniswapWethPoolFeeAsset,
+    uint48 deadline,
+    uint256 amountOutMinimum
   ) public payable returns (uint256 amountOut) {
     // get info from pool
     address pool = msg.sender;
@@ -96,7 +100,7 @@ contract TokenSwap {
     // Approve the router to spend src ERC20
     TransferHelper.safeApprove(
       tokenAddress,
-      uniswapUniversalRouter,
+      UNISWAP_UNIVERSAL_ROUTER,
       tokenAmount
     );
 
@@ -106,9 +110,9 @@ contract TokenSwap {
     // issue PERMIT2 Allowance
     IPermit2(PERMIT2_ADDRESS).approve(
       tokenAddress,
-      uniswapUniversalRouter,
+      UNISWAP_UNIVERSAL_ROUTER,
       tokenAmount.toUint160(),
-      uint48(block.timestamp + 60) // expires after 1min
+      deadline
     );
 
     // parse the path
@@ -127,23 +131,23 @@ contract TokenSwap {
     inputs[0] = abi.encode(
       address(this), // recipient is this contract
       tokenAmount, // amountIn
-      0, // amountOutMinimum
+      amountOutMinimum, // amountOutMinimum
       path,
       true // funds are not coming from PERMIT2
     );
 
     // Executes the swap.
-    IUniversalRouter(uniswapUniversalRouter).execute(
+    IUniversalRouter(UNISWAP_UNIVERSAL_ROUTER).execute(
       commands,
       inputs,
-      block.timestamp + 60 // expires after 1min
+      uint256(deadline)
     );
 
     // check if assets have actually been swapped
     amountOut = getBalance(asset) - assetAmountBefore;
     if (amountOut == 0) {
       revert TokenSwappedFailed(
-        uniswapUniversalRouter,
+        UNISWAP_UNIVERSAL_ROUTER,
         tokenAddress,
         tokenAmount
       );

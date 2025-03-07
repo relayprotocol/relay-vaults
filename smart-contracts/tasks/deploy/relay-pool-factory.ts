@@ -1,5 +1,4 @@
 import { task } from 'hardhat/config'
-const { Confirm } = require('enquirer')
 
 import { networks } from '@relay-protocol/networks'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'

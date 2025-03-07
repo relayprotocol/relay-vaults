@@ -110,7 +110,7 @@ task('deploy:pool', 'Deploy a relay pool')
         delay = await new Input({
           name: 'delay',
           message: 'Please enter a pool timelock delay (in seconds):',
-          default: 7 * 24 * 60 * 60,
+          default: 60, // 7 * 24 * 60 * 60,
         }).run()
       }
 
@@ -119,7 +119,7 @@ task('deploy:pool', 'Deploy a relay pool')
         deposit = await new Input({
           name: 'deposit',
           message: 'Please enter a pool initial deposit:',
-          default: 1,
+          default: 0.0001,
         }).run()
       }
 
@@ -128,6 +128,7 @@ task('deploy:pool', 'Deploy a relay pool')
       if (assetSymbol == 'WETH') {
         const balance = await assetContract.balanceOf(userAddress)
         if (balance < depositAmount) {
+          console.log('Wrapping WETH...')
           // Wrap WETH!
           const tx = await user.sendTransaction({
             to: asset,
@@ -151,15 +152,21 @@ task('deploy:pool', 'Deploy a relay pool')
         )
       }
 
-      // deploy the pool
-      const tx = await factoryContract.deployPool(
+      console.log(`Deploying relay pool...`, {
         asset,
         name,
         symbol,
         yieldPool,
         delay,
-        depositAmount
-      )
+        depositAmount,
+      })
+      // deploy the pool
+      const tx = await factoryContract
+        .deployPool(asset, name, symbol, yieldPool, delay, depositAmount)
+        .catch((e) => {
+          console.log(e)
+        })
+      console.log(tx)
 
       const receipt = await tx.wait()
       const event = await getEvent(

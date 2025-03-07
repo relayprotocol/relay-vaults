@@ -4,6 +4,7 @@ import { task } from 'hardhat/config'
 task('deploy:dummy-yield-pool', 'Deploy a dummy yield pool')
   .addParam('asset', 'An ERC20 asset')
   .setAction(async ({ asset }, { ethers, run }) => {
+    console.log({ asset })
     // parse asset metadata
     const assetContract = await ethers.getContractAt('MyToken', asset)
     const name = `${await assetContract.name()} Dummy Yield Pool`

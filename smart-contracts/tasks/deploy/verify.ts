@@ -25,6 +25,7 @@ task(
         verified = true
       })
       .catch(async (e) => {
+        console.error(e)
         if (attempts >= 10) {
           throw e
         }

@@ -1,6 +1,6 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
-import { mintUSDC, stealERC20 } from '../utils/hardhat'
+import { stealERC20 } from '../utils/hardhat'
 import { getBalance, getEvent } from '@relay-protocol/helpers'
 
 import {
@@ -10,12 +10,11 @@ import {
   L2CrossDomainMessenger,
   L2StandardBridge,
 } from '@relay-protocol/helpers/abis'
-import { ContractTransactionReceipt, Log } from 'ethers'
+import { Log } from 'ethers'
 
 import { networks } from '@relay-protocol/networks'
 import RelayBridgeModule from '../../ignition/modules/RelayBridgeModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
-import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import { RelayBridge } from '../../typechain-types'
 
 const {
@@ -65,66 +64,16 @@ describe('RelayBridge', function () {
     it('should work for the base sequence using ETH', async () => {
       const [user] = await ethers.getSigners()
 
-      const bridgeAddress = await bridge.getAddress()
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')
       const nonce = await bridge.transferNonce()
       const balanceBefore = await getBalance(recipient, ethers.provider)
       const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
-        value: amount * 2n,
+        value: amount,
       })
       const receipt = await tx.wait()
 
-      expect(receipt.logs.length).to.equal(5)
-      receipt.logs.forEach((log: Log) => {
-        expect(log.address).to.be.oneOf([
-          HYPERLANE_MAILBOX_ON_OPTIMISM,
-          '0x68eE9bec9B4dbB61f69D9D293Ae26a5AACb2e28f', // Merkle Tree Hook https://docs.hyperlane.xyz/docs/reference/contract-addresses#merkle-tree-hook
-          '0xD8A76C4D91fCbB7Cc8eA795DFDF870E48368995C', // Interchain Gas Paymaster https://docs.hyperlane.xyz/docs/reference/contract-addresses#interchain-gas-paymaster-hook
-          bridgeAddress,
-        ])
-        if (log.address === HYPERLANE_MAILBOX_ON_OPTIMISM) {
-          // L2ToL1MessagePasser
-          const iface = new ethers.Interface(Mailbox)
-          const event = iface.parseLog(log)
-
-          expect(event.name).to.be.oneOf(['Dispatch', 'DispatchId'])
-          if (event.name === 'Dispatch') {
-            expect(event.name).to.equal('Dispatch')
-            // sender
-            expect(event.args[0]).to.equal(bridgeAddress)
-            // destination
-            expect(event.args[1]).to.equal(1) // Ethereum mainnet
-            // recipient  https://docs.hyperlane.xyz/docs/reference/messaging/receive#handle
-            const poolAddressPadded =
-              '0x' +
-              relayPool.replace(/^0x/, '').toLowerCase().padStart(64, '0')
-            expect(event.args[2]).to.equal(poolAddressPadded)
-            // message TODO: decode
-            // expect(event.args[3]).to.equal(
-            //   "0x030009ae080000000a000000000000000000000000114e375b6fcc6d6fcb68c7a1d407e652c54f25fb000000010000000000000000000000001bd1dc30f238541d4cab3ba0ab766e9eb57050eb0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000de0b6b3a7640000"
-            // );
-          } else if (event.name === 'DispatchId') {
-            expect(event.name).to.equal('DispatchId')
-            // DispatchId
-            // expect(event.args[0]).to.equal(
-            //   "0x240ecaebb0f12af10b28a937771240b355dbc5e2c14fda63e2507ff4e9a598eb"
-            // );
-          }
-        } else if (log.address === bridgeAddress) {
-          const event = bridge.interface.parseLog(log)
-          expect(event.name).to.equal('BridgeInitiated')
-          expect(event.args[0]).to.equal(nonce)
-          expect(event.args[1]).to.equal(recipient)
-          expect(event.args[2]).to.equal(recipient)
-          expect(event.args[3]).to.equal(ethers.ZeroAddress) // l2 asset
-          expect(event.args[4]).to.equal(ethers.ZeroAddress) // l1 asset
-          expect(event.args[5]).to.equal(amount)
-          expect(event.args[6]).to.equal(opProxyBridgeAddress)
-        }
-      })
-
-      // Check the transaction obect
+      expect(receipt.logs.length).to.equal(1)
       const transaction = await bridge.transactions(nonce)
 
       expect(transaction.nonce).to.equal(nonce)
@@ -191,20 +140,12 @@ describe('RelayBridge', function () {
       await erc20Contract.approve(bridgeAddress, amount)
 
       const nonce = await bridge.transferNonce()
-      const balanceBefore = await getBalance(recipient, ethers.provider)
+      const balanceBefore = await erc20Contract.balanceOf(recipient)
 
-      const tx = await bridge.bridge(
-        amount,
-        recipient,
-        networks[1].assets.udt,
-        {
-          value: amount * 2n,
-          gasLimit: 30000000,
-        }
-      )
+      const tx = await bridge.bridge(amount, recipient, networks[1].assets.udt)
       const receipt = await tx.wait()
 
-      expect(receipt.logs.length).to.equal(7)
+      expect(receipt.logs.length).to.equal(3)
       receipt.logs.forEach((log: Log) => {
         expect(log.address).to.be.oneOf([
           HYPERLANE_MAILBOX_ON_OPTIMISM,
@@ -255,17 +196,31 @@ describe('RelayBridge', function () {
       })
 
       // make sure excess value refund has been issued
-      expect(await getBalance(recipient, ethers.provider)).to.be.greaterThan(
+      expect(await erc20Contract.balanceOf(recipient)).to.be.greaterThan(
         balanceBefore - amount * 2n
       )
+    })
+
+    it('should fail if the msg.value does not match the amount', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+      await expect(
+        bridge.bridge(amount, recipient, ethers.ZeroAddress, {
+          value: amount / 2n,
+        })
+      )
+        .to.be.revertedWithCustomError(bridge, 'InsufficientValue')
+        .withArgs(amount / 2n, amount)
     })
   })
 
   describe('executeBridge', () => {
     it('should fail of if the transaction is not in the correct state', async () => {
       await expect(bridge.executeBridge(1337))
-        .to.be.revertedWithCustomError(bridge, 'BridgingTransactionNotReady')
-        .withArgs(1337)
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(1337, 0, 1)
     })
 
     it('should update the transaction state and emit the bridge executed event', async () => {
@@ -273,12 +228,14 @@ describe('RelayBridge', function () {
 
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')
+      const fee = await bridge.getFee(amount, recipient)
+
       const bridgeTx = await bridge.bridge(
         amount,
         recipient,
         ethers.ZeroAddress,
         {
-          value: amount * 2n,
+          value: amount,
         }
       )
       await bridgeTx.wait()
@@ -288,7 +245,9 @@ describe('RelayBridge', function () {
       expect(transaction.status).to.equal(1)
 
       // Let's now issue the executeBridge
-      const tx = await bridge.executeBridge(transaction.nonce)
+      const tx = await bridge.executeBridge(transaction.nonce, {
+        value: fee,
+      })
       const receipt = await tx.wait()
       const updatedTransaction = await bridge.transactions(transaction.nonce)
       expect(updatedTransaction.status).to.equal(2)
@@ -312,25 +271,60 @@ describe('RelayBridge', function () {
       const amount = ethers.parseEther('1')
       const bridgeAddress = await bridge.getAddress()
       const nonce = await bridge.transferNonce()
+      const fee = await bridge.getFee(amount, recipient)
 
       await (
         await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
-          value: amount * 2n,
+          value: amount,
         })
       ).wait()
       const transaction = await bridge.transactions(nonce)
-      const tx = await bridge.executeBridge(nonce)
+      const tx = await bridge.executeBridge(nonce, {
+        value: fee,
+      })
       const receipt = (await tx.wait())!
 
-      expect(receipt.logs.length).to.equal(6)
+      // Check the transaction obect
+      expect(receipt.logs.length).to.equal(10)
       receipt.logs.forEach((log: Log) => {
         expect(log.address).to.be.oneOf([
           bridgeAddress,
+          HYPERLANE_MAILBOX_ON_OPTIMISM,
           '0x4200000000000000000000000000000000000016', // L2ToL1MessagePasser,
           '0x4200000000000000000000000000000000000007', // L2CrossDomainMessenger,
           '0x4200000000000000000000000000000000000010', // L2StandardBridge
+          '0x68eE9bec9B4dbB61f69D9D293Ae26a5AACb2e28f', // Merkle Tree Hook https://docs.hyperlane.xyz/docs/reference/contract-addresses#merkle-tree-hook
+          '0xD8A76C4D91fCbB7Cc8eA795DFDF870E48368995C', // Interchain Gas Paymaster https://docs.hyperlane.xyz/docs/reference/contract-addresses#interchain-gas-paymaster-hook
         ])
-        if (log.address === bridgeAddress) {
+        if (log.address === HYPERLANE_MAILBOX_ON_OPTIMISM) {
+          // L2ToL1MessagePasser
+          const iface = new ethers.Interface(Mailbox)
+          const event = iface.parseLog(log)
+
+          expect(event.name).to.be.oneOf(['Dispatch', 'DispatchId'])
+          if (event.name === 'Dispatch') {
+            expect(event.name).to.equal('Dispatch')
+            // sender
+            expect(event.args[0]).to.equal(bridgeAddress)
+            // destination
+            expect(event.args[1]).to.equal(1) // Ethereum mainnet
+            // recipient  https://docs.hyperlane.xyz/docs/reference/messaging/receive#handle
+            const poolAddressPadded =
+              '0x' +
+              relayPool.replace(/^0x/, '').toLowerCase().padStart(64, '0')
+            expect(event.args[2]).to.equal(poolAddressPadded)
+            // message TODO: decode
+            // expect(event.args[3]).to.equal(
+            //   "0x030009ae080000000a000000000000000000000000114e375b6fcc6d6fcb68c7a1d407e652c54f25fb000000010000000000000000000000001bd1dc30f238541d4cab3ba0ab766e9eb57050eb0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000de0b6b3a7640000"
+            // );
+          } else if (event.name === 'DispatchId') {
+            expect(event.name).to.equal('DispatchId')
+            // DispatchId
+            // expect(event.args[0]).to.equal(
+            //   "0x240ecaebb0f12af10b28a937771240b355dbc5e2c14fda63e2507ff4e9a598eb"
+            // );
+          }
+        } else if (log.address === bridgeAddress) {
           const event = bridge.interface.parseLog(log)
           expect(event.name).to.equal('BridgeExecuted')
           expect(event.args[0]).to.equal(nonce)
@@ -408,10 +402,179 @@ describe('RelayBridge', function () {
             expect(event.args.amount).to.equal(amount)
             expect(event.args.extraData).to.equal(transaction.data)
           }
-        } else {
-          throw new Error('Unknown event')
         }
       })
+    })
+
+    it('should require the executeBridge transaction to be delayed from the bridge transaction', async () => {
+      // We deploy a malicious contract that combibes bridge and executeBridge in a single transaction
+      const malicious = await ethers.deployContract('MaliciousContract', [])
+      const amount = ethers.parseEther('1')
+
+      await expect(
+        malicious.attackBridge(
+          bridge.getAddress(),
+          amount,
+          ethers.ZeroAddress,
+          { value: amount }
+        )
+      ).to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+    })
+  })
+
+  describe('cancelBridge', () => {
+    it('should fail if the transaction is not in the pending state', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+      const fee = await bridge.getFee(amount, recipient)
+
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount,
+        }
+      )
+      await bridgeTx.wait()
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      // Let's now issue the executeBridge
+      await bridge.executeBridge(transaction.nonce, {
+        value: fee,
+      })
+
+      await expect(bridge.cancelBridge(transaction.nonce))
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(transaction.nonce, 2, 1)
+    })
+
+    it('should fail if the transaction does not exist', async () => {
+      await expect(bridge.cancelBridge(13378n))
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(13378n, 0, 1)
+    })
+
+    it('should fail if the transaction was sent by another user', async () => {
+      const [user, another] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount,
+        }
+      )
+      await bridgeTx.wait()
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      await expect(bridge.connect(another).cancelBridge(transaction.nonce))
+        .to.be.revertedWithCustomError(bridge, 'Unauthorized')
+        .withArgs(await another.getAddress(), await user.getAddress())
+    })
+
+    it('should update the status of the transaction and prevents it from being executed', async () => {
+      const [user] = await ethers.getSigners()
+
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('100')
+      const balanceBefore = await getBalance(recipient, ethers.provider)
+      const bridgeTx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        {
+          value: amount,
+        }
+      )
+      const balanceAfterBridge = await getBalance(recipient, ethers.provider)
+      expect(balanceAfterBridge).to.be.lessThan(balanceBefore - amount)
+
+      // Let's get the nonce!
+      const nonce = await bridge.transferNonce()
+      const transaction = await bridge.transactions(nonce - 1n)
+      expect(transaction.status).to.equal(1)
+
+      const receipt = await (
+        await bridge.cancelBridge(transaction.nonce)
+      ).wait()
+
+      expect((await bridge.transactions(nonce - 1n)).status).to.equal(3)
+      const event = await getEvent(
+        receipt!,
+        'BridgeCancelled',
+        bridge.interface
+      )
+      expect(event.args.nonce).to.equal(transaction.nonce)
+
+      expect(await getBalance(recipient, ethers.provider)).to.greaterThan(
+        balanceAfterBridge
+      )
+
+      await expect(bridge.executeBridge(transaction.nonce))
+        .to.be.revertedWithCustomError(bridge, 'UnexpectedTransactionState')
+        .withArgs(transaction.nonce, 3, 1)
+    })
+
+    it('should allow for ERC20 cancellation', async () => {
+      const [user] = await ethers.getSigners()
+
+      const { bridge: opProxyBridge } = await ignition.deploy(
+        OPStackNativeBridgeProxyModule,
+        {
+          parameters: {
+            OPStackNativeBridgeProxy: {
+              portalProxy: ethers.ZeroAddress,
+              relayPoolChainId: 1,
+              relayPool,
+              l1BridgeProxy,
+            },
+          },
+        }
+      )
+      const opProxyBridgeAddress = await opProxyBridge.getAddress()
+
+      const bridge = await ethers.deployContract('RelayBridge', [
+        assets.udt,
+        opProxyBridgeAddress,
+        HYPERLANE_MAILBOX_ON_OPTIMISM,
+      ])
+      const bridgeAddress = await bridge.getAddress()
+      const recipient = await user.getAddress()
+      const amount = ethers.parseEther('1')
+
+      // Transfer UDT to sender/recipient
+      await stealERC20(
+        assets.udt,
+        '0x99b1348a9129ac49c6de7F11245773dE2f51fB0c',
+        recipient,
+        amount
+      )
+
+      // Approve
+      const erc20Contract = await ethers.getContractAt(ERC20, assets.udt)
+      await erc20Contract.approve(bridgeAddress, amount)
+
+      const nonce = await bridge.transferNonce()
+      const balanceBefore = await erc20Contract.balanceOf(recipient)
+      await bridge.bridge(amount, recipient, networks[1].assets.udt)
+      const balanceAfterBridge = await erc20Contract.balanceOf(recipient)
+      expect(balanceAfterBridge).to.be.equal(balanceBefore - amount)
+      await bridge.cancelBridge(nonce)
+      const balanceAfterCancellation = await erc20Contract.balanceOf(recipient)
+      expect(balanceAfterCancellation).to.be.equal(balanceBefore)
     })
   })
 })

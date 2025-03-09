@@ -24,5 +24,5 @@ export const base: L2NetworkConfig = {
   },
   rpc: process.env.RPC_8453
     ? [process.env.RPC_8453]
-    : ['https://gateway.tenderly.co/public/mainnet'],
+    : ['https://gateway.tenderly.co/public/base'],
 }

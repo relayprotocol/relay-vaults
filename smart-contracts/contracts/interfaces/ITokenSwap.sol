@@ -6,6 +6,7 @@ interface ITokenSwap {
     address pool,
     uint24 uniswapWethPoolFeeToken,
     uint24 uniswapWethPoolFeeAsset,
-    uint48 deadline
+    uint48 deadline,
+    uint256 amountOutMinimum
   ) external payable returns (uint amount);
 }

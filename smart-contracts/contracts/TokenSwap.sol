@@ -27,10 +27,6 @@ contract TokenSwap {
   // make sure we dont exceed type uint160 when casting
   using SafeCast160 for uint256;
 
-  // from '@uniswap/universal-router-sdk'
-  address public immutable PERMIT2_ADDRESS =
-    0x000000000022D473030F116dDEE9F6B43aC78BA3;
-
   // required by Uniswap Universal Router
   address public immutable UNISWAP_UNIVERSAL_ROUTER;
 
@@ -75,12 +71,14 @@ contract TokenSwap {
    * @notice The default route is token > WETH > asset.
    * If `uniswapWethPoolFeeAsset` is set to null, then we do a direct swap token > asset
    * @param deadline The deadline for the swap transaction
+   * @param amountOutMinimum The minimum amount of output tokens that must be received for the transaction not to revert
    */
   function swap(
     address tokenAddress,
     uint24 uniswapWethPoolFeeToken,
     uint24 uniswapWethPoolFeeAsset,
-    uint48 deadline
+    uint48 deadline,
+    uint256 amountOutMinimum
   ) public payable returns (uint256 amountOut) {
     // get info from pool
     address pool = msg.sender;
@@ -102,16 +100,8 @@ contract TokenSwap {
       tokenAmount
     );
 
-    // approve PERMIT2 to manipulate the token
-    IERC20(tokenAddress).approve(PERMIT2_ADDRESS, tokenAmount);
-
-    // issue PERMIT2 Allowance
-    IPermit2(PERMIT2_ADDRESS).approve(
-      tokenAddress,
-      UNISWAP_UNIVERSAL_ROUTER,
-      tokenAmount.toUint160(),
-      deadline
-    );
+    // send tokens to universal router to manipulate the token
+    IERC20(tokenAddress).transfer(UNISWAP_UNIVERSAL_ROUTER, tokenAmount);
 
     // parse the path
     bytes memory path = uniswapWethPoolFeeAsset == 0
@@ -129,9 +119,9 @@ contract TokenSwap {
     inputs[0] = abi.encode(
       address(this), // recipient is this contract
       tokenAmount, // amountIn
-      0, // amountOutMinimum
+      amountOutMinimum, // amountOutMinimum
       path,
-      true // funds are not coming from PERMIT2
+      false // funds are coming from universal router
     );
 
     // Executes the swap.

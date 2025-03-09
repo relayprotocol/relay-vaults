@@ -7,8 +7,14 @@ import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 error BridgingFailed(uint256 nonce);
-error InsufficientValue(uint256 value, uint256 hyperlaneFee, uint256 amount);
-error BridgingTransactionNotReady(uint256 nonce);
+error CancelationFailed(uint256 nonce);
+error InsufficientValue(uint256 received, uint256 expected);
+error UnexpectedTransactionState(
+  uint256 nonce,
+  RelayBridgeTransactionStatus status,
+  RelayBridgeTransactionStatus expected
+);
+error Unauthorized(address sender, address expected);
 
 interface IRelayBridge {
   function bridge(
@@ -33,7 +39,8 @@ struct BridgeTransaction {
 enum RelayBridgeTransactionStatus {
   NONE,
   INITIATED,
-  EXECUTED
+  EXECUTED,
+  CANCELLED
 }
 
 contract RelayBridge is IRelayBridge {
@@ -58,6 +65,8 @@ contract RelayBridge is IRelayBridge {
 
   event BridgeExecuted(uint256 indexed nonce);
 
+  event BridgeCancelled(uint256 indexed nonce);
+
   constructor(
     address _asset,
     BridgeProxy _bridgeProxy,
@@ -70,14 +79,19 @@ contract RelayBridge is IRelayBridge {
 
   // The bridging transaction is decoupled from the user's transfer of funds
   // If this transaction (below) gets reverted, the funds will remain in the contract
-  function executeBridge(uint256 nonce) external {
+  function executeBridge(uint256 nonce) external payable {
     BridgeTransaction storage transaction = transactions[nonce];
 
     if (
       transaction.nonce != nonce ||
-      transaction.status != RelayBridgeTransactionStatus.INITIATED
+      transaction.status != RelayBridgeTransactionStatus.INITIATED ||
+      block.timestamp <= transaction.timestamp
     ) {
-      revert BridgingTransactionNotReady(nonce);
+      revert UnexpectedTransactionState(
+        nonce,
+        transaction.status,
+        RelayBridgeTransactionStatus.INITIATED
+      );
     }
 
     // Issue transfer on the bridge
@@ -92,8 +106,65 @@ contract RelayBridge is IRelayBridge {
     );
     if (!success) revert BridgingFailed(nonce);
 
+    uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
+    bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
+
+    // Get the fee for the cross-chain message
+    uint256 hyperlaneFee = IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
+      poolChainId,
+      poolId,
+      transaction.data,
+      StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
+    );
+
+    if (msg.value < hyperlaneFee) {
+      revert InsufficientValue(msg.value, hyperlaneFee);
+    }
+
+    // Send the message, with the right fee
+    IHyperlaneMailbox(hyperlaneMailbox).dispatch{value: hyperlaneFee}(
+      poolChainId,
+      poolId,
+      transaction.data,
+      StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
+    );
+
     transaction.status = RelayBridgeTransactionStatus.EXECUTED;
     emit BridgeExecuted(nonce);
+
+    // refund extra value to msg sender
+    if (msg.value > hyperlaneFee) {
+      payable(msg.sender).transfer(msg.value - hyperlaneFee);
+    }
+  }
+
+  function cancelBridge(uint256 nonce) external {
+    BridgeTransaction storage transaction = transactions[nonce];
+    if (
+      transaction.nonce != nonce ||
+      transaction.status != RelayBridgeTransactionStatus.INITIATED
+    ) {
+      revert UnexpectedTransactionState(
+        nonce,
+        transaction.status,
+        RelayBridgeTransactionStatus.INITIATED
+      );
+    }
+    if (msg.sender != transaction.sender) {
+      revert Unauthorized(msg.sender, transaction.sender);
+    }
+
+    transaction.status = RelayBridgeTransactionStatus.CANCELLED;
+    emit BridgeCancelled(nonce);
+
+    // And refund the user
+    if (asset != address(0)) {
+      // Take the ERC20 tokens from the sender
+      IERC20(asset).transfer(transaction.sender, transaction.amount);
+    } else {
+      (bool success, ) = transaction.sender.call{value: transaction.amount}("");
+      if (!success) revert CancelationFailed(nonce);
+    }
   }
 
   /// @notice Convenience function which returns the Hyperlane fee to be passed as msg.value in `bridge`.
@@ -131,16 +202,6 @@ contract RelayBridge is IRelayBridge {
     // Encode the data for the cross-chain message
     // No need to pass the asset since the bridge and the pool are asset-specific
     bytes memory data = abi.encode(nonce, recipient, amount, block.timestamp);
-    uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
-    bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
-
-    // Get the fee for the cross-chain message
-    uint256 hyperlaneFee = IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
-      poolChainId,
-      poolId,
-      data,
-      StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
-    );
 
     // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
     if (asset != address(0)) {
@@ -148,18 +209,10 @@ contract RelayBridge is IRelayBridge {
       IERC20(asset).transferFrom(msg.sender, address(this), amount);
     } else {
       // We need to check that the msg.value matches the amount
-      if (msg.value < hyperlaneFee + amount) {
-        revert InsufficientValue(msg.value, hyperlaneFee, amount);
+      if (msg.value < amount) {
+        revert InsufficientValue(msg.value, amount);
       }
     }
-
-    // Send the message, with the right fee
-    IHyperlaneMailbox(hyperlaneMailbox).dispatch{value: hyperlaneFee}(
-      poolChainId,
-      poolId,
-      data,
-      StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
-    );
 
     transactions[nonce] = BridgeTransaction({
       nonce: nonce,
@@ -182,11 +235,6 @@ contract RelayBridge is IRelayBridge {
       amount,
       bridgeProxy
     );
-
-    // refund extra value to msg sender
-    uint256 spent = (asset == address(0) ? amount : 0) + hyperlaneFee;
-    if (msg.value > spent) {
-      payable(msg.sender).transfer(msg.value - spent);
-    }
+    return nonce;
   }
 }

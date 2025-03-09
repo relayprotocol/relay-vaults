@@ -4,11 +4,13 @@ pragma solidity ^0.8.28;
 import {BridgeProxy} from "./BridgeProxy.sol";
 import {IL1SharedBridge} from "../interfaces/zksync/IL1SharedBridge.sol";
 import {IL2SharedBridge} from "../interfaces/zksync/IL2SharedBridge.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {UnsafeBytes} from "../utils/UnsafeBytes.sol";
+import {IBaseToken} from "../interfaces/zksync/IBaseToken.sol";
 
 contract ZkSyncBridgeProxy is BridgeProxy {
   IL2SharedBridge public immutable L2_SHARED_BRIDGE;
+
+  IBaseToken public immutable L2_BASE_TOKEN =
+    IBaseToken(0x000000000000000000000000000000000000800A);
 
   constructor(
     address l2SharedBridge,
@@ -25,7 +27,13 @@ contract ZkSyncBridgeProxy is BridgeProxy {
     uint256 amount,
     bytes calldata /*data*/
   ) external payable override {
-    // withdraw to L1
-    L2_SHARED_BRIDGE.withdraw(L1_BRIDGE_PROXY, currency, amount);
+    // Check if this is a native token withdrawal
+    if (currency == address(0)) {
+      // For native token withdrawals, use IBaseToken.withdraw
+      L2_BASE_TOKEN.withdraw{value: amount}(L1_BRIDGE_PROXY);
+    } else {
+      // For ERC20 token withdrawals
+      L2_SHARED_BRIDGE.withdraw(L1_BRIDGE_PROXY, currency, amount);
+    }
   }
 }

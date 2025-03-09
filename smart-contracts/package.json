@@ -14,7 +14,7 @@
     "test:ethereum": "RPC_URL=https://mainnet.gateway.tenderly.co yarn hardhat test test/**/*.ethereum.ts",
     "test:optimism": "RPC_URL=https://gateway.tenderly.co/public/optimism yarn hardhat test test/**/*.optimism.ts",
     "test:sepolia": "RPC_URL=https://sepolia.gateway.tenderly.co yarn hardhat test test/**/*.sepolia.ts",
-    "test:zksync": "RPC_URL=https://mainnet.era.zksync.io yarn hardhat test test/**/*.zksync.ts",
+    "test:zksync": "ZKSYNC=1 && RPC_URL=https://mainnet.era.zksync.io yarn hardhat test test/**/*.zksync.ts",
     "lint:contracts": "solhint 'contracts/**/*.sol'",
     "lintFix": "yarn lint:contracts --fix --noPrompt && yarn lint:code --fix",
     "lint:code": "eslint .",

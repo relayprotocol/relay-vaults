@@ -71,15 +71,8 @@ Object.keys(nets).forEach((id) => {
 // parse fork URL for tests
 const forkUrl = process.env.RPC_URL
 if (forkUrl) {
-  // reocgnize if fork is zksync from chain id
-  let isZKsync = false
-  try {
-    const chainId = parseInt(forkUrl.split('/').pop())
-    ;({ isZKsync } = nets[chainId])
-  } catch (error) {
-    console.log(`Failed to parse chain id from rpc ${forkUrl}`)
-  }
-
+  // check if fork is zksync
+  const isZKsync = !!process.env.ZKSYNC
   networks.hardhat = {
     zksync: isZKsync,
     forking: {
@@ -158,7 +151,10 @@ const config: HardhatUserConfig = {
       // for '<address payable>.send/transfer(<X>)'
       // contracts/RelayBridge.sol:189:5
       suppressedErrors: ['sendtransfer'],
-      contractsToCompile: ['contracts/BridgeProxy/ZkSyncBridgeProxy.sol'],
+      contractsToCompile: [
+        'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
+        'contracts/interfaces/IUSDC.sol',
+      ],
     },
   },
   solidity: {

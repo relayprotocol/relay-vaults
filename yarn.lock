@@ -1952,7 +1952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@matterlabs/hardhat-zksync-deploy@npm:^1.5.0, @matterlabs/hardhat-zksync-deploy@npm:^1.6.0":
+"@matterlabs/hardhat-zksync-deploy@npm:1.6.0, @matterlabs/hardhat-zksync-deploy@npm:^1.5.0, @matterlabs/hardhat-zksync-deploy@npm:^1.6.0":
   version: 1.6.0
   resolution: "@matterlabs/hardhat-zksync-deploy@npm:1.6.0"
   dependencies:
@@ -3032,6 +3032,7 @@ __metadata:
     "@eslint/js": "npm:9.19.0"
     "@eth-optimism/contracts-bedrock": "npm:0.17.3"
     "@matterlabs/hardhat-zksync": "npm:1.3.0"
+    "@matterlabs/hardhat-zksync-deploy": "npm:1.6.0"
     "@nomicfoundation/hardhat-chai-matchers": "npm:2.0.8"
     "@nomicfoundation/hardhat-ethers": "npm:3.0.8"
     "@nomicfoundation/hardhat-ignition": "npm:0.15.9"

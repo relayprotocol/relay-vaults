@@ -34,7 +34,7 @@ task('deploy:relay-bridge', 'Deploy a bridge proxy')
       }
 
       if (!proxyBridgeAddress) {
-        // List proxyBirdges, and select one the!
+        // List proxyBridges, and select the one you want to deploy
         const proxyBridge = await new AutoComplete({
           name: 'proxyBridge',
           message: 'Please choose a proxy bridge',

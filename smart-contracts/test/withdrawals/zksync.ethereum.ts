@@ -84,7 +84,7 @@ describe('ZkSync withdrawal finalization', () => {
     ).to.equal(true)
   })
 
-  it.skip('should work with ERC20 token (USDC.e)', async () => {
+  it('should work with ERC20 token (USDC.e)', async () => {
     // USDC withdrawal
     // https://era.zksync.network/tx/0xcfc3f74fec4c803696b4daf8a15201d64046f5876c59832d19b34c2b0db18110
     const amount = ethers.parseUnits('0.5', 6)
@@ -98,7 +98,7 @@ describe('ZkSync withdrawal finalization', () => {
 
     const balanceBefore = await getBalance(
       account,
-      assets.USDC,
+      assets.usdc,
       ethers.provider
     )
 
@@ -132,10 +132,10 @@ describe('ZkSync withdrawal finalization', () => {
 
     expect(event.args.chainId).to.equal(ZKSYNC_MAINNET_CHAIN_ID)
     expect(event.args.to).to.equal(account)
-    expect(event.args.l1Token).to.equal(assets.USDC)
+    expect(event.args.l1Token).to.equal(assets.usdc)
     expect(event.args.amount).to.equal(amount)
 
-    expect(await getBalance(account, assets.USDC, ethers.provider)).to.equal(
+    expect(await getBalance(account, assets.usdc, ethers.provider)).to.equal(
       balanceBefore + amount
     )
 

@@ -16,9 +16,11 @@ interface RelayPoolTimelock {
 }
 
 contract RelayPoolFactory {
-  address public immutable hyperlaneMailbox;
-  address public immutable wrappedEth;
-  address public immutable timelockTemplate;
+  address public immutable HYPERLANE_MAILBOX;
+  address public immutable WETH;
+  address public immutable TIMELOCK_TEMPLATE;
+
+  mapping(address => address[]) public poolsByAsset; // Keeping track of pools by asset.
 
   event PoolDeployed(
     address indexed pool,
@@ -33,9 +35,9 @@ contract RelayPoolFactory {
   error InsufficientInitialDeposit(uint deposit);
 
   constructor(address hMailbox, address weth, address timelock) {
-    hyperlaneMailbox = hMailbox;
-    wrappedEth = weth;
-    timelockTemplate = timelock;
+    HYPERLANE_MAILBOX = hMailbox;
+    WETH = weth;
+    TIMELOCK_TEMPLATE = timelock;
   }
 
   function deployPool(
@@ -55,7 +57,7 @@ contract RelayPoolFactory {
     curator[0] = msg.sender;
 
     // clone timelock
-    address timelock = Clones.clone(timelockTemplate);
+    address timelock = Clones.clone(TIMELOCK_TEMPLATE);
     RelayPoolTimelock(timelock).initialize(
       timelockDelay,
       curator,
@@ -64,14 +66,16 @@ contract RelayPoolFactory {
     );
 
     RelayPool pool = new RelayPool(
-      hyperlaneMailbox,
+      HYPERLANE_MAILBOX,
       asset,
       name,
       symbol,
       thirdPartyPool,
-      wrappedEth,
+      WETH,
       timelock
     );
+
+    poolsByAsset[address(asset)].push(address(pool));
 
     emit PoolDeployed(
       address(pool),

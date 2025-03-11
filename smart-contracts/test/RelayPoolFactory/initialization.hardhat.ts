@@ -1,13 +1,18 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import { MyToken, MyYieldPool, RelayPoolFactory } from '../../typechain-types'
+import {
+  MyToken,
+  MyYieldPool,
+  RelayPoolFactory,
+  TimelockControllerUpgradeable,
+} from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 import { getEvent } from '@relay-protocol/helpers'
 
 describe('RelayPoolFactory: deployment', () => {
   let relayPoolFactory: RelayPoolFactory
   let myToken: MyToken
-  let timelockTemplate: any
+  let timelockTemplate: TimelockControllerUpgradeable
   const hyperlaneMailbox = '0x1000000000000000000000000000000000000000'
   const weth = '0x2000000000000000000000000000000000000000'
   let thirdPartyPool: MyYieldPool
@@ -38,30 +43,27 @@ describe('RelayPoolFactory: deployment', () => {
     // Check that there are shares!
     expect(await myToken.totalSupply()).to.equal('1000000000000000000000000000')
 
-    // Deploy an "empty" timelock for the Pool Factory
-    const TimelockController = await ethers.getContractFactory(
-      'TimelockControllerUpgradeable'
-    )
-    timelockTemplate = await TimelockController.deploy()
-    await timelockTemplate.waitForDeployment()
-
     // Deploy the factory
-    ;({ relayPoolFactory } = await ignition.deploy(RelayPoolFactoryModule, {
-      parameters: {
-        RelayPoolFactory: {
-          hyperlaneMailbox,
-          weth,
-          timelock: await timelockTemplate.getAddress(),
+    ;({ relayPoolFactory, timelockTemplate } = await ignition.deploy(
+      RelayPoolFactoryModule,
+      {
+        parameters: {
+          RelayPoolFactory: {
+            hyperlaneMailbox,
+            weth,
+          },
         },
-      },
-      deploymentId: 'RelayPoolFactory',
-    }))
+        deploymentId: 'RelayPoolFactory',
+      }
+    ))
   })
 
   it('should have deployed the factory', async () => {
-    expect(await relayPoolFactory.hyperlaneMailbox()).to.equal(hyperlaneMailbox)
-    expect(await relayPoolFactory.wrappedEth()).to.equal(weth)
-    expect(await relayPoolFactory.timelockTemplate()).to.equal(
+    expect(await relayPoolFactory.HYPERLANE_MAILBOX()).to.equal(
+      hyperlaneMailbox
+    )
+    expect(await relayPoolFactory.WETH()).to.equal(weth)
+    expect(await relayPoolFactory.TIMELOCK_TEMPLATE()).to.equal(
       await timelockTemplate.getAddress()
     )
   })

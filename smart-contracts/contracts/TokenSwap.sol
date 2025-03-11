@@ -27,10 +27,6 @@ contract TokenSwap {
   // make sure we dont exceed type uint160 when casting
   using SafeCast160 for uint256;
 
-  // from '@uniswap/universal-router-sdk'
-  address public immutable PERMIT2_ADDRESS =
-    0x000000000022D473030F116dDEE9F6B43aC78BA3;
-
   // required by Uniswap Universal Router
   address public immutable UNISWAP_UNIVERSAL_ROUTER;
 
@@ -104,16 +100,8 @@ contract TokenSwap {
       tokenAmount
     );
 
-    // approve PERMIT2 to manipulate the token
-    IERC20(tokenAddress).approve(PERMIT2_ADDRESS, tokenAmount);
-
-    // issue PERMIT2 Allowance
-    IPermit2(PERMIT2_ADDRESS).approve(
-      tokenAddress,
-      UNISWAP_UNIVERSAL_ROUTER,
-      tokenAmount.toUint160(),
-      deadline
-    );
+    // send tokens to universal router to manipulate the token
+    IERC20(tokenAddress).transfer(UNISWAP_UNIVERSAL_ROUTER, tokenAmount);
 
     // parse the path
     bytes memory path = uniswapWethPoolFeeAsset == 0
@@ -133,7 +121,7 @@ contract TokenSwap {
       tokenAmount, // amountIn
       amountOutMinimum, // amountOutMinimum
       path,
-      true // funds are not coming from PERMIT2
+      false // funds are coming from universal router
     );
 
     // Executes the swap.

@@ -27,6 +27,7 @@ import './tasks/networks'
 import './tasks/deploy/native-gateway'
 import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
+import './tasks/utils/zksync-contracts.ts'
 
 // get pk from shell
 const { DEPLOYER_PRIVATE_KEY } = process.env
@@ -72,7 +73,10 @@ Object.keys(nets).forEach((id) => {
 // parse fork URL for tests
 const forkUrl = process.env.RPC_URL
 if (forkUrl) {
+  // check if fork is zksync
+  const isZKsync = !!process.env.ZKSYNC
   networks.hardhat = {
+    zksync: isZKsync,
     forking: {
       url: forkUrl,
     },
@@ -143,6 +147,17 @@ const config: HardhatUserConfig = {
   etherscan,
   sourcify: {
     enabled: false,
+  },
+  zksolc: {
+    settings: {
+      // for '<address payable>.send/transfer(<X>)'
+      // contracts/RelayBridge.sol:189:5
+      suppressedErrors: ['sendtransfer'],
+      contractsToCompile: [
+        'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
+        'contracts/interfaces/IUSDC.sol',
+      ],
+    },
   },
   solidity: {
     compilers: [

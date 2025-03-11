@@ -25,3 +25,4 @@ journal.jsonl
 artifacts-zk
 cache-zk
 deployments-zk
+anvil-zksync.log

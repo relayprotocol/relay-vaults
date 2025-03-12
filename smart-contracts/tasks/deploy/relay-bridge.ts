@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
-import { AutoComplete } from 'enquirer'
+import { AutoComplete, name } from 'enquirer'
 import { getAddresses } from '@relay-protocol/addresses'
 import { getEvent } from '@relay-protocol/helpers'
 
@@ -77,7 +77,17 @@ task('deploy:bridge', 'Deploy a bridge proxy')
         'BridgeDeployed',
         factoryContract.interface
       )
+      const bridgeAddress = event.args.bridge
 
-      console.log(`✅ RelayBridge deployed to: ${event.args.bridge}`)
+      await run('deploy:verify', {
+        address: bridgeAddress,
+        constructorArguments: [
+          assetAddress,
+          proxyBridgeAddress,
+          await factoryContract.hyperlaneMailbox(),
+        ],
+      })
+
+      console.log(`✅ RelayBridge deployed to: ${bridgeAddress}`)
     }
   )

@@ -9,7 +9,7 @@
     "BridgeProxy": {
       "op": "0x67fb8AA4AafD829824Aa5CdDbCfE1A4fCe13EC2E"
     },
-    "RelayPoolFactory": "0xd8b8666b7048E62d0e7752ddF4297783CAB3182B"
+    "RelayPoolFactory": "0x67cC00ba142c5e551A6631D506E48286D41B6174"
   },
   "11155420": {
     "RelayBridgeFactory": "0xA274446d37Fa9ECb343bBEB7F050A96991B0a2BC"

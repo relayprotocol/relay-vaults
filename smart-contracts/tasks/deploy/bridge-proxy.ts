@@ -115,7 +115,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
         deploymentId,
       }))
       proxyBridgeAddress = await proxyBridge.getAddress()
-      console.log(`CCTP bridge deployed at: ${proxyBridgeAddress}`)
+      console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'op') {
       const portalProxy = bridges.op!.portalProxy! || ethers.ZeroAddress // Only used on the L1 deployments (to claim the assets)
       const parameters = {
@@ -137,7 +137,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
 
       // for verification
       constructorArguments = [portalProxy]
-      console.log(`OPStack bridge deployed at: ${proxyBridgeAddress}`)
+      console.log(`✅ OPStack bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'arb') {
       const routerGateway = bridges.arb!.routerGateway
       const outbox = bridges.arb!.outbox || ethers.ZeroAddress // Only used on the L1 deployments (to claim the assets)
@@ -161,7 +161,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
 
       // for verification
       constructorArguments = [routerGateway, outbox]
-      console.log(`ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
+      console.log(`✅ ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'zksync') {
       const l2SharedDefaultBridge = bridges.zksync!.l2SharedDefaultBridge!
       const l1SharedDefaultBridge = bridges.zksync!.l1SharedDefaultBridge!
@@ -199,7 +199,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
         proxyBridgeAddress = await proxyBridge.getAddress()
       }
       console.log(
-        `Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
+        `✅ Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
       )
     }
 

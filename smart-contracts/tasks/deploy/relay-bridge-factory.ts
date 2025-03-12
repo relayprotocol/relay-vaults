@@ -48,6 +48,6 @@ task('deploy:bridge-factory', 'Deploy a relay bridge factory').setAction(
       address: relayBridgeAddress,
       constructorArguments: [hyperlaneMailbox],
     })
-    console.log(`relayBridgeFactory deployed to: ${relayBridgeAddress}`)
+    console.log(`✅ relayBridgeFactory deployed to: ${relayBridgeAddress}`)
   }
 )

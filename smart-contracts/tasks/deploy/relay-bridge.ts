@@ -78,6 +78,6 @@ task('deploy:bridge', 'Deploy a bridge proxy')
         factoryContract.interface
       )
 
-      console.log(`RelayBridge deployed to: ${event.args.bridge}`)
+      console.log(`✅ RelayBridge deployed to: ${event.args.bridge}`)
     }
   )

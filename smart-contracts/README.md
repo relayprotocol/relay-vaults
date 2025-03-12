@@ -1,4 +1,4 @@
-# payday-pools
+# Relay Protocol
 
 ## Contracts used for Relay Vaults & Bridges:
 
@@ -18,7 +18,11 @@ RelayBridge contracts let solvers (or other users) initiate a withdrwal from an 
 
 The actual bridging logic is abstracted away and implemented in various ProxyBridge contracts for the OPStack, Arbitrum Orbit and others. It is in theory possible to create these bridges for any bridge (native or not).
 
-## Deploy contracts
+## Deployment Guide
+
+This guide outlines the step-by-step process to deploy the entire Relay Protocol across both L1 (Ethereum mainnet) and L2 networks (Arbitrum, ZKSync, or Optimism compatible chains).
+
+### Prerequisites
 
 For all deployments you need a private key:
 
@@ -27,72 +31,144 @@ For all deployments you need a private key:
 export DEPLOYER_PRIVATE_KEY=...
 ```
 
-The deployment tasks do include contract verifications.
+Make sure you have the network details added in the `../packages/network` package and run `yarn build` before deployment.
 
-### Deploy the factories
+### Deployment Sequence
 
-The factories are not strictly necessary for the protocol to operate but they provide convenience to identify deployed contracts. These addresses are added to the `../backend` application.
-You should not have to deploy factories.
+#### 1. Deploy L1 PoolFactory
 
-When deploying to a network, make sure you first add the network details in the package `../packages/network` and run `yarn build`.
+First, deploy the RelayPoolFactory on the L1 network (e.g., Ethereum mainnet or testnet):
 
-```
-# Bridge factory (deployed on L2)
-yarn run hardhat deploy:bridge-factory --network op-sepolia
-
-# Pool factory (deployed on L1)
-yarn run hardhat deploy:pool-factory --network sepolia
+```bash
+yarn run hardhat deploy:pool-factory --network <l1-network>
 ```
 
+This will deploy the RelayPoolFactory contract and a timelock template, which will be used for creating pools.
+
+#### 2. Create an L1 Pool using the Factory
+
+Next, create a pool for a specific ERC20 token:
+
+```bash
+yarn run hardhat deploy:pool --network <l1-network>
 ```
+
+The CLI will prompt you for:
+
+- Asset selection (e.g., WETH)
+- Yield pool selection (Aave or dummy yield pool)
+- Pool name and symbol
+- Timelock delay
+- Initial deposit amount
+
+For local/test deployments, you can use a dummy yield pool which will be automatically deployed if selected.
+
+#### 3. Deploy L1 BridgeProxy
+
+Deploy the bridge proxy on L1 for each L2 network you want to support:
+
+```bash
+yarn run hardhat deploy:bridge-proxy --network <l1-network> --type <bridge-type> --poolAddress <relay-pool-address>
+```
+
+Where `<bridge-type>` can be:
+
+- `arb` for Arbitrum
+- `op` for Optimism
+- `zksync` for ZKSync
+- `cctp` for Circle's Cross-Chain Transfer Protocol
+
+If you don't specify the pool address, the CLI will prompt you to select from available pools.
+
+#### 4. Deploy L2 BridgeProxy
+
+For each L2 network, deploy the corresponding bridge proxy:
+
+```bash
+yarn run hardhat deploy:bridge-proxy --network <l2-network> --type <bridge-type>
+```
+
+The L2 bridge proxy will be configured to communicate with the L1 bridge proxy deployed in the previous step.
+
+#### 5. Deploy L2 BridgeFactory
+
+Deploy the RelayBridgeFactory on each L2 network:
+
+```bash
+yarn run hardhat deploy:bridge-factory --network <l2-network>
+```
+
+This factory will be used to create bridges for specific tokens on the L2.
+
+#### 6. Deploy L2 Bridges
+
+For each token you want to support on the L2, deploy a bridge:
+
+```bash
+yarn run hardhat deploy:bridge --network <l2-network> --proxyBridge <proxy-bridge-address> --asset <token-address>
+```
+
+If the asset is the native token of the L2 (e.g., ETH), use `--asset 0x0000000000000000000000000000000000000000`.
+
+If you don't specify the proxy bridge address or asset, the CLI will prompt you to select from available options.
+
+#### 7. Add Origin to L1 Pool
+
+Finally, connect the L2 bridge to the L1 pool by adding it as an origin:
+
+```bash
+yarn run hardhat pool:add-origin --network <l1-network> --l2ChainId <l2-chain-id> --pool <pool-address> --proxyBridge <l1-proxy-bridge> --bridge <l2-bridge-address>
+```
+
+You'll be prompted to configure:
+
+- Maximum debt for this origin
+- Bridge fee (in basis points)
+- Curator address for this origin (should be a multisig or timelock)
+- Cool-down period (minimum delay between bridge initiation and transfer)
+
+### Example Deployment Flow
+
+Here's an example deployment flow for Ethereum mainnet (L1) and Arbitrum (L2) with WETH:
+
+```bash
+# 1. Deploy L1 PoolFactory on Ethereum
+yarn run hardhat deploy:pool-factory --network mainnet
+
+# 2. Create L1 Pool for WETH
+yarn run hardhat deploy:pool --network mainnet
+# Select WETH as asset and Aave as yield pool
+
+# 3. Deploy L1 BridgeProxy for Arbitrum
+yarn run hardhat deploy:bridge-proxy --network mainnet --type arb --poolAddress <pool-address>
+
+# 4. Deploy L2 BridgeProxy on Arbitrum
+yarn run hardhat deploy:bridge-proxy --network arbitrum --type arb
+
+# 5. Deploy L2 BridgeFactory on Arbitrum
+yarn run hardhat deploy:bridge-factory --network arbitrum
+
+# 6. Deploy L2 Bridge for ETH on Arbitrum
+yarn run hardhat deploy:bridge --network arbitrum --proxyBridge <l2-proxy-bridge-address> --asset 0x0000000000000000000000000000000000000000
+
+# 7. Add Arbitrum origin to L1 Pool
+yarn run hardhat pool:add-origin --network mainnet --l2ChainId 42161 --pool <pool-address> --proxyBridge <l1-proxy-bridge> --bridge <l2-bridge-address>
+```
+
+### Verifying Deployments
+
+All deployment tasks include contract verification. If you need to verify contracts manually, you can use:
+
+```bash
 yarn run hardhat ignition verify <name of deployment from ignition/deployments/>
 ```
 
-### Deploy protocol contracts
+### Notes for ZKSync Deployments
 
-#### Deploy the pool on the L1
+For ZKSync deployments, you need to compile contracts specifically for ZKSync:
 
-We start by deploying the pool without any origin configured.
-
-```
-# Deploy a relay pool on the L1 (the cli will prompt for parameters and may deploy a base yield pool):
-yarn hardhat deploy:pool --network sepolia
-⚠️ Using account from DEPLOYER_PRIVATE_KEY environment variable.
-deploying on Ethereum Sepolia (11155111)...
-✔ Please choose the asset for your relay bridge (make sure it is supported by the proxy bridge you selected): · weth
-✔ Please choose a yield pool: · dummy
-Dummy yield pool deployed at 0xC08DCC23F847C566104964d11Be638FE34C78E8e
-Verifying...
-The contract 0xC08DCC23F847C566104964d11Be638FE34C78E8e has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
-https://sepolia.etherscan.io/address/0xC08DCC23F847C566104964d11Be638FE34C78E8e#code
-
-The contract 0xC08DCC23F847C566104964d11Be638FE34C78E8e has already been verified on Sourcify.
-https://repo.sourcify.dev/contracts/full_match/11155111/0xC08DCC23F847C566104964d11Be638FE34C78E8e/
-
-✔ Please enter a pool name: · Wrapped Ether Relay Pool
-✔ Please enter a pool symbol: · WETH-REL
-relayPool deployed to: 0x794dE8b61567D0dE557CE60f1968f6C9E188e97E
-The contract 0x794dE8b61567D0dE557CE60f1968f6C9E188e97E has already been verified on the block explorer. If you're trying to verify a partially verified contract, please use the --force flag.
-https://sepolia.etherscan.io/address/0x794dE8b61567D0dE557CE60f1968f6C9E188e97E#code
-
-Successfully verified contract RelayPool on Sourcify.
-https://repo.sourcify.dev/contracts/full_match/11155111/0x794dE8b61567D0dE557CE60f1968f6C9E188e97E/
-
-```
-
-#### Adding origins
-
-Now that the pool has been deployed on the L1, we need to add origins to it.
-First, we need to deploy the L2 Bridge contract on the L2.
-
-```
-# Deploy a bridge proxy on an L1
-
-yarn hardhat deploy:bridge-proxy --network sepolia
-```
-
-## Use with ZkSync
-
-```
+```bash
 yarn hardhat compile --network zksync
 ```
+
+The deployment process will automatically use the appropriate deployment method for ZKSync.

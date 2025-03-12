@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { type BaseContract } from 'ethers'
-import { AutoComplete, Select } from 'enquirer'
+import { AutoComplete, Confirm } from 'enquirer'
 
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
@@ -24,12 +24,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
-    const { bridges, isZKsync } = networkConfig
+    const { bridges, isZKsync, name: networkName } = networkConfig
 
     // eslint-disable-next-line prefer-const
     let { l1ChainId, stack } = networkConfig as L2NetworkConfig
     let l1BridgeProxy
-
     // Let's get the pools on l1ChainId so we can get relayPool
     // Also, we must deploy the l1 proxyBridge first...
     const types = ['cctp', 'op', 'arb', 'zksync']
@@ -40,6 +39,16 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         choices: types,
         default: stack,
       }).run()
+    }
+    console.log({ stack, type })
+    if (stack != type) {
+      const confirmType = await new Confirm({
+        name: 'confirmType',
+        message: `Are you sure ${type} is correct stack for ${networkName} ?`,
+      }).run()
+      if (!confirmType) {
+        return
+      }
     }
 
     if (!l1ChainId) {

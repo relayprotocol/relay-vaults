@@ -152,7 +152,7 @@ task('deploy:pool', 'Deploy a relay pool')
         )
       }
 
-      console.log(`Deploying relay pool...`, {
+      console.log(`Deploying relay pool using factory ${factory}...`, {
         asset,
         name,
         symbol,
@@ -166,9 +166,8 @@ task('deploy:pool', 'Deploy a relay pool')
         .catch((e) => {
           console.log(e)
         })
-      console.log(tx)
 
-      const receipt = await tx.wait()
+      const receipt = await tx!.wait()
       const event = await getEvent(
         receipt!,
         'PoolDeployed',
@@ -191,5 +190,9 @@ task('deploy:pool', 'Deploy a relay pool')
           timelock,
         ],
       })
+
+      console.log(
+        `✅ relayPool '${name}' deployed successfully at: ${poolAddress}`
+      )
     }
   )

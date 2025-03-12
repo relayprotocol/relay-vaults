@@ -71,6 +71,16 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
       l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
     }
 
+    // parse args for all proxies
+    const defaultProxyConstructorArguments = {
+      relayPoolChainId: l1ChainId,
+      relayPool: poolAddress,
+      l1BridgeProxy,
+    }
+
+    // for verification
+    let constructorArguments: any[]
+
     // get args value
     const { name } = networks[chainId.toString()]
     console.log(`deploying ${type} proxy bridge on ${name} (${chainId})...`)
@@ -92,29 +102,26 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
           messenger,
           transmitter,
           usdc: USDC,
+          ...defaultProxyConstructorParams,
         },
       }
+
+      // for verification
+      constructorArguments = [messenger, transmitter, USDC]
+
       // deploy CCTP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(CCTPBridgeProxyModule, {
         parameters,
         deploymentId,
       }))
       proxyBridgeAddress = await proxyBridge.getAddress()
-
-      // verify!
-      await run('deploy:verify', {
-        address: proxyBridgeAddress,
-        constructorArguments: [messenger, transmitter, USDC],
-      })
       console.log(`CCTP bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'op') {
       const portalProxy = bridges.op!.portalProxy! || ethers.ZeroAddress // Only used on the L1 deployments (to claim the assets)
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy,
-          relayPoolChainId: l1ChainId,
-          relayPool: poolAddress,
-          l1BridgeProxy,
+          ...defaultProxyConstructorParams,
         },
       }
       // deploy OP bridge
@@ -127,16 +134,8 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
       ))
       proxyBridgeAddress = await proxyBridge.getAddress()
 
-      // verify!
-      await run('deploy:verify', {
-        address: proxyBridgeAddress,
-        constructorArguments: [
-          portalProxy,
-          l1ChainId,
-          poolAddress,
-          l1BridgeProxy,
-        ],
-      })
+      // for verification
+      constructorArguments = [portalProxy]
       console.log(`OPStack bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'arb') {
       const routerGateway = bridges.arb!.routerGateway
@@ -146,6 +145,9 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
         ArbitrumOrbitNativeBridgeProxy: {
           routerGateway,
           outbox,
+          l1ChainId,
+          poolAddress,
+          l1BridgeProxy,
         },
       }
       // deploy ARB bridge
@@ -158,24 +160,26 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
       ))
       proxyBridgeAddress = await proxyBridge.getAddress()
 
-      // verify!
-      await run('deploy:verify', {
-        address: proxyBridgeAddress,
-        constructorArguments: [routerGateway, outbox],
-      })
+      // for verification
+      constructorArguments = [routerGateway, outbox]
       console.log(`ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'zksync') {
-      let zkSyncBridgeAddress: string
       const l2SharedDefaultBridge = bridges.zksync!.l2SharedDefaultBridge!
       const l1SharedDefaultBridge = bridges.zksync!.l1SharedDefaultBridge!
+      // for verification
+      constructorArguments = [l2SharedDefaultBridge, l1SharedDefaultBridge]
       if (isZKsync) {
         // deploy using `deployContract` helper (for zksync L2s)
-        const deployArgs = [l2SharedDefaultBridge, l1SharedDefaultBridge]
-
-        ;({ address: zkSyncBridgeAddress } = await deployContract(
+        ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
           'ZkSyncBridgeProxy',
-          deployArgs as any
+          [
+            l2SharedDefaultBridge,
+            l1SharedDefaultBridge,
+            l1ChainId,
+            poolAddress,
+            l1BridgeProxy,
+          ]
         ))
       } else {
         // used ignition to deploy bridge on L1
@@ -183,6 +187,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
           ZkSyncBridgeProxy: {
             l2SharedDefaultBridge,
             l1SharedDefaultBridge,
+            ...defaultProxyConstructorParams,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(
@@ -193,14 +198,28 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
           }
         ))
         proxyBridgeAddress = await proxyBridge.getAddress()
-        console.log(
-          `Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
-        )
-        await run('deploy:verify', {
-          address: proxyBridgeAddress,
-          constructorArguments: [routerGateway, outbox],
-        })
       }
+      console.log(
+        `Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
+      )
+    }
+
+    // verify!
+    await run('deploy:verify', {
+      address: proxyBridgeAddress,
+      constructorArguments: [
+        defaultProxyConstructorArguments.relayPoolChainId,
+        defaultProxyConstructorArguments.relayPool,
+        defaultProxyConstructorArguments.l1BridgeProxy,
+        ...constructorArguments,
+        ...defaultVerifyArguments,
+      ],
+    })
+
+    if (!isL2) {
+      console.log(
+        "Please run 'yarn workspace @relay-protocol addresses generate' to update L1 addresses"
+      )
     }
 
     return proxyBridgeAddress

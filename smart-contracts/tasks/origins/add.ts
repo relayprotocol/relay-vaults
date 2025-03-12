@@ -162,16 +162,16 @@ task('pool:add-origin', 'Add origin for a pool')
         `Estimated execution time: ${new Date(eta * 1000).toLocaleString()}`
       )
 
-      const salt = ethers.id(`ADD_ORIGIN_${l2ChainId}_${Date.now()}`)
-      // Schedule the transaction through the timelock
-      const tx = await timelock.schedule(
+      // schedule the tx through the timelock
+      const operation = [
         poolAddress, // target
         0n, // value
         encodedCall, // data
-        ethers.ZeroHash, // predecessor (0x0 for no predecessor)
+        ethers.ZeroHash, // predecessor
         ethers.id(`ADD_ORIGIN_${l2ChainId}_${Date.now()}`), //salt
-        delaySeconds // delay
-      )
+        delaySeconds, // delay
+      ]
+      const tx = await timelock.schedule(...operation)
 
       await tx.wait()
       console.log('✅ Transaction scheduled through timelock!')
@@ -180,11 +180,7 @@ task('pool:add-origin', 'Add origin for a pool')
       )
 
       // Print the execution command for reference
-      console.log(
-        '\nTo execute this transaction after the delay has passed, run:'
-      )
-      console.log(
-        `yarn hardhat timelock:execute --network ${networks[chainId.toString()].name} --target ${poolAddress} --data "${encodedCall}" --salt "${salt}"`
-      )
+      console.log('\nTo execute this transaction use:')
+      console.log(operation)
     }
   )

@@ -9,7 +9,6 @@ import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/Arbitru
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { L2NetworkConfig } from '@relay-protocol/types'
-import { GET_ALL_POOLS, RelayVaultService } from '@relay-protocol/client'
 import { getAddresses } from '@relay-protocol/addresses'
 
 // We must deployed on the L1 first!
@@ -17,7 +16,7 @@ import { getAddresses } from '@relay-protocol/addresses'
 
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
-  .addOptionalParam(
+  .addParam(
     'poolAddress',
     'the relay pool address where the funds are eventually sent'
   )
@@ -27,26 +26,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const networkConfig = networks[chainId.toString()]
     const { bridges, isZKsync } = networkConfig
 
-    let { l1ChainId } = networkConfig as L2NetworkConfig
+    // eslint-disable-next-line prefer-const
+    let { l1ChainId, stack } = networkConfig as L2NetworkConfig
     let l1BridgeProxy
-
-    const vaultService = new RelayVaultService(
-      'https://relay-protocol-production.up.railway.app/' // TODO: add to config?
-    )
-
-    if (!poolAddress) {
-      const { relayPools } = await vaultService.query(GET_ALL_POOLS)
-      if (relayPools.items.length === 0) {
-        throw new Error('No pools found!')
-      }
-      const poolName = await new Select({
-        message:
-          'Which pool do you want this bridge proxy to send its funds to?',
-        choices: relayPools.items.map((pool) => pool.name),
-      }).run()
-      const pool = relayPools.items.find((pool) => pool.name === poolName)
-      poolAddress = pool.contractAddress
-    }
 
     // Let's get the pools on l1ChainId so we can get relayPool
     // Also, we must deploy the l1 proxyBridge first...
@@ -56,6 +38,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         name: 'type',
         message: 'Please choose a proxy type?',
         choices: types,
+        default: stack,
       }).run()
     }
 

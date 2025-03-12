@@ -140,7 +140,7 @@ yarn run hardhat deploy:pool --network mainnet
 # Select WETH as asset and Aave as yield pool
 
 # 3. Deploy L1 BridgeProxy for Arbitrum
-yarn run hardhat deploy:bridge-proxy --network mainnet --type arb --poolAddress <pool-address>
+yarn run hardhat deploy:bridge-proxy --network mainnet --type arb --pool-address <pool-address>
 
 # 4. Deploy L2 BridgeProxy on Arbitrum
 yarn run hardhat deploy:bridge-proxy --network arbitrum --type arb

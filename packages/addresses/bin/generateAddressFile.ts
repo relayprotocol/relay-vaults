@@ -45,7 +45,6 @@ function getAddressFromDeployment(deploymentPath: string): string | null {
 export function getAddresses(): Addresses {
   const addresses: Addresses = {}
 
-  // Get all deployment directories
   const deploymentDirs = fs.readdirSync(DEPLOYMENTS_PATH)
 
   // Process each deployment
@@ -57,15 +56,17 @@ export function getAddresses(): Addresses {
     if (bridgeProxyMatch?.groups) {
       const { bridge, chainId } = bridgeProxyMatch.groups
 
+      // Get address first
+      const address = getAddressFromDeployment(dir)
+      if (!address) continue // Skip if no address found
+
       // Initialize chain entry if needed
       addresses[chainId] = addresses[chainId] || {}
-      addresses[chainId].BridgeProxy = addresses[chainId].BridgeProxy || {}
 
-      // Get and store address
-      const address = getAddressFromDeployment(dir)
-      if (address) {
-        addresses[chainId].BridgeProxy[bridge] = address
-      }
+      // Initialize BridgeProxy object only if we have a valid address
+      addresses[chainId].BridgeProxy = addresses[chainId].BridgeProxy || {}
+      addresses[chainId].BridgeProxy[bridge] = address
+
       continue
     }
 
@@ -74,14 +75,14 @@ export function getAddresses(): Addresses {
     if (bridgeFactoryMatch?.groups) {
       const { chainId } = bridgeFactoryMatch.groups
 
+      // Get address first
+      const address = getAddressFromDeployment(dir)
+      if (!address) continue // Skip if no address found
+
       // Initialize chain entry if needed
       addresses[chainId] = addresses[chainId] || {}
+      addresses[chainId].RelayBridgeFactory = address
 
-      // Get and store address
-      const address = getAddressFromDeployment(dir)
-      if (address) {
-        addresses[chainId].RelayBridgeFactory = address
-      }
       continue
     }
 
@@ -90,15 +91,31 @@ export function getAddresses(): Addresses {
     if (poolFactoryMatch?.groups) {
       const { chainId } = poolFactoryMatch.groups
 
+      // Get address first
+      const address = getAddressFromDeployment(dir)
+      if (!address) continue // Skip if no address found
+
       // Initialize chain entry if needed
       addresses[chainId] = addresses[chainId] || {}
+      addresses[chainId].RelayPoolFactory = address
 
-      // Get and store address
-      const address = getAddressFromDeployment(dir)
-      if (address) {
-        addresses[chainId].RelayPoolFactory = address
-      }
       continue
+    }
+  }
+
+  // Clean up empty objects
+  for (const chainId in addresses) {
+    // Remove empty BridgeProxy objects
+    if (
+      addresses[chainId].BridgeProxy &&
+      Object.keys(addresses[chainId].BridgeProxy).length === 0
+    ) {
+      delete addresses[chainId].BridgeProxy
+    }
+
+    // Remove empty chain entries
+    if (Object.keys(addresses[chainId]).length === 0) {
+      delete addresses[chainId]
     }
   }
 

@@ -163,6 +163,19 @@ All deployment tasks include contract verification. If you need to verify contra
 yarn run hardhat ignition verify <name of deployment from ignition/deployments/>
 ```
 
+### Automatic Address Updates
+
+The deployment process automatically updates the `@relay-protocol/addresses` package with the latest contract addresses after each deployment task completes. This ensures that the addresses package is always up-to-date with the latest deployments.
+
+If you need to manually update the addresses package, you can run:
+
+```bash
+# From the smart-contracts directory
+yarn update-addresses
+```
+
+This will scan all deployment files in the `ignition/deployments/` directory and update the addresses package accordingly.
+
 ### Notes for ZKSync Deployments
 
 For ZKSync deployments, you need to compile contracts specifically for ZKSync:

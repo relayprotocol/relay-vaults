@@ -72,7 +72,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
     }
 
     // parse args for all proxies
-    const defaultProxyConstructorArguments = {
+    const defaultProxyModuleArguments = {
       relayPoolChainId: l1ChainId,
       relayPool: poolAddress,
       l1BridgeProxy,
@@ -102,7 +102,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
           messenger,
           transmitter,
           usdc: USDC,
-          ...defaultProxyConstructorParams,
+          ...defaultProxyModuleArguments,
         },
       }
 
@@ -121,9 +121,10 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy,
-          ...defaultProxyConstructorParams,
+          ...defaultProxyModuleArguments,
         },
       }
+
       // deploy OP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
         OPStackNativeBridgeProxyModule,
@@ -145,9 +146,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
         ArbitrumOrbitNativeBridgeProxy: {
           routerGateway,
           outbox,
-          l1ChainId,
-          poolAddress,
-          l1BridgeProxy,
+          ...defaultProxyModuleArguments,
         },
       }
       // deploy ARB bridge
@@ -187,7 +186,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
           ZkSyncBridgeProxy: {
             l2SharedDefaultBridge,
             l1SharedDefaultBridge,
-            ...defaultProxyConstructorParams,
+            ...defaultProxyModuleArguments,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(
@@ -208,17 +207,16 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
     await run('deploy:verify', {
       address: proxyBridgeAddress,
       constructorArguments: [
-        defaultProxyConstructorArguments.relayPoolChainId,
-        defaultProxyConstructorArguments.relayPool,
-        defaultProxyConstructorArguments.l1BridgeProxy,
         ...constructorArguments,
-        ...defaultVerifyArguments,
+        defaultProxyModuleArguments.relayPoolChainId,
+        defaultProxyModuleArguments.relayPool,
+        defaultProxyModuleArguments.l1BridgeProxy,
       ],
     })
 
     if (!isL2) {
       console.log(
-        "Please run 'yarn workspace @relay-protocol addresses generate' to update L1 addresses"
+        "\n ⚠️ Please update L1 addresses in './packages/addresses' to update "
       )
     }
 

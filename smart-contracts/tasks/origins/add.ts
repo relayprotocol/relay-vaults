@@ -1,7 +1,6 @@
 import { task } from 'hardhat/config'
 import { Select, Input } from 'enquirer'
 import { networks } from '@relay-protocol/networks'
-
 import { L2NetworkConfig } from '@relay-protocol/types'
 
 task('pool:add-origin', 'Add origin for a pool')
@@ -53,14 +52,24 @@ task('pool:add-origin', 'Add origin for a pool')
       // get L2 bridge contracts settings
       const l2Network = networks[l2ChainId.toString()]
       const l2provider = new ethers.JsonRpcProvider(l2Network.rpc[0])
-      const relayBridge = await ethers.getContractAt(
-        'RelayBridge',
+
+      // Create contract instances with the L2 provider (read-only)
+      const relayBridgeInterface = (
+        await ethers.getContractAt('RelayBridge', ethers.ZeroAddress)
+      ).interface
+      const relayBridge = new ethers.Contract(
         bridgeAddress,
+        relayBridgeInterface,
         l2provider
       )
-      const l2BridgeProxy = await ethers.getContractAt(
-        'BridgeProxy',
-        await relayBridge.bridgeProxy(),
+
+      const bridgeProxyAddress = await relayBridge.bridgeProxy()
+      const bridgeProxyInterface = (
+        await ethers.getContractAt('BridgeProxy', ethers.ZeroAddress)
+      ).interface
+      const l2BridgeProxy = new ethers.Contract(
+        bridgeProxyAddress,
+        bridgeProxyInterface,
         l2provider
       )
 
@@ -89,7 +98,7 @@ task('pool:add-origin', 'Add origin for a pool')
           message: 'What is the maximum debt for this origin?',
           default: 100,
         }).run()
-        maxDebt = ethers.parseUnits(maxDebtInDecimals, decimals)
+        maxDebt = ethers.parseUnits(maxDebtInDecimals.toString(), decimals)
       }
 
       if (!bridgeFee) {
@@ -115,7 +124,18 @@ task('pool:add-origin', 'Add origin for a pool')
         }).run()
       }
 
-      const tx = await pool.addOrigin({
+      // Get the timelock that owns the pool
+      const timelockAddress = await pool.owner()
+      console.log(`Pool is owned by timelock at: ${timelockAddress}`)
+
+      // Get the timelock contract
+      const timelock = await ethers.getContractAt(
+        'TimelockControllerUpgradeable',
+        timelockAddress
+      )
+
+      // addOrigin parameters
+      const addOriginParams = {
         curator,
         chainId: l2ChainId,
         bridge: bridgeAddress,
@@ -123,9 +143,48 @@ task('pool:add-origin', 'Add origin for a pool')
         maxDebt,
         bridgeFee,
         coolDown,
-      })
-      console.log('Adding origin...')
+      }
+
+      // Encode the function call to addOrigin
+      const encodedCall = pool.interface.encodeFunctionData('addOrigin', [
+        addOriginParams,
+      ])
+
+      // Get the current timestamp for the timelock
+      const currentTimestamp = Math.floor(Date.now() / 1000)
+      const delaySeconds = await timelock.getMinDelay()
+      const eta = currentTimestamp + Number(delaySeconds)
+
+      console.log(
+        `Scheduling transaction through timelock with delay: ${delaySeconds} seconds`
+      )
+      console.log(
+        `Estimated execution time: ${new Date(eta * 1000).toLocaleString()}`
+      )
+
+      const salt = ethers.id(`ADD_ORIGIN_${l2ChainId}_${Date.now()}`)
+      // Schedule the transaction through the timelock
+      const tx = await timelock.schedule(
+        poolAddress, // target
+        0n, // value
+        encodedCall, // data
+        ethers.ZeroHash, // predecessor (0x0 for no predecessor)
+        ethers.id(`ADD_ORIGIN_${l2ChainId}_${Date.now()}`), //salt
+        delaySeconds // delay
+      )
+
       await tx.wait()
-      console.log('✅ Origin added!')
+      console.log('✅ Transaction scheduled through timelock!')
+      console.log(
+        `Transaction can be executed after: ${new Date(eta * 1000).toLocaleString()}`
+      )
+
+      // Print the execution command for reference
+      console.log(
+        '\nTo execute this transaction after the delay has passed, run:'
+      )
+      console.log(
+        `yarn hardhat timelock:execute --network ${networks[chainId.toString()].name} --target ${poolAddress} --data "${encodedCall}" --salt "${salt}"`
+      )
     }
   )

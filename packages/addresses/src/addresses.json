@@ -7,7 +7,8 @@
   },
   "11155111": {
     "BridgeProxy": {
-      "op": "0x67fb8AA4AafD829824Aa5CdDbCfE1A4fCe13EC2E"
+      "op": "0x9F004e9018adC480b39e425c068D5C54c08Bf3aE",
+      "arb": "0x03C301992bf8949A9343C20c6fA509e15d42a2BF"
     },
     "RelayPoolFactory": "0x67cC00ba142c5e551A6631D506E48286D41B6174"
   },

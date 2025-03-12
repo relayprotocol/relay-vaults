@@ -110,7 +110,7 @@ describe('RelayPool: inflation attack', () => {
       await myToken.decimals()
     )
     // mint tokens!
-    myToken.connect(victim).mint(victimDepositAmount)
+    await myToken.connect(victim).mint(victimDepositAmount)
 
     // Deposit in the relay pool
     myToken

@@ -11,16 +11,14 @@ import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyMod
 import { L2NetworkConfig } from '@relay-protocol/types'
 import { getAddresses } from '@relay-protocol/addresses'
 
-// We must deployed on the L1 first!
-// So we need to
-
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
   .addParam(
     'poolAddress',
     'the relay pool address where the funds are eventually sent'
   )
-  .setAction(async ({ type, poolAddress }, hre) => {
+  .addOptionalParam('l1BridgeProxy', 'The address of the bridge proxy on L1')
+  .setAction(async ({ type, poolAddress, l1BridgeProxy }, hre) => {
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
@@ -28,9 +26,10 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
     // eslint-disable-next-line prefer-const
     let { l1ChainId, stack } = networkConfig as L2NetworkConfig
-    let l1BridgeProxy
-    // Let's get the pools on l1ChainId so we can get relayPool
-    // Also, we must deploy the l1 proxyBridge first...
+
+    const isL2 = !!l1ChainId
+
+    // pick a type
     const types = ['cctp', 'op', 'arb', 'zksync']
     if (!type) {
       type = await new AutoComplete({
@@ -40,39 +39,44 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         default: stack,
       }).run()
     }
-    console.log({ stack, type })
-    if (stack != type) {
-      const confirmType = await new Confirm({
-        name: 'confirmType',
-        message: `Are you sure ${type} is correct stack for ${networkName} ?`,
-      }).run()
-      if (!confirmType) {
-        return
+
+    // double check if our L2 stack is correct
+    if (isL2) {
+      if (stack != type && type != 'cctp') {
+        const confirmType = await new Confirm({
+          name: 'confirmType',
+          message: `Are you sure ${type} is correct stack for ${networkName} ?`,
+        }).run()
+        if (!confirmType) {
+          return
+        }
       }
     }
 
-    if (!l1ChainId) {
-      // We are deploying the BridgeProxy on an L1 chain on the L1
+    if (isL2) {
+      if (!l1BridgeProxy) {
+        const l1DeployedAddresses = getAddresses()[l1ChainId]
+        if (!l1DeployedAddresses.BridgeProxy[type]) {
+          throw new Error(
+            `No ${type} bridge proxy deployed on L1! Please deploy it first.
+Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
+          )
+        }
+        // We are deploying the BridgeProxy on an L2 chain
+        l1BridgeProxy = l1DeployedAddresses.BridgeProxy[type]
+      }
+    } else {
+      // We are deploying the BridgeProxy on an L1 chain
       l1ChainId = chainId
       l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
-    } else {
-      const l1DeployedAddresses = getAddresses()[l1ChainId]
-      if (!l1DeployedAddresses.BridgeProxy[type]) {
-        throw new Error(
-          `There is no ${type} bridge proxy deployed on L1! Please deploy it first! Don't forget to run yarn run generate in packages/addresses`
-        )
-      }
-      // We are deploying the BridgeProxy on an L2 chain
-      l1BridgeProxy = l1DeployedAddresses.BridgeProxy[type]
     }
 
     // get args value
     const { name } = networks[chainId.toString()]
     console.log(`deploying ${type} proxy bridge on ${name} (${chainId})...`)
 
-    let proxyBridgeAddress
-
     // deploy bridge proxy
+    let proxyBridgeAddress
     let proxyBridge: BaseContract
 
     const deploymentId = `BridgeProxy-${type}-${chainId.toString()}`

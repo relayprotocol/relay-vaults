@@ -1,6 +1,4 @@
 import { task } from 'hardhat/config'
-import fs from 'fs-extra'
-import path from 'path'
 import { execSync } from 'child_process'
 
 /**
@@ -14,18 +12,7 @@ task(
   console.log('Updating addresses package with latest deployments...')
 
   try {
-    // Path to the addresses package
-    const addressesPackagePath = path.resolve(
-      config.paths.root,
-      '../packages/addresses'
-    )
-
-    // Run the generate script directly
-    execSync('yarn generate', {
-      cwd: addressesPackagePath,
-      stdio: 'inherit',
-    })
-
+    execSync('yarn workspace @relay-protocol/addresses generate')
     console.log('✅ Addresses package updated successfully')
   } catch (error) {
     console.error('❌ Failed to update addresses package:', error)

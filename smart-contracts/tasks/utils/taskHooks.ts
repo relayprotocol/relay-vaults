@@ -1,13 +1,12 @@
-import { task, subtask } from 'hardhat/config'
-import { TASK_COMPILE_SOLIDITY_COMPILE_JOBS } from 'hardhat/builtin-tasks/task-names'
-import './updateAddresses'
-
 /**
  * This mdoule adds post-deployment hooks to automatically update addresses
  * after deployment tasks complete
  */
+import { task, subtask } from 'hardhat/config'
+import { TASK_COMPILE_SOLIDITY_COMPILE_JOBS } from 'hardhat/builtin-tasks/task-names'
+import './updateAddresses'
 
-// List of deployment tasks that should trigger address updates
+// List of deployment tasks triggers address package updates
 const DEPLOYMENT_TASKS = [
   'deploy:pool-factory',
   'deploy:bridge-factory',

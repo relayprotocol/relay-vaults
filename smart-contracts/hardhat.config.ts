@@ -20,6 +20,7 @@ import './tasks/deploy/bridge-proxy'
 import './tasks/deploy/relay-pool-factory'
 import './tasks/deploy/relay-bridge-factory'
 import './tasks/deploy/verify'
+import './tasks/deploy/timelock'
 
 // Helpers/tests
 import './tasks/networks'

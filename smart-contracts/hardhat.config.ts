@@ -117,7 +117,7 @@ const etherscan = {
     },
     {
       network: 'opSepolia',
-      chainId: 11155420,
+      chainId: 421614,
       urls: {
         apiURL: 'https://api-sepolia-optimism.etherscan.io/api',
         browserURL: 'https://sepolia-optimism.etherscan.io/',

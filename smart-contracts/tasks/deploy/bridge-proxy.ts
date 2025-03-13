@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { type BaseContract } from 'ethers'
-import { AutoComplete, Confirm } from 'enquirer'
+import { AutoComplete, Confirm, Input } from 'enquirer'
 
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
@@ -12,7 +12,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
-  .addParam(
+  .addOptionalParam(
     'poolAddress',
     'the relay pool address where the funds are eventually sent'
   )
@@ -39,6 +39,13 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       }).run()
     }
 
+    if (!poolAddress) {
+      poolAddress = await new Input({
+        name: 'poolAddress',
+        message: 'Please enter the relay pool address:',
+      }).run()
+    }
+
     // double check if our L2 stack is correct
     if (isL2) {
       if (stack != type && type != 'cctp') {
@@ -54,15 +61,14 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
     if (isL2) {
       if (!l1BridgeProxy) {
-        const l1DeployedAddresses = getAddresses()[l1ChainId]
-        if (!l1DeployedAddresses.BridgeProxy[type]) {
-          throw new Error(
-            `No ${type} bridge proxy deployed on L1! Please deploy it first.
-Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
-          )
-        }
-        // We are deploying the BridgeProxy on an L2 chain
-        l1BridgeProxy = l1DeployedAddresses.BridgeProxy[type]
+        l1BridgeProxy = await new Input({
+          name: 'l1BridgeProxy',
+          message:
+            'Please enter the address of the corresponding BridgeProxy on the l1 :',
+        }).run()
+
+        // TODO: can we check that this is the same type of bridge?
+        console.log(l1BridgeProxy)
       }
     } else {
       // We are deploying the BridgeProxy on an L1 chain
@@ -89,6 +95,7 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
     let proxyBridge: BaseContract
 
     const deploymentId = `BridgeProxy-${type}-${chainId.toString()}`
+
     if (type === 'cctp') {
       const {
         bridges: {
@@ -212,12 +219,6 @@ Make sure to run 'yarn workspace @relay-protocol addresses generate' afterwards`
         defaultProxyModuleArguments.l1BridgeProxy,
       ],
     })
-
-    if (!isL2) {
-      console.log(
-        "\n ⚠️ Please update L1 addresses in './packages/addresses' to update "
-      )
-    }
 
     return proxyBridgeAddress
   })

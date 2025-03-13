@@ -68,24 +68,17 @@ For local/test deployments, you can use a dummy yield pool which will be automat
 Deploy the bridge proxy on L1 for each L2 network you want to support:
 
 ```bash
-yarn run hardhat deploy:bridge-proxy --network <l1-network> --type <bridge-type> --poolAddress <relay-pool-address>
+yarn run hardhat deploy:bridge-proxy --network <l1-network> --pool-address <relay-pool-address>
 ```
 
-Where `<bridge-type>` can be:
-
-- `arb` for Arbitrum
-- `op` for Optimism
-- `zksync` for ZKSync
-- `cctp` for Circle's Cross-Chain Transfer Protocol
-
-If you don't specify the pool address, the CLI will prompt you to select from available pools.
+The script will prompt you to chose a bridge type (OP, Arb.. etc). You can deploy as many of these as you will need to add origins later, and you can do that much later as well.
 
 #### 4. Deploy L2 BridgeProxy
 
-For each L2 network, deploy the corresponding bridge proxy:
+For each L2 network, deploy the corresponding bridge proxy and we pass the address of the L1 Bridge Proxy:
 
 ```bash
-yarn run hardhat deploy:bridge-proxy --network <l2-network> --type <bridge-type>
+yarn run hardhat deploy:bridge-proxy --network <l2-network> --pool-address <relay-pool-address> --l1-bridge-proxy <l1-bridge-proxy-address>
 ```
 
 The L2 bridge proxy will be configured to communicate with the L1 bridge proxy deployed in the previous step.
@@ -105,7 +98,7 @@ This factory will be used to create bridges for specific tokens on the L2.
 For each token you want to support on the L2, deploy a bridge:
 
 ```bash
-yarn run hardhat deploy:bridge --network <l2-network> --proxyBridge <proxy-bridge-address> --asset <token-address>
+yarn run hardhat deploy:bridge --network <l2-network> --proxyBridge <proxy-bridge-address>
 ```
 
 If the asset is the native token of the L2 (e.g., ETH), use `--asset 0x0000000000000000000000000000000000000000`.

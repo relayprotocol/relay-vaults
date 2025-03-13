@@ -53,6 +53,15 @@ error MessageTooRecent(
   uint32 coolDown
 );
 
+error SlippageTooHighOnWithdraw(
+  uint256 withdrawnAssets,
+  uint256 minAssetsToWithdraw
+);
+error SlippageTooHighOnDeposit(
+  uint256 receivedShares,
+  uint256 minSharesToReceive
+);
+
 contract RelayPool is ERC4626, Ownable {
   // The address of the Hyperlane mailbox
   address public immutable HYPERLANE_MAILBOX;
@@ -160,7 +169,11 @@ contract RelayPool is ERC4626, Ownable {
     emit StreamingPeriodChanged(oldPeriod, newPeriod);
   }
 
-  function updateYieldPool(address newPool) public onlyOwner {
+  function updateYieldPool(
+    address newPool,
+    uint256 minAssetsToWithdraw,
+    uint256 minSharesToReceive
+  ) public onlyOwner {
     address oldPool = yieldPool;
     uint256 sharesOfOldPool = ERC20(yieldPool).balanceOf(address(this));
     // Redeem all the shares from the old pool
@@ -170,8 +183,21 @@ contract RelayPool is ERC4626, Ownable {
       address(this)
     );
     yieldPool = newPool;
+
+    // Verify minimum assets received
+    if (withdrawnAssets < minAssetsToWithdraw) {
+      revert SlippageTooHighOnWithdraw(withdrawnAssets, minAssetsToWithdraw);
+    }
+
     // Deposit all assets into the new pool
-    depositAssetsInYieldPool(withdrawnAssets);
+    ERC20(asset).approve(newPool, withdrawnAssets);
+    uint256 receivedShares = depositAssetsInYieldPool(withdrawnAssets);
+
+    // Verify minimum shares received
+    if (receivedShares < minSharesToReceive) {
+      revert SlippageTooHighOnDeposit(receivedShares, minSharesToReceive);
+    }
+
     emit YieldPoolChanged(oldPool, newPool);
   }
 

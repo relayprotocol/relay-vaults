@@ -54,15 +54,6 @@ error MessageTooRecent(
   uint32 coolDown
 );
 
-error SlippageTooHighOnWithdraw(
-  uint256 withdrawnAssets,
-  uint256 minAssetsToWithdraw
-);
-error SlippageTooHighOnDeposit(
-  uint256 receivedShares,
-  uint256 minSharesToReceive
-);
-
 error SharePriceTooLow(uint256 actualPrice, uint256 minPrice);
 error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
 

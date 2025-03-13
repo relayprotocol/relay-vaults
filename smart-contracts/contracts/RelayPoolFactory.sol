@@ -51,7 +51,7 @@ contract RelayPoolFactory {
     // We require an initial deposit of 1 unit
     uint8 decimals = ERC20(asset).decimals();
     if (initialDeposit < 10 ** decimals) {
-      // revert InsufficientInitialDeposit(initialDeposit);
+      revert InsufficientInitialDeposit(initialDeposit);
     }
     address[] memory curator = new address[](1);
     curator[0] = msg.sender;

@@ -14,7 +14,6 @@ export const degen: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_666666666

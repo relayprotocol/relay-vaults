@@ -14,7 +14,6 @@ export const b3: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_84531

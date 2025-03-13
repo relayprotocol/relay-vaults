@@ -2,6 +2,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 
 // Arbitrum L3
 // https://docs.game7.io/the-g7-network
+
 export const game7: L2NetworkConfig = {
   stack: 'arb',
   l1ChainId: 1,
@@ -9,11 +10,11 @@ export const game7: L2NetworkConfig = {
   isTestnet: false,
   name: 'Game7',
   slug: 'game7',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '', // currently not in https://github.com/hyperlane-xyz/hyperlane-registry
   bridges: {
     arb: {
       arbSys: '0x0000000000000000000000000000000000000064',
-      routerGateway: '', // TODO: Add router gateway address
+      routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
     },
   },
   assets: {

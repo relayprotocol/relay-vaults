@@ -7,7 +7,7 @@ export const echos: L2NetworkConfig = {
   isTestnet: false,
   name: 'Echos',
   slug: 'echos',
-  hyperlaneMailbox: '', // TODO: Add Hyperlane mailbox address
+  hyperlaneMailbox: '0x2cA13C25A48B5A98c5AD47808Efa983D29543a9a',
   bridges: {
     op: {
       messagePasser: '0x4200000000000000000000000000000000000016',

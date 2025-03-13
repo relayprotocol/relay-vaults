@@ -47,10 +47,10 @@ This will deploy the RelayPoolFactory contract and a timelock template, which wi
 
 #### 2. Create an L1 Pool using the Factory
 
-Next, create a pool for a specific ERC20 token:
+Next, deploy a pool for a specific network, using the factory contract from above:
 
 ```bash
-yarn run hardhat deploy:pool --network <l1-network>
+yarn run hardhat deploy:pool --network <l1-network> --factory <factory-address>
 ```
 
 The CLI will prompt you for:
@@ -134,8 +134,6 @@ Here's an example deployment flow for Ethereum mainnet (L1) and Arbitrum (L2) wi
 ```bash
 # 1. Deploy L1 PoolFactory on Ethereum
 yarn run hardhat deploy:pool-factory --network mainnet
-# add deployed factory  address to addresses package
-# then rebuild with `yarn workspace @relay-protocol/addresses build`
 
 # 2. Create L1 Pool for WETH
 yarn run hardhat deploy:pool --network mainnet
@@ -143,16 +141,12 @@ yarn run hardhat deploy:pool --network mainnet
 
 # 3. Deploy L1 BridgeProxy for Arbitrum
 yarn run hardhat deploy:bridge-proxy --network mainnet --type arb --pool-address <pool-address>
-# add deployed bridge address to addresses package
-# then rebuild with `yarn workspace @relay-protocol/addresses build`
 
 # 4. Deploy L2 BridgeProxy on Arbitrum
 yarn run hardhat deploy:bridge-proxy --network arbitrum --type arb --pool-address <pool-address>
 
 # 5. Deploy L2 BridgeFactory on Arbitrum
 yarn run hardhat deploy:bridge-factory --network arbitrum
-# add deployed factory  address to addresses package
-# then rebuild with `yarn workspace @relay-protocol/addresses build`
 
 # 6. Deploy L2 Bridge for ETH on Arbitrum
 yarn run hardhat deploy:bridge --network arbitrum --proxy-bridge <l2-proxy-bridge-address> --asset 0x0000000000000000000000000000000000000000

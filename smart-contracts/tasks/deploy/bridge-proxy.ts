@@ -9,7 +9,6 @@ import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/Arbitru
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { L2NetworkConfig } from '@relay-protocol/types'
-import { getAddresses } from '@relay-protocol/addresses'
 
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')

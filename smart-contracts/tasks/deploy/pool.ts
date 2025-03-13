@@ -2,12 +2,11 @@ import { task } from 'hardhat/config'
 import { AutoComplete, Input } from 'enquirer'
 import { networks } from '@relay-protocol/networks'
 import { getStataToken, getEvent } from '@relay-protocol/helpers'
-import { getAddresses } from '@relay-protocol/addresses'
 
 task('deploy:pool', 'Deploy a relay pool')
+  .addParam('factory', 'Address of the factory')
   .addOptionalParam('name', 'name of the pool')
   .addOptionalParam('symbol', 'symbol of the pool')
-  .addOptionalParam('factory', 'Address of the factory')
   .addOptionalParam('asset', 'An ERC20 asset')
   .addOptionalParam('yieldPool', 'A yield pool address')
   .addOptionalParam('delay', 'Timelock delay in seconds. Defaults to 7 days')
@@ -27,12 +26,6 @@ task('deploy:pool', 'Deploy a relay pool')
       const { name: networkName, assets } = networks[chainId.toString()]
 
       console.log(`deploying on ${networkName} (${chainId})...`)
-
-      // pool factory
-      if (!factory) {
-        const { RelayPoolFactory } = (await getAddresses())[chainId.toString()]
-        factory = RelayPoolFactory
-      }
 
       if (!asset) {
         const assetName = await new AutoComplete({

@@ -2,13 +2,19 @@
 
 This package contains network configurations for various L2 chains supported by the Relay Protocol, including chain IDs, RPC endpoints, bridge contracts, and supported assets.
 
+### chain IDs/ RPC endpoints
+
+RPC endpoints can be found at https://chainlist.org/ or https://chainid.network
+
+### Hyperlane mailbox
+
+You can check directly in the [official hyperlane docs](https://docs.hyperlane.xyz/docs/reference/addresses/mailbox-addresses)
+
 ### Assets
 
-Info about supported chains and tokens can be found in the [Hyperlane Registry](https://github.com/hyperlane-xyz/hyperlane-registry/)
+For chains, tokens and routes, refer to the official docs of each chain. You can also check support in the [Hyperlane Registry](https://github.com/hyperlane-xyz/hyperlane-registry/)
 
-### Hyperlane
-
-You can chekc directly in the [official hyperlane docs](https://docs.hyperlane.xyz/docs/reference/addresses/mailbox-addresses)
+## Bridges
 
 ### CCTP Circle
 

@@ -2,12 +2,7 @@ import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
 import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
-import {
-  MyToken,
-  MyYieldPool,
-  RelayPool,
-  Timelock,
-} from '../../typechain-types'
+import { MyToken, MyYieldPool, RelayPool } from '../../typechain-types'
 import { getEvent } from '@relay-protocol/helpers'
 import { time } from '@nomicfoundation/hardhat-network-helpers'
 
@@ -70,8 +65,8 @@ describe('RelayPool: curator', () => {
       await expect(
         relayPool.connect(another).updateYieldPool(
           await thirdPartyPool.getAddress(),
-          0, // minAssetsToWithdraw
-          0 // minSharesToReceive
+          ethers.parseEther('1'), // minSharePriceFromOldPool
+          ethers.parseEther('1') // maxSharePricePriceFromNewPool
         )
       )
         .to.be.revertedWithCustomError(relayPool, 'OwnableUnauthorizedAccount')
@@ -81,7 +76,6 @@ describe('RelayPool: curator', () => {
     it('should pull all the funds from the previous pool and deposit in the new pool', async () => {
       const oldPoolAddress = await relayPool.yieldPool()
       const newPoolAddress = await betterYieldPool.getAddress()
-
       const oldPoolTokenBalanceBefore = await myToken.balanceOf(oldPoolAddress)
       expect(oldPoolTokenBalanceBefore).to.be.greaterThan(0)
       const newPoolTokenBalanceBefore = await myToken.balanceOf(newPoolAddress)
@@ -90,8 +84,8 @@ describe('RelayPool: curator', () => {
       const receipt = await (
         await relayPool.updateYieldPool(
           newPoolAddress,
-          0, // minAssetsToWithdraw - setting to 0 to accept any amount
-          0 // minSharesToReceive - setting to 0 to accept any amount
+          0, // minSharePriceFromOldPool - setting to 0 to accept any price
+          ethers.parseEther('100') // maxSharePricePriceFromNewPool - setting high to accept any price
         )
       ).wait()
 
@@ -108,7 +102,7 @@ describe('RelayPool: curator', () => {
       expect(event.args.newPool).to.equal(newPoolAddress)
     })
 
-    it('should revert if minAssetsToWithdraw is not met', async () => {
+    it('should revert if share price from old pool is too low', async () => {
       // Deploy another pool for this test
       const anotherPool = await ethers.deployContract('MyYieldPool', [
         await myToken.getAddress(),
@@ -116,19 +110,19 @@ describe('RelayPool: curator', () => {
         'ANOTHER',
       ])
 
-      // Set a very high minAssetsToWithdraw that can't be met
-      const highMinAssets = ethers.parseEther('10000')
+      // Set a very high minimum share price that can't be met
+      const highMinSharePrice = ethers.parseEther('1000000')
 
       await expect(
         relayPool.updateYieldPool(
           await anotherPool.getAddress(),
-          highMinAssets,
-          0
+          highMinSharePrice,
+          ethers.parseEther('1')
         )
-      ).to.be.revertedWithCustomError(relayPool, 'SlippageTooHighOnWithdraw')
+      ).to.be.revertedWithCustomError(relayPool, 'SharePriceTooLow')
     })
 
-    it('should revert if minSharesToReceive is not met', async () => {
+    it('should revert if share price from new pool is too high', async () => {
       // Deploy another pool for this test
       const anotherPool = await ethers.deployContract('MyYieldPool', [
         await myToken.getAddress(),
@@ -136,16 +130,16 @@ describe('RelayPool: curator', () => {
         'ANOTHER',
       ])
 
-      // Set a very high minSharesToReceive that can't be met
-      const highMinShares = ethers.parseEther('100000')
+      // Set a very low maximum share price that will be exceeded
+      const lowMaxSharePrice = 1n // Almost 0
 
       await expect(
         relayPool.updateYieldPool(
           await anotherPool.getAddress(),
           0,
-          highMinShares
+          lowMaxSharePrice
         )
-      ).to.be.revertedWithCustomError(relayPool, 'SlippageTooHighOnDeposit')
+      ).to.be.revertedWithCustomError(relayPool, 'SharePriceTooHigh')
     })
   })
 

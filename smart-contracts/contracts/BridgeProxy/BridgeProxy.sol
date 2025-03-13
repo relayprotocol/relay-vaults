@@ -50,15 +50,17 @@ contract BridgeProxy {
     address currency,
     uint256 amount
   ) external onlyRelayPool returns (uint256 balance) {
-    if (currency == address(0)) {
-      balance = Math.min(address(this).balance, amount);
-      (bool success, ) = RELAY_POOL.call{value: balance}("");
-      if (!success) {
-        revert TransferFailed(balance);
+    if (amount > 0) {
+      if (currency == address(0)) {
+        balance = Math.min(address(this).balance, amount);
+        (bool success, ) = RELAY_POOL.call{value: balance}("");
+        if (!success) {
+          revert TransferFailed(balance);
+        }
+      } else {
+        balance = Math.min(IERC20(currency).balanceOf(address(this)), amount);
+        IERC20(currency).transfer(RELAY_POOL, balance);
       }
-    } else {
-      balance = Math.min(IERC20(currency).balanceOf(address(this)), amount);
-      IERC20(currency).transfer(RELAY_POOL, balance);
     }
   }
 

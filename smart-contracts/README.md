@@ -147,7 +147,7 @@ yarn run hardhat deploy:bridge-proxy --network mainnet --type arb --pool-address
 # then rebuild with `yarn workspace @relay-protocol/addresses build`
 
 # 4. Deploy L2 BridgeProxy on Arbitrum
-yarn run hardhat deploy:bridge-proxy --network arbitrum --type arb
+yarn run hardhat deploy:bridge-proxy --network arbitrum --type arb --pool-address <pool-address>
 
 # 5. Deploy L2 BridgeFactory on Arbitrum
 yarn run hardhat deploy:bridge-factory --network arbitrum

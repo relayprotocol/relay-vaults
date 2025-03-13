@@ -20,6 +20,7 @@ task('deploy:pool', 'Deploy a relay pool')
       { ethers, run }
     ) => {
       const [user] = await ethers.getSigners()
+      const userAddress = await user.getAddress()
       const { chainId } = await ethers.provider.getNetwork()
       const { name: networkName, assets } = networks[chainId.toString()]
 
@@ -150,7 +151,8 @@ task('deploy:pool', 'Deploy a relay pool')
         symbol,
         JSON.parse(origins),
         yieldPool,
-        7 * 24 * 60 * 60
+        7 * 24 * 60 * 60,
+        userAddress
       )
       const receipt = await tx.wait()
       const event = await getEvent(
@@ -176,7 +178,7 @@ task('deploy:pool', 'Deploy a relay pool')
             authorizedOrigins,
             yieldPool,
             await factoryContract.WETH(),
-            await user.getAddress(),
+            userAddress,
           ],
         })
           .then(() => {

@@ -68,13 +68,16 @@ describe('RelayPool: curator', () => {
     it('should only be callable by the curator', async () => {
       const [, another] = await ethers.getSigners()
       await expect(
-        relayPool
-          .connect(another)
-          .updateYieldPool(await thirdPartyPool.getAddress())
+        relayPool.connect(another).updateYieldPool(
+          await thirdPartyPool.getAddress(),
+          0, // minAssetsToWithdraw
+          0 // minSharesToReceive
+        )
       )
         .to.be.revertedWithCustomError(relayPool, 'OwnableUnauthorizedAccount')
         .withArgs(await another.getAddress())
     })
+
     it('should pull all the funds from the previous pool and deposit in the new pool', async () => {
       const oldPoolAddress = await relayPool.yieldPool()
       const newPoolAddress = await betterYieldPool.getAddress()
@@ -85,7 +88,11 @@ describe('RelayPool: curator', () => {
       expect(newPoolTokenBalanceBefore).to.be.equal(0)
 
       const receipt = await (
-        await relayPool.updateYieldPool(newPoolAddress)
+        await relayPool.updateYieldPool(
+          newPoolAddress,
+          0, // minAssetsToWithdraw - setting to 0 to accept any amount
+          0 // minSharesToReceive - setting to 0 to accept any amount
+        )
       ).wait()
 
       const oldPoolTokenBalanceAfter = await myToken.balanceOf(oldPoolAddress)
@@ -99,6 +106,46 @@ describe('RelayPool: curator', () => {
       )
       expect(event.args.oldPool).to.equal(oldPoolAddress)
       expect(event.args.newPool).to.equal(newPoolAddress)
+    })
+
+    it('should revert if minAssetsToWithdraw is not met', async () => {
+      // Deploy another pool for this test
+      const anotherPool = await ethers.deployContract('MyYieldPool', [
+        await myToken.getAddress(),
+        'Another Yield Pool',
+        'ANOTHER',
+      ])
+
+      // Set a very high minAssetsToWithdraw that can't be met
+      const highMinAssets = ethers.parseEther('10000')
+
+      await expect(
+        relayPool.updateYieldPool(
+          await anotherPool.getAddress(),
+          highMinAssets,
+          0
+        )
+      ).to.be.revertedWithCustomError(relayPool, 'SlippageTooHighOnWithdraw')
+    })
+
+    it('should revert if minSharesToReceive is not met', async () => {
+      // Deploy another pool for this test
+      const anotherPool = await ethers.deployContract('MyYieldPool', [
+        await myToken.getAddress(),
+        'Another Yield Pool',
+        'ANOTHER',
+      ])
+
+      // Set a very high minSharesToReceive that can't be met
+      const highMinShares = ethers.parseEther('100000')
+
+      await expect(
+        relayPool.updateYieldPool(
+          await anotherPool.getAddress(),
+          0,
+          highMinShares
+        )
+      ).to.be.revertedWithCustomError(relayPool, 'SlippageTooHighOnDeposit')
     })
   })
 

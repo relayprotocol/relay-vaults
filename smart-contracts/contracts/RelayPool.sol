@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC4626} from "solmate/src/tokens/ERC4626.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -303,7 +305,7 @@ contract RelayPool is ERC4626, Ownable {
   //       This creates a vulnerability where a 3rd party can inflate
   //       the share price and use that to capture the value created.
   function depositAssetsInYieldPool(uint256 amount) internal {
-    ERC20(asset).approve(yieldPool, amount);
+    SafeERC20.safeIncreaseAllowance(IERC20(address(asset)), yieldPool, amount);
     ERC4626(yieldPool).deposit(amount, address(this));
     emit AssetsDepositedIntoYieldPool(amount, yieldPool);
   }
@@ -493,7 +495,8 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedSwap(token);
     }
 
-    ERC20(token).transfer(tokenSwapAddress, amount);
+    SafeERC20.safeTransfer(IERC20(address(asset)), tokenSwapAddress, amount);
+
     ITokenSwap(tokenSwapAddress).swap(
       token,
       uniswapWethPoolFeeToken,

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
@@ -49,7 +51,7 @@ contract RelayPoolFactory {
     uint256 initialDeposit
   ) public returns (address) {
     // We require an initial deposit of 1 unit
-    uint8 decimals = ERC20(asset).decimals();
+    uint8 decimals = asset.decimals();
     if (initialDeposit < 10 ** decimals) {
       revert InsufficientInitialDeposit(initialDeposit);
     }
@@ -88,8 +90,17 @@ contract RelayPoolFactory {
     );
 
     // Transfer initial deposit to the pool to prevent inflation attack
-    asset.transferFrom(msg.sender, address(this), initialDeposit);
-    asset.approve(address(pool), initialDeposit);
+    SafeERC20.safeTransferFrom(
+      IERC20(address(asset)),
+      msg.sender,
+      address(this),
+      initialDeposit
+    );
+    SafeERC20.safeIncreaseAllowance(
+      IERC20(address(asset)),
+      address(pool),
+      initialDeposit
+    );
     pool.deposit(initialDeposit, timelock);
 
     return address(pool);

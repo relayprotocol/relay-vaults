@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ITokenMessenger} from "../interfaces/cctp/ITokenMessenger.sol";
 import {IMessageTransmitter} from "../interfaces/cctp/IMessageTransmitter.sol";
 import {BridgeProxy} from "./BridgeProxy.sol";
@@ -44,7 +46,7 @@ contract CCTPBridgeProxy is BridgeProxy {
     }
 
     // approve messenger to manipulate USDC tokens
-    IUSDC(USDC).approve(address(MESSENGER), amount);
+    SafeERC20.safeIncreaseAllowance(IERC20(USDC), address(MESSENGER), amount);
 
     // burn USDC on that side of the chain
     bytes32 targetAddressBytes32 = bytes32(uint256(uint160(L1_BRIDGE_PROXY)));

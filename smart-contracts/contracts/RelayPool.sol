@@ -495,7 +495,7 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedSwap(token);
     }
 
-    SafeERC20.safeTransfer(IERC20(address(asset)), tokenSwapAddress, amount);
+    SafeERC20.safeTransfer(IERC20(address(token)), tokenSwapAddress, amount);
 
     ITokenSwap(tokenSwapAddress).swap(
       token,

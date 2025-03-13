@@ -11,7 +11,7 @@ export const arbitrumNova: L2NetworkConfig = {
   bridges: {
     arb: {
       arbSys: '0x0000000000000000000000000000000000000064',
-      routerGateway: '', // TODO: Add router gateway address
+      routerGateway: '0x21903d3F8176b1a0c17E953Cd896610Be9fFDFa8',
     },
   },
   assets: {

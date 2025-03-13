@@ -431,7 +431,6 @@ contract RelayPool is ERC4626, Ownable {
 
   // This function is called externally to claim funds from a bridge.
   // The funds are immediately added to the yieldPool
-  // TODO: handle cases where the origin might have been removed/changed (fees, etc.)
   function claim(uint32 chainId, address bridge) external {
     OriginSettings storage origin = authorizedOrigins[chainId][bridge];
     if (origin.proxyBridge == address(0)) {
@@ -441,7 +440,7 @@ contract RelayPool is ERC4626, Ownable {
     // We need to claim the funds from the bridge proxy contract
     uint amount = BridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset),
-      outstandingDebt
+      origin.outstandingDebt
     );
 
     // We should have received funds
@@ -450,7 +449,6 @@ contract RelayPool is ERC4626, Ownable {
     depositAssetsInYieldPool(amount);
 
     // The amount is the amount that was loaned + the fees
-    // TODO: what happens if the bridgeFee was changed?
     uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion
@@ -487,7 +485,9 @@ contract RelayPool is ERC4626, Ownable {
     address token,
     uint256 amount,
     uint24 uniswapWethPoolFeeToken,
-    uint24 uniswapWethPoolFeeAsset
+    uint24 uniswapWethPoolFeeAsset,
+    uint48 deadline,
+    uint256 amountOutMinimum
   ) public onlyOwner {
     if (token == address(asset)) {
       revert UnauthorizedSwap(token);
@@ -497,7 +497,9 @@ contract RelayPool is ERC4626, Ownable {
     ITokenSwap(tokenSwapAddress).swap(
       token,
       uniswapWethPoolFeeToken,
-      uniswapWethPoolFeeAsset
+      uniswapWethPoolFeeAsset,
+      deadline,
+      amountOutMinimum
     );
     collectNonDepositedAssets();
   }
@@ -526,6 +528,30 @@ contract RelayPool is ERC4626, Ownable {
   ) internal override {
     // We need to deposit the assets into the yield pool
     depositAssetsInYieldPool(assets);
+  }
+
+  // @notice This function is used to handle failed (fast) messages manually
+  //  It provides a mechanism for the pool curator to recover funds from a
+  //  solver who have arrived thru the bridge but for which the hyperlane message was never processed
+  // @param recipient The address of the recipient
+  // @param amount The amount of assets to transfer
+  function processFailedHandler(
+    uint32 chainId,
+    address bridge,
+    bytes calldata data
+  ) public onlyOwner {
+    HyperlaneMessage memory message = abi.decode(data, (HyperlaneMessage));
+
+    // Check if message was already processed
+    if (messages[chainId][bridge][message.nonce].length > 0) {
+      revert MessageAlreadyProcessed(chainId, bridge, message.nonce);
+    }
+
+    // Mark the message as processed to avoid double processing (if the hyperlane message eventually makes it)
+    messages[chainId][bridge][message.nonce] = data;
+
+    // Send the funds to the recipient (we should not take fees because the funds have taken more time to arrive...)
+    sendFunds(message.amount, message.recipient);
   }
 
   // Needed to receive ETH from WETH for the `handle` function

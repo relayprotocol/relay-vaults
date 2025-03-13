@@ -37,20 +37,12 @@ describe('RelayPool: inflation attack', () => {
     // Check that there are shares!
     expect(await myToken.totalSupply()).to.equal('1000000000000000000000000000')
 
-    // Deploy an "empty" timelock for the Pool Factory
-    const TimelockController = await ethers.getContractFactory(
-      'TimelockControllerUpgradeable'
-    )
-    const timelockTemplate = await TimelockController.deploy()
-    await timelockTemplate.waitForDeployment()
-
     // Deploy the factory
     const { relayPoolFactory } = await ignition.deploy(RelayPoolFactoryModule, {
       parameters: {
         RelayPoolFactory: {
           hyperlaneMailbox: networks[1].hyperlaneMailbox,
           weth: ethers.ZeroAddress,
-          timelock: await timelockTemplate.getAddress(),
         },
       },
       deploymentId: 'RelayPoolFactory',
@@ -101,7 +93,7 @@ describe('RelayPool: inflation attack', () => {
     // Then send a LARGE amount of tokens to the third party pool
     const attackAmount = ethers.parseUnits('100', await myToken.decimals())
     myToken.connect(attacker).mint(attackAmount)
-    myToken
+    await myToken
       .connect(attacker)
       .approve(await thirdPartyPool.getAddress(), attackAmount)
     await thirdPartyPool
@@ -118,7 +110,7 @@ describe('RelayPool: inflation attack', () => {
       await myToken.decimals()
     )
     // mint tokens!
-    myToken.connect(victim).mint(victimDepositAmount)
+    await myToken.connect(victim).mint(victimDepositAmount)
 
     // Deposit in the relay pool
     myToken

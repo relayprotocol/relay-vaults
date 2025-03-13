@@ -76,7 +76,7 @@ describe('CCTPBridgeProxy', function () {
 
       // approve bridge to manipulate our usdc tokens
       const usdc = await ethers.getContractAt('IUSDC', assets.usdc)
-      usdc.connect(recipient).transfer(await bridge.getAddress(), amount)
+      await usdc.connect(recipient).transfer(await bridge.getAddress(), amount)
 
       // send message to the bridge
       const tx = await bridge.bridge(

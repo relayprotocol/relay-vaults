@@ -51,6 +51,7 @@ describe('RelayPoolFactory: deployment', () => {
           RelayPoolFactory: {
             hyperlaneMailbox,
             weth,
+            timelockDelay: 60 * 60 * 24 * 7,
           },
         },
         deploymentId: 'RelayPoolFactory',
@@ -89,6 +90,29 @@ describe('RelayPoolFactory: deployment', () => {
         'InsufficientInitialDeposit'
       )
       .withArgs('900000000000000000')
+  })
+
+  it('should fail to deploy a pool with the timelock delay is insufficient', async () => {
+    const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
+
+    await myToken.mint(initialDeposit)
+    await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)
+
+    await expect(
+      relayPoolFactory.deployPool(
+        await myToken.getAddress(),
+        'Test Vault',
+        'RELAY',
+        await thirdPartyPool.getAddress(),
+        1,
+        initialDeposit
+      )
+    )
+      .to.be.revertedWithCustomError(
+        relayPoolFactory,
+        'InsufficientTimelockDelay'
+      )
+      .withArgs(1)
   })
 
   it('should let user deploy a pool', async () => {

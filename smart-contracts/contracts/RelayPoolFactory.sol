@@ -19,6 +19,7 @@ contract RelayPoolFactory {
   address public immutable HYPERLANE_MAILBOX;
   address public immutable WETH;
   address public immutable TIMELOCK_TEMPLATE;
+  uint public immutable MIN_TIMELOCK_DELAY;
 
   mapping(address => address[]) public poolsByAsset; // Keeping track of pools by asset.
 
@@ -33,11 +34,18 @@ contract RelayPoolFactory {
   );
 
   error InsufficientInitialDeposit(uint deposit);
+  error InsufficientTimelockDelay(uint delay);
 
-  constructor(address hMailbox, address weth, address timelock) {
+  constructor(
+    address hMailbox,
+    address weth,
+    address timelock,
+    uint minTimelockDelay
+  ) {
     HYPERLANE_MAILBOX = hMailbox;
     WETH = weth;
     TIMELOCK_TEMPLATE = timelock;
+    MIN_TIMELOCK_DELAY = minTimelockDelay;
   }
 
   function deployPool(
@@ -53,6 +61,11 @@ contract RelayPoolFactory {
     if (initialDeposit < 10 ** decimals) {
       revert InsufficientInitialDeposit(initialDeposit);
     }
+
+    if (timelockDelay < MIN_TIMELOCK_DELAY) {
+      revert InsufficientTimelockDelay(timelockDelay);
+    }
+
     address[] memory curator = new address[](1);
     curator[0] = msg.sender;
 

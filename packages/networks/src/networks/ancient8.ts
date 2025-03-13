@@ -14,7 +14,7 @@ export const ancient8: L2NetworkConfig = {
     },
   },
   assets: {
-    usdc: '', // TODO: Add USDC address
+    usdc: '0x97423A68BAe94b5De52d767a17aBCc54c157c0E5',
     weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: ['https://rpc.ancient8.gg'],

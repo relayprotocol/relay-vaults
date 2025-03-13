@@ -173,6 +173,13 @@ contract RelayPool is ERC4626, Ownable {
     emit StreamingPeriodChanged(oldPeriod, newPeriod);
   }
 
+  /**
+   * @notice Updates the yield pool, moving all assets from the old pool to the new one
+   * @param newPool The address of the new yield pool
+   * @param minSharePriceFromOldPool The minimum acceptable share price when withdrawing from the old pool
+   * @param maxSharePricePriceFromNewPool The maximum acceptable share price when depositing into the new pool
+   * @dev This function implements share price-based slippage protection to ensure fair value transfer between pools
+   */
   function updateYieldPool(
     address newPool,
     uint256 minSharePriceFromOldPool,
@@ -182,8 +189,8 @@ contract RelayPool is ERC4626, Ownable {
     uint256 sharesOfOldPool = ERC20(yieldPool).balanceOf(address(this));
 
     // Calculate share price of old pool
-    uint256 oldPoolSharePrice = FixedPointMathLib.divWadUp(
-      ERC4626(oldPool).totalAssets(),
+    uint256 oldPoolSharePrice = FixedPointMathLib.divWadDown(
+      sharesOfOldPool,
       ERC20(oldPool).totalSupply()
     );
 
@@ -201,8 +208,8 @@ contract RelayPool is ERC4626, Ownable {
     yieldPool = newPool;
 
     // Calculate share price of new pool
-    uint256 newPoolSharePrice = FixedPointMathLib.divWadUp(
-      ERC4626(newPool).totalAssets(),
+    uint256 newPoolSharePrice = FixedPointMathLib.divWadDown(
+      sharesOfOldPool,
       ERC20(newPool).totalSupply()
     );
 

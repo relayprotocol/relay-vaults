@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import {BridgeProxy} from "./BridgeProxy.sol";
-import {IL1SharedBridge} from "../interfaces/zksync/IL1SharedBridge.sol";
 import {IL2SharedBridge} from "../interfaces/zksync/IL2SharedBridge.sol";
 import {IBaseToken} from "../interfaces/zksync/IBaseToken.sol";
 

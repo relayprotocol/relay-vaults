@@ -55,8 +55,8 @@ contract RelayPoolNativeGateway {
   }
 
   /**
-   * @dev withraw native tokens from the WETH _reserves of msg.sender
-   * @param assets amout of native tokens
+   * @dev withraw native tokens from the WETH reserves of msg.sender
+   * @param assets amount of native tokens
    * @param receiver the reserve account to be credited
    */
   function withdraw(
@@ -84,7 +84,7 @@ contract RelayPoolNativeGateway {
 
   /**
    * @dev redeem native tokens
-   * @param shares amout of native tokens
+   * @param shares amount of native tokens
    * @param receiver the reserve account to be credited
    */
   function redeem(

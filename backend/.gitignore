@@ -14,5 +14,6 @@ yarn-error.log*
 .env*.local
 
 # Ponder
-/generated/
+/generated/*
+!/generated/schema.graphql
 /.ponder/

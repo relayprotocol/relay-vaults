@@ -1,3 +1,3 @@
 export * from './client'
 export * from './services/vault'
-export * from './queries'
+export * from './generated/graphql'

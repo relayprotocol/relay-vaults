@@ -5,7 +5,7 @@ import {RelayBridge} from "./RelayBridge.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
 contract RelayBridgeFactory {
-  address public immutable hyperlaneMailbox;
+  address public immutable HYPERLANE_MAILBOX;
 
   mapping(address => address[]) public bridgesByAsset; // Keeping track of bridges by asset.
 

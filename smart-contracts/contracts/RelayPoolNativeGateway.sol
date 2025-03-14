@@ -34,7 +34,7 @@ contract RelayPoolNativeGateway {
     WETH.approve(pool, msg.value);
 
     // do the deposit
-    uint256 shares = IERC4626(pool).deposit(msg.value, receiver);
+    shares = IERC4626(pool).deposit(msg.value, receiver);
 
     // Enforce slippage protection
     if (shares < minSharesOut) {
@@ -82,7 +82,7 @@ contract RelayPoolNativeGateway {
     uint256 balanceBefore = address(this).balance;
 
     // withdraw from pool
-    uint256 shares = IERC4626(pool).withdraw(assets, address(this), msg.sender);
+    shares = IERC4626(pool).withdraw(assets, address(this), msg.sender);
 
     // Enforce slippage protection
     if (shares > maxSharesIn) {
@@ -113,7 +113,7 @@ contract RelayPoolNativeGateway {
   ) external virtual returns (uint256 assets) {
     uint256 balanceBefore = address(this).balance;
     // withdraw from pool
-    uint256 assets = IERC4626(pool).redeem(shares, address(this), msg.sender);
+    assets = IERC4626(pool).redeem(shares, address(this), msg.sender);
 
     // Enforce slippage protection
     if (assets < minAssetsOut) {

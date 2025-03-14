@@ -65,8 +65,8 @@ describe('RelayPool: curator', () => {
       await expect(
         relayPool.connect(another).updateYieldPool(
           await thirdPartyPool.getAddress(),
-          ethers.parseEther('1'), // minSharePriceFromOldPool
-          ethers.parseEther('1') // maxSharePricePriceFromNewPool
+          0, // minSharePriceFromOldPool
+          ethers.MaxUint256 // maxSharePricePriceFromNewPool
         )
       )
         .to.be.revertedWithCustomError(relayPool, 'OwnableUnauthorizedAccount')

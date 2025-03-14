@@ -1,6 +1,6 @@
 # `@relay-protocol/client`
 
-The `@relay-protocol/client` package provides a TypeScript client library for interacting with the Relay Protocol vaults API.
+TypeScript client for the Relay Protocol API with type-safe queries and responses.
 
 ## Installation
 
@@ -8,58 +8,68 @@ The `@relay-protocol/client` package provides a TypeScript client library for in
 yarn add @relay-protocol/client
 ```
 
+## Features
+
+- Type-safe API client with automatic types generation
+- High-level methods for common operations
+- Support for custom queries
+
 ## Usage
+
+### Basic Usage
 
 ```typescript
 import { RelayVaultService } from '@relay-protocol/client'
 
-// Create service instance with your API endpoint
 const vaultService = new RelayVaultService('https://api.example.com/graphql')
 
-// Execute queries with type safety
-interface PoolsResponse {
+// Use the high-level methods
+const pools = await vaultService.getAllPools()
+const poolDetails = await vaultService.getRelayPool('0x123...', 1)
+const userBalances = await vaultService.getUserBalances('0xabc...')
+```
+
+### SDK Access
+
+```typescript
+import { RelayClient } from '@relay-protocol/client'
+
+const client = new RelayClient('https://api.example.com/graphql')
+
+// Use the SDK methods
+const { data } = await client.sdk.GetAllPools({
+  limit: 20,
+  targetTimestamp: Math.floor(Date.now() / 1000).toString(),
+  orderDirection: 'desc',
+})
+```
+
+### Custom Queries
+
+```typescript
+import { RelayVaultService, gql } from '@relay-protocol/client'
+
+const vaultService = new RelayVaultService('https://api.example.com/graphql')
+
+interface CustomResponse {
   relayPools: {
     items: Array<{
       contractAddress: string
-      asset: string
-      chainId: number
+      totalApproved: string
     }>
   }
 }
 
-const data = await vaultService.query<PoolsResponse>(`
-  query GetAllPools {
-    relayPools(limit: 10) {
+const result = await vaultService.query<CustomResponse>(gql`
+  query CustomPoolQuery {
+    relayPools(limit: 5) {
       items {
         contractAddress
-        asset
-        chainId
+        totalApproved
       }
     }
   }
 `)
-
-// With variables
-interface UserBalancesResponse {
-  userBalances: {
-    items: Array<{
-      relayPool: string
-      balance: string
-    }>
-  }
-}
-
-const balances = await vaultService.query<UserBalancesResponse>(
-  `query GetUserBalances($walletAddress: String!) {
-    userBalances(where: { wallet: $walletAddress }) {
-      items {
-        relayPool
-        balance
-      }
-    }
-  }`,
-  { walletAddress: '0x123...' }
-)
 ```
 
 ## Development
@@ -68,17 +78,9 @@ const balances = await vaultService.query<UserBalancesResponse>(
 # Install dependencies
 yarn install
 
+# Update schema and regenerate types
+yarn update-schema
+
 # Build package
 yarn build
-
-# Watch mode
-yarn dev
-```
-
-## Configuration
-
-The service requires a GraphQL endpoint URL to be provided when instantiating:
-
-```typescript
-const vaultService = new RelayVaultService('https://api.example.com/graphql')
 ```

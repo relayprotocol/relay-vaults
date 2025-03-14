@@ -95,7 +95,9 @@ describe('RelayPoolFactory: deployment', () => {
   })
 
   it('should fail to deploy a pool with the timelock delay is insufficient', async () => {
+    const [user] = await ethers.getSigners()
     const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
+    const userAddress = await user.getAddress()
 
     await myToken.mint(initialDeposit)
     await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)
@@ -107,7 +109,8 @@ describe('RelayPoolFactory: deployment', () => {
         'RELAY',
         await thirdPartyPool.getAddress(),
         1,
-        initialDeposit
+        initialDeposit,
+        userAddress
       )
     )
       .to.be.revertedWithCustomError(

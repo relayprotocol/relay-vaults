@@ -1,0 +1,15 @@
+schema: ./src/schema.graphql
+documents: './src/**/*.graphql'
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+    config:
+      rawRequest: true
+      skipTypename: false
+      avoidOptionals: true
+      dedupeOperationSuffix: true
+      exportFragmentSpreadSubTypes: true
+      preResolveTypes: true

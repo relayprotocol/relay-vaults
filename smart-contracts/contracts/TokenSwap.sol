@@ -23,6 +23,7 @@ contract TokenSwap {
   event TokenSwapped(
     address pool,
     address tokenIn,
+    address tokenOut,
     uint256 amountIn,
     uint256 amountOut
   );
@@ -128,7 +129,7 @@ contract TokenSwap {
 
     // transfer the swapped asset to the pool
     IERC20(asset).transfer(pool, amountOut);
-    emit TokenSwapped(pool, tokenAddress, tokenAmount, amountOut);
+    emit TokenSwapped(pool, tokenAddress, asset, tokenAmount, amountOut);
   }
 
   /**

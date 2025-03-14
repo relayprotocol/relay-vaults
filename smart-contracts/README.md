@@ -98,7 +98,7 @@ This factory will be used to create bridges for specific tokens on the L2.
 For each token you want to support on the L2, deploy a bridge:
 
 ```bash
-yarn run hardhat deploy:bridge --network <l2-network> --proxyBridge <proxy-bridge-address>
+yarn run hardhat deploy:bridge --network <l2-network> --proxy-bridge <proxy-bridge-address> --factory <bridge-factory>
 ```
 
 If the asset is the native token of the L2 (e.g., ETH), use `--asset 0x0000000000000000000000000000000000000000`.
@@ -110,7 +110,7 @@ If you don't specify the proxy bridge address or asset, the CLI will prompt you 
 Finally, connect the L2 bridge to the L1 pool by adding it as an origin:
 
 ```bash
-yarn run hardhat pool:add-origin --network <l1-network> --l2ChainId <l2-chain-id> --pool <pool-address> --proxyBridge <l1-proxy-bridge> --bridge <l2-bridge-address>
+yarn run hardhat pool:add-origin --network <l1-network> --l2-chain-id <l2-chain-id> --pool <pool-address> --proxyBridge <l1-proxy-bridge> --bridge <l2-bridge-address>
 ```
 
 You'll be prompted to configure:

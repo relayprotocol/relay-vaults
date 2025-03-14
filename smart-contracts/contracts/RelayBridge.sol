@@ -50,7 +50,10 @@ contract RelayBridge is IRelayBridge {
     hyperlaneMailbox = _hyperlaneMailbox;
   }
 
-  /// @notice Convenience function which returns the Hyperlane fee to be passed as msg.value in `bridge`.
+  /// @notice Calculates the Hyperlane fee required for bridging
+  /// @param amount Amount of tokens to bridge
+  /// @param recipient Address that will receive the bridged tokens
+  /// @return fee The required fee in native currency
   function getFee(
     uint256 amount,
     address recipient

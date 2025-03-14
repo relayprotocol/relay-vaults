@@ -138,21 +138,21 @@ contract RelayPool is ERC4626, Ownable {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    address thirdPartyPool,
-    address wrappedEth,
-    address curator
+    address _yieldPool,
+    address _weth,
+    address _curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
 
     // set the yieldPool
-    yieldPool = thirdPartyPool;
+    yieldPool = _yieldPool;
 
     // set weth
-    WETH = wrappedEth;
+    WETH = _weth;
 
     // Change the owner to the curator
-    transferOwnership(curator);
+    transferOwnership(_curator);
   }
 
   function updateStreamingPeriod(uint256 newPeriod) public onlyOwner {
@@ -206,7 +206,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function increaseOutStandingDebt(
+  function increaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -223,7 +223,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function decreaseOutStandingDebt(
+  function decreaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -381,7 +381,7 @@ contract RelayPool is ERC4626, Ownable {
         message.amount
       );
     }
-    increaseOutStandingDebt(message.amount, origin);
+    increaseOutstandingDebt(message.amount, origin);
 
     // We only send the amount net of fees
     sendFunds(message.amount - feeAmount, message.recipient);
@@ -446,7 +446,7 @@ contract RelayPool is ERC4626, Ownable {
     );
 
     // We should have received funds
-    decreaseOutStandingDebt(amount, origin);
+    decreaseOutstandingDebt(amount, origin);
     // and we should deposit these funds into the yield pool
     depositAssetsInYieldPool(amount);
 

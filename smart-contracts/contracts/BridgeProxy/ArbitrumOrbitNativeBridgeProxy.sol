@@ -7,7 +7,6 @@ import {BridgeProxy} from "./BridgeProxy.sol";
 import {IL2GatewayRouter} from "../interfaces/arb/IArbL2GatewayRouter.sol";
 import {IArbSys} from "../interfaces/arb/IArbSys.sol";
 import {IOutbox} from "../interfaces/arb/IOutbox.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // errors
 error AssetMismatch(address expected, address actual);

@@ -21,7 +21,6 @@ task('deploy:pool', 'Deploy a relay pool')
     ) => {
       const [user] = await ethers.getSigners()
       const userAddress = await user.getAddress()
-
       const { chainId } = await ethers.provider.getNetwork()
       const { name: networkName, assets } = networks[chainId.toString()]
 
@@ -148,8 +147,17 @@ task('deploy:pool', 'Deploy a relay pool')
 
       console.log(`Deploying relay pool using factory ${factory}...`)
       // deploy the pool
+
       const tx = await factoryContract
-        .deployPool(asset, name, symbol, yieldPool, delay, depositAmount)
+        .deployPool(
+          asset,
+          name,
+          symbol,
+          yieldPool,
+          delay,
+          depositAmount,
+          userAddress
+        )
         .catch((e) => {
           console.log(e)
         })

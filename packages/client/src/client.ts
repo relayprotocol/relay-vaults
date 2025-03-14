@@ -1,6 +1,7 @@
 import { GraphQLClient } from 'graphql-request'
 import type { DocumentNode } from 'graphql'
 import type { Variables } from 'graphql-request'
+import { getSdk } from './generated/graphql'
 
 /**
  * RelayClient provides a low-level interface for making GraphQL requests to the Relay Protocol vaults API.
@@ -17,6 +18,7 @@ import type { Variables } from 'graphql-request'
  */
 export class RelayClient {
   private client: GraphQLClient
+  public sdk: ReturnType<typeof getSdk>
 
   /**
    * Creates a new RelayClient instance
@@ -25,6 +27,7 @@ export class RelayClient {
    */
   constructor(url: string) {
     this.client = new GraphQLClient(url)
+    this.sdk = getSdk(this.client)
   }
 
   /**

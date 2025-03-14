@@ -104,7 +104,7 @@ task('deploy:pool', 'Deploy a relay pool')
         delay = await new Input({
           name: 'delay',
           message: `Please enter a pool timelock delay (in seconds, more than ${minimumDelay.toString()}):`,
-          default: 7 * 24 * 60 * 60,
+          default: minimumDelay,
         }).run()
       }
 

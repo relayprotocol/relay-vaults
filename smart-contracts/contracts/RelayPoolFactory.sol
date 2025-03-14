@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
@@ -17,7 +18,7 @@ interface RelayPoolTimelock {
   ) external;
 }
 
-contract RelayPoolFactory {
+contract RelayPoolFactory is Ownable {
   address public immutable HYPERLANE_MAILBOX;
   address public immutable WETH;
   address public immutable TIMELOCK_TEMPLATE;
@@ -50,6 +51,13 @@ contract RelayPoolFactory {
     MIN_TIMELOCK_DELAY = minTimelockDelay;
   }
 
+  function setTimelockDelay(newDelay, address[] pools) onlyOwner public {
+    // Set the timelock delay
+    minTimelockDelay = newDelay;
+    pools.owner().updateDelay(newDelay);
+    emit TimelockDelayUpdated(newDelay);
+  }
+
   function deployPool(
     ERC20 asset,
     string memory name,
@@ -58,6 +66,9 @@ contract RelayPoolFactory {
     uint timelockDelay,
     uint256 initialDeposit
   ) public returns (address) {
+    if(address(owner) != address(0) && msg.sender != owner) {
+      revert Unauthrozied()
+    }
     // We require an initial deposit of 1 unit
     uint8 decimals = asset.decimals();
     if (initialDeposit < 10 ** decimals) {
@@ -77,7 +88,7 @@ contract RelayPoolFactory {
       timelockDelay,
       curator,
       curator,
-      address(0) // No admin
+      address(this)
     );
 
     RelayPool pool = new RelayPool(

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import {IUniversalRouter} from "./interfaces/uniswap/IUniversalRouter.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRelayPool} from "./interfaces/IRelayPool.sol";
@@ -77,13 +76,6 @@ contract TokenSwap {
     if (tokenAddress == asset) {
       revert UnauthorizedSwap();
     }
-
-    // Approve the router to spend src ERC20
-    TransferHelper.safeApprove(
-      tokenAddress,
-      UNISWAP_UNIVERSAL_ROUTER,
-      tokenAmount
-    );
 
     // send tokens to universal router to manipulate the token
     IERC20(tokenAddress).transfer(UNISWAP_UNIVERSAL_ROUTER, tokenAmount);

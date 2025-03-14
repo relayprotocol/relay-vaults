@@ -55,7 +55,7 @@ contract RelayBridge is IRelayBridge {
     address recipient
   ) external view returns (uint256 fee) {
     bytes memory data = abi.encode(
-      transferNonce, // use the currenct transferNonce
+      transferNonce, // use the current transferNonce
       recipient,
       amount,
       block.timestamp

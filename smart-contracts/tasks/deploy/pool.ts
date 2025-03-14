@@ -100,10 +100,11 @@ task('deploy:pool', 'Deploy a relay pool')
       )
 
       if (!delay) {
+        const minimumDelay = await factoryContract.MIN_TIMELOCK_DELAY()
         delay = await new Input({
           name: 'delay',
-          message: 'Please enter a pool timelock delay (in seconds):',
-          default: 60, // 7 * 24 * 60 * 60,
+          message: `Please enter a pool timelock delay (in seconds, more than ${minimumDelay.toString()}):`,
+          default: 7 * 24 * 60 * 60,
         }).run()
       }
 
@@ -146,6 +147,14 @@ task('deploy:pool', 'Deploy a relay pool')
       }
 
       console.log(`Deploying relay pool using factory ${factory}...`)
+      console.log({
+        asset,
+        name,
+        symbol,
+        yieldPool,
+        delay,
+        depositAmount,
+      })
       // deploy the pool
       const tx = await factoryContract
         .deployPool(asset, name, symbol, yieldPool, delay, depositAmount)

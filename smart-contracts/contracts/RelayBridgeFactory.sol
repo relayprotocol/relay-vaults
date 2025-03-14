@@ -16,7 +16,7 @@ contract RelayBridgeFactory {
   );
 
   constructor(address hMailbox) {
-    hyperlaneMailbox = hMailbox;
+    HYPERLANE_MAILBOX = hMailbox;
   }
 
   function deployBridge(

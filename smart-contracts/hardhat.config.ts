@@ -19,6 +19,8 @@ import './tasks/deploy/relay-bridge'
 import './tasks/deploy/bridge-proxy'
 import './tasks/deploy/relay-pool-factory'
 import './tasks/deploy/relay-bridge-factory'
+import './tasks/deploy/verify'
+import './tasks/deploy/timelock'
 
 // Helpers/tests
 import './tasks/networks'
@@ -144,7 +146,7 @@ const config: HardhatUserConfig = {
   networks,
   etherscan,
   sourcify: {
-    enabled: true,
+    enabled: false,
   },
   zksolc: {
     settings: {

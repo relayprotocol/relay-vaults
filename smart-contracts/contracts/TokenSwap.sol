@@ -4,7 +4,6 @@ pragma solidity ^0.8.24;
 
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import {IUniversalRouter} from "./interfaces/uniswap/IUniversalRouter.sol";
-import {IPermit2} from "./interfaces/uniswap/IPermit2.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRelayPool} from "./interfaces/IRelayPool.sol";
 

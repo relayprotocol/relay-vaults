@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
-import {RelayPool, OriginParam} from "./RelayPool.sol";
+import {RelayPool} from "./RelayPool.sol";
 
 interface RelayPoolTimelock {
   function initialize(

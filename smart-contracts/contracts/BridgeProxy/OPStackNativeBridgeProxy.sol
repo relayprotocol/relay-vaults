@@ -3,8 +3,6 @@ pragma solidity ^0.8.28;
 
 import {BridgeProxy} from "./BridgeProxy.sol";
 import {L2StandardBridge} from "../interfaces/L2StandardBridge.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IOptimismPortal, Types} from "../interfaces/IOptimismPortal.sol";
 import {IOptimismMintableERC20} from "../interfaces/IOptimismMintableERC20.sol";
 
 contract OPStackNativeBridgeProxy is BridgeProxy {

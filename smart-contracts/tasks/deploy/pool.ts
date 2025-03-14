@@ -112,7 +112,7 @@ task('deploy:pool', 'Deploy a relay pool')
         deposit = await new Input({
           name: 'deposit',
           message: 'Please enter a pool initial deposit:',
-          default: 0.0001,
+          default: 1,
         }).run()
       }
 

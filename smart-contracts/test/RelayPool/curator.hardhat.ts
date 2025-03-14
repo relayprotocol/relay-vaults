@@ -85,7 +85,7 @@ describe('RelayPool: curator', () => {
         await relayPool.updateYieldPool(
           newPoolAddress,
           0, // minSharePriceFromOldPool - setting to 0 to accept any price
-          ethers.parseEther('100') // maxSharePricePriceFromNewPool - setting high to accept any price
+         ethers.MaxUint256 // maxSharePricePriceFromNewPool - setting high to accept any price
         )
       ).wait()
 

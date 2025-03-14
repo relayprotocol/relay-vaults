@@ -134,14 +134,8 @@ contract TokenSwap {
     }
 
     // transfer the swapped asset to the pool
-<<<<<<< HEAD
-    IERC20(asset).transfer(pool, amountOut);
-    emit TokenSwapped(pool, tokenAddress, asset, tokenAmount, amountOut);
-=======
     SafeERC20.safeTransfer(IERC20(asset), pool, amountOut);
-
-    emit TokenSwapped(pool, tokenAddress, tokenAmount, amountOut);
->>>>>>> main
+    emit TokenSwapped(pool, tokenAddress, asset, tokenAmount, amountOut);
   }
 
   /**

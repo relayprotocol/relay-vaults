@@ -20,6 +20,7 @@ export const baseSepolia: L2NetworkConfig = {
   },
   assets: {
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+    weth: '0x999B45BB215209e567FaF486515af43b8353e393',
   },
   rpc: process.env.RPC_84532
     ? [process.env.RPC_84532]

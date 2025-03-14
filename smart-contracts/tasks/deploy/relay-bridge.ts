@@ -1,46 +1,31 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
-import { AutoComplete } from 'enquirer'
-import { getAddresses } from '@relay-protocol/addresses'
+import { AutoComplete, Input } from 'enquirer'
 import { getEvent } from '@relay-protocol/helpers'
 
-task('deploy:relay-bridge', 'Deploy a bridge proxy')
+task('deploy:bridge', 'Deploy a bridge proxy')
+  .addParam('factory', 'The Bridge Factory address')
   .addOptionalParam('proxyBridge', 'The Proxy bridge asset')
   .addOptionalParam('asset', 'An ERC20 asset')
   .setAction(
     async (
-      { asset: assetAddress, proxyBridge: proxyBridgeAddress },
+      { factory, asset: assetAddress, proxyBridge: proxyBridgeAddress },
       { ethers }
     ) => {
       const { chainId } = await ethers.provider.getNetwork()
-      const deployedContracts = (await getAddresses())[chainId.toString()]
 
-      if (!deployedContracts) {
-        throw new Error(
-          'This chain does not have any deployed contracts. Please deploy BridgeProxy and RelayBridgeFactory first.'
-        )
-      }
-
-      const { BridgeProxy, RelayBridgeFactory } = deployedContracts
-
-      const { assets, l1ChainId } = networks[chainId.toString()]
-
-      if (!l1ChainId) {
-        throw new Error('This chain does not have a corresponding L1 chain')
-      }
-
-      if (!RelayBridgeFactory) {
-        throw new Error('This chain does not have a RelayBridgeFactory')
-      }
+      const { assets, bridges } = networks[chainId.toString()]
 
       if (!proxyBridgeAddress) {
-        // List proxyBridges, and select the one you want to deploy
-        const proxyBridge = await new AutoComplete({
-          name: 'proxyBridge',
-          message: 'Please choose a proxy bridge',
-          choices: Object.keys(BridgeProxy),
+        proxyBridgeAddress = await new Input({
+          name: 'proxyBridgeAddress',
+          message:
+            'Please enter a proxy bridge address on this network or type enter to deploy a new one:',
         }).run()
-        proxyBridgeAddress = BridgeProxy[proxyBridge]
+        // Err, we need to deploy one here!
+        if (!proxyBridgeAddress) {
+          proxyBridgeAddress = await run('deploy:bridge-proxy', {})
+        }
       }
 
       if (!assetAddress) {
@@ -59,7 +44,7 @@ task('deploy:relay-bridge', 'Deploy a bridge proxy')
 
       const factoryContract = await ethers.getContractAt(
         'RelayBridgeFactory',
-        RelayBridgeFactory
+        factory
       )
 
       const tx = await factoryContract.deployBridge(
@@ -72,7 +57,17 @@ task('deploy:relay-bridge', 'Deploy a bridge proxy')
         'BridgeDeployed',
         factoryContract.interface
       )
+      const bridgeAddress = event.args.bridge
 
-      console.log(`RelayBridge deployed to: ${event.args.bridge}`)
+      await run('deploy:verify', {
+        address: bridgeAddress,
+        constructorArguments: [
+          assetAddress,
+          proxyBridgeAddress,
+          await factoryContract.hyperlaneMailbox(),
+        ],
+      })
+
+      console.log(`✅ RelayBridge deployed to: ${bridgeAddress}`)
     }
   )

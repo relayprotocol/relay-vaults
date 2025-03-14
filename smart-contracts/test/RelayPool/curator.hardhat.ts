@@ -4,12 +4,12 @@ import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { MyToken, MyYieldPool, RelayPool } from '../../typechain-types'
 import { getEvent } from '@relay-protocol/helpers'
-import { time } from '@nomicfoundation/hardhat-network-helpers'
+import { Signer } from 'ethers'
 
 describe('RelayPool: curator', () => {
   let relayPool: RelayPool
   let myToken: MyToken
-  let thirdPartyPool: MyYieldPool
+  let yieldPool: MyYieldPool
 
   before(async () => {
     const [user] = await ethers.getSigners()
@@ -17,7 +17,7 @@ describe('RelayPool: curator', () => {
     myToken = await ethers.deployContract('MyToken', ['My Token', 'TOKEN'])
     expect(await myToken.totalSupply()).to.equal(1000000000000000000000000000n)
     // deploy 3rd party pool
-    thirdPartyPool = await ethers.deployContract('MyYieldPool', [
+    yieldPool = await ethers.deployContract('MyYieldPool', [
       await myToken.getAddress(),
       'My Yield Pool',
       'YIELD',
@@ -29,7 +29,7 @@ describe('RelayPool: curator', () => {
         asset: await myToken.getAddress(),
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
-        thirdPartyPool: await thirdPartyPool.getAddress(),
+        thirdPartyPool: await yieldPool.getAddress(),
         weth: ethers.ZeroAddress,
         curator: userAddress,
       },
@@ -41,9 +41,9 @@ describe('RelayPool: curator', () => {
 
   describe('updateYieldPool', () => {
     let betterYieldPool: MyYieldPool
-
+    let user: Signer
     before(async () => {
-      const [user] = await ethers.getSigners()
+      ;[user] = await ethers.getSigners()
 
       // deposit some funds in the relay pool
       await myToken.approve(
@@ -64,7 +64,7 @@ describe('RelayPool: curator', () => {
       const [, another] = await ethers.getSigners()
       await expect(
         relayPool.connect(another).updateYieldPool(
-          await thirdPartyPool.getAddress(),
+          await yieldPool.getAddress(),
           0, // minSharePriceFromOldPool
           ethers.MaxUint256 // maxSharePricePriceFromNewPool
         )
@@ -74,12 +74,22 @@ describe('RelayPool: curator', () => {
     })
 
     it('should pull all the funds from the previous pool and deposit in the new pool', async () => {
-      const oldPoolAddress = await relayPool.yieldPool()
       const newPoolAddress = await betterYieldPool.getAddress()
+      const oldPoolAddress = await relayPool.yieldPool()
       const oldPoolTokenBalanceBefore = await myToken.balanceOf(oldPoolAddress)
       expect(oldPoolTokenBalanceBefore).to.be.greaterThan(0)
+      expect(await myToken.balanceOf(newPoolAddress)).to.be.equal(0)
+
+      // make a deposit into the new yield pool
+      const yieldPoolDeposit = ethers.parseEther('3.1')
+      await myToken.approve(
+        await betterYieldPool.getAddress(),
+        yieldPoolDeposit
+      )
+      await betterYieldPool.deposit(yieldPoolDeposit, await user.getAddress())
+
       const newPoolTokenBalanceBefore = await myToken.balanceOf(newPoolAddress)
-      expect(newPoolTokenBalanceBefore).to.be.equal(0)
+      expect(newPoolTokenBalanceBefore).to.be.equal(yieldPoolDeposit)
 
       const receipt = await (
         await relayPool.updateYieldPool(
@@ -92,7 +102,7 @@ describe('RelayPool: curator', () => {
       const oldPoolTokenBalanceAfter = await myToken.balanceOf(oldPoolAddress)
       expect(oldPoolTokenBalanceAfter).to.be.equal(0)
       const newPoolTokenBalanceAfter = await myToken.balanceOf(newPoolAddress)
-      expect(newPoolTokenBalanceAfter).to.be.greaterThan(0)
+      expect(newPoolTokenBalanceAfter).to.be.greaterThan(yieldPoolDeposit)
       const { event } = await getEvent(
         receipt!,
         'YieldPoolChanged',
@@ -112,7 +122,6 @@ describe('RelayPool: curator', () => {
 
       // Set a very high minimum share price that can't be met
       const highMinSharePrice = ethers.MaxUint256
-
       await expect(
         relayPool.updateYieldPool(
           await anotherPool.getAddress(),
@@ -129,6 +138,11 @@ describe('RelayPool: curator', () => {
         'Another Yield Pool',
         'ANOTHER',
       ])
+
+      // make a deposit into the new yield pool (prevent division by zero)
+      const yieldPoolDeposit = ethers.parseEther('.1')
+      await myToken.approve(await anotherPool.getAddress(), yieldPoolDeposit)
+      await anotherPool.deposit(yieldPoolDeposit, await user.getAddress())
 
       // Set a very low maximum share price that will be exceeded
       const lowMaxSharePrice = 1n // Almost 0

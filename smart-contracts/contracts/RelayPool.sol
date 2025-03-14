@@ -420,7 +420,7 @@ contract RelayPool is ERC4626, Ownable {
   // Internal function to add assets to be accounted in a streaming fashgion
   function addToStreamingAssets(uint256 amount) internal returns (uint256) {
     updateStreamedAssets();
-    // We ajdust the end of the stream based on the new amount
+    // We adjust the end of the stream based on the new amount
     uint amountLeft = remainsToStream();
     uint timeLeft = Math.max(endOfStream, block.timestamp) - block.timestamp;
     uint weightedStreamingPeriod = (amountLeft *

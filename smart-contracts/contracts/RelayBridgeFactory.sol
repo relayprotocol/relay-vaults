@@ -23,7 +23,7 @@ contract RelayBridgeFactory {
     address asset,
     BridgeProxy proxyBridge
   ) public returns (address) {
-    RelayBridge bridge = new RelayBridge(asset, proxyBridge, hyperlaneMailbox);
+    RelayBridge bridge = new RelayBridge(asset, proxyBridge, HYPERLANE_MAILBOX);
     bridgesByAsset[asset].push(address(bridge));
     emit BridgeDeployed(address(bridge), asset, proxyBridge);
     return address(bridge);

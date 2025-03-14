@@ -75,7 +75,7 @@ describe('RelayPool: claim for native ETH', () => {
       const bridgeProxyParameters = {
         OPStackNativeBridgeProxy: {
           portalProxy,
-          relayPoolChainId: 1,
+          relayPoolChainId: 31337,
           relayPool: await relayPool.getAddress(),
           l1BridgeProxy: ethers.ZeroAddress,
         },
@@ -366,7 +366,7 @@ describe('RelayPool: claim for an ERC20', () => {
     const bridgeProxyParameters = {
       OPStackNativeBridgeProxy: {
         portalProxy,
-        relayPoolChainId: 1,
+        relayPoolChainId: 31337,
         relayPool: await relayPool.getAddress(),
         l1BridgeProxy: ethers.ZeroAddress,
       },

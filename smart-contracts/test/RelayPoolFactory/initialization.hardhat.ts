@@ -10,6 +10,7 @@ import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModul
 import { getEvent } from '@relay-protocol/helpers'
 
 describe('RelayPoolFactory: deployment', () => {
+  let userAddress
   let relayPoolFactory: RelayPoolFactory
   let myToken: MyToken
   let timelockTemplate: TimelockControllerUpgradeable
@@ -19,7 +20,7 @@ describe('RelayPoolFactory: deployment', () => {
 
   before(async () => {
     const [user] = await ethers.getSigners()
-    const userAddress = await user.getAddress()
+    userAddress = await user.getAddress()
     myToken = await ethers.deployContract('MyToken', ['My Token', 'TOKEN'])
     expect(await myToken.totalSupply()).to.equal(1000000000000000000000000000n)
     // deploy 3rd party pool
@@ -51,6 +52,7 @@ describe('RelayPoolFactory: deployment', () => {
           RelayPoolFactory: {
             hyperlaneMailbox,
             weth,
+            timelockDelay: 60 * 60 * 24 * 7,
           },
         },
         deploymentId: 'RelayPoolFactory',
@@ -81,7 +83,8 @@ describe('RelayPoolFactory: deployment', () => {
         'RELAY',
         await thirdPartyPool.getAddress(),
         60 * 60 * 24 * 7,
-        initialDeposit
+        initialDeposit,
+        userAddress
       )
     )
       .to.be.revertedWithCustomError(
@@ -89,6 +92,32 @@ describe('RelayPoolFactory: deployment', () => {
         'InsufficientInitialDeposit'
       )
       .withArgs('900000000000000000')
+  })
+
+  it('should fail to deploy a pool with the timelock delay is insufficient', async () => {
+    const [user] = await ethers.getSigners()
+    const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
+    const userAddress = await user.getAddress()
+
+    await myToken.mint(initialDeposit)
+    await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)
+
+    await expect(
+      relayPoolFactory.deployPool(
+        await myToken.getAddress(),
+        'Test Vault',
+        'RELAY',
+        await thirdPartyPool.getAddress(),
+        1,
+        initialDeposit,
+        userAddress
+      )
+    )
+      .to.be.revertedWithCustomError(
+        relayPoolFactory,
+        'InsufficientTimelockDelay'
+      )
+      .withArgs(1)
   })
 
   it('should let user deploy a pool', async () => {
@@ -105,7 +134,8 @@ describe('RelayPoolFactory: deployment', () => {
       'RELAY',
       await thirdPartyPool.getAddress(),
       60 * 60 * 24 * 7,
-      initialDeposit
+      initialDeposit,
+      userAddress
     )
     const receipt = await tx.wait()
     const event = await getEvent(

@@ -59,7 +59,8 @@ describe('RelayPool: inflation attack', () => {
       `${await myToken.symbol()}-REL`,
       await thirdPartyPool.getAddress(),
       60 * 60 * 24 * 7,
-      initialDeposit
+      initialDeposit,
+      userAddress
     )
 
     const receipt = await tx.wait()

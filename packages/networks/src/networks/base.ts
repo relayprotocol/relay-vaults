@@ -21,6 +21,7 @@ export const base: L2NetworkConfig = {
   assets: {
     usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     udt: '0xD7eA82D19f1f59FF1aE95F1945Ee6E6d86A25B96',
+    weth: '0x4200000000000000000000000000000000000006',
   },
   rpc: process.env.RPC_8453
     ? [process.env.RPC_8453]

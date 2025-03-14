@@ -7,25 +7,11 @@ import {IUniversalRouter} from "./interfaces/uniswap/IUniversalRouter.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRelayPool} from "./interfaces/IRelayPool.sol";
 
-library SafeCast160 {
-  error UnsafeCast();
-
-  /// @notice Safely casts uint256 to uint160
-  /// @param value The uint256 to be cast
-  function toUint160(uint256 value) internal pure returns (uint160) {
-    if (value > type(uint160).max) revert UnsafeCast();
-    return uint160(value);
-  }
-}
-
 /**
  * @title TokenSwap
  * @notice A helper contract to swap tokens
  */
 contract TokenSwap {
-  // make sure we dont exceed type uint160 when casting
-  using SafeCast160 for uint256;
-
   // required by Uniswap Universal Router
   address public immutable UNISWAP_UNIVERSAL_ROUTER;
 

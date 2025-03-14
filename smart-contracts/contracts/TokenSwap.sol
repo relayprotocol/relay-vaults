@@ -8,7 +8,9 @@ import {IRelayPool} from "./interfaces/IRelayPool.sol";
 
 /**
  * @title TokenSwap
- * @notice A helper contract to swap tokens
+ * @notice A helper contract that facilitates token swaps through Uniswap's Universal Router
+ * @dev This contract is designed to work with RelayPool contracts and handles swapping of
+ *      various tokens to the pool's asset token using Uniswap V3 pools
  */
 contract TokenSwap {
   // required by Uniswap Universal Router
@@ -42,20 +44,26 @@ contract TokenSwap {
   }
 
   /**
-   * Simple helper to retrieve balance in ERC20 or native tokens
-   * @param token the address of the token (address(0) for native token)
+   * @notice Retrieves the balance of a specified token for this contract
+   * @param token The address of the ERC20 token
+   * @return The balance of the specified token held by this contract
+   * @dev This is a helper function used internally to check token balances
    */
   function getBalance(address token) internal view returns (uint256) {
     return IERC20(token).balanceOf(address(this));
   }
 
   /**
-   * Swap tokens to UDT and burn the tokens
-   *
-   * @notice The default route is token > WETH > asset.
-   * If `uniswapWethPoolFeeAsset` is set to null, then we do a direct swap token > asset
-   * @param deadline The deadline for the swap transaction
-   * @param amountOutMinimum The minimum amount of output tokens that must be received for the transaction not to revert
+   * @notice Swaps input tokens for the pool's asset token using Uniswap V3
+   * @param tokenAddress The address of the input token to swap
+   * @param uniswapWethPoolFeeToken The fee tier for the token-WETH pool (if used)
+   * @param uniswapWethPoolFeeAsset The fee tier for the WETH-asset pool (if used)
+   * @param deadline The Unix timestamp after which the swap will revert
+   * @param amountOutMinimum The minimum amount of output tokens that must be received
+   * @return amountOut The amount of output tokens received from the swap
+   * @dev The swap can follow two routes:
+   *      1. Direct: token -> asset (when uniswapWethPoolFeeAsset is 0)
+   *      2. Through WETH: token -> WETH -> asset (default route)
    */
   function swap(
     address tokenAddress,
@@ -123,6 +131,8 @@ contract TokenSwap {
     emit TokenSwapped(pool, tokenAddress, tokenAmount, amountOut);
   }
 
-  // required to withdraw WETH
+  /**
+   * @dev This function is required to handle ETH received from unwrapping WETH during swaps
+   */
   receive() external payable {}
 }

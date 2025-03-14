@@ -214,7 +214,7 @@ contract RelayPool is ERC4626, Ownable {
 
     // Deposit all assets into the new pool
     ERC20(asset).approve(newPool, withdrawnAssets);
-    uint256 receivedShares = depositAssetsInYieldPool(withdrawnAssets);
+    depositAssetsInYieldPool(withdrawnAssets);
 
     emit YieldPoolChanged(oldPool, newPool);
   }
@@ -346,11 +346,9 @@ contract RelayPool is ERC4626, Ownable {
   // Note: a previous version used the full balance of assets.
   //       This creates a vulnerability where a 3rd party can inflate
   //       the share price and use that to capture the value created.
-  function depositAssetsInYieldPool(
-    uint256 amount
-  ) internal returns (uint256 receivedShares) {
+  function depositAssetsInYieldPool(uint256 amount) internal {
     ERC20(asset).approve(yieldPool, amount);
-    receivedShares = ERC4626(yieldPool).deposit(amount, address(this));
+    ERC4626(yieldPool).deposit(amount, address(this));
     emit AssetsDepositedIntoYieldPool(amount, yieldPool);
   }
 

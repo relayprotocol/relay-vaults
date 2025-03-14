@@ -111,7 +111,7 @@ describe('RelayPool: curator', () => {
       ])
 
       // Set a very high minimum share price that can't be met
-      const highMinSharePrice = ethers.parseEther('1000000')
+      const highMinSharePrice = ethers.MaxUint256
 
       await expect(
         relayPool.updateYieldPool(

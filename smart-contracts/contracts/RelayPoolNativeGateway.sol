@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {IWETH} from "./interfaces/IWETH.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {IWETH} from "./interfaces/IWETH.sol";
 
 error EthTransferFailed();
 error OnlyWethCanSendEth();
@@ -28,7 +30,7 @@ contract RelayPoolNativeGateway {
   ) external payable returns (uint256) {
     // wrap tokens
     WETH.deposit{value: msg.value}();
-    WETH.approve(pool, msg.value);
+    SafeERC20.safeIncreaseAllowance(IERC20(address(WETH)), pool, msg.value);
 
     // do the deposit
     uint256 shares = IERC4626(pool).deposit(msg.value, receiver);
@@ -45,7 +47,7 @@ contract RelayPoolNativeGateway {
   ) external payable returns (uint256 shares) {
     // wrap tokens
     WETH.deposit{value: msg.value}();
-    WETH.approve(pool, msg.value);
+    SafeERC20.safeIncreaseAllowance(IERC20(address(WETH)), pool, msg.value);
 
     // do the deposit
     shares = IERC4626(pool).convertToShares(msg.value);

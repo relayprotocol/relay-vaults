@@ -11,10 +11,13 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "build": "yarn update-schema && tsup src/index.ts --dts --format esm,cjs",
+    "dev": "yarn update-schema && tsup src/index.ts --watch --dts --format esm,cjs",
     "clean": "rm -rf dist",
     "lint:fix": "yarn lint --fix",
-    "lint": "eslint"
+    "lint": "eslint",
+    "update-schema": "cp ../../backend/generated/schema.graphql ./src/schema.graphql && yarn generate-types",
+    "generate-types": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "graphql": "16.10.0",
@@ -22,6 +25,10 @@
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.5",
+    "@graphql-codegen/typescript": "4.1.5",
+    "@graphql-codegen/typescript-graphql-request": "6.2.0",
+    "@graphql-codegen/typescript-operations": "4.5.1",
     "@relay-protocol/eslint-config": "workspace:^",
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",

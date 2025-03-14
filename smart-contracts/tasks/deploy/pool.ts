@@ -147,14 +147,6 @@ task('deploy:pool', 'Deploy a relay pool')
       }
 
       console.log(`Deploying relay pool using factory ${factory}...`)
-      console.log({
-        asset,
-        name,
-        symbol,
-        yieldPool,
-        delay,
-        depositAmount,
-      })
       // deploy the pool
       const tx = await factoryContract
         .deployPool(asset, name, symbol, yieldPool, delay, depositAmount)

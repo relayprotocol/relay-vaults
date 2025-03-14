@@ -11,12 +11,11 @@
     }
   },
   "scripts": {
-    "build": "yarn update-schema && tsup src/index.ts --dts --format esm,cjs",
-    "dev": "yarn update-schema && tsup src/index.ts --watch --dts --format esm,cjs",
-    "clean": "rm -rf dist",
+    "build": "yarn generate-types && tsup src/index.ts --dts --format esm,cjs",
+    "dev": "yarn generate-types && tsup src/index.ts --watch --dts --format esm,cjs",
+    "clean": "rm -rf dist src/generated",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
-    "update-schema": "cp ../../backend/generated/schema.graphql ./src/schema.graphql && yarn generate-types",
     "generate-types": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {

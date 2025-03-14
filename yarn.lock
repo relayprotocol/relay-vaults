@@ -3042,7 +3042,6 @@ __metadata:
     "@nomicfoundation/hardhat-verify": "npm:2.0.12"
     "@openzeppelin/contracts": "npm:5.2.0"
     "@openzeppelin/contracts-upgradeable": "npm:5.2.0"
-    "@relay-protocol/addresses": "workspace:*"
     "@relay-protocol/client": "workspace:*"
     "@relay-protocol/helpers": "workspace:*"
     "@typechain/ethers-v6": "npm:0.5.1"

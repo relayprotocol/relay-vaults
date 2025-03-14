@@ -3,8 +3,9 @@
 pragma solidity ^0.8.24;
 
 import {TransferHelper} from "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
-import {IUniversalRouter} from "./interfaces/uniswap/IUniversalRouter.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IUniversalRouter} from "./interfaces/uniswap/IUniversalRouter.sol";
 import {IRelayPool} from "./interfaces/IRelayPool.sol";
 
 library SafeCast160 {
@@ -100,7 +101,11 @@ contract TokenSwap {
     );
 
     // send tokens to universal router to manipulate the token
-    IERC20(tokenAddress).transfer(UNISWAP_UNIVERSAL_ROUTER, tokenAmount);
+    SafeERC20.safeTransfer(
+      IERC20(tokenAddress),
+      UNISWAP_UNIVERSAL_ROUTER,
+      tokenAmount
+    );
 
     // parse the path
     bytes memory path = uniswapWethPoolFeeAsset == 0
@@ -141,7 +146,8 @@ contract TokenSwap {
     }
 
     // transfer the swapped asset to the pool
-    IERC20(asset).transfer(pool, amountOut);
+    SafeERC20.safeTransfer(IERC20(asset), pool, amountOut);
+
     emit TokenSwapped(pool, tokenAddress, tokenAmount, amountOut);
   }
 

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
@@ -19,6 +21,7 @@ contract RelayPoolFactory {
   address public immutable HYPERLANE_MAILBOX;
   address public immutable WETH;
   address public immutable TIMELOCK_TEMPLATE;
+  uint public immutable MIN_TIMELOCK_DELAY;
 
   mapping(address => address[]) public poolsByAsset; // Keeping track of pools by asset.
 
@@ -33,11 +36,18 @@ contract RelayPoolFactory {
   );
 
   error InsufficientInitialDeposit(uint deposit);
+  error InsufficientTimelockDelay(uint delay);
 
-  constructor(address hMailbox, address weth, address timelock) {
+  constructor(
+    address hMailbox,
+    address weth,
+    address timelock,
+    uint minTimelockDelay
+  ) {
     HYPERLANE_MAILBOX = hMailbox;
     WETH = weth;
     TIMELOCK_TEMPLATE = timelock;
+    MIN_TIMELOCK_DELAY = minTimelockDelay;
   }
 
   function deployPool(
@@ -49,10 +59,15 @@ contract RelayPoolFactory {
     uint256 initialDeposit
   ) public returns (address) {
     // We require an initial deposit of 1 unit
-    uint8 decimals = ERC20(asset).decimals();
+    uint8 decimals = asset.decimals();
     if (initialDeposit < 10 ** decimals) {
       revert InsufficientInitialDeposit(initialDeposit);
     }
+
+    if (timelockDelay < MIN_TIMELOCK_DELAY) {
+      revert InsufficientTimelockDelay(timelockDelay);
+    }
+
     address[] memory curator = new address[](1);
     curator[0] = msg.sender;
 
@@ -88,8 +103,17 @@ contract RelayPoolFactory {
     );
 
     // Transfer initial deposit to the pool to prevent inflation attack
-    asset.transferFrom(msg.sender, address(this), initialDeposit);
-    asset.approve(address(pool), initialDeposit);
+    SafeERC20.safeTransferFrom(
+      IERC20(address(asset)),
+      msg.sender,
+      address(this),
+      initialDeposit
+    );
+    SafeERC20.safeIncreaseAllowance(
+      IERC20(address(asset)),
+      address(pool),
+      initialDeposit
+    );
     pool.deposit(initialDeposit, timelock);
 
     return address(pool);

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IHyperlaneMailbox} from "./interfaces/IHyperlaneMailbox.sol";
 import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 error BridgingFailed(uint256 nonce);
 error InsufficientValue(uint256 received, uint256 expected);
@@ -49,7 +50,10 @@ contract RelayBridge is IRelayBridge {
     hyperlaneMailbox = _hyperlaneMailbox;
   }
 
-  /// @notice Convenience function which returns the Hyperlane fee to be passed as msg.value in `bridge`.
+  /// @notice Calculates the Hyperlane fee required for bridging
+  /// @param amount Amount of tokens to bridge
+  /// @param recipient Address that will receive the bridged tokens
+  /// @return fee The required fee in native currency
   function getFee(
     uint256 amount,
     address recipient
@@ -99,7 +103,12 @@ contract RelayBridge is IRelayBridge {
     // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
     if (asset != address(0)) {
       // Take the ERC20 tokens from the sender
-      IERC20(asset).transferFrom(msg.sender, address(this), amount);
+      SafeERC20.safeTransferFrom(
+        IERC20(asset),
+        msg.sender,
+        address(this),
+        amount
+      );
       if (msg.value < hyperlaneFee) {
         revert InsufficientValue(msg.value, hyperlaneFee);
       }

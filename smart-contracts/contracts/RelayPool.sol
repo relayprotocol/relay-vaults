@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC4626} from "solmate/src/tokens/ERC4626.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -136,21 +138,21 @@ contract RelayPool is ERC4626, Ownable {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    address thirdPartyPool,
-    address wrappedEth,
-    address curator
+    address _yieldPool,
+    address _weth,
+    address _curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
 
     // set the yieldPool
-    yieldPool = thirdPartyPool;
+    yieldPool = _yieldPool;
 
     // set weth
-    WETH = wrappedEth;
+    WETH = _weth;
 
     // Change the owner to the curator
-    transferOwnership(curator);
+    transferOwnership(_curator);
   }
 
   function updateStreamingPeriod(uint256 newPeriod) public onlyOwner {
@@ -204,7 +206,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function increaseOutStandingDebt(
+  function increaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -221,7 +223,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function decreaseOutStandingDebt(
+  function decreaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -303,7 +305,7 @@ contract RelayPool is ERC4626, Ownable {
   //       This creates a vulnerability where a 3rd party can inflate
   //       the share price and use that to capture the value created.
   function depositAssetsInYieldPool(uint256 amount) internal {
-    ERC20(asset).approve(yieldPool, amount);
+    SafeERC20.safeIncreaseAllowance(IERC20(address(asset)), yieldPool, amount);
     ERC4626(yieldPool).deposit(amount, address(this));
     emit AssetsDepositedIntoYieldPool(amount, yieldPool);
   }
@@ -379,7 +381,7 @@ contract RelayPool is ERC4626, Ownable {
         message.amount
       );
     }
-    increaseOutStandingDebt(message.amount, origin);
+    increaseOutstandingDebt(message.amount, origin);
 
     // We only send the amount net of fees
     sendFunds(message.amount - feeAmount, message.recipient);
@@ -444,7 +446,7 @@ contract RelayPool is ERC4626, Ownable {
     );
 
     // We should have received funds
-    decreaseOutStandingDebt(amount, origin);
+    decreaseOutstandingDebt(amount, origin);
     // and we should deposit these funds into the yield pool
     depositAssetsInYieldPool(amount);
 
@@ -493,7 +495,8 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedSwap(token);
     }
 
-    ERC20(token).transfer(tokenSwapAddress, amount);
+    SafeERC20.safeTransfer(IERC20(address(token)), tokenSwapAddress, amount);
+
     ITokenSwap(tokenSwapAddress).swap(
       token,
       uniswapWethPoolFeeToken,

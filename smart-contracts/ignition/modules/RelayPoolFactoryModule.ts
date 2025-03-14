@@ -12,6 +12,7 @@ export default buildModule('RelayPoolFactory', (m) => {
     hyperlaneMailbox,
     weth,
     timelockTemplate,
+    60 * 60 * 24 * 7,
   ])
   return { relayPoolFactory, timelockTemplate }
 })

@@ -49,7 +49,7 @@ contract TokenSwap {
    * @return The balance of the specified token held by this contract
    * @dev This is a helper function used internally to check token balances
    */
-  function getBalance(address token) internal view returns (uint256) {
+  function _getBalance(address token) internal view returns (uint256) {
     return IERC20(token).balanceOf(address(this));
   }
 
@@ -78,8 +78,8 @@ contract TokenSwap {
     address wrappedAddress = IRelayPool(pool).WETH();
 
     // get total balance of token to swap
-    uint256 tokenAmount = getBalance(tokenAddress);
-    uint256 assetAmountBefore = getBalance(asset);
+    uint256 tokenAmount = _getBalance(tokenAddress);
+    uint256 assetAmountBefore = _getBalance(asset);
 
     if (tokenAddress == asset) {
       revert UnauthorizedSwap();
@@ -117,7 +117,7 @@ contract TokenSwap {
     );
 
     // check if assets have actually been swapped
-    amountOut = getBalance(asset) - assetAmountBefore;
+    amountOut = _getBalance(asset) - assetAmountBefore;
     if (amountOut == 0) {
       revert TokenSwappedFailed(
         UNISWAP_UNIVERSAL_ROUTER,

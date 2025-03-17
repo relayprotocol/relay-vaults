@@ -6,6 +6,8 @@ import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNative
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { reverts } from '../utils/errors'
+import { impersonate } from '../utils/hardhat'
+import { ZeroAddress } from 'ethers'
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
@@ -73,7 +75,7 @@ describe('BridgeProxies accept native token', function () {
       const parameters = {
         OPStackNativeBridgeProxy: {
           portalProxy: op.portalProxy,
-          relayPoolChainId: 1,
+          relayPoolChainId: 31337,
           relayPool,
           l1BridgeProxy,
         },
@@ -97,6 +99,17 @@ describe('BridgeProxies accept native token', function () {
         await bridge.getAddress()
       )
       expect(finalBalance - initialBalance).to.equal(amount)
+
+      // tokens can be claimed
+      const poolSigner = await impersonate(relayPool)
+      const balanceBeforeClaim = await ethers.provider.getBalance(relayPool)
+      const tx = await bridge.connect(poolSigner).claim(ZeroAddress, amount)
+      const receipt = await tx.wait()
+      const gas = receipt!.gasUsed * receipt!.gasPrice
+      const balanceAfterClaim = await ethers.provider.getBalance(relayPool)
+      expect(balanceAfterClaim).to.equal(
+        balanceBeforeClaim - BigInt(gas) + amount
+      )
     })
   })
 
@@ -116,7 +129,7 @@ describe('BridgeProxies accept native token', function () {
         ArbitrumOrbitNativeBridgeProxy: {
           routerGateway: arb.routerGateway,
           outbox: arb.outbox || ethers.ZeroAddress,
-          relayPoolChainId: 1,
+          relayPoolChainId: 31337,
           relayPool,
           l1BridgeProxy,
         },
@@ -141,6 +154,17 @@ describe('BridgeProxies accept native token', function () {
         await bridge.getAddress()
       )
       expect(finalBalance - initialBalance).to.equal(amount)
+
+      // tokens can be claimed
+      const poolSigner = await impersonate(relayPool)
+      const balanceBeforeClaim = await ethers.provider.getBalance(relayPool)
+      const tx = await bridge.connect(poolSigner).claim(ZeroAddress, amount)
+      const receipt = await tx.wait()
+      const gas = receipt!.gasUsed * receipt!.gasPrice
+      const balanceAfterClaim = await ethers.provider.getBalance(relayPool)
+      expect(balanceAfterClaim).to.equal(
+        balanceBeforeClaim - BigInt(gas) + amount
+      )
     })
   })
 
@@ -159,7 +183,7 @@ describe('BridgeProxies accept native token', function () {
       const parameters = {
         ZkSyncBridgeProxy: {
           l2SharedDefaultBridge: zksync.l2SharedDefaultBridge,
-          relayPoolChainId: 1,
+          relayPoolChainId: 31337,
           relayPool,
           l1BridgeProxy,
         },
@@ -183,6 +207,17 @@ describe('BridgeProxies accept native token', function () {
         await bridge.getAddress()
       )
       expect(finalBalance - initialBalance).to.equal(amount)
+
+      // tokens can be claimed
+      const poolSigner = await impersonate(relayPool)
+      const balanceBeforeClaim = await ethers.provider.getBalance(relayPool)
+      const tx = await bridge.connect(poolSigner).claim(ZeroAddress, amount)
+      const receipt = await tx.wait()
+      const gas = receipt!.gasUsed * receipt!.gasPrice
+      const balanceAfterClaim = await ethers.provider.getBalance(relayPool)
+      expect(balanceAfterClaim).to.equal(
+        balanceBeforeClaim - BigInt(gas) + amount
+      )
     })
   })
 })

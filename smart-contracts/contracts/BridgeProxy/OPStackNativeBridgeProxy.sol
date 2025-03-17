@@ -9,16 +9,11 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
   address public constant STANDARD_BRIDGE =
     address(0x4200000000000000000000000000000000000010);
 
-  address public immutable PORTAL_PROXY;
-
   constructor(
-    address portalProxy,
     uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy
-  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
-    PORTAL_PROXY = portalProxy;
-  }
+  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {}
 
   function bridge(
     address currency,

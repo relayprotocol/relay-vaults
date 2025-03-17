@@ -1,8 +1,12 @@
 module.exports = {
   skipFiles: [
+    './utils',
+    './interfaces',
+    // covered in forked tests
     './BridgeProxy/ArbitrumOrbitNativeBridgeProxy.sol',
-    './BridgeProxy/BaseOrbitNativeBridgeProxy.sol',
-    './BridgeProxy/OptimismOrbitNativeBridgeProxy.sol',
-    './BridgeProxy/ZkSyncOrbitNativeBridgeProxy.sol',
+    './BridgeProxy/CCTPBridgeProxy.sol',
+    './BridgeProxy/OPStackNativeBridgeProxy.sol',
+    './BridgeProxy/ZkSyncBridgeProxy.sol',
+    './TokenSwap.sol',
   ],
 }

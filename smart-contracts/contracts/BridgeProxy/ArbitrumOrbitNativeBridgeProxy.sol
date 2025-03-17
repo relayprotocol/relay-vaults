@@ -6,7 +6,6 @@ pragma solidity ^0.8.28;
 import {BridgeProxy} from "./BridgeProxy.sol";
 import {IL2GatewayRouter} from "../interfaces/arb/IArbL2GatewayRouter.sol";
 import {IArbSys} from "../interfaces/arb/IArbSys.sol";
-import {IOutbox} from "../interfaces/arb/IOutbox.sol";
 
 // errors
 error AssetMismatch(address expected, address actual);
@@ -17,7 +16,6 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
     IArbSys(0x0000000000000000000000000000000000000064);
 
   IL2GatewayRouter public immutable ROUTER;
-  IOutbox public immutable OUTBOX;
 
   /**
    * params will be stored as immutable values in the bytecode
@@ -25,13 +23,11 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
    */
   constructor(
     address routerGateway,
-    address outbox,
     uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy
   ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     ROUTER = IL2GatewayRouter(routerGateway);
-    OUTBOX = IOutbox(outbox);
   }
 
   // TODO: BUG: we should pass the L2 token, and get the L1 token... not the other way around!
@@ -57,4 +53,7 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
       ROUTER.outboundTransfer(l1Currency, L1_BRIDGE_PROXY, amount, "");
     }
   }
+
+  // Contract should be able to receive ETH
+  receive() external payable {}
 }

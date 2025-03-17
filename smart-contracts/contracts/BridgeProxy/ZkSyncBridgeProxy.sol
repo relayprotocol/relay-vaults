@@ -35,4 +35,7 @@ contract ZkSyncBridgeProxy is BridgeProxy {
       L2_SHARED_BRIDGE.withdraw(L1_BRIDGE_PROXY, currency, amount);
     }
   }
+
+  // Contract should be able to receive ETH
+  receive() external payable {}
 }

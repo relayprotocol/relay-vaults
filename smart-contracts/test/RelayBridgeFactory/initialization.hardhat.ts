@@ -41,7 +41,7 @@ describe('RelayBridgeFactory: deployment', () => {
     )
     const bridgeAddress = event.args.bridge
     const bridge = await ethers.getContractAt('RelayBridge', bridgeAddress)
-    expect(await bridge.asset()).to.equal(await myToken.getAddress())
+    expect(await bridge.ASSET()).to.equal(await myToken.getAddress())
     expect(event.args.asset).to.equal(await myToken.getAddress())
     expect(event.args.proxyBridge).to.equal(oPStackNativeBridgeProxy)
 

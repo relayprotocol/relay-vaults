@@ -149,18 +149,13 @@ contract RelayBridge is IRelayBridge {
     );
 
     // refund extra value to msg.sender (we ignore failures here)
-    bool refundSuccess;
     if (ASSET != address(0)) {
       if (msg.value > hyperlaneFee) {
-        (refundSuccess, ) = msg.sender.call{value: msg.value - hyperlaneFee}(
-          new bytes(0)
-        );
+        msg.sender.call{value: msg.value - hyperlaneFee}(new bytes(0));
       }
     } else {
       if (msg.value > hyperlaneFee + amount) {
-        (refundSuccess, ) = msg.sender.call{
-          value: msg.value - hyperlaneFee - amount
-        }(new bytes(0));
+        msg.sender.call{value: msg.value - hyperlaneFee - amount}(new bytes(0));
       }
     }
 

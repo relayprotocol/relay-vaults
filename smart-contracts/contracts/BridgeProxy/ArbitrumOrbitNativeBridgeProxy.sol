@@ -23,7 +23,6 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
    */
   constructor(
     address routerGateway,
-    address outbox,
     uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy

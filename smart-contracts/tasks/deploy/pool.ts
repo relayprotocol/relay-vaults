@@ -2,9 +2,12 @@ import { task } from 'hardhat/config'
 import { AutoComplete, Input } from 'enquirer'
 import { networks } from '@relay-protocol/networks'
 import { getStataToken, getEvent } from '@relay-protocol/helpers'
+import fs from 'fs'
 
-task('deploy:pool', 'Deploy a relay pool')
-  .addParam('factory', 'Address of the factory')
+const ignitionPath = __dirname + '/../../ignition/deployments/'
+
+task('deploy:pool', 'Deploy a relay vault')
+  .addOptionalParam('factory', 'Address of the factory')
   .addOptionalParam('name', 'name of the pool')
   .addOptionalParam('symbol', 'symbol of the pool')
   .addOptionalParam('asset', 'An ERC20 asset')
@@ -25,6 +28,15 @@ task('deploy:pool', 'Deploy a relay pool')
       const { name: networkName, assets } = networks[chainId.toString()]
 
       console.log(`deploying on ${networkName} (${chainId})...`)
+
+      if (!factory) {
+        // Read it from the files!
+        const folder = `RelayPoolFactory-${chainId.toString()}`
+        const factoryData = require(
+          ignitionPath + `${folder}/deployed_addresses.json`
+        )
+        factory = factoryData['RelayPoolFactory#RelayPoolFactory']
+      }
 
       if (!asset) {
         const assetName = await new AutoComplete({
@@ -58,7 +70,7 @@ task('deploy:pool', 'Deploy a relay pool')
       const assetDecimals = await assetContract.decimals()
 
       if (!name) {
-        const defaultName = `${assetName} Relay Pool`
+        const defaultName = `${assetName} Relay Vault`
         name = await new Input({
           name: 'name',
           message: 'Please enter a pool name:',
@@ -120,6 +132,7 @@ task('deploy:pool', 'Deploy a relay pool')
 
       if (assetSymbol == 'WETH') {
         const balance = await assetContract.balanceOf(userAddress)
+        console.log({ balance })
         if (balance < depositAmount) {
           console.log('Wrapping WETH...')
           // Wrap WETH!
@@ -145,7 +158,7 @@ task('deploy:pool', 'Deploy a relay pool')
         )
       }
 
-      console.log(`Deploying relay pool using factory ${factory}...`)
+      console.log(`Deploying relay vault using factory ${factory}...`)
       // deploy the pool
 
       const tx = await factoryContract
@@ -172,6 +185,25 @@ task('deploy:pool', 'Deploy a relay pool')
       const poolAddress = event.args.pool
       const timelock = event.args.timelock
       console.log(`relayPool deployed to: ${poolAddress}`)
+
+      const path = ignitionPath + `pools/${chainId}/${poolAddress}/`
+      await fs.promises.mkdir(path, { recursive: true })
+      await fs.promises.writeFile(
+        `${path}/params.json`,
+        JSON.stringify(
+          {
+            hyperlaneMailbox: await factoryContract.HYPERLANE_MAILBOX(),
+            asset,
+            name,
+            symbol,
+            yieldPool,
+            weth: await factoryContract.WETH(),
+            timelock,
+          },
+          null,
+          2
+        )
+      )
 
       await run('deploy:verify', {
         address: poolAddress,

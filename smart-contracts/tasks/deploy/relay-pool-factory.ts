@@ -3,7 +3,7 @@ import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 
-task('deploy:pool-factory', 'Deploy a relay pool factory')
+task('deploy:pool-factory', 'Deploy a relay vault factory')
   .addOptionalParam('delay', 'The Timelock delay')
   .setAction(async ({ delay }, { ethers, ignition, run }) => {
     // get args value

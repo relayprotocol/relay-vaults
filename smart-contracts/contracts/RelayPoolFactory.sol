@@ -54,18 +54,6 @@ contract RelayPoolFactory is Ownable {
     MIN_TIMELOCK_DELAY = minTimelockDelay;
   }
 
-  function setTimelockDelayOnPools(
-    uint256 newDelay,
-    address[] calldata pools
-  ) public onlyOwner {
-    for (uint256 i = 0; i < pools.length; i++) {
-      RelayPool pool = RelayPool(payable(pools[i]));
-      TimelockControllerUpgradeable(payable(pool.owner())).updateDelay(
-        newDelay
-      );
-    }
-  }
-
   function deployPool(
     ERC20 asset,
     string memory name,
@@ -97,7 +85,7 @@ contract RelayPoolFactory is Ownable {
       timelockDelay,
       curators,
       curators,
-      address(this)
+      address(0) // No admin
     );
 
     RelayPool pool = new RelayPool(

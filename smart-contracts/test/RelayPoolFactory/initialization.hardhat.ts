@@ -94,7 +94,7 @@ describe('RelayPoolFactory: deployment', () => {
       .withArgs('900000000000000000')
   })
 
-  it.only('should fail to deploy from an unauthorized user while there is an owner', async () => {
+  it('should fail to deploy from an unauthorized user while there is an owner', async () => {
     const [, anotherUser] = await ethers.getSigners()
     const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
     const userAddress = await anotherUser.getAddress()
@@ -196,5 +196,118 @@ describe('RelayPoolFactory: deployment', () => {
     expect(
       await timelock.hasRole(await timelock.CANCELLER_ROLE(), userAddress)
     ).to.be.equal(true)
+  })
+
+  it('should not let a random user update the delay on the timelock', async () => {
+    const [user, another] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
+
+    await myToken.mint(initialDeposit)
+    await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)
+    const defaultDelay = 60 * 60 * 24 * 7
+    const newDelay = 60
+
+    const tx = await relayPoolFactory.deployPool(
+      await myToken.getAddress(),
+      'Test Vault',
+      'RELAY',
+      await thirdPartyPool.getAddress(),
+      defaultDelay,
+      initialDeposit,
+      userAddress
+    )
+    const receipt = await tx.wait()
+    const event = await getEvent(
+      receipt!,
+      'PoolDeployed',
+      relayPoolFactory.interface
+    )
+
+    const timelock = await ethers.getContractAt(
+      'TimelockControllerUpgradeable',
+      event.args.timelock
+    )
+
+    // schedule the tx through the timelock
+    await expect(
+      timelock
+        .connect(another)
+        .schedule(
+          event.args.timelock,
+          0n,
+          timelock.interface.encodeFunctionData('updateDelay', [newDelay]),
+          ethers.ZeroHash,
+          ethers.id('UPDATE_DELAY'),
+          defaultDelay
+        )
+    ).to.be.revertedWithCustomError(
+      timelock,
+      'AccessControlUnauthorizedAccount'
+    )
+  })
+
+  it('should let the owner update the delay on the timelock', async () => {
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
+
+    await myToken.mint(initialDeposit)
+    await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)
+    const defaultDelay = 60 * 60 * 24 * 7
+    const newDelay = 60
+
+    const tx = await relayPoolFactory.deployPool(
+      await myToken.getAddress(),
+      'Test Vault',
+      'RELAY',
+      await thirdPartyPool.getAddress(),
+      defaultDelay,
+      initialDeposit,
+      userAddress
+    )
+    const receipt = await tx.wait()
+    const event = await getEvent(
+      receipt!,
+      'PoolDeployed',
+      relayPoolFactory.interface
+    )
+
+    const timelock = await ethers.getContractAt(
+      'TimelockControllerUpgradeable',
+      event.args.timelock
+    )
+    // check the delay now!
+    expect(await timelock.getMinDelay()).to.equal(defaultDelay)
+
+    // update the delay, thru a timelocked operation
+    const target = event.args.timelock
+    const value = 0n
+    const payload = timelock.interface.encodeFunctionData('updateDelay', [
+      newDelay,
+    ])
+    const predecessor = ethers.ZeroHash
+    const salt = ethers.id('UPDATE_DELAY')
+
+    // schedule the tx through the timelock
+    await (
+      await timelock.schedule(
+        target,
+        value,
+        payload,
+        predecessor,
+        salt,
+        defaultDelay
+      )
+    ).wait()
+    // Advance the time
+    await ethers.provider.send('evm_increaseTime', [defaultDelay + 1])
+
+    // execute the timelocked tx!
+    await (
+      await timelock.execute(target, value, payload, predecessor, salt)
+    ).wait()
+
+    expect(await timelock.getMinDelay()).to.equal(newDelay)
   })
 })

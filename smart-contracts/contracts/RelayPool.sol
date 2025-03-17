@@ -46,6 +46,7 @@ error TooMuchDebtFromOrigin(
   uint256 amount
 );
 error FailedTransfer(address recipient, uint256 amount);
+error InsufficientFunds(uint256 amount, uint256 balance);
 
 error NotAWethPool();
 error MessageTooRecent(
@@ -483,14 +484,17 @@ contract RelayPool is ERC4626, Ownable {
 
   // This function is called externally to claim funds from a bridge.
   // The funds are immediately added to the yieldPool
-  function claim(uint32 chainId, address bridge) external {
+  function claim(
+    uint32 chainId,
+    address bridge
+  ) public returns (uint256 amount) {
     OriginSettings storage origin = authorizedOrigins[chainId][bridge];
     if (origin.proxyBridge == address(0)) {
       revert UnauthorizedOrigin(chainId, bridge);
     }
 
     // We need to claim the funds from the bridge proxy contract
-    uint amount = IBridgeProxy(origin.proxyBridge).claim(
+    amount = IBridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset),
       origin.outstandingDebt
     );
@@ -584,8 +588,10 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   // @notice This function is used to handle failed (fast) messages manually
-  //  It provides a mechanism for the pool curator to recover funds from a
-  //  solver who have arrived thru the bridge but for which the hyperlane message was never processed
+  // It provides a mechanism for the pool curator to recover funds from a
+  // solver who have arrived thru the bridge but for which the hyperlane message was never processed.
+  // Given that this function is only callable by the owner, behind a timelock, it will likely only be called
+  // once the "slow" bridge has resolved, which means that it can claim funds.
   // @param recipient The address of the recipient
   // @param amount The amount of assets to transfer
   function processFailedHandler(
@@ -593,6 +599,7 @@ contract RelayPool is ERC4626, Ownable {
     address bridge,
     bytes calldata data
   ) public onlyOwner {
+    OriginSettings storage origin = authorizedOrigins[chainId][bridge]; // no validation here since this is onlyOwner and _may_ be called for a disabled origin.
     HyperlaneMessage memory message = abi.decode(data, (HyperlaneMessage));
 
     // Check if message was already processed
@@ -602,6 +609,14 @@ contract RelayPool is ERC4626, Ownable {
 
     // Mark the message as processed to avoid double processing (if the hyperlane message eventually makes it)
     messages[chainId][bridge][message.nonce] = data;
+
+    // Increase the outstanding debt with the amount
+    increaseOutstandingDebt(message.amount, origin);
+    // And immediately claim from the bridge to get the funds (and decrease the outstanding debt!)
+    uint256 amount = claim(chainId, bridge);
+    if (amount < message.amount) {
+      revert InsufficientFunds(amount, message.amount);
+    }
 
     // Send the funds to the recipient (we should not take fees because the funds have taken more time to arrive...)
     sendFunds(message.amount, message.recipient);

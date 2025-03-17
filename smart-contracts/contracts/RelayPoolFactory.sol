@@ -56,7 +56,8 @@ contract RelayPoolFactory {
     string memory symbol,
     address thirdPartyPool,
     uint timelockDelay,
-    uint256 initialDeposit
+    uint256 initialDeposit,
+    address curator
   ) public returns (address) {
     // We require an initial deposit of 1 unit
     uint8 decimals = asset.decimals();
@@ -68,15 +69,15 @@ contract RelayPoolFactory {
       revert InsufficientTimelockDelay(timelockDelay);
     }
 
-    address[] memory curator = new address[](1);
-    curator[0] = msg.sender;
+    address[] memory curators = new address[](1);
+    curators[0] = curator;
 
     // clone timelock
     address timelock = Clones.clone(TIMELOCK_TEMPLATE);
     RelayPoolTimelock(timelock).initialize(
       timelockDelay,
-      curator,
-      curator,
+      curators,
+      curators,
       address(0) // No admin
     );
 

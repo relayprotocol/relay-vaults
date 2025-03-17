@@ -1,14 +1,19 @@
 # Get all pools
-query GetAllPools {
-  relayPools(limit: 10) {
+query GetAllPools(
+  $limit: Int
+  $originsLimit: Int
+  $snapshotsLimit: Int
+  $targetTimestamp: BigInt!
+  $orderDirection: String!
+) {
+  relayPools(limit: $limit) {
     items {
-      contractAddress
       asset
-      chainId
-      outstandingDebt
+      contractAddress
       totalAssets
-      totalShares
-      origins(limit: 10) {
+      outstandingDebt
+      chainId
+      origins(limit: $originsLimit) {
         totalCount
         items {
           proxyBridge
@@ -16,15 +21,29 @@ query GetAllPools {
           originBridge
         }
       }
+      snapshots(
+        limit: $snapshotsLimit
+        where: { timestamp_lte: $targetTimestamp }
+        orderBy: "blockNumber"
+        orderDirection: $orderDirection
+      ) {
+        items {
+          vault
+          blockNumber
+          timestamp
+          sharePrice
+          yieldPoolSharePrice
+        }
+      }
     }
   }
 }
 
 # Get a specific pool
-query GetRelayPool($contractAddress: String!) {
-  relayPool(contractAddress: $contractAddress) {
+query GetRelayPool($contractAddress: String!, $chainId: Float!) {
+  relayPool(contractAddress: $contractAddress, chainId: $chainId) {
     contractAddress
-    creator
+    curator
     asset
     yieldPool
     outstandingDebt
@@ -36,40 +55,147 @@ query GetRelayPool($contractAddress: String!) {
   }
 }
 
-# Get a user's balance across all pools
-query GetUserBalances($walletAddress: String!) {
-  userBalances(where: { wallet: $walletAddress }) {
+# Get all bridge transactions by status
+query GetAllBridgeTransactionsByType(
+  $nativeBridgeStatus: String!
+  $limit: Int
+) {
+  bridgeTransactions(
+    where: { nativeBridgeStatus: $nativeBridgeStatus }
+    limit: $limit
+  ) {
     items {
-      relayPool
-      balance
-      pool {
-        contractAddress
+      originBridgeAddress
+      nonce
+      originChainId
+      destinationPoolAddress
+      destinationPoolChainId
+      originSender
+      destinationRecipient
+      asset
+      amount
+      hyperlaneMessageId
+      nativeBridgeStatus
+      opProofTxHash
+      nativeBridgeFinalizedTxHash
+      loanEmittedTxHash
+      originTimestamp
+      originTxHash
+    }
+  }
+}
+
+# Get detailed pool information with snapshots at a specific time
+query GetPoolDetails(
+  $poolAddress: String!
+  $chainId: Float!
+  $originsLimit: Int
+  $snapshotsLimit: Int
+  $targetTimestamp: BigInt!
+  $orderDirection: String!
+) {
+  relayPool(contractAddress: $poolAddress, chainId: $chainId) {
+    yieldPool
+    contractAddress
+    chainId
+    asset
+    totalAssets
+    totalShares
+    outstandingDebt
+    totalBridgeFees
+    origins(limit: $originsLimit) {
+      totalCount
+      items {
         chainId
-        asset
-        totalAssets
-        totalShares
-        outstandingDebt
+        proxyBridge
+        bridgeFee
+        coolDown
+        originChainId
+        originBridge
+        currentOutstandingDebt
+        maxDebt
+      }
+    }
+    snapshots(
+      limit: $snapshotsLimit
+      where: { timestamp_lte: $targetTimestamp }
+      orderBy: "blockNumber"
+      orderDirection: $orderDirection
+    ) {
+      items {
+        vault
+        blockNumber
+        timestamp
+        sharePrice
+        yieldPoolSharePrice
       }
     }
   }
 }
 
-# Get a user's balance for a specific pool
-query GetUserBalanceInPool($walletAddress: String!, $poolAddress: String!) {
-  userBalances(where: { wallet: $walletAddress, relayPool: $poolAddress }) {
+# Get yield pool information
+query GetYieldPool($yieldPoolAddress: String!, $chainId: Float!) {
+  yieldPool(contractAddress: $yieldPoolAddress, chainId: $chainId) {
+    contractAddress
+    name
+    lastUpdated
+  }
+}
+
+# Get transaction volume for a pool since a specific timestamp
+query GetVolume($poolAddress: String!, $fromTimestamp: BigInt!, $limit: Int) {
+  bridgeTransactions(
+    where: {
+      destinationPoolAddress: $poolAddress
+      originTimestamp_gt: $fromTimestamp
+    }
+    limit: $limit
+  ) {
+    items {
+      amount
+    }
+  }
+}
+
+# Get user balances with detailed pool information
+query GetUserBalances($walletAddress: String!, $limit: Int) {
+  userBalances(where: { wallet: $walletAddress }, limit: $limit) {
     items {
       relayPool
-      balance
+      shareBalance
       totalDeposited
       totalWithdrawn
-      lastUpdated
       pool {
         contractAddress
-        chainId
         asset
         totalAssets
         totalShares
-        outstandingDebt
+        chainId
+      }
+    }
+  }
+}
+
+# Get user balance in a specific pool
+query GetUserBalanceForPool(
+  $walletAddress: String!
+  $poolAddress: String!
+  $limit: Int
+) {
+  userBalances(
+    where: { AND: [{ wallet: $walletAddress }, { relayPool: $poolAddress }] }
+    limit: $limit
+  ) {
+    items {
+      shareBalance
+      totalDeposited
+      totalWithdrawn
+      pool {
+        contractAddress
+        asset
+        chainId
+        totalAssets
+        totalShares
       }
     }
   }

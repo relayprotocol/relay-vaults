@@ -2,10 +2,18 @@ import { expect } from 'chai'
 import { AbiCoder } from 'ethers'
 import { ethers, ignition } from 'hardhat'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
-import { MyToken, MyWeth, MyYieldPool, RelayPool } from '../../typechain-types'
+import {
+  MyToken,
+  MyWeth,
+  MyYieldPool,
+  OPStackNativeBridgeProxy,
+  RelayPool,
+} from '../../typechain-types'
+import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 const relayBridgeOptimism = '0x0000000000000000000000000000000000000010'
-const oPStackNativeBridgeProxy = '0x0000000000000000000000000000000000000010'
+const portalProxy = '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e'
+
 const now = () => Math.floor(new Date().getTime() / 1000)
 
 export const encodeData = (
@@ -19,11 +27,12 @@ export const encodeData = (
   return abiCoder.encode(types, [nonce, recipient, amount, timestamp || now()])
 }
 
-describe('ERC20 RelayBridge: when a message was never received from Hyperlane', () => {
+describe('RelayPool: when a message was never received from Hyperlane', () => {
   let relayPool: RelayPool
   let myToken: MyToken
   let thirdPartyPool: MyYieldPool
   let myWeth: MyWeth
+  let bridgeProxy: OPStackNativeBridgeProxy
 
   before(async () => {
     const [user] = await ethers.getSigners()
@@ -56,11 +65,24 @@ describe('ERC20 RelayBridge: when a message was never received from Hyperlane', 
       parameters,
     }))
 
+    const bridgeProxyParameters = {
+      OPStackNativeBridgeProxy: {
+        portalProxy,
+        relayPoolChainId: 31337,
+        relayPool: await relayPool.getAddress(),
+        l1BridgeProxy: ethers.ZeroAddress,
+      },
+    }
+    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
+      parameters: bridgeProxyParameters,
+    })
+    bridgeProxy = bridge
+
     await relayPool.addOrigin({
       chainId: 10,
       bridge: relayBridgeOptimism,
       maxDebt: ethers.parseEther('10'),
-      proxyBridge: oPStackNativeBridgeProxy,
+      proxyBridge: await bridgeProxy.getAddress(),
       bridgeFee: 0,
       curator: userAddress,
       coolDown: 10, // 10 seconds!
@@ -91,12 +113,16 @@ describe('ERC20 RelayBridge: when a message was never received from Hyperlane', 
   it('should refuse to handle messages that have already been handled', async () => {
     const [user] = await ethers.getSigners()
     const userAddress = await user.getAddress()
+    const amount = ethers.parseUnits('1')
+
+    // Send funds to the proxyBridge
+    await myToken.connect(user).transfer(await bridgeProxy.getAddress(), amount)
 
     // should work!
     await relayPool.processFailedHandler(
       10,
       relayBridgeOptimism,
-      encodeData(2n, userAddress, ethers.parseUnits('1'))
+      encodeData(2n, userAddress, amount)
     )
 
     // should fail!
@@ -130,20 +156,42 @@ describe('ERC20 RelayBridge: when a message was never received from Hyperlane', 
       .withArgs(10, relayBridgeOptimism, 3n)
   })
 
-  it('should send funds to the recipient', async () => {
+  it('should send funds to the recipient and have the correct accounting', async () => {
     const [user] = await ethers.getSigners()
     const userAddress = await user.getAddress()
+    const amount = ethers.parseUnits('1')
+    // Send funds to the proxyBridge
+    await myToken.connect(user).transfer(await bridgeProxy.getAddress(), amount)
 
     const userBalanceBefore = await myToken.balanceOf(userAddress)
     // should work!
     await relayPool.processFailedHandler(
       10,
       relayBridgeOptimism,
-      encodeData(4n, userAddress, ethers.parseUnits('1'))
+      encodeData(4n, userAddress, amount)
     )
     const userBalanceAfter = await myToken.balanceOf(userAddress)
-    expect(userBalanceAfter - userBalanceBefore).to.equal(
-      ethers.parseUnits('1')
+    expect(userBalanceAfter - userBalanceBefore).to.equal(amount)
+  })
+
+  it('should fail if the funds never actually arrived on the bridge', async () => {
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const amount = ethers.parseUnits('1')
+
+    // Send some funds to the proxyBridge but not enough
+    await myToken
+      .connect(user)
+      .transfer(await bridgeProxy.getAddress(), amount / 2n)
+
+    await expect(
+      relayPool.processFailedHandler(
+        10,
+        relayBridgeOptimism,
+        encodeData(5n, userAddress, amount)
+      )
     )
+      .to.revertedWithCustomError(relayPool, 'InsufficientFunds')
+      .withArgs(amount / 2n, amount)
   })
 })

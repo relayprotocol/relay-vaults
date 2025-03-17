@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unknown
 pragma solidity ^0.8.28;
 
-import {BridgeProxy} from "../BridgeProxy/BridgeProxy.sol";
+import {BridgeProxy} from "../../BridgeProxy/BridgeProxy.sol";
 
 // This is a fake contract to be used in tests
 contract FakeBridgeProxy is BridgeProxy {

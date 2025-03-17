@@ -10,7 +10,7 @@ import {IWETH} from "./interfaces/IWETH.sol";
 import {ITokenSwap} from "./interfaces/ITokenSwap.sol";
 import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
-import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
+import {IBridgeProxy} from "./interfaces/IBridgeProxy.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 
@@ -490,7 +490,7 @@ contract RelayPool is ERC4626, Ownable {
     }
 
     // We need to claim the funds from the bridge proxy contract
-    uint amount = BridgeProxy(origin.proxyBridge).claim(
+    uint amount = IBridgeProxy(origin.proxyBridge).claim(
       address(asset) == WETH ? address(0) : address(asset),
       origin.outstandingDebt
     );

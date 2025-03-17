@@ -22,18 +22,18 @@ contract RelayBridge is IRelayBridge {
   uint256 public constant IGP_GAS_LIMIT = 300_000;
 
   uint256 public transferNonce;
-  address public asset;
-  BridgeProxy public bridgeProxy;
-  address public hyperlaneMailbox;
+  address public immutable ASSET;
+  BridgeProxy public immutable BRIDGE_PROXY;
+  address public immutable HYPERLANE_MAILBOX;
 
   event BridgeInitiated(
     uint256 indexed nonce,
     address indexed sender,
     address recipient,
-    address asset,
+    address ASSET,
     address l1Asset,
     uint256 amount,
-    BridgeProxy bridgeProxy
+    BridgeProxy BRIDGE_PROXY
   );
 
   event BridgeExecuted(uint256 indexed nonce);
@@ -45,9 +45,9 @@ contract RelayBridge is IRelayBridge {
     BridgeProxy _bridgeProxy,
     address _hyperlaneMailbox
   ) {
-    asset = _asset;
-    bridgeProxy = _bridgeProxy;
-    hyperlaneMailbox = _hyperlaneMailbox;
+    ASSET = _asset;
+    BRIDGE_PROXY = _bridgeProxy;
+    HYPERLANE_MAILBOX = _hyperlaneMailbox;
   }
 
   /// @notice Calculates the Hyperlane fee required for bridging
@@ -64,12 +64,12 @@ contract RelayBridge is IRelayBridge {
       amount,
       block.timestamp
     );
-    uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
-    bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
+    uint32 poolChainId = uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID());
+    bytes32 poolId = bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())));
 
     // Get the fee for the cross-chain message
     return
-      IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
+      IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
         poolChainId,
         poolId,
         data,
@@ -87,13 +87,13 @@ contract RelayBridge is IRelayBridge {
     nonce = transferNonce++;
 
     // Encode the data for the cross-chain message
-    // No need to pass the asset since the bridge and the pool are asset-specific
+    // No need to pass the ASSET since the bridge and the pool are ASSET-specific
     bytes memory data = abi.encode(nonce, recipient, amount, block.timestamp);
 
     // Get the fee for the cross-chain message
-    uint32 poolChainId = uint32(bridgeProxy.RELAY_POOL_CHAIN_ID());
-    bytes32 poolId = bytes32(uint256(uint160(bridgeProxy.RELAY_POOL())));
-    uint256 hyperlaneFee = IHyperlaneMailbox(hyperlaneMailbox).quoteDispatch(
+    uint32 poolChainId = uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID());
+    bytes32 poolId = bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())));
+    uint256 hyperlaneFee = IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
       poolChainId,
       poolId,
       data,
@@ -101,10 +101,10 @@ contract RelayBridge is IRelayBridge {
     );
 
     // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
-    if (asset != address(0)) {
+    if (ASSET != address(0)) {
       // Take the ERC20 tokens from the sender
       SafeERC20.safeTransferFrom(
-        IERC20(asset),
+        IERC20(ASSET),
         msg.sender,
         address(this),
         amount
@@ -119,10 +119,10 @@ contract RelayBridge is IRelayBridge {
     }
 
     // Issue transfer on the bridge
-    (bool success, ) = address(bridgeProxy).delegatecall(
+    (bool success, ) = address(BRIDGE_PROXY).delegatecall(
       abi.encodeWithSignature(
         "bridge(address,address,uint256,bytes)",
-        asset,
+        ASSET,
         l1Asset,
         amount,
         data
@@ -131,7 +131,7 @@ contract RelayBridge is IRelayBridge {
     if (!success) revert BridgingFailed(nonce);
 
     // Send the Hyperlane message, with the right fee
-    IHyperlaneMailbox(hyperlaneMailbox).dispatch{value: hyperlaneFee}(
+    IHyperlaneMailbox(HYPERLANE_MAILBOX).dispatch{value: hyperlaneFee}(
       poolChainId,
       poolId,
       data,
@@ -142,15 +142,15 @@ contract RelayBridge is IRelayBridge {
       nonce,
       msg.sender,
       recipient,
-      asset,
+      ASSET,
       l1Asset,
       amount,
-      bridgeProxy
+      BRIDGE_PROXY
     );
 
     // refund extra value to msg.sender (we ignore failures here)
     bool refundSuccess;
-    if (asset != address(0)) {
+    if (ASSET != address(0)) {
       if (msg.value > hyperlaneFee) {
         (refundSuccess, ) = msg.sender.call{value: msg.value - hyperlaneFee}(
           new bytes(0)

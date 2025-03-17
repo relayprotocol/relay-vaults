@@ -14,7 +14,7 @@ interface IRelayBridge {
   function bridge(
     uint256 amount,
     address recipient,
-    address l1ASSET
+    address l1Asset
   ) external payable returns (uint256 nonce);
 }
 
@@ -31,7 +31,7 @@ contract RelayBridge is IRelayBridge {
     address indexed sender,
     address recipient,
     address ASSET,
-    address l1ASSET,
+    address l1Asset,
     uint256 amount,
     BridgeProxy BRIDGE_PROXY
   );
@@ -81,7 +81,7 @@ contract RelayBridge is IRelayBridge {
   function bridge(
     uint256 amount,
     address recipient,
-    address l1ASSET
+    address l1Asset
   ) external payable returns (uint256 nonce) {
     // Associate the withdrawal to a unique id
     nonce = transferNonce++;
@@ -123,7 +123,7 @@ contract RelayBridge is IRelayBridge {
       abi.encodeWithSignature(
         "bridge(address,address,uint256,bytes)",
         ASSET,
-        l1ASSET,
+        l1Asset,
         amount,
         data
       )
@@ -143,7 +143,7 @@ contract RelayBridge is IRelayBridge {
       msg.sender,
       recipient,
       ASSET,
-      l1ASSET,
+      l1Asset,
       amount,
       BRIDGE_PROXY
     );

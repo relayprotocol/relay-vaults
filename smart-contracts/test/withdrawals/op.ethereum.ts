@@ -91,23 +91,24 @@ describe('op withdrawal helper', function () {
     // https://optimistic.etherscan.io/tx/0xe21e6a9d6c214c50d1fa864d21a9db35c9f05b14d683d773146fc8ec42f256c1
     const withdrawalHash =
       '0xe21e6a9d6c214c50d1fa864d21a9db35c9f05b14d683d773146fc8ec42f256c1'
-
-    // Get the withdrawal data
-    const proof = await buildProveWithdrawal(10, withdrawalHash, 1)
-    const withdrawal = await buildFinalizeWithdrawal(10, withdrawalHash)
-
+    const submitter = '0x246A13358Fb27523642D86367a51C2aEB137Ac6C'
     // Prove the withdrawal
-    const tx1 = await portal.proveWithdrawalTransaction(
-      proof.outputRootProof,
-      proof.withdrawalProof,
-      withdrawal
-    )
-    await tx1.wait()
+    // const proof = await buildProveWithdrawal(10, withdrawalHash, 1)
+    // const txProve = await portalProxy.proveWithdrawalTransaction(
+    //   proof.transaction,
+    //   proof.disputeGameIndex,
+    //   proof.outputRootProof,
+    //   proof.withdrawalProof
+    // )
+    // const receiptProve = await txProve.wait()
+    // console.log(receiptProve)
 
     // Finalize the withdrawal
-    const tx2 = await portal
-      .connect(user)
-      .finalizeWithdrawalTransaction(withdrawal)
+    const finalizeParams = await buildFinalizeWithdrawal(10, withdrawalHash)
+    const tx2 = await portalProxy.finalizeWithdrawalTransactionExternalProof(
+      finalizeParams,
+      submitter
+    )
     const receipt = await tx2.wait()
 
     // Verify the events

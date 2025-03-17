@@ -37,9 +37,7 @@ export const fetchRawProof = async (
     },
     method: 'POST',
   })
-  const res = await resp.json()
-  console.log({ res })
-  const { result } = res as JsonRpcResult
+  const { result } = (await resp.json()) as JsonRpcResult
   return result
 }
 

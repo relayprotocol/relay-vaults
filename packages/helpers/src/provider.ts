@@ -11,20 +11,25 @@ export const getProvider = (chainId: bigint | string | number) => {
 export const fetchRawProof = async (
   slot: string,
   blockHash: string,
-  chainId: bigint | string = 10n
+  chainId: bigint | string
 ) => {
-  console.log({ blockHash, slot })
-  const { rpc } = networks[chainId.toString()]
-  const resp = await fetch(rpc[0], {
+  // here we need a RPC that implements the `eth_getProof` method
+  // unlock (quicknode) does
+  const rpc = `https://rpc.unlock-protocol.com/${chainId.toString()}`
+
+  // const r = chainId === 10n ? 'https://optimism-rpc.publicnode.com' : rpc[0]
+  const params = [
+    '0x4200000000000000000000000000000000000016', // MessagePasser
+    [slot],
+    blockHash,
+  ]
+  // console.log({ params, r })
+  const resp = await fetch(rpc, {
     body: JSON.stringify({
       id: 1,
       jsonrpc: '2.0',
       method: 'eth_getProof',
-      params: [
-        '0x4200000000000000000000000000000000000016', // MessagePasser
-        [slot],
-        blockHash,
-      ],
+      params,
     }),
     headers: {
       Accept: 'application/json',
@@ -33,7 +38,7 @@ export const fetchRawProof = async (
     method: 'POST',
   })
   const res = await resp.json()
-  console.log(res)
+  console.log({ res })
   const { result } = res as JsonRpcResult
   return result
 }

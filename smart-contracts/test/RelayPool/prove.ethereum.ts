@@ -19,8 +19,7 @@ describe('RelayBridge: prove', () => {
 
       const proveParams = await buildProveWithdrawal(
         originChainId,
-        withdrawlTxHash,
-        Number(destinationPoolChainId)
+        withdrawlTxHash
       )
 
       const portal = new ethers.Contract(
@@ -49,8 +48,7 @@ describe('RelayBridge: prove', () => {
 
       const proveParams = await buildProveWithdrawal(
         originChainId,
-        withdrawlTxHash,
-        Number(destinationPoolChainId)
+        withdrawlTxHash
       )
 
       const portal = new ethers.Contract(

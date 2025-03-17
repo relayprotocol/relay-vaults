@@ -12,6 +12,7 @@ import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 
 struct OriginSettings {
   address curator;
@@ -54,6 +55,9 @@ error MessageTooRecent(
   uint256 timestamp,
   uint32 coolDown
 );
+
+error SharePriceTooLow(uint256 actualPrice, uint256 minPrice);
+error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
 
 contract RelayPool is ERC4626, Ownable {
   // The address of the Hyperlane mailbox
@@ -162,9 +166,32 @@ contract RelayPool is ERC4626, Ownable {
     emit StreamingPeriodChanged(oldPeriod, newPeriod);
   }
 
-  function updateYieldPool(address newPool) public onlyOwner {
+  /**
+   * @notice Updates the yield pool, moving all assets from the old pool to the new one
+   * @param newPool The address of the new yield pool
+   * @param minSharePriceFromOldPool The minimum acceptable share price when withdrawing from the old pool
+   * @param maxSharePricePriceFromNewPool The maximum acceptable share price when depositing into the new pool
+   * @dev This function implements share price-based slippage protection to ensure fair value transfer between pools
+   */
+  function updateYieldPool(
+    address newPool,
+    uint256 minSharePriceFromOldPool,
+    uint256 maxSharePricePriceFromNewPool
+  ) public onlyOwner {
     address oldPool = yieldPool;
     uint256 sharesOfOldPool = ERC20(yieldPool).balanceOf(address(this));
+
+    // Calculate share price of old pool
+    uint256 oldPoolSharePrice = FixedPointMathLib.divWadDown(
+      ERC4626(oldPool).totalAssets(),
+      ERC4626(oldPool).totalSupply()
+    );
+
+    // Check if share price is too low
+    if (oldPoolSharePrice < minSharePriceFromOldPool) {
+      revert SharePriceTooLow(oldPoolSharePrice, minSharePriceFromOldPool);
+    }
+
     // Redeem all the shares from the old pool
     uint256 withdrawnAssets = ERC4626(yieldPool).redeem(
       sharesOfOldPool,
@@ -172,8 +199,29 @@ contract RelayPool is ERC4626, Ownable {
       address(this)
     );
     yieldPool = newPool;
+
+    // Calculate share price of new pool
+    uint256 newPoolSharePrice = FixedPointMathLib.divWadDown(
+      ERC4626(newPool).totalAssets(),
+      ERC4626(newPool).totalSupply()
+    );
+
+    // Check if share price is too high
+    if (newPoolSharePrice > maxSharePricePriceFromNewPool) {
+      revert SharePriceTooHigh(
+        newPoolSharePrice,
+        maxSharePricePriceFromNewPool
+      );
+    }
+
     // Deposit all assets into the new pool
+    SafeERC20.safeIncreaseAllowance(
+      IERC20(address(asset)),
+      newPool,
+      withdrawnAssets
+    );
     depositAssetsInYieldPool(withdrawnAssets);
+
     emit YieldPoolChanged(oldPool, newPool);
   }
 

@@ -8,25 +8,13 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IUniversalRouter} from "./interfaces/uniswap/IUniversalRouter.sol";
 import {IRelayPool} from "./interfaces/IRelayPool.sol";
 
-library SafeCast160 {
-  error UnsafeCast();
-
-  /// @notice Safely casts uint256 to uint160
-  /// @param value The uint256 to be cast
-  function toUint160(uint256 value) internal pure returns (uint160) {
-    if (value > type(uint160).max) revert UnsafeCast();
-    return uint160(value);
-  }
-}
-
 /**
  * @title TokenSwap
- * @notice A helper contract to swap tokens
+ * @notice A helper contract that facilitates token swaps through Uniswap's Universal Router
+ * @dev This contract is designed to work with RelayPool contracts and handles swapping of
+ *      various tokens to the pool's asset token using Uniswap V3 pools
  */
 contract TokenSwap {
-  // make sure we dont exceed type uint160 when casting
-  using SafeCast160 for uint256;
-
   // required by Uniswap Universal Router
   address public immutable UNISWAP_UNIVERSAL_ROUTER;
 
@@ -37,6 +25,7 @@ contract TokenSwap {
   event TokenSwapped(
     address pool,
     address tokenIn,
+    address tokenOut,
     uint256 amountIn,
     uint256 amountOut
   );
@@ -58,20 +47,26 @@ contract TokenSwap {
   }
 
   /**
-   * Simple helper to retrieve balance in ERC20 or native tokens
-   * @param token the address of the token (address(0) for native token)
+   * @notice Retrieves the balance of a specified token for this contract
+   * @param token The address of the ERC20 token
+   * @return The balance of the specified token held by this contract
+   * @dev This is a helper function used internally to check token balances
    */
-  function getBalance(address token) internal view returns (uint256) {
+  function _getBalance(address token) internal view returns (uint256) {
     return IERC20(token).balanceOf(address(this));
   }
 
   /**
-   * Swap tokens to UDT and burn the tokens
-   *
-   * @notice The default route is token > WETH > asset.
-   * If `uniswapWethPoolFeeAsset` is set to null, then we do a direct swap token > asset
-   * @param deadline The deadline for the swap transaction
-   * @param amountOutMinimum The minimum amount of output tokens that must be received for the transaction not to revert
+   * @notice Swaps input tokens for the pool's asset token using Uniswap V3
+   * @param tokenAddress The address of the input token to swap
+   * @param uniswapWethPoolFeeToken The fee tier for the token-WETH pool (if used)
+   * @param uniswapWethPoolFeeAsset The fee tier for the WETH-asset pool (if used)
+   * @param deadline The Unix timestamp after which the swap will revert
+   * @param amountOutMinimum The minimum amount of output tokens that must be received
+   * @return amountOut The amount of output tokens received from the swap
+   * @dev The swap can follow two routes:
+   *      1. Direct: token -> asset (when uniswapWethPoolFeeAsset is 0)
+   *      2. Through WETH: token -> WETH -> asset (default route)
    */
   function swap(
     address tokenAddress,
@@ -86,19 +81,12 @@ contract TokenSwap {
     address wrappedAddress = IRelayPool(pool).WETH();
 
     // get total balance of token to swap
-    uint256 tokenAmount = getBalance(tokenAddress);
-    uint256 assetAmountBefore = getBalance(asset);
+    uint256 tokenAmount = _getBalance(tokenAddress);
+    uint256 assetAmountBefore = _getBalance(asset);
 
     if (tokenAddress == asset) {
       revert UnauthorizedSwap();
     }
-
-    // Approve the router to spend src ERC20
-    TransferHelper.safeApprove(
-      tokenAddress,
-      UNISWAP_UNIVERSAL_ROUTER,
-      tokenAmount
-    );
 
     // send tokens to universal router to manipulate the token
     SafeERC20.safeTransfer(
@@ -136,7 +124,7 @@ contract TokenSwap {
     );
 
     // check if assets have actually been swapped
-    amountOut = getBalance(asset) - assetAmountBefore;
+    amountOut = _getBalance(asset) - assetAmountBefore;
     if (amountOut == 0) {
       revert TokenSwappedFailed(
         UNISWAP_UNIVERSAL_ROUTER,
@@ -147,10 +135,11 @@ contract TokenSwap {
 
     // transfer the swapped asset to the pool
     SafeERC20.safeTransfer(IERC20(asset), pool, amountOut);
-
-    emit TokenSwapped(pool, tokenAddress, tokenAmount, amountOut);
+    emit TokenSwapped(pool, tokenAddress, asset, tokenAmount, amountOut);
   }
 
-  // required to withdraw WETH
+  /**
+   * @dev This function is required to handle ETH received from unwrapping WETH during swaps
+   */
   receive() external payable {}
 }

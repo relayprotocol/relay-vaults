@@ -121,17 +121,9 @@ export async function constructArbProof(
   // NB: calling `sendMerkleTreeState` on ArbSys returned a wrong value
   // that makes the merkle computation fails when claiming later from the outbox
   // so we have to get the size directly from the latest "rolled up" block
-  const arbsys = new ethers.Contract(
-    '0x0000000000000000000000000000000000000064',
-    arbsysInterface,
-    arbProvider
-  )
-  const { size: merkleTreeSize } = await arbsys.sendMerkleTreeState()
 
-  // fetch raw block
   // NB: we have to use a json rpc call as ethers will filter out
   // additional block params added by Arbitrum
-  // TODO: make sure fetched block sendRoot if identical to the one in coords
   const { blockHash: latestConfirmedBlockHash } =
     await getLatestConfirmedBlockCoords(l1ChainId)
   const latestConfirmededBlock = await fetchRawBlock(
@@ -139,8 +131,10 @@ export async function constructArbProof(
     latestConfirmedBlockHash
   )
   const sendRootSizeConfirmed = BigInt(latestConfirmededBlock.sendCount)
-  console.log({ merkleTreeSize, sendRootSizeConfirmed })
 
+  if (leaf > sendRootSizeConfirmed) {
+    throw Error(`Leaf not in tree yet: ${leaf}/${sendRootSizeConfirmed}`)
+  }
   // use Arb's NodeInterface precompiled to comppute proof
   const INodeInterface = new ethers.Interface(NODE_INTERFACE_ABI)
   const nodeInterface = new ethers.Contract(
@@ -152,7 +146,7 @@ export async function constructArbProof(
   // construct actual proof using
   const { /*send , root, */ proof } =
     await nodeInterface.constructOutboxProof.staticCall(
-      merkleTreeSize, // sendRootSizeConfirmed,
+      sendRootSizeConfirmed,
       ethers.Typed.uint64(leaf) // position
     )
 

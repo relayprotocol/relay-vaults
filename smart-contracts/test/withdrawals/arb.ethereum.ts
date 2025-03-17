@@ -3,7 +3,6 @@ import { ZeroAddress } from 'ethers'
 import { expect } from 'chai'
 import { constructArbProof, getEvent } from '@relay-protocol/helpers'
 
-import { ArbitrumOrbitNativeBridgeProxy } from '../../typechain-types'
 import { networks } from '@relay-protocol/networks'
 import { getBalance } from '@relay-protocol/helpers'
 

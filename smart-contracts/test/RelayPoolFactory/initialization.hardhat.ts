@@ -94,10 +94,38 @@ describe('RelayPoolFactory: deployment', () => {
       .withArgs('900000000000000000')
   })
 
-  it('should fail to deploy a pool with the timelock delay is insufficient', async () => {
+  it.only('should fail to deploy from an unauthorized user while there is an owner', async () => {
+    const [, anotherUser] = await ethers.getSigners()
+    const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
+    const userAddress = await anotherUser.getAddress()
+
+    await myToken.mint(initialDeposit)
+    await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)
+
+    await expect(
+      relayPoolFactory
+        .connect(anotherUser)
+        .deployPool(
+          await myToken.getAddress(),
+          'Test Vault',
+          'RELAY',
+          await thirdPartyPool.getAddress(),
+          1,
+          initialDeposit,
+          userAddress
+        )
+    )
+      .to.be.revertedWithCustomError(relayPoolFactory, 'UnauthorizedCaller')
+      .withArgs(userAddress)
+  })
+
+  it('should fail to deploy a pool with the timelock delay', async () => {
     const [user] = await ethers.getSigners()
     const initialDeposit = ethers.parseUnits('10', await myToken.decimals())
     const userAddress = await user.getAddress()
+
+    // We need to renounce the ownership of the factory
+    await relayPoolFactory.renounceOwnership()
 
     await myToken.mint(initialDeposit)
     await myToken.approve(await relayPoolFactory.getAddress(), initialDeposit)

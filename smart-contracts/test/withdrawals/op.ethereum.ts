@@ -1,7 +1,10 @@
 import { ethers, ignition } from 'hardhat'
 import { networks } from '@relay-protocol/networks'
 import { time } from '@nomicfoundation/hardhat-network-helpers'
-import { buildFinalizeWithdrawal } from '@relay-protocol/helpers'
+import {
+  buildProveWithdrawal,
+  buildFinalizeWithdrawal,
+} from '@relay-protocol/helpers'
 import { expect } from 'chai'
 import * as ABIs from '@relay-protocol/helpers/abis'
 import { IOptimismPortal } from '../../typechain-types'

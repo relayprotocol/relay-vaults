@@ -50,4 +50,7 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
       );
     }
   }
+
+  // Contract should be able to receive ETH
+  receive() external payable {}
 }

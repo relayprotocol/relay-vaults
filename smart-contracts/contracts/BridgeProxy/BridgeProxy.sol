@@ -72,7 +72,4 @@ contract BridgeProxy {
     }
     _;
   }
-
-  // Bridge contracts should be able to receive ETH
-  receive() external payable {}
 }

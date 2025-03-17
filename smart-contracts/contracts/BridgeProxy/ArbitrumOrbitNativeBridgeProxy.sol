@@ -57,4 +57,7 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
       ROUTER.outboundTransfer(l1Currency, L1_BRIDGE_PROXY, amount, "");
     }
   }
+
+  // Contract should be able to receive ETH
+  receive() external payable {}
 }

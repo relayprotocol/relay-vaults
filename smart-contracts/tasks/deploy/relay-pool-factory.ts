@@ -4,8 +4,8 @@ import { networks } from '@relay-protocol/networks'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 
 task('deploy:pool-factory', 'Deploy a relay pool factory')
-  .addOptionalParam('timelock', 'The Timelock contract to use')
-  .setAction(async (_, { ethers, ignition, run }) => {
+  .addOptionalParam('delay', 'The Timelock delay')
+  .setAction(async ({ delay }, { ethers, ignition, run }) => {
     // get args value
     const { chainId } = await ethers.provider.getNetwork()
     const {
@@ -15,11 +15,15 @@ task('deploy:pool-factory', 'Deploy a relay pool factory')
     } = networks[chainId.toString()]
     console.log(`deploying on ${networkName} (${chainId})...`)
 
+    if (!delay) {
+      delay = 60 * 60 * 24 * 7
+    }
     // deploy the pool using ignition
     const parameters = {
       RelayPoolFactory: {
         hyperlaneMailbox,
         weth,
+        delay,
       },
     }
 
@@ -47,6 +51,7 @@ task('deploy:pool-factory', 'Deploy a relay pool factory')
         hyperlaneMailbox,
         weth,
         await timelockTemplate.getAddress(),
+        delay,
       ],
     })
   })

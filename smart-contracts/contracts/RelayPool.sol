@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC4626} from "solmate/src/tokens/ERC4626.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -10,6 +12,7 @@ import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 
 struct OriginSettings {
   address curator;
@@ -52,6 +55,9 @@ error MessageTooRecent(
   uint256 timestamp,
   uint32 coolDown
 );
+
+error SharePriceTooLow(uint256 actualPrice, uint256 minPrice);
+error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
 
 contract RelayPool is ERC4626, Ownable {
   // The address of the Hyperlane mailbox
@@ -136,21 +142,21 @@ contract RelayPool is ERC4626, Ownable {
     ERC20 asset,
     string memory name,
     string memory symbol,
-    address thirdPartyPool,
-    address wrappedEth,
-    address curator
+    address _yieldPool,
+    address _weth,
+    address _curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
 
     // set the yieldPool
-    yieldPool = thirdPartyPool;
+    yieldPool = _yieldPool;
 
     // set weth
-    WETH = wrappedEth;
+    WETH = _weth;
 
     // Change the owner to the curator
-    transferOwnership(curator);
+    transferOwnership(_curator);
   }
 
   function updateStreamingPeriod(uint256 newPeriod) public onlyOwner {
@@ -160,9 +166,32 @@ contract RelayPool is ERC4626, Ownable {
     emit StreamingPeriodChanged(oldPeriod, newPeriod);
   }
 
-  function updateYieldPool(address newPool) public onlyOwner {
+  /**
+   * @notice Updates the yield pool, moving all assets from the old pool to the new one
+   * @param newPool The address of the new yield pool
+   * @param minSharePriceFromOldPool The minimum acceptable share price when withdrawing from the old pool
+   * @param maxSharePricePriceFromNewPool The maximum acceptable share price when depositing into the new pool
+   * @dev This function implements share price-based slippage protection to ensure fair value transfer between pools
+   */
+  function updateYieldPool(
+    address newPool,
+    uint256 minSharePriceFromOldPool,
+    uint256 maxSharePricePriceFromNewPool
+  ) public onlyOwner {
     address oldPool = yieldPool;
     uint256 sharesOfOldPool = ERC20(yieldPool).balanceOf(address(this));
+
+    // Calculate share price of old pool
+    uint256 oldPoolSharePrice = FixedPointMathLib.divWadDown(
+      ERC4626(oldPool).totalAssets(),
+      ERC4626(oldPool).totalSupply()
+    );
+
+    // Check if share price is too low
+    if (oldPoolSharePrice < minSharePriceFromOldPool) {
+      revert SharePriceTooLow(oldPoolSharePrice, minSharePriceFromOldPool);
+    }
+
     // Redeem all the shares from the old pool
     uint256 withdrawnAssets = ERC4626(yieldPool).redeem(
       sharesOfOldPool,
@@ -170,8 +199,29 @@ contract RelayPool is ERC4626, Ownable {
       address(this)
     );
     yieldPool = newPool;
+
+    // Calculate share price of new pool
+    uint256 newPoolSharePrice = FixedPointMathLib.divWadDown(
+      ERC4626(newPool).totalAssets(),
+      ERC4626(newPool).totalSupply()
+    );
+
+    // Check if share price is too high
+    if (newPoolSharePrice > maxSharePricePriceFromNewPool) {
+      revert SharePriceTooHigh(
+        newPoolSharePrice,
+        maxSharePricePriceFromNewPool
+      );
+    }
+
     // Deposit all assets into the new pool
+    SafeERC20.safeIncreaseAllowance(
+      IERC20(address(asset)),
+      newPool,
+      withdrawnAssets
+    );
     depositAssetsInYieldPool(withdrawnAssets);
+
     emit YieldPoolChanged(oldPool, newPool);
   }
 
@@ -204,7 +254,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function increaseOutStandingDebt(
+  function increaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -221,7 +271,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function decreaseOutStandingDebt(
+  function decreaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -303,7 +353,7 @@ contract RelayPool is ERC4626, Ownable {
   //       This creates a vulnerability where a 3rd party can inflate
   //       the share price and use that to capture the value created.
   function depositAssetsInYieldPool(uint256 amount) internal {
-    ERC20(asset).approve(yieldPool, amount);
+    SafeERC20.safeIncreaseAllowance(IERC20(address(asset)), yieldPool, amount);
     ERC4626(yieldPool).deposit(amount, address(this));
     emit AssetsDepositedIntoYieldPool(amount, yieldPool);
   }
@@ -379,7 +429,7 @@ contract RelayPool is ERC4626, Ownable {
         message.amount
       );
     }
-    increaseOutStandingDebt(message.amount, origin);
+    increaseOutstandingDebt(message.amount, origin);
 
     // We only send the amount net of fees
     sendFunds(message.amount - feeAmount, message.recipient);
@@ -417,15 +467,17 @@ contract RelayPool is ERC4626, Ownable {
 
   // Internal function to add assets to be accounted in a streaming fashgion
   function addToStreamingAssets(uint256 amount) internal returns (uint256) {
-    updateStreamedAssets();
-    // We ajdust the end of the stream based on the new amount
-    uint amountLeft = remainsToStream();
-    uint timeLeft = Math.max(endOfStream, block.timestamp) - block.timestamp;
-    uint weightedStreamingPeriod = (amountLeft *
-      timeLeft +
-      amount *
-      streamingPeriod) / (amountLeft + amount);
-    endOfStream = block.timestamp + weightedStreamingPeriod;
+    if (amount > 0) {
+      updateStreamedAssets();
+      // We adjust the end of the stream based on the new amount
+      uint amountLeft = remainsToStream();
+      uint timeLeft = Math.max(endOfStream, block.timestamp) - block.timestamp;
+      uint weightedStreamingPeriod = (amountLeft *
+        timeLeft +
+        amount *
+        streamingPeriod) / (amountLeft + amount);
+      endOfStream = block.timestamp + weightedStreamingPeriod;
+    }
     return totalAssetsToStream += amount;
   }
 
@@ -444,7 +496,7 @@ contract RelayPool is ERC4626, Ownable {
     );
 
     // We should have received funds
-    decreaseOutStandingDebt(amount, origin);
+    decreaseOutstandingDebt(amount, origin);
     // and we should deposit these funds into the yield pool
     depositAssetsInYieldPool(amount);
 
@@ -493,7 +545,8 @@ contract RelayPool is ERC4626, Ownable {
       revert UnauthorizedSwap(token);
     }
 
-    ERC20(token).transfer(tokenSwapAddress, amount);
+    SafeERC20.safeTransfer(IERC20(address(token)), tokenSwapAddress, amount);
+
     ITokenSwap(tokenSwapAddress).swap(
       token,
       uniswapWethPoolFeeToken,

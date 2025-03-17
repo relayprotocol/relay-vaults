@@ -138,8 +138,9 @@ export async function constructArbProof(
   const sendRootSizeConfirmed = BigInt(latestConfirmededBlock.sendCount)
 
   if (leaf > sendRootSizeConfirmed) {
-    throw Error(
-      `Leaf ${leaf} not in tree yet: (size: ${sendRootSize}, ${sendRootSizeConfirmed})`
+    // not confirmed yet
+    console.log(
+      `Leaf ${leaf} not confirmed yet: (size: ${sendRootSize}, ${sendRootSizeConfirmed})`
     )
   }
   // use Arb's NodeInterface precompiled to comppute proof
@@ -153,7 +154,7 @@ export async function constructArbProof(
   // construct actual proof using
   const { /*send , root, */ proof } =
     await nodeInterface.constructOutboxProof.staticCall(
-      sendRootSizeConfirmed, //sendRootSize,
+      sendRootSizeConfirmed,
       ethers.Typed.uint64(leaf) // position
     )
 

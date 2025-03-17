@@ -2,13 +2,7 @@ import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
 import { encodeData } from './hyperlane.hardhat'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
-import {
-  MyOpStackPortal,
-  MyToken,
-  MyWeth,
-  MyYieldPool,
-  RelayPool,
-} from '../../typechain-types'
+import { MyToken, MyWeth, MyYieldPool, RelayPool } from '../../typechain-types'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 import { reverts } from '../utils/errors'
 
@@ -21,7 +15,6 @@ describe('RelayPool: claim for native ETH', () => {
   let myWeth: MyWeth
   let thirdPartyPool: MyYieldPool
   let userAddress: string
-  let myOpStackPortal: MyOpStackPortal
 
   before(async () => {
     const [user] = await ethers.getSigners()
@@ -41,9 +34,6 @@ describe('RelayPool: claim for native ETH', () => {
     await myWeth.deposit({ value: initialDeposit })
     await myWeth.approve(thirdPartyPoolAddress, initialDeposit)
     await thirdPartyPool.deposit(initialDeposit, userAddress)
-
-    myOpStackPortal = await ethers.deployContract('MyOpStackPortal')
-
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
@@ -379,6 +369,8 @@ describe('RelayPool: claim for native ETH', () => {
       )
     })
     it('should prevent from claiming from unauthorized caller', async () => {
+      const [, , , , attacker] = await ethers.getSigners()
+
       // add origin
       const bridgeProxyParameters = {
         OPStackNativeBridgeProxy: {
@@ -433,10 +425,11 @@ describe('RelayPool: claim for native ETH', () => {
       ).to.be.greaterThan(0)
 
       // will revert here as block.chainid should be
-      const maliciousBridge = await ethers.deployContract('MaliciousBridge')
       await reverts(
-        maliciousBridge.claim(origin.chainId, origin.bridge),
-        `NotAuthorized("${await relayPool.getAddress()}", 31337)`
+        opBridgeProxy
+          .connect(attacker)
+          .claim(await relayPool.asset(), bridgedAmount),
+        `NotAuthorized("${await attacker.getAddress()}", 31337)`
       )
     })
   })
@@ -449,7 +442,6 @@ describe('RelayPool: claim for an ERC20', () => {
 
   let thirdPartyPool: MyYieldPool
   let userAddress: string
-  let myOpStackPortal: MyOpStackPortal
   let origin, bridgedAmount: bigint
 
   before(async () => {
@@ -470,8 +462,6 @@ describe('RelayPool: claim for an ERC20', () => {
     const initialDeposit = ethers.parseEther('1')
     await myToken.approve(thirdPartyPoolAddress, initialDeposit)
     await thirdPartyPool.deposit(initialDeposit, userAddress)
-
-    myOpStackPortal = await ethers.deployContract('MyOpStackPortal')
 
     // deploy the pool using ignition
     const parameters = {

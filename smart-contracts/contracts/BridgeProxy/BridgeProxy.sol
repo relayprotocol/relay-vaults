@@ -72,4 +72,6 @@ contract BridgeProxy {
     }
     _;
   }
+
+  receive() external payable {}
 }

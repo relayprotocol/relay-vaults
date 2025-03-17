@@ -4,7 +4,7 @@ import L2ToL1MessagePasserAbi from './abis/L2ToL1MessagePasser.json'
 import * as rlp from 'rlp'
 import Portal2 from './abis/op/Portal2.json'
 import DisputeGameFactory from './abis/op/DisputeGameFactory.json'
-import { getProvider } from './provider'
+import { getProvider, fetchRawProof } from './provider'
 
 import { networks } from '@relay-protocol/networks'
 import { L1NetworkConfig, L2NetworkConfig } from '@relay-protocol/types'
@@ -78,7 +78,6 @@ export const buildProveWithdrawal = async (
   if (!receipt) {
     throw new Error('No receipt found for withdrawal transaction')
   }
-
   // Extract event
   const event = await getEvent(
     receipt!,
@@ -137,11 +136,7 @@ export const buildProveWithdrawal = async (
   }
 
   // Get the storage proof
-  const proof = await provider.send('eth_getProof', [
-    '0x4200000000000000000000000000000000000016', // MessagePasser
-    [slot],
-    block!.hash,
-  ])
+  const proof = await fetchRawProof(slot, block!.hash!)
 
   // encode the root proof
   // const outputRootProof = abiCoder.encode(

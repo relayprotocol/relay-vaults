@@ -21,7 +21,4 @@ contract FakeBridgeProxy is BridgeProxy {
       revert("FakeBridgeProxy: bridge failed");
     }
   }
-
-  // This contract should be able to receive ETH!
-  receive() external payable {}
 }

@@ -21,8 +21,6 @@ const earliestBlocks = {
   arbSepolia: 130000000,
 }
 
-console.log(deployedAddresses['11155111'].RelayPoolFactory)
-
 export default createConfig({
   database: {
     kind: 'postgres',

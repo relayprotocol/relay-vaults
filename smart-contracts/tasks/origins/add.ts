@@ -2,10 +2,11 @@ import { task } from 'hardhat/config'
 import { Select, Input } from 'enquirer'
 import { networks } from '@relay-protocol/networks'
 import { L2NetworkConfig } from '@relay-protocol/types'
+import { getPoolsForNetwork } from '../deploy/bridge-proxy'
 
 task('pool:add-origin', 'Add origin for a pool')
-  .addParam('pool', 'the pool address')
-  .addParam('bridge', 'the address of the bridge contract on the L2')
+  .addOptionalParam('pool', 'the pool address')
+  .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
   .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
   .addOptionalParam('proxyBridge', 'the origin proxyBridge (on this L1)')
   .addOptionalParam('maxDebt', 'the maximum debt coming from the origin')
@@ -24,13 +25,31 @@ task('pool:add-origin', 'Add origin for a pool')
         curator,
         coolDown,
       },
-      { ethers, run }
+      { ethers }
     ) => {
       const { chainId } = await ethers.provider.getNetwork()
       const network = networks[chainId.toString()] as L2NetworkConfig
 
       if (network.l1ChainId) {
         throw Error('Origins can only be added on L1')
+      }
+
+      if (!poolAddress) {
+        const pools = await getPoolsForNetwork(Number(chainId))
+        poolAddress = await new Select({
+          name: 'poolAddress',
+          message: 'Please chose the relay vault address:',
+          choices: pools.map((pool) => {
+            return {
+              message: pool.params.name,
+              value: pool.address,
+            }
+          }),
+        }).run()
+      }
+
+      if (!bridgeAddress) {
+        // Read it from the files!
       }
 
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
@@ -119,7 +138,7 @@ task('pool:add-origin', 'Add origin for a pool')
       if (!coolDown) {
         coolDown = await new Input({
           message:
-            'Who should the the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)',
+            'What should the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)',
           default: 60 * 30, // 30 minutes
         }).run()
       }

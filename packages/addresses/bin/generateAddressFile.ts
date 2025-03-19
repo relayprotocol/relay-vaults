@@ -37,6 +37,15 @@ export const getAddresses = () => {
       if (address) {
         addresses[match.groups!.chainId].RelayPoolFactory = address
       }
+    } else if ((match = file.match(/RelayPoolNativeGateway-(?<chainId>.*)/))) {
+      addresses[match.groups!.chainId] ||= {}
+      const address = getAddressForFile(
+        file + '/deployed_addresses.json',
+        'RelayPoolNativeGateway#RelayPoolNativeGateway'
+      )
+      if (address) {
+        addresses[match.groups!.chainId].RelayPoolNativeGateway = address
+      }
     }
   })
   return addresses

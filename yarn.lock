@@ -4235,7 +4235,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-protocol/addresses@npm:1.0.1, @relay-protocol/addresses@workspace:packages/addresses":
+"@relay-protocol/addresses@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@relay-protocol/addresses@npm:1.0.1"
+  dependencies:
+    graphql: "npm:16.10.0"
+    graphql-request: "npm:7.1.2"
+    tsx: "npm:4.19.2"
+  checksum: 10/9f9cdd3d7b4e4065ec85f344cc59167daf47f4f2df7c07e5bb84208dc7e0c09d9fab52382bde042b27e4504472bd41bfbf4735ef5cd832a7b48ad953f4afb0ef
+  languageName: node
+  linkType: hard
+
+"@relay-protocol/addresses@workspace:packages/addresses":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/addresses@workspace:packages/addresses"
   dependencies:

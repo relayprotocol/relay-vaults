@@ -15,11 +15,13 @@ import networks from '@relay-protocol/networks'
 const deployedAddresses = getAddresses()
 
 const earliestBlocks = {
-  sepolia: 7500000,
-  opSepolia: 22000000,
-  baseSepolia: 21000000,
-  arbSepolia: 115000000,
+  sepolia: 7900000,
+  opSepolia: 25000000,
+  baseSepolia: 23000000,
+  arbSepolia: 130000000,
 }
+
+console.log(deployedAddresses['11155111'].RelayPoolFactory)
 
 export default createConfig({
   database: {

@@ -9,9 +9,9 @@ interface Addresses {
 const addresses: Addresses = {}
 
 const basePath = __dirname + '/../../../smart-contracts/ignition/deployments/'
-export const getAddressForFile = (file: string) => {
+export const getAddressForFile = (file: string, contractName: string) => {
   const deployments = JSON.parse(fs.readFileSync(basePath + file, 'utf-8'))
-  return Object.values(deployments)[0]
+  return deployments[contractName]
 }
 
 // export const getDeployBlock = async (address, chainID) => {}
@@ -19,23 +19,21 @@ export const getAddressForFile = (file: string) => {
 export const getAddresses = () => {
   fs.readdirSync(basePath).forEach((file) => {
     let match
-    if ((match = file.match(/BridgeProxy-(?<bridge>.*)-(?<chainId>.*)/))) {
+    if ((match = file.match(/RelayBridgeFactory-(?<chainId>.*)/))) {
       addresses[match.groups!.chainId] ||= {}
-      addresses[match.groups!.chainId].BridgeProxy ||= {}
-      const address = getAddressForFile(file + '/deployed_addresses.json')
-      if (address) {
-        addresses[match.groups!.chainId].BridgeProxy[match.groups!.bridge] =
-          address
-      }
-    } else if ((match = file.match(/RelayBridgeFactory-(?<chainId>.*)/))) {
-      addresses[match.groups!.chainId] ||= {}
-      const address = getAddressForFile(file + '/deployed_addresses.json')
+      const address = getAddressForFile(
+        file + '/deployed_addresses.json',
+        'RelayBridgeFactory#RelayBridgeFactory'
+      )
       if (address) {
         addresses[match.groups!.chainId].RelayBridgeFactory = address
       }
     } else if ((match = file.match(/RelayPoolFactory-(?<chainId>.*)/))) {
       addresses[match.groups!.chainId] ||= {}
-      const address = getAddressForFile(file + '/deployed_addresses.json')
+      const address = getAddressForFile(
+        file + '/deployed_addresses.json',
+        'RelayPoolFactory#RelayPoolFactory'
+      )
       if (address) {
         addresses[match.groups!.chainId].RelayPoolFactory = address
       }

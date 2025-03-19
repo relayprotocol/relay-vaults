@@ -1,50 +1,55 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { getProvider } from '@relay-protocol/helpers'
 
-interface Addresses {
-  [address: string]: any
+export interface Addresses {
+  [chainId: number]: {
+    RelayBridgeFactory?: `0x${string}`
+    RelayPoolFactory?: `0x${string}`
+    RelayPoolNativeGateway?: `0x${string}`
+  }
 }
 
 const addresses: Addresses = {}
 
 const basePath = __dirname + '/../../../smart-contracts/ignition/deployments/'
-export const getAddressForFile = (file: string, contractName: string) => {
+export const getAddressForFile = (
+  file: string,
+  contractName: string
+): `0x${string}` => {
   const deployments = JSON.parse(fs.readFileSync(basePath + file, 'utf-8'))
-  return deployments[contractName]
+  return deployments[contractName] as `0x${string}`
 }
-
-// export const getDeployBlock = async (address, chainID) => {}
 
 export const getAddresses = () => {
   fs.readdirSync(basePath).forEach((file) => {
     let match
     if ((match = file.match(/RelayBridgeFactory-(?<chainId>.*)/))) {
-      addresses[match.groups!.chainId] ||= {}
+      addresses[Number(match.groups!.chainId)] ||= {}
       const address = getAddressForFile(
         file + '/deployed_addresses.json',
         'RelayBridgeFactory#RelayBridgeFactory'
       )
       if (address) {
-        addresses[match.groups!.chainId].RelayBridgeFactory = address
+        addresses[Number(match.groups!.chainId)].RelayBridgeFactory = address
       }
     } else if ((match = file.match(/RelayPoolFactory-(?<chainId>.*)/))) {
-      addresses[match.groups!.chainId] ||= {}
+      addresses[Number(match.groups!.chainId)] ||= {}
       const address = getAddressForFile(
         file + '/deployed_addresses.json',
         'RelayPoolFactory#RelayPoolFactory'
       )
       if (address) {
-        addresses[match.groups!.chainId].RelayPoolFactory = address
+        addresses[Number(match.groups!.chainId)].RelayPoolFactory = address
       }
     } else if ((match = file.match(/RelayPoolNativeGateway-(?<chainId>.*)/))) {
-      addresses[match.groups!.chainId] ||= {}
+      addresses[Number(match.groups!.chainId)] ||= {}
       const address = getAddressForFile(
         file + '/deployed_addresses.json',
         'RelayPoolNativeGateway#RelayPoolNativeGateway'
       )
       if (address) {
-        addresses[match.groups!.chainId].RelayPoolNativeGateway = address
+        addresses[Number(match.groups!.chainId)].RelayPoolNativeGateway =
+          address
       }
     }
   })

@@ -132,7 +132,6 @@ task('deploy:pool', 'Deploy a relay vault')
 
       if (assetSymbol == 'WETH') {
         const balance = await assetContract.balanceOf(userAddress)
-        console.log({ balance })
         if (balance < depositAmount) {
           console.log('Wrapping WETH...')
           // Wrap WETH!

@@ -92,8 +92,6 @@ task('pool:add-origin', 'Add origin for a pool')
         l2provider
       )
 
-      console.log(`${bridgeProxyAddress}, ${l2Network.rpc[0]}`)
-
       if (
         (await l2BridgeProxy.RELAY_POOL_CHAIN_ID()) !== chainId ||
         (await l2BridgeProxy.RELAY_POOL()) !== poolAddress

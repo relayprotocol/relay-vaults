@@ -68,22 +68,12 @@ For local/test deployments, you can use a dummy yield pool which will be automat
 Deploy the bridge proxy on L1 for each L2 network you want to support:
 
 ```bash
-yarn run hardhat deploy:bridge-proxy --network <l1-network> --pool-address <relay-pool-address>
+yarn run hardhat deploy:bridge-proxy --network <l1-network>
 ```
 
 The script will prompt you to chose a bridge type (OP, Arb.. etc). You can deploy as many of these as you will need to add origins later, and you can do that much later as well.
 
-#### 4. Deploy L2 BridgeProxy
-
-For each L2 network, deploy the corresponding bridge proxy and we pass the address of the L1 Bridge Proxy:
-
-```bash
-yarn run hardhat deploy:bridge-proxy --network <l2-network> --pool-address <relay-pool-address> --l1-bridge-proxy <l1-bridge-proxy-address>
-```
-
-The L2 bridge proxy will be configured to communicate with the L1 bridge proxy deployed in the previous step.
-
-#### 5. Deploy L2 BridgeFactory
+#### 4. Deploy L2 BridgeFactory
 
 Deploy the RelayBridgeFactory on each L2 network:
 
@@ -93,24 +83,20 @@ yarn run hardhat deploy:bridge-factory --network <l2-network>
 
 This factory will be used to create bridges for specific tokens on the L2.
 
-#### 6. Deploy L2 Bridges
+#### 5. Deploy L2 Bridges
 
 For each token you want to support on the L2, deploy a bridge:
 
 ```bash
-yarn run hardhat deploy:bridge --network <l2-network> --proxyBridge <proxy-bridge-address>
+yarn run hardhat deploy:bridge --network <l2-network>
 ```
-
-If the asset is the native token of the L2 (e.g., ETH), use `--asset 0x0000000000000000000000000000000000000000`.
-
-If you don't specify the proxy bridge address or asset, the CLI will prompt you to select from available options.
 
 #### 7. Add Origin to L1 Pool
 
 Finally, connect the L2 bridge to the L1 pool by adding it as an origin:
 
 ```bash
-yarn run hardhat pool:add-origin --network <l1-network> --l2ChainId <l2-chain-id> --pool <pool-address> --proxyBridge <l1-proxy-bridge> --bridge <l2-bridge-address>
+yarn run hardhat pool:add-origin --network <l1-network> --l2-chain-id <l2-chain-id> --pool <pool-address> --proxyBridge <l1-proxy-bridge> --bridge <l2-bridge-address>
 ```
 
 You'll be prompted to configure:

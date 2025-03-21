@@ -80,10 +80,10 @@ export class RelayVaultService {
 
     return this.client.sdk.GetAllPools({
       limit,
+      orderDirection,
       originsLimit,
       snapshotsLimit,
       targetTimestamp,
-      orderDirection,
     })
   }
 
@@ -95,7 +95,7 @@ export class RelayVaultService {
    * @returns Promise containing the pool data
    */
   async getRelayPool(contractAddress: string, chainId: number) {
-    return this.client.sdk.GetRelayPool({ contractAddress, chainId })
+    return this.client.sdk.GetRelayPool({ chainId, contractAddress })
   }
 
   /**
@@ -128,12 +128,12 @@ export class RelayVaultService {
     } = options
 
     return this.client.sdk.GetPoolDetails({
-      poolAddress,
       chainId,
+      orderDirection,
       originsLimit,
+      poolAddress,
       snapshotsLimit,
       targetTimestamp,
-      orderDirection,
     })
   }
 
@@ -146,8 +146,8 @@ export class RelayVaultService {
    */
   async getYieldPool(yieldPoolAddress: string, chainId: number) {
     return this.client.sdk.GetYieldPool({
-      yieldPoolAddress,
       chainId,
+      yieldPoolAddress,
     })
   }
 
@@ -165,9 +165,9 @@ export class RelayVaultService {
     limit: number = 100
   ) {
     return this.client.sdk.GetVolume({
-      poolAddress,
       fromTimestamp,
       limit,
+      poolAddress,
     })
   }
 
@@ -180,8 +180,8 @@ export class RelayVaultService {
    */
   async getUserBalances(walletAddress: string, limit: number = 100) {
     return this.client.sdk.GetUserBalances({
-      walletAddress,
       limit,
+      walletAddress,
     })
   }
 
@@ -199,9 +199,9 @@ export class RelayVaultService {
     limit: number = 1
   ) {
     return this.client.sdk.GetUserBalanceForPool({
-      walletAddress,
-      poolAddress,
       limit,
+      poolAddress,
+      walletAddress,
     })
   }
 
@@ -217,8 +217,8 @@ export class RelayVaultService {
     limit: number = 100
   ) {
     return this.client.sdk.GetAllBridgeTransactionsByType({
-      nativeBridgeStatus,
       limit,
+      nativeBridgeStatus,
     })
   }
 }

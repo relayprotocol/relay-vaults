@@ -29,9 +29,9 @@ task('export:abis', 'Export ABIs to a node package').setAction(
           await artifacts.readArtifact(qualifiedName)
 
         const toExport = {
-          sourceName,
-          contractName,
           abi,
+          contractName,
+          sourceName,
         }
 
         const abiFileName = path.resolve(

@@ -30,11 +30,11 @@ describe('BridgeProxies accept native token', function () {
 
       const parameters = {
         CCTPBridgeProxy: {
-          messenger: cctp.messenger,
-          usdc: assets.usdc,
-          relayPoolChainId: 1,
-          relayPool,
           l1BridgeProxy,
+          messenger: cctp.messenger,
+          relayPool,
+          relayPoolChainId: 1,
+          usdc: assets.usdc,
         },
       }
       const { bridge } = await ignition.deploy(CCTPBridgeProxyModule, {
@@ -74,10 +74,10 @@ describe('BridgeProxies accept native token', function () {
 
       const parameters = {
         OPStackNativeBridgeProxy: {
-          portalProxy: op.portalProxy,
-          relayPoolChainId: 31337,
-          relayPool,
           l1BridgeProxy,
+          portalProxy: op.portalProxy,
+          relayPool,
+          relayPoolChainId: 31337,
         },
       } as const // Use const assertion to fix type error
 
@@ -127,11 +127,11 @@ describe('BridgeProxies accept native token', function () {
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {
-          routerGateway: arb.routerGateway,
-          outbox: arb.outbox || ethers.ZeroAddress,
-          relayPoolChainId: 31337,
-          relayPool,
           l1BridgeProxy,
+          outbox: arb.outbox || ethers.ZeroAddress,
+          relayPool,
+          relayPoolChainId: 31337,
+          routerGateway: arb.routerGateway,
         },
       } as const // Use const assertion to fix type error
 
@@ -182,10 +182,10 @@ describe('BridgeProxies accept native token', function () {
 
       const parameters = {
         ZkSyncBridgeProxy: {
-          l2SharedDefaultBridge: zksync.l2SharedDefaultBridge,
-          relayPoolChainId: 31337,
-          relayPool,
           l1BridgeProxy,
+          l2SharedDefaultBridge: zksync.l2SharedDefaultBridge,
+          relayPool,
+          relayPoolChainId: 31337,
         },
       } as const // Use const assertion to fix type error
 

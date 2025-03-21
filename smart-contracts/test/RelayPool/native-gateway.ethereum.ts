@@ -38,13 +38,13 @@ describe('RelayPoolNativeGateway', () => {
       // deploy the WETH pool
       const parameters = {
         RelayPool: {
-          hyperlaneMailbox,
           asset: WETH,
+          curator: userAddress,
+          hyperlaneMailbox,
           name: 'WETH RELAY POOL',
           symbol: 'WETH-REL',
           thirdPartyPool: thirdPartyPoolAddress,
           weth: WETH,
-          curator: userAddress,
         },
       }
       ;({ relayPool } = await ignition.deploy(RelayPoolModule, {

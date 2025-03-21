@@ -31,12 +31,12 @@ describe('CCTPBridgeProxy', function () {
     // deploy using ignition
     const parameters = {
       CCTPBridgeProxy: {
+        l1BridgeProxy,
         messenger,
+        relayPool,
+        relayPoolChainId: 1,
         transmitter,
         usdc: assets.usdc,
-        relayPoolChainId: 1,
-        relayPool,
-        l1BridgeProxy,
       },
     }
     ;({ bridge } = await ignition.deploy(CCTPBridgeProxyModule, { parameters }))

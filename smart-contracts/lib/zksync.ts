@@ -42,8 +42,8 @@ export const verifyContract = async ({
     try {
       await run('verify:verify', {
         address,
-        contract,
         constructorArguments: deployArgs,
+        contract,
       })
       tries++
     } catch (error) {
@@ -83,15 +83,15 @@ export async function deployContract(
 
   // verify
   await verifyContract({
-    hre,
     address,
     contract: contractNameOrFullyQualifiedName,
     deployArgs,
+    hre,
   })
   return {
+    address,
     contract,
     hash,
-    address,
   }
 }
 
@@ -99,5 +99,5 @@ async function zkSyncSetupDeployer(hre: HardhatRuntimeEnvironment) {
   // set deployer
   const wallet = await hre.zksyncEthers.getWallet(0)
   const deployer = new Deployer(hre, wallet)
-  return { wallet, deployer }
+  return { deployer, wallet }
 }

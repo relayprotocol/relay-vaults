@@ -48,19 +48,19 @@ Object.keys(nets).forEach((id) => {
   let accounts
   let zksync = {}
   const network = {
-    url: rpc[0],
     chainId: Number(id),
+    url: rpc[0],
   }
   if (DEPLOYER_PRIVATE_KEY) {
     accounts = [DEPLOYER_PRIVATE_KEY]
   }
   if (isZKsync) {
     zksync = {
-      zksync: true,
       ethNetwork: isTestnet ? 'sepolia' : 'mainnet',
       verifyURL: isTestnet
         ? 'https://explorer.sepolia.era.zksync.dev/contract_verification'
         : 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
+      zksync: true,
     }
   }
   networks[slug] = {
@@ -76,64 +76,75 @@ if (forkUrl) {
   // check if fork is zksync
   const isZKsync = !!process.env.ZKSYNC
   networks.hardhat = {
-    zksync: isZKsync,
     forking: {
       url: forkUrl,
     },
+    zksync: isZKsync,
   }
 }
 
 const etherscan = {
   apiKey: {
+    'arbitrum-sepolia': 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
+
+    arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
+
+    avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
+
+    base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
+
+    baseSepolia: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
+
+    bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
+
+    celo: '6KBKUFYV3NQR4Y1BQN3Q34S2U7NTZBBPQZ',
+
+    gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
+
+    linea: 'S66J314Q7PICPB4RP2G117KDFQRBEUYIFX',
+
+    mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
+
+    opSepolia: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
+
+    optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
     // xdai requires only placeholder api key
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
-    mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-    sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-    bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
-    gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
-    arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
-    avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
-    celo: '6KBKUFYV3NQR4Y1BQN3Q34S2U7NTZBBPQZ',
-    base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-    baseSepolia: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-    linea: 'S66J314Q7PICPB4RP2G117KDFQRBEUYIFX',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
     scroll: 'BZEXNPN6KKKJQ8VIMNXZDZNEX7QQZWZQ3P',
-    opSepolia: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
-    'arbitrum-sepolia': 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
-    zksyncsepolia: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
+    sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
+    xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
     zksyncmainnet: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
+    zksyncsepolia: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
   },
   customChains: [
     {
-      network: 'baseSepolia',
       chainId: 84532,
+      network: 'baseSepolia',
       urls: {
         apiURL: 'https://api-sepolia.basescan.org/api',
         browserURL: 'https://sepolia.basescan.org/',
       },
     },
     {
-      network: 'opSepolia',
       chainId: 11155420,
+      network: 'opSepolia',
       urls: {
         apiURL: 'https://api-sepolia-optimism.etherscan.io/api',
         browserURL: 'https://sepolia-optimism.etherscan.io/',
       },
     },
     {
-      network: 'base',
       chainId: 8453,
+      network: 'base',
       urls: {
         apiURL: 'https://api.basescan.org/api',
         browserURL: 'https://basescan.org/',
       },
     },
     {
-      network: 'arbitrum-sepolia',
       chainId: 421614,
+      network: 'arbitrum-sepolia',
       urls: {
         apiURL: 'https://api-sepolia.arbiscan.io/api',
         browserURL: 'https://sepolia.arbiscan.io/',
@@ -143,35 +154,35 @@ const etherscan = {
 }
 
 const config: HardhatUserConfig = {
-  networks,
   etherscan,
+  networks,
+  solidity: {
+    compilers: [
+      {
+        settings: {
+          optimizer: {
+            details: { yul: false },
+            enabled: true,
+            runs: 200,
+          },
+        },
+        version: '0.8.28',
+      },
+    ],
+  },
   sourcify: {
     enabled: false,
   },
   zksolc: {
     settings: {
-      // for '<address payable>.send/transfer(<X>)'
-      // contracts/RelayBridge.sol:189:5
-      suppressedErrors: ['sendtransfer'],
       contractsToCompile: [
         'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
         'contracts/interfaces/IUSDC.sol',
       ],
+      // for '<address payable>.send/transfer(<X>)'
+      // contracts/RelayBridge.sol:189:5
+      suppressedErrors: ['sendtransfer'],
     },
-  },
-  solidity: {
-    compilers: [
-      {
-        version: '0.8.28',
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-            details: { yul: false },
-          },
-        },
-      },
-    ],
   },
 }
 

@@ -38,8 +38,8 @@ task('deploy:bridge-factory', 'Deploy a relay bridge factory').setAction(
       const { relayBridgeFactory } = await ignition.deploy(
         RelayBridgeFactoryModule,
         {
-          parameters,
           deploymentId: `RelayBridgeFactory-${chainId.toString()}`,
+          parameters,
         }
       )
       relayBridgeAddress = await relayBridgeFactory.getAddress()

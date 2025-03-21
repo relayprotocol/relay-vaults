@@ -5,10 +5,14 @@ task(
   'Verifies a contract utility, includes retries and wait times'
 ).setAction(async ({ address, constructorArguments }, { config, ethers }) => {
   const { chainId } = await ethers.provider.getNetwork()
+  const etherscanNetworkName =
+    Number(chainId) == 1
+      ? 'mainnet'
+      : networks[chainId.toString()].name.toLowerCase()
 
-  if (!config.etherscan.apiKey[networks[chainId].name]) {
+  if (!config.etherscan.apiKey[etherscanNetworkName]) {
     console.error(
-      `No Etherscan API key found for ${networks[chainId].name}. Please add one to hardhat.config.ts`
+      `No Etherscan API key found for ${etherscanNetworkName}. Please add one to hardhat.config.ts`
     )
     return
   }

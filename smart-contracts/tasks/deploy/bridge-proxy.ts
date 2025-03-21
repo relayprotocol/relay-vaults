@@ -67,6 +67,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         default: stack,
       }).run()
     }
+    console.log(
+      `Deploying ${isL2 ? Number(l1ChainId) : Number(chainId)} bridge proxy...`
+    )
 
     if (!poolAddress) {
       const pools = await getPoolsForNetwork(

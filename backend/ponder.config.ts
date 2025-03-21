@@ -14,6 +14,7 @@ import networks from '@relay-protocol/networks'
 
 const deployedAddresses = getAddresses()
 
+// TODO: move to network config!
 const earliestBlocks = {
   // Production networks
   ethereum: 22000000,
@@ -143,9 +144,15 @@ export default createConfig({
   },
   blocks: {
     VaultSnapshot: {
-      network: 'sepolia',
+      network: {
+        sepolia: {
+          startBlock: earliestBlocks.sepolia,
+        },
+        ethereum: {
+          startBlock: earliestBlocks.sepolia,
+        },
+      },
       interval: 25, // ~5 minutes with 12s block time
-      startBlock: earliestBlocks.sepolia,
     },
   },
 })

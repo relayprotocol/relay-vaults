@@ -26,8 +26,8 @@ task('deploy:native-gateway', 'Deploy a WETH/Native gateway for a relay vault')
     const { nativeGateway } = await ignition.deploy(
       RelayPoolNativeGatewayModule,
       {
-        parameters,
         deploymentId: `RelayPoolNativeGateway-${chainId.toString()}`,
+        parameters,
       }
     )
     console.log(

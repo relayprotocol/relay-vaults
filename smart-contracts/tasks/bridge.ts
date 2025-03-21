@@ -5,11 +5,6 @@ import { Select, Input } from 'enquirer'
 import { task } from 'hardhat/config'
 import { getBalance, checkAllowance } from '@relay-protocol/helpers'
 import { networks } from '@relay-protocol/networks'
-import {
-  GET_ORIGINS_WITH_BRIDGE,
-  GET_RELAY_BRIDGES_BY_NETWORK_AND_ASSET,
-  RelayVaultService,
-} from '@relay-protocol/client'
 
 task('bridge:send', 'Send tokens to a pool across a relay bridge')
   .addOptionalParam('asset', 'The address of the asset you want to bridge')
@@ -142,74 +137,80 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
     }
   )
 
-task('bridge:send-proxy', 'Send tokens across a proxy bridge (test purposes)')
-  // .addParam('asset', 'The ERC20 asset to deposit')
-  .addParam('bridge', 'The bridge contract address')
-  .addParam('amount', 'the amount of tokens to send')
-  .addOptionalParam(
-    'destChain',
-    'the id of destination chain (default to eth mainnet)'
-  )
-  .addOptionalParam('asset', 'the asset to send (default to native)')
-  .addOptionalParam('recipient', 'The recipient of the funds (default to self)')
-  .setAction(
-    async (
-      {
-        bridge: bridgeAddress,
-        amount,
-        destChain,
-        asset: assetAddress,
-        recipient,
-      },
-      { ethers: rawEthers, zksyncEthers }
-    ) => {
-      const { chainId } = await rawEthers.provider.getNetwork()
-      const { isZksync } = networks[chainId.toString()]
-      const ethers = isZksync ? zksyncEthers : rawEthers
-      const bridge = await ethers.getContractAt('BridgeProxy', bridgeAddress)
-      const [user] = await ethers.getSigners()
-      const userAddress = await user.getAddress()
+task('bridge:pay-gas', 'Pay extra gas when a message is stuck')
+  .addParam('messageId', 'The Hyperlane message id')
+  .addParam('destChain', 'the chain destination of the pool')
+  .addParam('gasAmount', 'the amount of tokens to send')
+  .setAction(async ({ messageId, destChain, gasAmount }, { ethers }) => {
+    const { chainId } = await ethers.provider.getNetwork()
+    const networkConfig = networks[chainId.toString()]
+    const { hyperlaneMailbox } = networkConfig
 
-      // parse default values
-      if (!assetAddress) assetAddress = ethers.ZeroAddress
-      if (!recipient) recipient = userAddress
-      if (!destChain) destChain = 1
+    const hyperlaneMailboxContract = await ethers.getContractAt(
+      'IHyperlaneMailbox',
+      hyperlaneMailbox
+    )
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
 
-      // check balance
-      const balance = await getBalance(
-        userAddress,
-        assetAddress,
-        ethers.provider
-      )
-      if (balance < amount) {
-        throw Error(
-          `Insufficient balance (actual: ${balance}, expected: ${amount})`
-        )
-      }
+    console.log(userAddress)
+    const value = ethers.parseEther(gasAmount)
+    const tx = await hyperlaneMailboxContract.payForGas.populateTransaction(
+      messageId,
+      destChain,
+      value,
+      userAddress,
+      { value }
+    )
 
-      // check allowance
-      if (assetAddress != ethers.ZeroAddress) {
-        const asset = await ethers.getContractAt('MyToken', assetAddress)
-        await checkAllowance(asset, bridgeAddress, amount, userAddress)
-      }
+    console.log(tx)
 
-      // send tx
-      const tx = await bridge.bridge(
-        userAddress, // sender
-        destChain, // destinationChainId,
-        recipient, // recipient
-        assetAddress, // asset
-        amount, // amount
-        '0x', // data
-        {
-          value: assetAddress === ethers.ZeroAddress ? amount : 0,
-        }
-      )
+    // const receipt = await tx.wait()
+    // console.log(receipt)
+    // const ethers = isZksync ? zksyncEthers : rawEthers
+    // const bridge = await ethers.getContractAt('BridgeProxy', bridgeAddress)
+    // const [user] = await ethers.getSigners()
+    // const userAddress = await user.getAddress()
 
-      // parse tx results
-      const receipt = await tx.wait()
-      console.log(receipt?.logs)
-      // TODO: check for AssetsDepositedIntoYieldPool or similar
-      // const event = await getEvent(receipt, 'MessagePassed')
-    }
-  )
+    // // parse default values
+    // if (!assetAddress) assetAddress = ethers.ZeroAddress
+    // if (!recipient) recipient = userAddress
+    // if (!destChain) destChain = 1
+
+    // // check balance
+    // const balance = await getBalance(
+    //   userAddress,
+    //   assetAddress,
+    //   ethers.provider
+    // )
+    // if (balance < amount) {
+    //   throw Error(
+    //     `Insufficient balance (actual: ${balance}, expected: ${amount})`
+    //   )
+    // }
+
+    // // check allowance
+    // if (assetAddress != ethers.ZeroAddress) {
+    //   const asset = await ethers.getContractAt('MyToken', assetAddress)
+    //   await checkAllowance(asset, bridgeAddress, amount, userAddress)
+    // }
+
+    // // send tx
+    // const tx = await bridge.bridge(
+    //   userAddress, // sender
+    //   destChain, // destinationChainId,
+    //   recipient, // recipient
+    //   assetAddress, // asset
+    //   amount, // amount
+    //   '0x', // data
+    //   {
+    //     value: assetAddress === ethers.ZeroAddress ? amount : 0,
+    //   }
+    // )
+
+    // // parse tx results
+    // const receipt = await tx.wait()
+    // console.log(receipt?.logs)
+    // // TODO: check for AssetsDepositedIntoYieldPool or similar
+    // // const event = await getEvent(receipt, 'MessagePassed')
+  })

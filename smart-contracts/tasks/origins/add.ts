@@ -175,10 +175,10 @@ task('pool:add-origin', 'Add origin for a pool')
 
       // Check if the user is a submutter on the timelock!
       const PROPOSER_ROLE = await timelock.PROPOSER_ROLE()
-      console.log(userAddress)
+
       const isProposer = await timelock.hasRole(PROPOSER_ROLE, userAddress)
       if (!isProposer) {
-        throw Error('User is not a proposer on the timelock!')
+        throw Error(`User ${userAddress} is not a proposer on the timelock!`)
       }
 
       // addOrigin parameters
@@ -198,7 +198,7 @@ task('pool:add-origin', 'Add origin for a pool')
       ])
 
       // Get the current timestamp for the timelock
-      const currentTimestamp = Math.floor(Date.now() / 1000)
+      const currentTimestamp = Date.now()
       const delaySeconds = await timelock.getMinDelay()
       const eta = new Date(
         currentTimestamp + Number(delaySeconds) * 1000

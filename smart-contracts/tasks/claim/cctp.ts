@@ -28,7 +28,7 @@ task('claim:usdc', 'Claim USDC from bridge for the pool')
       const receipt = await tx.wait()
       console.log(receipt)
     } else {
-      console.log({ messageBytes, attestation, status })
+      console.log({ attestation, messageBytes, status })
       throw Error(`Attestation not completed: ${status}`)
     }
   })

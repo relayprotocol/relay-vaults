@@ -25,13 +25,18 @@ describe('RelayBridge: when using an ERC20', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
-        name: `${await myToken.name()} Relay Pool`,
-        symbol: `${await myToken.symbol()}-REL`,
-        thirdPartyPool: await thirdPartyPool.getAddress(),
-        weth: ethers.ZeroAddress, // Not used in this test
+        // Not used in this test
         curator: userAddress,
+
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
+
+        name: `${await myToken.name()} Relay Pool`,
+
+        symbol: `${await myToken.symbol()}-REL`,
+
+        thirdPartyPool: await thirdPartyPool.getAddress(),
+        weth: ethers.ZeroAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {

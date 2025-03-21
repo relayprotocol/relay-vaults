@@ -25,13 +25,13 @@ describe('RelayPool: curator', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
         thirdPartyPool: await yieldPool.getAddress(),
         weth: ethers.ZeroAddress,
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -159,13 +159,13 @@ describe('RelayPool: curator', () => {
 
   describe('addOrigin', async () => {
     const newOrigin = {
-      chainId: 10,
       bridge: ethers.Wallet.createRandom().address,
+      bridgeFee: 5,
+      chainId: 10,
+      coolDown: 0,
+      curator: ethers.Wallet.createRandom().address,
       maxDebt: ethers.parseEther('10'),
       proxyBridge: ethers.Wallet.createRandom().address,
-      bridgeFee: 5,
-      curator: ethers.Wallet.createRandom().address,
-      coolDown: 0,
     }
 
     it('should only be callable by the curator', async () => {
@@ -219,13 +219,13 @@ describe('RelayPool: curator', () => {
       const [user] = await ethers.getSigners()
 
       originToRemove = {
-        chainId: 10,
         bridge: ethers.Wallet.createRandom().address,
+        bridgeFee: 0,
+        chainId: 10,
+        coolDown: 0,
+        curator: await user.getAddress(),
         maxDebt: ethers.parseEther('10'),
         proxyBridge: ethers.Wallet.createRandom().address,
-        bridgeFee: 0,
-        curator: await user.getAddress(),
-        coolDown: 0,
       }
 
       // Let's first add it!

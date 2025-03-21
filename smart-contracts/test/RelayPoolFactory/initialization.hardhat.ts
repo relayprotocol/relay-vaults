@@ -48,14 +48,14 @@ describe('RelayPoolFactory: deployment', () => {
     ;({ relayPoolFactory, timelockTemplate } = await ignition.deploy(
       RelayPoolFactoryModule,
       {
+        deploymentId: 'RelayPoolFactory',
         parameters: {
           RelayPoolFactory: {
             hyperlaneMailbox,
-            weth,
             timelockDelay: 60 * 60 * 24 * 7,
+            weth,
           },
         },
-        deploymentId: 'RelayPoolFactory',
       }
     ))
   })

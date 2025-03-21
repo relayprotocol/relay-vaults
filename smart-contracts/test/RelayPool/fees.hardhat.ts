@@ -30,13 +30,14 @@ describe('Fees', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // using the user address as the mailbox so we can send transactions!
+        // using the user address as the mailbox so we can send transactions!
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -44,13 +45,16 @@ describe('Fees', () => {
     }))
 
     await relayPool.addOrigin({
-      chainId: 10,
       bridge: relayBridgeOptimism,
-      maxDebt: ethers.parseEther('10'),
-      proxyBridge: oPStackNativeBridgeProxy,
-      bridgeFee: 5, // (0.05%)
-      curator: userAddress,
+      bridgeFee: 5,
+      chainId: 10,
       coolDown: 0,
+      // (0.05%)
+      curator: userAddress,
+
+      maxDebt: ethers.parseEther('10'),
+
+      proxyBridge: oPStackNativeBridgeProxy,
     })
 
     const liquidity = ethers.parseUnits('100', 18)

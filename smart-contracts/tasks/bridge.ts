@@ -54,9 +54,9 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       if (!assetAddress) {
         const asset = await new Select({
-          name: 'asset',
-          message: 'Please choose the asset you want to bridge:',
           choices: ['native', ...Object.keys(assets)],
+          message: 'Please choose the asset you want to bridge:',
+          name: 'asset',
         }).run()
         if (asset === 'native') {
           assetAddress = rawEthers.ZeroAddress
@@ -86,9 +86,9 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
           bridgeAddress = relayBridges.items[0].contractAddress
         } else {
           bridgeAddress = await new Select({
-            name: 'bridgeAddress',
-            message: 'Multiple bridges found. Please choose one:',
             choices: relayBridges.items.map((bridge) => bridge.contractAddress),
+            message: 'Multiple bridges found. Please choose one:',
+            name: 'bridgeAddress',
           }).run()
         }
       }
@@ -97,8 +97,8 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         const { poolOrigins } = await vaultService.query(
           GET_ORIGINS_WITH_BRIDGE,
           {
-            originChainId: Number(chainId),
             originBridge: bridgeAddress,
+            originChainId: Number(chainId),
           }
         )
         if (poolOrigins.items.length === 0) {
@@ -107,11 +107,11 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
           poolAddress = poolOrigins.items[0].pool.contractAddress
         } else {
           poolAddress = await new Select({
-            name: 'poolAddress',
-            message: 'Multiple pools found. Please choose one:',
             choices: poolOrigins.items.map(
               (origin) => origin.pool.contractAddress
             ),
+            message: 'Multiple pools found. Please choose one:',
+            name: 'poolAddress',
           }).run()
         }
       }
@@ -124,9 +124,9 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       if (!amount) {
         const amountInDecimals = await new Input({
-          name: 'amount',
-          message: 'How much do you want to bridge?',
           default: '0.1',
+          message: 'How much do you want to bridge?',
+          name: 'amount',
         }).run()
         amount = ethers.parseUnits(amountInDecimals, decimals)
       }
@@ -167,8 +167,8 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         destChain, // chain
         poolAddress,
         {
-          value,
           gasLimit: 25000000,
+          value,
         }
       )
 

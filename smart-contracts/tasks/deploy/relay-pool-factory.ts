@@ -21,9 +21,9 @@ task('deploy:pool-factory', 'Deploy a relay vault factory')
     // deploy the pool using ignition
     const parameters = {
       RelayPoolFactory: {
+        delay,
         hyperlaneMailbox,
         weth,
-        delay,
       },
     }
 
@@ -31,8 +31,8 @@ task('deploy:pool-factory', 'Deploy a relay vault factory')
     const { relayPoolFactory, timelockTemplate } = await ignition.deploy(
       RelayPoolFactoryModule,
       {
-        parameters,
         deploymentId,
+        parameters,
       }
     )
 

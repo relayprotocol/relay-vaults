@@ -15,6 +15,9 @@ import networks from '@relay-protocol/networks'
 const deployedAddresses = getAddresses()
 
 const earliestBlocks = {
+  // Production networks
+  ethereum: 22000000,
+  // Test networks
   sepolia: 7900000,
   opSepolia: 25000000,
   baseSepolia: 23000000,
@@ -27,6 +30,9 @@ export default createConfig({
     connectionString: process.env.DATABASE_URL,
   },
   networks: {
+    // Production networks
+    ethereum: createNetworkConfig(1),
+    // Test networks
     sepolia: createNetworkConfig(11155111),
     opSepolia: createNetworkConfig(11155420),
     baseSepolia: createNetworkConfig(84532),
@@ -39,6 +45,10 @@ export default createConfig({
       network: {
         sepolia: {
           address: deployedAddresses['11155111'].RelayPoolFactory,
+          startBlock: earliestBlocks.sepolia,
+        },
+        ethereum: {
+          address: deployedAddresses['1'].RelayPoolFactory,
           startBlock: earliestBlocks.sepolia,
         },
       },

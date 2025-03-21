@@ -25,6 +25,20 @@ export const getPoolsForNetwork = async (chainId: number) => {
   })
 }
 
+export const getBridgesForNetwork = async (chainId: number) => {
+  const bridges = await fs.promises.readdir(
+    `${ignitionPath}/bridges/${chainId}`
+  )
+  return bridges.map((address) => {
+    return {
+      address: address,
+      params: require(
+        `${ignitionPath}/bridges/${chainId}/${address}/params.json`
+      ),
+    }
+  })
+}
+
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
   .addOptionalParam(
@@ -60,7 +74,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       )
       poolAddress = await new Select({
         name: 'poolAddress',
-        message: 'Please chose the relay vault address:',
+        message: 'Please choose the relay vault address:',
         choices: pools.map((pool) => {
           return {
             message: pool.params.name,

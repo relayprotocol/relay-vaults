@@ -10,18 +10,18 @@ import { index, onchainTable, primaryKey, relations } from 'ponder'
 export const yieldPool = onchainTable(
   'yield_pool',
   (t) => ({
-    contractAddress: t.hex().notNull(),
     asset: t.hex().notNull(),
-    name: t.text().notNull(),
-    lastUpdated: t.bigint().notNull(),
     chainId: t.integer().notNull(),
+    contractAddress: t.hex().notNull(),
+    lastUpdated: t.bigint().notNull(),
+    name: t.text().notNull(),
   }),
   (table) => ({
+    assetIdx: index().on(table.asset),
+    chainIdIdx: index().on(table.chainId),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
-    assetIdx: index().on(table.asset),
-    chainIdIdx: index().on(table.chainId),
   })
 )
 
@@ -42,45 +42,46 @@ export const yieldPool = onchainTable(
 export const relayPool = onchainTable(
   'relay_pool',
   (t) => ({
-    contractAddress: t.hex().notNull(),
-    curator: t.hex().notNull(),
     asset: t.hex().notNull(),
-    yieldPool: t.hex().notNull(),
-    outstandingDebt: t.bigint().notNull(),
-    totalAssets: t.bigint().notNull(),
-    totalShares: t.bigint().notNull(),
-    totalBridgeFees: t.bigint().notNull(),
     chainId: t.integer().notNull(),
+    contractAddress: t.hex().notNull(),
     createdAt: t.bigint().notNull(),
     createdAtBlock: t.bigint().notNull(),
+    curator: t.hex().notNull(),
     name: t.text().notNull(),
+    outstandingDebt: t.bigint().notNull(),
     symbol: t.text().notNull(),
+    totalAssets: t.bigint().notNull(),
+    totalBridgeFees: t.bigint().notNull(),
+    totalShares: t.bigint().notNull(),
+    yieldPool: t.hex().notNull(),
   }),
   (table) => ({
+    assetIdx: index().on(table.asset),
+    curatorIdx: index().on(table.curator),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
     yieldPoolIdx: index().on(table.yieldPool),
-    assetIdx: index().on(table.asset),
-    curatorIdx: index().on(table.curator),
   })
 )
 
 export const poolOrigin = onchainTable(
   'pool_origin',
   (t) => ({
+    bridgeFee: t.integer().notNull(),
     chainId: t.integer().notNull(),
+    coolDown: t.integer().notNull(),
+    curator: t.hex().notNull(),
+    currentOutstandingDebt: t.bigint().notNull(),
+    maxDebt: t.bigint().notNull(),
+    originBridge: t.hex().notNull(),
+    originChainId: t.integer().notNull(),
     pool: t.hex().notNull(),
     proxyBridge: t.hex().notNull(),
-    originChainId: t.integer().notNull(),
-    originBridge: t.hex().notNull(),
-    maxDebt: t.bigint().notNull(),
-    currentOutstandingDebt: t.bigint().notNull(),
-    curator: t.hex().notNull(),
-    bridgeFee: t.integer().notNull(),
-    coolDown: t.integer().notNull(),
   }),
   (table) => ({
+    originIdx: index().on(table.originChainId, table.originBridge),
     pk: primaryKey({
       columns: [
         table.chainId,
@@ -90,7 +91,6 @@ export const poolOrigin = onchainTable(
       ],
     }),
     poolIdx: index().on(table.chainId, table.pool),
-    originIdx: index().on(table.originChainId, table.originBridge),
   })
 )
 
@@ -119,23 +119,23 @@ export const originPoolRelation = relations(poolOrigin, ({ one }) => ({
 export const poolAction = onchainTable(
   'pool_action',
   (t) => ({
-    type: t.text().notNull(),
-    user: t.hex().notNull(),
-    relayPool: t.hex().notNull(),
     assets: t.bigint().notNull(),
+    blockNumber: t.bigint().notNull(),
+    chainId: t.integer().notNull(),
+    relayPool: t.hex().notNull(),
     shares: t.bigint().notNull(),
     timestamp: t.bigint().notNull(),
-    blockNumber: t.bigint().notNull(),
     transactionHash: t.hex().notNull(),
-    chainId: t.integer().notNull(),
+    type: t.text().notNull(),
+    user: t.hex().notNull(),
   }),
   (table) => ({
+    assetsIdx: index().on(table.chainId, table.assets),
     pk: primaryKey({
       columns: [table.chainId, table.transactionHash],
     }),
-    userIdx: index().on(table.user),
     poolIdx: index().on(table.chainId, table.relayPool),
-    assetsIdx: index().on(table.chainId, table.assets),
+    userIdx: index().on(table.user),
   })
 )
 
@@ -145,20 +145,20 @@ export const poolAction = onchainTable(
 export const userBalance = onchainTable(
   'user_balance',
   (t) => ({
-    wallet: t.hex().notNull(),
-    relayPool: t.hex().notNull(),
     chainId: t.integer().notNull(),
+    lastUpdated: t.bigint().notNull(),
+    relayPool: t.hex().notNull(),
     shareBalance: t.bigint().notNull(),
     totalDeposited: t.bigint().notNull(),
     totalWithdrawn: t.bigint().notNull(),
-    lastUpdated: t.bigint().notNull(),
+    wallet: t.hex().notNull(),
   }),
   (table) => ({
     pk: primaryKey({
       columns: [table.chainId, table.wallet, table.relayPool],
     }),
-    walletIdx: index().on(table.wallet),
     relayPoolIdx: index().on(table.chainId, table.relayPool),
+    walletIdx: index().on(table.wallet),
   })
 )
 
@@ -176,25 +176,25 @@ export const userBalanceRelations = relations(userBalance, ({ one }) => ({
  * Relations for relay pool
  */
 export const relayPoolRelations = relations(relayPool, ({ many }) => ({
-  userBalances: many(userBalance),
   snapshots: many(vaultSnapshot),
+  userBalances: many(userBalance),
 }))
 
 export const relayBridge = onchainTable(
   'relay_bridge',
   (t) => ({
+    asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
-    asset: t.hex().notNull(),
-    transferNonce: t.bigint().notNull(),
     createdAt: t.bigint().notNull(),
     createdAtBlock: t.bigint().notNull(),
+    transferNonce: t.bigint().notNull(),
   }),
   (table) => ({
+    assetIdx: index().on(table.asset),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
-    assetIdx: index().on(table.asset),
   })
 )
 
@@ -242,26 +242,30 @@ export const relayBridge = onchainTable(
 export const bridgeTransaction = onchainTable(
   'bridge_transaction',
   (t) => ({
-    originBridgeAddress: t.hex().notNull(),
-    nonce: t.bigint().notNull(),
-    originChainId: t.integer().notNull(),
+    amount: t.bigint().notNull(),
+    arbTransactionIndex: t.bigint(),
+    asset: t.hex().notNull(),
     destinationPoolAddress: t.hex().notNull(),
     destinationPoolChainId: t.integer().notNull(),
-    originSender: t.hex().notNull(),
     destinationRecipient: t.hex().notNull(),
-    asset: t.hex().notNull(),
-    amount: t.bigint().notNull(),
     hyperlaneMessageId: t.hex().notNull(),
-    nativeBridgeStatus: t.text().notNull(),
-    opProofTxHash: t.hex(),
-    nativeBridgeFinalizedTxHash: t.hex(),
     loanEmittedTxHash: t.hex(),
+    nativeBridgeFinalizedTxHash: t.hex(),
+    nativeBridgeStatus: t.text().notNull(),
+    nonce: t.bigint().notNull(),
+    opProofTxHash: t.hex(),
+    opWithdrawalHash: t.hex(),
+    originBridgeAddress: t.hex().notNull(),
+    originChainId: t.integer().notNull(),
+    originSender: t.hex().notNull(),
     originTimestamp: t.bigint().notNull(),
     originTxHash: t.hex().notNull(),
-    opWithdrawalHash: t.hex(),
-    arbTransactionIndex: t.bigint(),
   }),
   (table) => ({
+    arbTransactionIndex: index().on(table.arbTransactionIndex),
+    assetIdx: index().on(table.asset),
+    opWithdrawalHashIdx: index().on(table.opWithdrawalHash),
+    originTxHashIdx: index().on(table.originTxHash),
     pk: primaryKey({
       columns: [table.originChainId, table.originBridgeAddress, table.nonce],
     }),
@@ -270,10 +274,6 @@ export const bridgeTransaction = onchainTable(
       table.destinationPoolAddress
     ),
     senderIdx: index().on(table.originSender),
-    assetIdx: index().on(table.asset),
-    originTxHashIdx: index().on(table.originTxHash),
-    opWithdrawalHashIdx: index().on(table.opWithdrawalHash),
-    arbTransactionIndex: index().on(table.arbTransactionIndex),
   })
 )
 
@@ -288,11 +288,11 @@ export const bridgeTransaction = onchainTable(
 export const vaultSnapshot = onchainTable(
   'vaultSnapshot',
   (t) => ({
-    vault: t.hex().notNull(),
-    chainId: t.integer().notNull(),
     blockNumber: t.bigint().notNull(),
-    timestamp: t.bigint().notNull(),
+    chainId: t.integer().notNull(),
     sharePrice: t.numeric().notNull(),
+    timestamp: t.bigint().notNull(),
+    vault: t.hex().notNull(),
     yieldPoolSharePrice: t.numeric().notNull(),
   }),
   (table) => ({

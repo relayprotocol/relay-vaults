@@ -20,8 +20,8 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   async function fetchSharePrice(contractAddress: string) {
     // Retrieve the contract's decimals
     const decimals = await context.client.readContract({
-      address: contractAddress,
       abi: erc20Abi,
+      address: contractAddress,
       functionName: 'decimals',
     })
 
@@ -30,10 +30,10 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
 
     // Query the current share price from convertToAssets with the calculated share unit
     const sharePrice = await context.client.readContract({
-      address: contractAddress,
       abi: erc4626Abi,
-      functionName: 'convertToAssets',
+      address: contractAddress,
       args: [shareUnit],
+      functionName: 'convertToAssets',
     })
 
     return sharePrice
@@ -57,12 +57,12 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
     const id = `${vault.chainId}-${vault.contractAddress.toLowerCase()}-${event.block.number}`
 
     const snapshot = {
-      id,
-      vault: vault.contractAddress,
-      chainId: vault.chainId,
       blockNumber: event.block.number,
-      timestamp: event.block.timestamp,
+      chainId: vault.chainId,
+      id,
       sharePrice: vaultSharePrice.toString(),
+      timestamp: event.block.timestamp,
+      vault: vault.contractAddress,
       yieldPoolSharePrice: yieldPoolSharePrice.toString(),
     }
 

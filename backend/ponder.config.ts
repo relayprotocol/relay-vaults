@@ -14,111 +14,29 @@ import networks from '@relay-protocol/networks'
 
 const deployedAddresses = getAddresses()
 
-// TODO: move to network config!
 const earliestBlocks = {
-  // Production networks
-  ethereum: 22000000,
-  // Test networks
-  sepolia: 7900000,
-  opSepolia: 25000000,
-  baseSepolia: 23000000,
-  arbSepolia: 130000000,
+  arbSepolia: 115000000,
+  baseSepolia: 21000000,
+  opSepolia: 22000000,
+  sepolia: 7500000,
 }
 
+const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
+  return {
+    ...usedNetworks,
+    [networks[chainId].name]: createNetworkConfig(chainId!),
+  }
+}, {})
+
 export default createConfig({
-  database: {
-    kind: 'postgres',
-    connectionString: process.env.DATABASE_URL,
-  },
-  networks: {
-    // Production networks
-    ethereum: createNetworkConfig(1),
-    // Test networks
-    sepolia: createNetworkConfig(11155111),
-    opSepolia: createNetworkConfig(11155420),
-    baseSepolia: createNetworkConfig(84532),
-    arbSepolia: createNetworkConfig(421614),
+  blocks: {
+    VaultSnapshot: {
+      interval: 25,
+      network: 'sepolia', // ~5 minutes with 12s block time
+      startBlock: earliestBlocks.sepolia,
+    },
   },
   contracts: {
-    // Relay contracts
-    RelayPoolFactory: {
-      abi: RelayPoolFactory as Abi,
-      network: {
-        sepolia: {
-          address: deployedAddresses['11155111'].RelayPoolFactory,
-          startBlock: earliestBlocks.sepolia,
-        },
-        ethereum: {
-          address: deployedAddresses['1'].RelayPoolFactory,
-          startBlock: earliestBlocks.sepolia,
-        },
-      },
-    },
-    RelayPool: {
-      abi: RelayPool as Abi,
-      network: 'sepolia',
-      address: factory({
-        address: deployedAddresses['11155111'].RelayPoolFactory,
-        event: RelayPoolFactory.find(
-          (e) => e.name === 'PoolDeployed'
-        ) as AbiEvent,
-        parameter: 'pool',
-        startBlock: earliestBlocks.sepolia,
-      }),
-    },
-    RelayBridgeFactory: {
-      abi: RelayBridgeFactory as Abi,
-      network: {
-        opSepolia: {
-          address: deployedAddresses['11155420'].RelayBridgeFactory,
-          startBlock: earliestBlocks.opSepolia,
-        },
-        baseSepolia: {
-          address: deployedAddresses['84532'].RelayBridgeFactory,
-          startBlock: earliestBlocks.baseSepolia,
-        },
-        arbSepolia: {
-          address: deployedAddresses['421614'].RelayBridgeFactory,
-          startBlock: earliestBlocks.arbSepolia,
-        },
-      },
-    },
-    RelayBridge: {
-      abi: RelayBridge as Abi,
-      network: {
-        opSepolia: {
-          address: factory({
-            address: deployedAddresses['11155420'].RelayBridgeFactory,
-            event: RelayBridgeFactory.find(
-              (e) => e.name === 'BridgeDeployed'
-            ) as AbiEvent,
-            parameter: 'bridge',
-          }),
-          startBlock: earliestBlocks.opSepolia,
-        },
-        baseSepolia: {
-          address: factory({
-            address: deployedAddresses['84532'].RelayBridgeFactory,
-            event: RelayBridgeFactory.find(
-              (e) => e.name === 'BridgeDeployed'
-            ) as AbiEvent,
-            parameter: 'bridge',
-          }),
-          startBlock: earliestBlocks.baseSepolia,
-        },
-        arbSepolia: {
-          address: factory({
-            address: deployedAddresses['421614'].RelayBridgeFactory,
-            event: RelayBridgeFactory.find(
-              (e) => e.name === 'BridgeDeployed'
-            ) as AbiEvent,
-            parameter: 'bridge',
-          }),
-          startBlock: earliestBlocks.arbSepolia,
-        },
-      },
-    },
-
     // Third-party contracts
     OPPortal: {
       abi: Portal2,
@@ -141,18 +59,85 @@ export default createConfig({
         },
       },
     },
-  },
-  blocks: {
-    VaultSnapshot: {
+
+    RelayBridge: {
+      abi: RelayBridge as Abi,
+      network: {
+        arbSepolia: {
+          address: factory({
+            address: deployedAddresses['421614'].RelayBridgeFactory,
+            event: RelayBridgeFactory.find(
+              (e) => e.name === 'BridgeDeployed'
+            ) as AbiEvent,
+            parameter: 'bridge',
+          }),
+          startBlock: earliestBlocks.arbSepolia,
+        },
+        baseSepolia: {
+          address: factory({
+            address: deployedAddresses['84532'].RelayBridgeFactory,
+            event: RelayBridgeFactory.find(
+              (e) => e.name === 'BridgeDeployed'
+            ) as AbiEvent,
+            parameter: 'bridge',
+          }),
+          startBlock: earliestBlocks.baseSepolia,
+        },
+        opSepolia: {
+          address: factory({
+            address: deployedAddresses['11155420'].RelayBridgeFactory,
+            event: RelayBridgeFactory.find(
+              (e) => e.name === 'BridgeDeployed'
+            ) as AbiEvent,
+            parameter: 'bridge',
+          }),
+          startBlock: earliestBlocks.opSepolia,
+        },
+      },
+    },
+    RelayBridgeFactory: {
+      abi: RelayBridgeFactory as Abi,
+      network: {
+        arbSepolia: {
+          address: deployedAddresses['421614'].RelayBridgeFactory,
+          startBlock: earliestBlocks.arbSepolia,
+        },
+        baseSepolia: {
+          address: deployedAddresses['84532'].RelayBridgeFactory,
+          startBlock: earliestBlocks.baseSepolia,
+        },
+        opSepolia: {
+          address: deployedAddresses['11155420'].RelayBridgeFactory,
+          startBlock: earliestBlocks.opSepolia,
+        },
+      },
+    },
+    RelayPool: {
+      abi: RelayPool as Abi,
+      address: factory({
+        address: deployedAddresses['11155111'].RelayPoolFactory,
+        event: RelayPoolFactory.find(
+          (e) => e.name === 'PoolDeployed'
+        ) as AbiEvent,
+        parameter: 'pool',
+        startBlock: earliestBlocks.sepolia,
+      }),
+      network: 'sepolia',
+    },
+    // Relay contracts
+    RelayPoolFactory: {
+      abi: RelayPoolFactory as Abi,
       network: {
         sepolia: {
-          startBlock: earliestBlocks.sepolia,
-        },
-        ethereum: {
+          address: deployedAddresses['11155111'].RelayPoolFactory,
           startBlock: earliestBlocks.sepolia,
         },
       },
-      interval: 25, // ~5 minutes with 12s block time
     },
   },
+  database: {
+    connectionString: process.env.DATABASE_URL,
+    kind: 'postgres',
+  },
+  networks: usedNetworks,
 })

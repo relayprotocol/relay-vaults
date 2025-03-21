@@ -1,7 +1,10 @@
 import { L2NetworkConfig } from '@relay-protocol/types'
 
 export const arbSepolia: L2NetworkConfig = {
-  stack: 'arb',
+  assets: {
+    udt: '0xeCf77F1D5bB9d40BCc79343DB16ACB86795050fC',
+    usdc: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
+  },
   bridges: {
     arb: {
       arbSys: '0x0000000000000000000000000000000000000064',
@@ -14,6 +17,7 @@ export const arbSepolia: L2NetworkConfig = {
     },
   },
   chainId: 421614,
+  earliestBlock: 130000000,
   hyperlaneMailbox: '0x598facE78a4302f11E3de0bee1894Da0b2Cb71F8',
   isTestnet: true,
   l1ChainId: 11155111,
@@ -22,8 +26,5 @@ export const arbSepolia: L2NetworkConfig = {
     ? [process.env.RPC_421614]
     : ['https://sepolia-rollup.arbitrum.io/rpc'],
   slug: 'arbitrum-sepolia',
-  assets: {
-    udt: '0xeCf77F1D5bB9d40BCc79343DB16ACB86795050fC',
-    usdc: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
-  },
+  stack: 'arb',
 }

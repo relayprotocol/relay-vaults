@@ -6,6 +6,8 @@ const mochaPlugin = require('eslint-plugin-mocha')
 const typescriptEslint = require('typescript-eslint')
 const evmAddressPlugin = require('eslint-plugin-evm-address-to-checksummed')
 const jsonPlugin = require('eslint-plugin-json')
+const sortKeysFix = require('eslint-plugin-sort-keys-fix')
+
 
 /**
  * @type {ESLintConfig}
@@ -39,6 +41,7 @@ module.exports = [
       mocha: mochaPlugin,
       'evm-address-to-checksummed': evmAddressPlugin,
       json: jsonPlugin,
+      'sort-keys-fix': sortKeysFix,
     },
     rules: {
       'prettier/prettier': 'error',
@@ -62,6 +65,7 @@ module.exports = [
       '@typescript-eslint/ban-ts-comment': 'warn',
       'evm-address-to-checksummed/evm-address-to-checksummed': 'error',
       '@typescript-eslint/no-require-imports': 'warn',
+      'sort-keys-fix/sort-keys-fix': 'error',
     },
     settings: {
       'import/parsers': {

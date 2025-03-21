@@ -15,21 +15,21 @@ export default async function ({
   await context.db
     .insert(poolOrigin)
     .values({
+      bridgeFee: origin.bridgeFee,
       chainId: context.network.chainId,
+      coolDown: origin.coolDown,
+      curator: origin.curator,
+      currentOutstandingDebt: BigInt(0),
+      maxDebt: origin.maxDebt,
+      originBridge: origin.bridge as `0x${string}`,
+      originChainId: origin.chainId,
       pool: poolAddress as `0x${string}`,
       proxyBridge: origin.proxyBridge as `0x${string}`,
-      originChainId: origin.chainId,
-      originBridge: origin.bridge as `0x${string}`,
-      maxDebt: origin.maxDebt,
-      currentOutstandingDebt: BigInt(0),
-      curator: origin.curator,
-      bridgeFee: origin.bridgeFee,
-      coolDown: origin.coolDown,
     })
     .onConflictDoUpdate({
-      maxDebt: origin.maxDebt,
-      curator: origin.curator,
       bridgeFee: origin.bridgeFee,
       coolDown: origin.coolDown,
+      curator: origin.curator,
+      maxDebt: origin.maxDebt,
     })
 }

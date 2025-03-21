@@ -53,7 +53,7 @@ describe('CCTPBridgeProxy', function () {
           networks[10].assets.udt,
           networks[1].assets.udt,
           parseUnits('100', 6),
-          '0x' //empty data
+          '0x' //empty data,
         ),
         'TokenNotBridged'
       )

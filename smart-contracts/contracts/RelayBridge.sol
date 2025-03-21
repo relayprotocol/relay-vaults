@@ -14,7 +14,8 @@ interface IRelayBridge {
   function bridge(
     uint256 amount,
     address recipient,
-    address l1Asset
+    address l1Asset,
+    uint256 l1Gas
   ) external payable returns (uint256 nonce);
 }
 
@@ -55,7 +56,7 @@ contract RelayBridge is IRelayBridge {
   function getFee(
     uint256 amount,
     address recipient,
-    uint256 l1Gas,
+    uint256 l1Gas
   ) external view returns (uint256 fee) {
     bytes memory data = abi.encode(
       transferNonce, // use the current transferNonce
@@ -81,7 +82,7 @@ contract RelayBridge is IRelayBridge {
     uint256 amount,
     address recipient,
     address l1Asset,
-    uint256 l1Gas,
+    uint256 l1Gas
   ) external payable returns (uint256 nonce) {
     // Associate the withdrawal to a unique id
     nonce = transferNonce++;

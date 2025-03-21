@@ -1,5 +1,5 @@
 import { getBalance, checkAllowance, getEvent } from '@relay-protocol/helpers'
-import { Mailbox } from '@relay-protocol/helpers/abis'
+import { Mailbox, InterchainGasPaymaster } from '@relay-protocol/helpers/abis'
 import { Select, Input } from 'enquirer'
 
 import { task } from 'hardhat/config'
@@ -142,25 +142,28 @@ task('bridge:pay-gas', 'Pay extra gas when a message is stuck')
   .addParam('destChain', 'the chain destination of the pool')
   .addParam('gasAmount', 'the amount of tokens to send')
   .setAction(async ({ messageId, destChain, gasAmount }, { ethers }) => {
+    const [user] = await ethers.getSigners()
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
-    const { hyperlaneMailbox } = networkConfig
-
-    const hyperlaneMailboxContract = await ethers.getContractAt(
-      'IHyperlaneMailbox',
-      hyperlaneMailbox
+    const { hyperlaneHook } = networkConfig
+    if (!hyperlaneHook) {
+      throw Error('Hyperlane hook not found')
+    }
+    const paymaster = await new ethers.Contract(
+      hyperlaneHook,
+      InterchainGasPaymaster,
+      user
     )
-    const [user] = await ethers.getSigners()
     const userAddress = await user.getAddress()
-
-    console.log(userAddress)
-    const value = ethers.parseEther(gasAmount)
-    const tx = await hyperlaneMailboxContract.payForGas.populateTransaction(
+    const value = await paymaster.quoteGasPayment(destChain, gasAmount)
+    const tx = await paymaster.payForGas(
       messageId,
       destChain,
-      value,
+      gasAmount,
       userAddress,
-      { value }
+      {
+        value,
+      }
     )
 
     console.log(tx)

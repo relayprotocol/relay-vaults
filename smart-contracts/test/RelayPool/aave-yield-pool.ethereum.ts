@@ -42,18 +42,18 @@ describe('RelayBridge: use Aave yield pool (USDC)', () => {
     // deploy the pool
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await usdc.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await usdc.name()} Relay Pool`,
         symbol: `${await usdc.symbol()}-REL`,
         thirdPartyPool: await staticAaveUsdc.getAddress(),
         weth,
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
-      parameters,
       deploymentId: `RelayPool-${parameters.RelayPool.symbol}-${chainId.toString()}`,
+      parameters,
     }))
   })
 

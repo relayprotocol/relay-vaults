@@ -40,10 +40,10 @@ task('deploy:pool', 'Deploy a relay vault')
 
       if (!asset) {
         const assetName = await new AutoComplete({
-          name: 'asset',
+          choices: Object.keys(assets),
           message:
             'Please choose the asset for your relay bridge (make sure it is supported by the proxy bridge you selected):',
-          choices: Object.keys(assets),
+          name: 'asset',
         }).run()
         asset = assets[assetName]
       }
@@ -51,9 +51,9 @@ task('deploy:pool', 'Deploy a relay vault')
       // yield pool
       if (!yieldPool) {
         const yieldPoolName = await new AutoComplete({
-          name: 'yieldPoolName',
-          message: 'Please choose a yield pool:',
           choices: ['aave', 'dummy'],
+          message: 'Please choose a yield pool:',
+          name: 'yieldPoolName',
         }).run()
         if (yieldPoolName === 'aave') {
           yieldPool = await getStataToken(asset, chainId)
@@ -72,18 +72,18 @@ task('deploy:pool', 'Deploy a relay vault')
       if (!name) {
         const defaultName = `${assetName} Relay Vault`
         name = await new Input({
-          name: 'name',
-          message: 'Please enter a pool name:',
           default: defaultName,
+          message: 'Please enter a pool name:',
+          name: 'name',
         }).run()
       }
 
       if (!symbol) {
         const defaultSymbol = `${assetSymbol}-REL`
         symbol = await new Input({
-          name: 'symbol',
-          message: 'Please enter a pool symbol:',
           default: defaultSymbol,
+          message: 'Please enter a pool symbol:',
+          name: 'symbol',
         }).run()
       }
 
@@ -113,18 +113,18 @@ task('deploy:pool', 'Deploy a relay vault')
       if (!delay) {
         const minimumDelay = await factoryContract.MIN_TIMELOCK_DELAY()
         delay = await new Input({
-          name: 'delay',
-          message: `Please enter a pool timelock delay (in seconds, more than ${minimumDelay.toString()}):`,
           default: minimumDelay,
+          message: `Please enter a pool timelock delay (in seconds, more than ${minimumDelay.toString()}):`,
+          name: 'delay',
         }).run()
       }
 
       if (!deposit) {
         // Get the default amount as the balance of the user
         deposit = await new Input({
-          name: 'deposit',
-          message: 'Please enter a pool initial deposit:',
           default: 1,
+          message: 'Please enter a pool initial deposit:',
+          name: 'deposit',
         }).run()
       }
 
@@ -191,13 +191,13 @@ task('deploy:pool', 'Deploy a relay vault')
         `${path}/params.json`,
         JSON.stringify(
           {
-            hyperlaneMailbox: await factoryContract.HYPERLANE_MAILBOX(),
             asset,
+            hyperlaneMailbox: await factoryContract.HYPERLANE_MAILBOX(),
             name,
             symbol,
-            yieldPool,
-            weth: await factoryContract.WETH(),
             timelock,
+            weth: await factoryContract.WETH(),
+            yieldPool,
           },
           null,
           2

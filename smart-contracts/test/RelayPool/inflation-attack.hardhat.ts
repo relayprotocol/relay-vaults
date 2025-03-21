@@ -39,13 +39,13 @@ describe('RelayPool: inflation attack', () => {
 
     // Deploy the factory
     const { relayPoolFactory } = await ignition.deploy(RelayPoolFactoryModule, {
+      deploymentId: 'RelayPoolFactory',
       parameters: {
         RelayPoolFactory: {
           hyperlaneMailbox: networks[1].hyperlaneMailbox,
           weth: ethers.ZeroAddress,
         },
       },
-      deploymentId: 'RelayPoolFactory',
     })
 
     initialDeposit = ethers.parseUnits('100', await myToken.decimals())

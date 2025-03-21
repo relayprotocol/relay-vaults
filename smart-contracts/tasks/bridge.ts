@@ -60,9 +60,9 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       if (!amount) {
         const amountInDecimals = await new Input({
-          name: 'amount',
-          message: 'How much do you want to bridge?',
           default: '0.1',
+          message: 'How much do you want to bridge?',
+          name: 'amount',
         }).run()
         amount = ethers.parseUnits(amountInDecimals, decimals)
       }

@@ -100,14 +100,14 @@ describe('RelayPool / Swap and Deposit', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
+        bridgeFee: 0,
+        curator: curatorAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: WETH,
-        bridgeFee: 0,
-        curator: curatorAddress,
       },
       TokenSwap: {
         uniswapUniversalRouter: universalRouterAddress,

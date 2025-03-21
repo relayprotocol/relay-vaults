@@ -42,14 +42,14 @@ task('pool:add-origin', 'Add origin for a pool')
       if (!poolAddress) {
         const pools = await getPoolsForNetwork(Number(chainId))
         poolAddress = await new Select({
-          name: 'poolAddress',
-          message: 'Please choose the relay vault address:',
           choices: pools.map((pool) => {
             return {
               message: pool.params.name,
               value: pool.address,
             }
           }),
+          message: 'Please chose the relay vault address:',
+          name: 'poolAddress',
         }).run()
       }
 
@@ -61,8 +61,8 @@ task('pool:add-origin', 'Add origin for a pool')
           (n) => (n as L2NetworkConfig).l1ChainId == chainId
         )
         const l2chainName = await new Select({
-          message: 'On what network is this origin?',
           choices: possibleL2s.map((network) => network.name),
+          message: 'On what network is this origin?',
         }).run()
         l2ChainId = possibleL2s.find(
           (network) => network.name === l2chainName
@@ -133,33 +133,33 @@ task('pool:add-origin', 'Add origin for a pool')
 
       if (!maxDebt) {
         const maxDebtInDecimals = await new Input({
-          message: 'What is the maximum debt for this origin?',
           default: 100,
+          message: 'What is the maximum debt for this origin?',
         }).run()
         maxDebt = ethers.parseUnits(maxDebtInDecimals.toString(), decimals)
       }
 
       if (!bridgeFee) {
         bridgeFee = await new Input({
-          message: 'What is the bridge fee, in basis points?',
           default: 10,
+          message: 'What is the bridge fee, in basis points?',
         }).run()
       }
 
       const timelockAddress = await pool.owner()
       if (!curator) {
         curator = await new Input({
+          default: userAddress,
           message:
             'Who should be curator for that origin? They can instantly suspend the origin. (default is you)',
-          default: userAddress,
         }).run()
       }
 
       if (!coolDown) {
         coolDown = await new Input({
+          default: 60 * 30,
           message:
-            'What should the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)',
-          default: 60 * 30, // 30 minutes
+            'What should the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)', // 30 minutes
         }).run()
       }
 
@@ -183,13 +183,13 @@ task('pool:add-origin', 'Add origin for a pool')
 
       // addOrigin parameters
       const addOriginParams = {
-        curator,
-        chainId: l2ChainId,
         bridge: bridgeAddress,
-        proxyBridge,
-        maxDebt,
         bridgeFee,
+        chainId: l2ChainId,
         coolDown,
+        curator,
+        maxDebt,
+        proxyBridge,
       }
 
       // Encode the function call to addOrigin

@@ -61,10 +61,10 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const types = ['cctp', 'op', 'arb', 'zksync']
     if (!type) {
       type = await new Select({
-        name: 'type',
-        message: 'Please choose a proxy type?',
         choices: types,
         default: stack,
+        message: 'Please choose a proxy type?',
+        name: 'type',
       }).run()
     }
     console.log(
@@ -76,14 +76,14 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         isL2 ? Number(l1ChainId) : Number(chainId)
       )
       poolAddress = await new Select({
-        name: 'poolAddress',
-        message: 'Please choose the relay vault address:',
         choices: pools.map((pool) => {
           return {
             message: pool.params.name,
             value: pool.address,
           }
         }),
+        message: 'Please chose the relay vault address:',
+        name: 'poolAddress',
       }).run()
     }
 
@@ -91,8 +91,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     if (isL2) {
       if (stack != type && type != 'cctp') {
         const confirmType = await new Confirm({
-          name: 'confirmType',
           message: `Are you sure ${type} is correct stack for ${networkName} ?`,
+          name: 'confirmType',
         }).run()
         if (!confirmType) {
           return
@@ -113,9 +113,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
         if (!l1BridgeProxy) {
           l1BridgeProxy = await new Input({
-            name: 'l1BridgeProxy',
             message:
               'Please enter the address of the corresponding BridgeProxy on the l1 :',
+            name: 'l1BridgeProxy',
           }).run()
         }
 
@@ -129,9 +129,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
     // parse args for all proxies
     const defaultProxyModuleArguments = {
-      relayPoolChainId: l1ChainId,
-      relayPool: poolAddress,
       l1BridgeProxy,
+      relayPool: poolAddress,
+      relayPoolChainId: l1ChainId,
     }
 
     // for verification
@@ -167,8 +167,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
       // deploy CCTP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(CCTPBridgeProxyModule, {
-        parameters,
         deploymentId,
+        parameters,
       }))
       proxyBridgeAddress = await proxyBridge.getAddress()
       console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
@@ -183,8 +183,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       ;({ bridge: proxyBridge } = await ignition.deploy(
         OPStackNativeBridgeProxyModule,
         {
-          parameters,
           deploymentId,
+          parameters,
         }
       ))
       proxyBridgeAddress = await proxyBridge.getAddress()
@@ -205,8 +205,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       ;({ bridge: proxyBridge } = await ignition.deploy(
         ArbitrumOrbitNativeBridgeProxyModule,
         {
-          parameters,
           deploymentId,
+          parameters,
         }
       ))
       proxyBridgeAddress = await proxyBridge.getAddress()
@@ -233,16 +233,16 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         // used ignition to deploy bridge on L1
         const parameters = {
           ZkSyncBridgeProxy: {
-            l2SharedDefaultBridge,
             l1SharedDefaultBridge,
+            l2SharedDefaultBridge,
             ...defaultProxyModuleArguments,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(
           ZkSyncBridgeProxyModule,
           {
-            parameters,
             deploymentId,
+            parameters,
           }
         ))
         proxyBridgeAddress = await proxyBridge.getAddress()

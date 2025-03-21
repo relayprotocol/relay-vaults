@@ -13,6 +13,7 @@ const { hyperlaneMailbox: HYPERLANE_MAILBOX_ON_OPTIMISM } = networks[10]
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+const l1Gas = '500000'
 
 // This runs in an OP fork because we need Hyperlane to work, but we don't actually use the OPStack native bridge.
 describe('RelayBridge', function () {
@@ -49,10 +50,16 @@ describe('RelayBridge', function () {
       const amount = ethers.parseEther('1')
       const nonce = await bridge.transferNonce()
       const balanceBefore = await getBalance(recipient, ethers.provider)
-      const fee = await bridge.getFee(amount, recipient)
-      const tx = await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
-        value: amount + fee,
-      })
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
+      const tx = await bridge.bridge(
+        amount,
+        recipient,
+        ethers.ZeroAddress,
+        l1Gas,
+        {
+          value: amount + fee,
+        }
+      )
       const receipt = await tx.wait()
 
       const bridgeAddress = await bridge.getAddress()
@@ -89,10 +96,10 @@ describe('RelayBridge', function () {
 
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
 
       await expect(
-        bridge.bridge(amount, recipient, ethers.ZeroAddress, {
+        bridge.bridge(amount, recipient, ethers.ZeroAddress, l1Gas, {
           value: amount / 2n,
         })
       )
@@ -105,11 +112,11 @@ describe('RelayBridge', function () {
       const recipient = await user.getAddress()
       const amount = 13371337133713371337n
 
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
 
       await expect(
-        bridge.bridge(amount, recipient, wethAddressOnL1, {
+        bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, {
           value: amount + fee,
         })
       ).to.be.revertedWithCustomError(bridge, 'BridgingFailed')
@@ -121,12 +128,12 @@ describe('RelayBridge', function () {
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')
       const balanceBefore = await getBalance(recipient, ethers.provider)
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
 
       const value = (amount + fee) * 10n
       const expectedBalanceAfter = balanceBefore - value
 
-      await bridge.bridge(amount, recipient, ethers.ZeroAddress, {
+      await bridge.bridge(amount, recipient, ethers.ZeroAddress, l1Gas, {
         value,
       })
 
@@ -175,13 +182,19 @@ describe('RelayBridge', function () {
       const nonce = await bridge.transferNonce()
       const balanceBefore = await weth.balanceOf(recipient)
 
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddress = await weth.getAddress()
       const wethAddressOnL1 = ethers.ZeroAddress
 
-      const tx = await bridge.bridge(amount, recipient, wethAddressOnL1, {
-        value: fee,
-      })
+      const tx = await bridge.bridge(
+        amount,
+        recipient,
+        wethAddressOnL1,
+        l1Gas,
+        {
+          value: fee,
+        }
+      )
       const receipt = await tx.wait()
 
       expect(receipt.logs.length).to.equal(6)
@@ -227,11 +240,11 @@ describe('RelayBridge', function () {
       // Approve
       await weth.approve(bridgeAddress, amount / 2n)
 
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
 
       await expect(
-        bridge.bridge(amount, recipient, wethAddressOnL1, {
+        bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, {
           value: fee / 2n,
         })
       ).to.be.reverted
@@ -246,11 +259,11 @@ describe('RelayBridge', function () {
       // Approve
       await weth.approve(bridgeAddress, amount)
 
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
 
       await expect(
-        bridge.bridge(amount, recipient, wethAddressOnL1, {
+        bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, {
           value: fee / 2n,
         })
       )
@@ -268,11 +281,11 @@ describe('RelayBridge', function () {
       // Approve
       await weth.approve(bridgeAddress, amount)
 
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
 
       await expect(
-        bridge.bridge(amount, recipient, wethAddressOnL1, {
+        bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, {
           value: fee,
         })
       ).to.be.revertedWithCustomError(bridge, 'BridgingFailed')
@@ -288,11 +301,11 @@ describe('RelayBridge', function () {
       // Approve
       await weth.approve(bridgeAddress, amount)
 
-      const fee = await bridge.getFee(amount, recipient)
+      const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
       const value = fee * 10n
       const expectedBalanceAfter = balanceOfEthBefore - value
-      await bridge.bridge(amount, recipient, wethAddressOnL1, {
+      await bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, {
         value,
       })
 

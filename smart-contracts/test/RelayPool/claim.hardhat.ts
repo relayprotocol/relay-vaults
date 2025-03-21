@@ -37,13 +37,14 @@ describe('RelayPool: claim for native ETH', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // networks[1].hyperlaneMailbox,
+        // networks[1].hyperlaneMailbox,
         asset: await myWeth.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: `${await myWeth.name()} Relay Pool`,
         symbol: `${await myWeth.symbol()}-REL`,
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -65,10 +66,10 @@ describe('RelayPool: claim for native ETH', () => {
       // Add origins (we use and OPStack origin here)
       const bridgeProxyParameters = {
         OPStackNativeBridgeProxy: {
-          portalProxy,
-          relayPoolChainId: 31337,
-          relayPool: await relayPool.getAddress(),
           l1BridgeProxy: ethers.ZeroAddress,
+          portalProxy,
+          relayPool: await relayPool.getAddress(),
+          relayPoolChainId: 31337,
         },
       }
       const { bridge: opBridgeProxy } = await ignition.deploy(
@@ -79,13 +80,16 @@ describe('RelayPool: claim for native ETH', () => {
       )
 
       origin = {
+        bridge: relayBridgeOptimism,
+        bridgeFee: 10,
         chainId: 10,
-        bridge: relayBridgeOptimism, // should not matter
+
+        coolDown: 0,
+
+        curator: userAddress,
+        // should not matter
         maxDebt: ethers.parseEther('10'),
         proxyBridge: await opBridgeProxy.getAddress(),
-        bridgeFee: 10,
-        curator: userAddress,
-        coolDown: 0,
       }
 
       relayPool.addOrigin(origin)
@@ -98,13 +102,16 @@ describe('RelayPool: claim for native ETH', () => {
       )
 
       anotherOrigin = {
+        bridge: relayBridgeBase,
+        bridgeFee: 10,
         chainId: 8453,
-        bridge: relayBridgeBase, // should not matter
+
+        coolDown: 0,
+
+        curator: userAddress,
+        // should not matter
         maxDebt: ethers.parseEther('10'),
         proxyBridge: await baseBridgeProxy.getAddress(),
-        bridgeFee: 10,
-        curator: userAddress,
-        coolDown: 0,
       }
 
       relayPool.addOrigin(anotherOrigin)
@@ -312,10 +319,10 @@ describe('RelayPool: claim for native ETH', () => {
       // add origin
       const bridgeProxyParameters = {
         OPStackNativeBridgeProxy: {
-          portalProxy,
-          relayPoolChainId: 100,
-          relayPool: await relayPool.getAddress(),
           l1BridgeProxy: ethers.ZeroAddress,
+          portalProxy,
+          relayPool: await relayPool.getAddress(),
+          relayPoolChainId: 100,
         },
       }
       const { bridge: opBridgeProxy } = await ignition.deploy(
@@ -326,13 +333,16 @@ describe('RelayPool: claim for native ETH', () => {
       )
 
       origin = {
+        bridge: relayBridgeOptimism,
+        bridgeFee: 10,
         chainId: 10,
-        bridge: relayBridgeOptimism, // should not matter
+
+        coolDown: 0,
+
+        curator: userAddress,
+        // should not matter
         maxDebt: ethers.parseEther('10'),
         proxyBridge: await opBridgeProxy.getAddress(),
-        bridgeFee: 10,
-        curator: userAddress,
-        coolDown: 0,
       }
 
       relayPool.addOrigin(origin)
@@ -374,10 +384,10 @@ describe('RelayPool: claim for native ETH', () => {
       // add origin
       const bridgeProxyParameters = {
         OPStackNativeBridgeProxy: {
-          portalProxy,
-          relayPoolChainId: 31337,
-          relayPool: await relayPool.getAddress(),
           l1BridgeProxy: ethers.ZeroAddress,
+          portalProxy,
+          relayPool: await relayPool.getAddress(),
+          relayPoolChainId: 31337,
         },
       }
       const { bridge: opBridgeProxy } = await ignition.deploy(
@@ -388,13 +398,16 @@ describe('RelayPool: claim for native ETH', () => {
       )
 
       origin = {
+        bridge: relayBridgeOptimism,
+        bridgeFee: 10,
         chainId: 10,
-        bridge: relayBridgeOptimism, // should not matter
+
+        coolDown: 0,
+
+        curator: userAddress,
+        // should not matter
         maxDebt: ethers.parseEther('10'),
         proxyBridge: await opBridgeProxy.getAddress(),
-        bridgeFee: 10,
-        curator: userAddress,
-        coolDown: 0,
       }
 
       relayPool.addOrigin(origin)
@@ -466,13 +479,14 @@ describe('RelayPool: claim for an ERC20', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // networks[1].hyperlaneMailbox,
+        // networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -482,10 +496,10 @@ describe('RelayPool: claim for an ERC20', () => {
     // Add origins (we use and OPStack origin here)
     const bridgeProxyParameters = {
       OPStackNativeBridgeProxy: {
-        portalProxy,
-        relayPoolChainId: 31337,
-        relayPool: await relayPool.getAddress(),
         l1BridgeProxy: ethers.ZeroAddress,
+        portalProxy,
+        relayPool: await relayPool.getAddress(),
+        relayPoolChainId: 31337,
       },
     }
     const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
@@ -493,13 +507,16 @@ describe('RelayPool: claim for an ERC20', () => {
     })
 
     origin = {
+      bridge: relayBridgeOptimism,
+      bridgeFee: 10,
       chainId: 10,
-      bridge: relayBridgeOptimism, // should not matter
+
+      coolDown: 0,
+
+      curator: userAddress,
+      // should not matter
       maxDebt: ethers.parseEther('10'),
       proxyBridge: await bridge.getAddress(),
-      bridgeFee: 10,
-      curator: userAddress,
-      coolDown: 0,
     }
 
     relayPool.addOrigin(origin)

@@ -13,6 +13,7 @@ export interface NetworkConfig {
   chainId: number | bigint
   name: string
   slug: string
+  earliestBlock: number
   bridges: {
     cctp?: {
       domain: bigint

@@ -21,6 +21,6 @@ const getRpcUrl = (chainId: number): string => {
  */
 export const createNetworkConfig = (chainId: number) => ({
   chainId,
-  transport: http(getRpcUrl(chainId)),
   pollingInterval: 15_000,
+  transport: http(getRpcUrl(chainId)),
 })

@@ -15,8 +15,8 @@ export default async function ({
 
   // Get the relay pool to find its yield pool
   const pool = await context.db.find(relayPool, {
-    contractAddress: event.log.address,
     chainId: context.network.chainId,
+    contractAddress: event.log.address,
   })
 
   if (!pool) {
@@ -42,8 +42,8 @@ export default async function ({
     // Update relay pool
     context.db
       .update(relayPool, {
-        contractAddress: event.log.address,
         chainId: context.network.chainId,
+        contractAddress: event.log.address,
       })
       .set({
         totalAssets: relayTotalAssets,
@@ -52,17 +52,17 @@ export default async function ({
 
     // Record pool action
     context.db.insert(poolAction).values({
-      type: 'DEPOSIT',
-      user: owner,
-      receiver: event.log.address,
-      owner: event.log.address,
-      relayPool: event.log.address,
       assets,
+      blockNumber,
+      chainId: context.network.chainId,
+      owner: event.log.address,
+      receiver: event.log.address,
+      relayPool: event.log.address,
       shares,
       timestamp,
-      blockNumber,
       transactionHash,
-      chainId: context.network.chainId,
+      type: 'DEPOSIT',
+      user: owner,
     }),
   ])
 
@@ -70,16 +70,16 @@ export default async function ({
     .insert(userBalance)
     .values({
       chainId: context.network.chainId,
-      wallet: owner,
+      lastUpdated: timestamp,
       relayPool: event.log.address,
       shareBalance: shares,
       totalDeposited: assets,
       totalWithdrawn: 0n,
-      lastUpdated: timestamp,
+      wallet: owner,
     })
     .onConflictDoUpdate((row) => ({
+      lastUpdated: timestamp,
       shareBalance: row.shareBalance + shares,
       totalDeposited: row.totalDeposited + assets,
-      lastUpdated: timestamp,
     }))
 }

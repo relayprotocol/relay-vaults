@@ -22,8 +22,8 @@ task(
   const { nativeGateway } = await ignition.deploy(
     RelayPoolNativeGatewayModule,
     {
-      parameters,
       deploymentId: `RelayPoolNativeGateway-${chainId.toString()}`,
+      parameters,
     }
   )
 

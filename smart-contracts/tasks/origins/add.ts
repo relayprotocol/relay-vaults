@@ -146,14 +146,14 @@ task('pool:add-origin', 'Add origin for a pool')
       if (!bridgeAddress) {
         const bridges = await getBridgesForNetwork(Number(l2ChainId))
         bridgeAddress = await new Select({
-          name: 'bridgeAddress',
-          message: 'Please choose the bridge address:',
           choices: bridges.map((bridge) => {
             return {
               message: bridge.params.name,
               value: bridge.address,
             }
           }),
+          message: 'Please choose the bridge address:',
+          name: 'bridgeAddress',
         }).run()
       }
 

@@ -1,6 +1,7 @@
 import { task } from 'hardhat/config'
 import { checkAllowance } from '@relay-protocol/helpers'
 import { Input } from 'enquirer'
+import { executeThruTimelock } from './origins/add'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   // .addParam('asset', 'The ERC20 asset to deposit')
@@ -88,23 +89,32 @@ task('pool:withdraw', 'Withdraw ERC20 tokens from a relay vault')
         encodedCall = pool.interface.encodeFunctionData('redeem', [
           sharesBalance,
           userAddress,
-          userAddress,
+          withdrawingAddress,
         ])
       } else {
         // use withdraw
         encodedCall = pool.interface.encodeFunctionData('withdraw', [
           amount,
           userAddress,
-          userAddress,
+          withdrawingAddress,
         ])
       }
 
       if (timelockAddress) {
-        // TODO: check that the user is a proposer on the timelock?
+        const target = poolAddress
+        const value = 0
+        const payload = encodedCall
+        await executeThruTimelock(
+          ethers,
+          timelockAddress,
+          user,
+          payload,
+          target,
+          value
+        )
       } else {
-        // parse results
-        const receipt = await tx.wait()
-        console.log(receipt?.logs)
+        // const receipt = await tx.wait()
+        // console.log(receipt?.logs)
       }
 
       // TODO: check for AssetsDepositedIntoYieldPool or similar

@@ -193,7 +193,7 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
       originChainId,
       originBridge
     )
-    expect(originSettingsAfter[2]).to.equal(originSettingsBefore[2] + amount)
+    expect(originSettingsAfter[4]).to.equal(originSettingsBefore[4] + amount)
   })
 
   it('should transfer the assets from the pool to the recipient', async () => {
@@ -285,7 +285,7 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
     expect(loanEmittedEvent.args.recipient).to.equal(userAddress)
     expect(loanEmittedEvent.args.asset).to.equal(await myToken.getAddress())
     expect(loanEmittedEvent.args.amount).to.equal(amount)
-    expect(loanEmittedEvent.args.origin[3]).to.equal(relayBridgeOptimism)
+    expect(loanEmittedEvent.args.origin[5]).to.equal(relayBridgeOptimism)
     const { event: outstandingDebtChanged } = await getEvent(
       receipt,
       'OutstandingDebtChanged',

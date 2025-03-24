@@ -28,9 +28,9 @@ task('deploy:bridge', 'Deploy a bridge proxy')
 
       if (!proxyBridgeAddress) {
         proxyBridgeAddress = await new Input({
-          name: 'proxyBridgeAddress',
           message:
             'Please enter a proxy bridge address on this network or type enter to deploy a new one:',
+          name: 'proxyBridgeAddress',
         }).run()
         // Err, we need to deploy one here!
         if (!proxyBridgeAddress) {
@@ -40,10 +40,10 @@ task('deploy:bridge', 'Deploy a bridge proxy')
 
       if (!assetAddress) {
         const asset = await new AutoComplete({
-          name: 'asset',
+          choices: ['native', ...Object.keys(assets)],
           message:
             'Please choose the asset for your relay bridge (make sure it is supported by the proxy bridge you selected):',
-          choices: ['native', ...Object.keys(assets)],
+          name: 'asset',
         }).run()
         if (asset === 'native') {
           assetAddress = ethers.ZeroAddress

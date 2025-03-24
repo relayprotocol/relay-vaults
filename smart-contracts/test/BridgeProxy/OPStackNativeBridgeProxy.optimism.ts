@@ -22,10 +22,10 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
     // deploy
     const parameters = {
       OPStackNativeBridgeProxy: {
-        portalProxy: op.portalProxy,
-        relayPoolChainId: 1,
-        relayPool,
         l1BridgeProxy,
+        portalProxy: op.portalProxy,
+        relayPool,
+        relayPoolChainId: 1,
       },
     }
     const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
@@ -58,8 +58,8 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
       amount,
       '0x',
       {
-        value: amount,
         gasLimit: 30000000,
+        value: amount,
       }
     )
     const receipt = await tx.wait()
@@ -206,10 +206,10 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
 
     const parameters = {
       OPStackNativeBridgeProxy: {
-        portalProxy: op.portalProxy,
-        relayPoolChainId: 1,
-        relayPool,
         l1BridgeProxy,
+        portalProxy: op.portalProxy,
+        relayPool,
+        relayPoolChainId: 1,
       },
     }
     const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {

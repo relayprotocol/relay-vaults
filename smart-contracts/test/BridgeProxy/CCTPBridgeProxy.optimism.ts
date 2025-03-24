@@ -31,12 +31,12 @@ describe('CCTPBridgeProxy', function () {
     // deploy using ignition
     const parameters = {
       CCTPBridgeProxy: {
+        l1BridgeProxy,
         messenger,
+        relayPool,
+        relayPoolChainId: 1,
         transmitter,
         usdc: assets.usdc,
-        relayPoolChainId: 1,
-        relayPool,
-        l1BridgeProxy,
       },
     }
     ;({ bridge } = await ignition.deploy(CCTPBridgeProxyModule, { parameters }))
@@ -53,7 +53,7 @@ describe('CCTPBridgeProxy', function () {
           networks[10].assets.udt,
           networks[1].assets.udt,
           parseUnits('100', 6),
-          '0x' //empty data
+          '0x' //empty data,
         ),
         'TokenNotBridged'
       )

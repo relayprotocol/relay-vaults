@@ -11,11 +11,11 @@ export default async function ({
   const { bridge, asset } = event.args
 
   await context.db.insert(relayBridge).values({
+    asset: asset as `0x${string}`,
     chainId: context.network.chainId,
     contractAddress: bridge as `0x${string}`,
-    asset: asset as `0x${string}`,
-    transferNonce: BigInt(0),
     createdAt: BigInt(new Date().getTime()),
     createdAtBlock: event.block.number,
+    transferNonce: BigInt(0),
   })
 }

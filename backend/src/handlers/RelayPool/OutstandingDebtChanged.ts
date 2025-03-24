@@ -37,8 +37,8 @@ export default async function ({
   // Update the relay pool record with the new outstanding debt.
   await context.db
     .update(relayPool, {
-      contractAddress: poolAddress,
       chainId: context.network.chainId,
+      contractAddress: poolAddress,
     })
     .set({
       outstandingDebt: newDebt,
@@ -56,10 +56,10 @@ export default async function ({
   for (const origin of origins) {
     // Read the origin's settings from the on-chain RelayPool contract.
     const originSettings = await context.client.readContract({
-      address: poolAddress,
       abi: context.contracts.RelayPool.abi,
-      functionName: 'authorizedOrigins',
+      address: poolAddress,
       args: [origin.originChainId, origin.originBridge],
+      functionName: 'authorizedOrigins',
     })
 
     // Extract the outstandingDebt from the returned struct.
@@ -74,9 +74,9 @@ export default async function ({
     await context.db
       .update(poolOrigin, {
         chainId: origin.chainId,
-        pool: origin.pool,
-        originChainId: origin.originChainId,
         originBridge: origin.originBridge,
+        originChainId: origin.originChainId,
+        pool: origin.pool,
       })
       .set({
         currentOutstandingDebt: updatedOriginDebt.toString(),

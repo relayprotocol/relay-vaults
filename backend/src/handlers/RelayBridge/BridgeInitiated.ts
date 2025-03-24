@@ -72,42 +72,44 @@ export default async function ({
 
   // Record bridge initiation
   await context.db.insert(bridgeTransaction).values({
-    // Bridge identification
-    originBridgeAddress: event.log.address,
-    nonce,
-
-    // Chain information
-    originChainId: context.network.chainId,
-    destinationPoolAddress: pool,
-    destinationPoolChainId: poolChainId,
-
-    // Transaction participants
-    originSender: sender,
-    destinationRecipient: recipient,
+    amount,
+    // ARB Specifics
+    arbTransactionIndex,
 
     // Asset details
     asset,
-    amount,
+    destinationPoolAddress: pool,
+    destinationPoolChainId: poolChainId,
+
+    destinationRecipient: recipient,
 
     // Hyperlane
     hyperlaneMessageId,
-
-    // Bridge status
-    nativeBridgeStatus: 'INITIATED',
-    nativeBridgeFinalizedTxHash: null as any,
-
     // Instant loan tracking
     loanEmittedTxHash: null as any,
 
-    // Origin transaction details
-    originTimestamp: event.block.timestamp,
-    originTxHash: event.transaction.hash,
+    nativeBridgeFinalizedTxHash: null as any,
+    // Bridge status
+    nativeBridgeStatus: 'INITIATED',
+
+    nonce,
+
+    opProofTxHash: null as any,
 
     // OP Specifics
     opWithdrawalHash,
-    opProofTxHash: null as any,
 
-    // ARB Specifics
-    arbTransactionIndex,
+    // Bridge identification
+    originBridgeAddress: event.log.address,
+
+    // Chain information
+    originChainId: context.network.chainId,
+    // Transaction participants
+    originSender: sender,
+
+    // Origin transaction details
+    originTimestamp: event.block.timestamp,
+
+    originTxHash: event.transaction.hash,
   })
 }

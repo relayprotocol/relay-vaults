@@ -4380,7 +4380,6 @@ __metadata:
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig"
     "@relay-protocol/types": "workspace:./packages/types"
     eslint: "npm:9.19.0"
-    eslint-plugin-sort-keys-fix: "npm:1.1.2"
     fs-extra: "npm:11.3.0"
     tsup: "npm:8.3.6"
     typescript: "npm:5.7.3"

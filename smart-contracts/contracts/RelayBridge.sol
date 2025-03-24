@@ -14,13 +14,12 @@ interface IRelayBridge {
   function bridge(
     uint256 amount,
     address recipient,
-    address l1Asset
+    address l1Asset,
+    uint256 l1Gas
   ) external payable returns (uint256 nonce);
 }
 
 contract RelayBridge is IRelayBridge {
-  uint256 public constant IGP_GAS_LIMIT = 300_000;
-
   uint256 public transferNonce;
   address public immutable ASSET;
   BridgeProxy public immutable BRIDGE_PROXY;
@@ -56,7 +55,8 @@ contract RelayBridge is IRelayBridge {
   /// @return fee The required fee in native currency
   function getFee(
     uint256 amount,
-    address recipient
+    address recipient,
+    uint256 l1Gas
   ) external view returns (uint256 fee) {
     bytes memory data = abi.encode(
       transferNonce, // use the current transferNonce
@@ -73,7 +73,7 @@ contract RelayBridge is IRelayBridge {
         poolChainId,
         poolId,
         data,
-        StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
+        StandardHookMetadata.overrideGasLimit(l1Gas)
       );
   }
 
@@ -81,7 +81,8 @@ contract RelayBridge is IRelayBridge {
   function bridge(
     uint256 amount,
     address recipient,
-    address l1Asset
+    address l1Asset,
+    uint256 l1Gas
   ) external payable returns (uint256 nonce) {
     // Associate the withdrawal to a unique id
     nonce = transferNonce++;
@@ -97,7 +98,7 @@ contract RelayBridge is IRelayBridge {
       poolChainId,
       poolId,
       data,
-      StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
+      StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 
     // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
@@ -135,7 +136,7 @@ contract RelayBridge is IRelayBridge {
       poolChainId,
       poolId,
       data,
-      StandardHookMetadata.overrideGasLimit(IGP_GAS_LIMIT)
+      StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 
     emit BridgeInitiated(

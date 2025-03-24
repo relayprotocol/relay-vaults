@@ -26,13 +26,14 @@ describe('RelayPool: asset transfers', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // using the user address as the mailbox so we can send transactions!
+        // using the user address as the mailbox so we can send transactions!
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {

@@ -122,7 +122,7 @@ task('pool:add-origin', 'Add origin for a pool')
               value: pool.address,
             }
           }),
-          message: 'Please chose the relay vault address:',
+          message: 'Please choose the relay vault address:',
           name: 'poolAddress',
         }).run()
       }

@@ -1,28 +1,72 @@
 import { task } from 'hardhat/config'
 import { checkAllowance } from '@relay-protocol/helpers'
-import { Input } from 'enquirer'
+import { Input, Select } from 'enquirer'
 import { executeThruTimelock } from './origins/add'
+import { getPoolsForNetwork } from './deploy/bridge-proxy'
+import networks from '@relay-protocol/networks'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   // .addParam('asset', 'The ERC20 asset to deposit')
-  .addParam('pool', 'The relay vault address')
-  .addParam('amount', 'the amount of tokens to deposit')
+  .addOptionalParam('pool', 'The relay vault address')
+  .addOptionalParam('amount', 'the amount of tokens to deposit')
   .setAction(async ({ pool: poolAddress, amount }, { ethers }) => {
-    const pool = await ethers.getContractAt('RelayPool', poolAddress)
     const [user] = await ethers.getSigners()
     const userAddress = await user.getAddress()
+    const { chainId } = await ethers.provider.getNetwork()
+    const { assets } = networks[chainId.toString()]
+
+    if (!poolAddress) {
+      const pools = await getPoolsForNetwork(Number(chainId))
+      poolAddress = await new Select({
+        choices: pools.map((pool) => {
+          return {
+            message: pool.params.name,
+            value: pool.address,
+          }
+        }),
+        message: 'Please choose the relay vault address:',
+        name: 'poolAddress',
+      }).run()
+    }
+
+    const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
     // get underlying asset
     const assetAddress = await pool.asset()
     const asset = await ethers.getContractAt('MyToken', assetAddress)
     console.log(`${await pool.name()} - (asset: ${assetAddress})`)
 
+    let decimals = 18n
+    if (assetAddress !== ethers.ZeroAddress) {
+      const asset = await ethers.getContractAt('MyToken', assetAddress)
+      decimals = await asset.decimals()
+    }
+
+    if (!amount) {
+      const amountInDecimals = await new Input({
+        default: '0.1',
+        message: 'How much liquidity do you want to add?',
+        name: 'amount',
+      }).run()
+      amount = ethers.parseUnits(amountInDecimals, decimals)
+    }
+
     // check balance
     const balance = await asset.balanceOf(userAddress)
     if (balance < amount) {
-      throw Error(
-        `Insufficient balance (actual: ${balance}, expected: ${amount})`
-      )
+      if (assetAddress === assets.weth) {
+        console.log('Wrapping WETH...')
+        // Wrap WETH!
+        const tx = await user.sendTransaction({
+          to: asset,
+          value: amount,
+        })
+        await tx.wait()
+      } else {
+        throw Error(
+          `Insufficient balance (actual: ${balance}, expected: ${amount})`
+        )
+      }
     }
 
     // check allowance
@@ -39,7 +83,7 @@ task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   })
 
 task('pool:withdraw', 'Withdraw ERC20 tokens from a relay vault')
-  .addParam('pool', 'The relay vault address')
+  .addOptionalParam('pool', 'The relay vault address')
   .addOptionalParam('amount', 'the amount of tokens to deposit')
   .addOptionalParam(
     'timelock',
@@ -52,13 +96,27 @@ task('pool:withdraw', 'Withdraw ERC20 tokens from a relay vault')
     ) => {
       const [user] = await ethers.getSigners()
       const userAddress = await user.getAddress()
+      const { chainId } = await ethers.provider.getNetwork()
+
+      if (!poolAddress) {
+        const pools = await getPoolsForNetwork(Number(chainId))
+        poolAddress = await new Select({
+          choices: pools.map((pool) => {
+            return {
+              message: pool.params.name,
+              value: pool.address,
+            }
+          }),
+          message: 'Please choose the relay vault address:',
+          name: 'poolAddress',
+        }).run()
+      }
 
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
       // get underlying asset
       const assetAddress = await pool.asset()
       const asset = await ethers.getContractAt('MyToken', assetAddress)
-      console.log(`${await pool.name()} - (asset: ${assetAddress})`)
       const decimals = await asset.decimals()
 
       const withdrawingAddress = timelockAddress || userAddress
@@ -113,11 +171,15 @@ task('pool:withdraw', 'Withdraw ERC20 tokens from a relay vault')
           value
         )
       } else {
-        // const receipt = await tx.wait()
-        // console.log(receipt?.logs)
+        const tx = await user.sendTransaction({
+          data: encodedCall,
+          to: poolAddress,
+          value: 0,
+        })
+        await tx.wait()
+        console.log(
+          `Withdrawn ${amount == 'all' ? 'all' : ethers.formatUnits(amount, decimals)} from ${poolAddress}`
+        )
       }
-
-      // TODO: check for AssetsDepositedIntoYieldPool or similar
-      // const event = await getEvent(receipt, 'MessagePassed')
     }
   )

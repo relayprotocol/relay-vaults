@@ -82,7 +82,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
             value: pool.address,
           }
         }),
-        message: 'Please chose the relay vault address:',
+        message: 'Please choose the relay vault address:',
         name: 'poolAddress',
       }).run()
     }

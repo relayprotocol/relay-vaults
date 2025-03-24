@@ -5,6 +5,7 @@ import { Select, Input } from 'enquirer'
 import { task } from 'hardhat/config'
 import { getBalance, checkAllowance } from '@relay-protocol/helpers'
 import { networks } from '@relay-protocol/networks'
+import { getBridgesForNetwork } from './deploy/bridge-proxy'
 
 task('bridge:send', 'Send tokens to a pool across a relay bridge')
   .addOptionalParam('asset', 'The address of the asset you want to bridge')
@@ -17,13 +18,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
   )
   .setAction(
     async (
-      {
-        bridge: bridgeAddress,
-        pool: poolAddress,
-        amount,
-        recipient,
-        destChain = 11155111,
-      },
+      { bridge: bridgeAddress, amount, recipient },
       { ethers: rawEthers, zksyncEthers }
     ) => {
       const { chainId } = await rawEthers.provider.getNetwork()
@@ -47,6 +42,18 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       if (!bridgeAddress) {
         // TODO: lookup!
+        const bridges = await getBridgesForNetwork(Number(chainId))
+        // TODO: select based on the asset?
+        bridgeAddress = await new Select({
+          choices: bridges.map((bridge) => {
+            return {
+              message: bridge.address,
+              value: bridge.address,
+            }
+          }),
+          message: 'Please choose the relay bridge you want to use:',
+          name: 'poolAddress',
+        }).run()
       }
 
       const bridge = await ethers.getContractAt('RelayBridge', bridgeAddress)
@@ -92,7 +99,9 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         await checkAllowance(asset, bridgeAddress, amount, userAddress)
       }
 
-      const hyperlaneFee = await bridge.getFee(amount, recipient)
+      // TODO: actually compute the gas (simulation!)
+      const l1Gas = 1700000
+      const hyperlaneFee = await bridge.getFee(amount, recipient, l1Gas)
 
       const value =
         assetAddress === rawEthers.ZeroAddress
@@ -112,12 +121,12 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         )
       }
 
-      let l1Asset = ethers.ZeroAddress
+      const l1Asset = ethers.ZeroAddress
       if (assetAddress !== ethers.ZeroAddress) {
         throw Error('Not implemented yet')
       }
 
-      const tx = await bridge.bridge(amount, recipient, l1Asset, {
+      const tx = await bridge.bridge(amount, recipient, l1Asset, l1Gas, {
         value,
       })
 

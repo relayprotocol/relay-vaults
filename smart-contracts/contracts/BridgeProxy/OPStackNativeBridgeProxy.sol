@@ -17,7 +17,7 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
 
   function bridge(
     address currency,
-    address /* l1Asset */,
+    address l1Asset,
     uint256 amount,
     bytes calldata data
   ) external payable override {
@@ -32,6 +32,8 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
       address l1Token = IOptimismMintableERC20(currency).remoteToken();
       if (l1Token == address(0)) {
         revert TokenNotBridged(currency);
+      } else if (l1Asset != l1Token) {
+        revert UnexpectedL1Asset(l1Token, l1Asset);
       }
 
       // Bridge!

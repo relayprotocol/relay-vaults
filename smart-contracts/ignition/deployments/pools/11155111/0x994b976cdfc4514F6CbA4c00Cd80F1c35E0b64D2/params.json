@@ -1,0 +1,9 @@
+{
+  "hyperlaneMailbox": "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766",
+  "asset": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "name": "USDC Relay Pool",
+  "symbol": "USDC-REL",
+  "yieldPool": "0x58e7d013869147fd17843821A8936f85d50b931C",
+  "weth": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+  "timelock": "0xAbd6fbF47e1f7bfFfb065d3D3c629930B23cBbc6"
+}

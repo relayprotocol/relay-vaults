@@ -3,8 +3,10 @@ import { networks } from '@relay-protocol/networks'
 import { AutoComplete, Input } from 'enquirer'
 import { getEvent } from '@relay-protocol/helpers'
 
+const ignitionPath = __dirname + '/../../ignition/deployments/'
+
 task('deploy:bridge', 'Deploy a bridge proxy')
-  .addParam('factory', 'The Bridge Factory address')
+  .addOptionalParam('factory', 'The Bridge Factory address')
   .addOptionalParam('proxyBridge', 'The Proxy bridge asset')
   .addOptionalParam('asset', 'An ERC20 asset')
   .setAction(
@@ -13,8 +15,16 @@ task('deploy:bridge', 'Deploy a bridge proxy')
       { ethers }
     ) => {
       const { chainId } = await ethers.provider.getNetwork()
+      const { assets } = networks[chainId.toString()]
 
-      const { assets, bridges } = networks[chainId.toString()]
+      if (!factory) {
+        // Read it from the files!
+        const folder = `RelayBridgeFactory-${chainId.toString()}`
+        const factoryData = require(
+          ignitionPath + `${folder}/deployed_addresses.json`
+        )
+        factory = factoryData['RelayBridgeFactory#RelayBridgeFactory']
+      }
 
       if (!proxyBridgeAddress) {
         proxyBridgeAddress = await new Input({
@@ -64,7 +74,7 @@ task('deploy:bridge', 'Deploy a bridge proxy')
         constructorArguments: [
           assetAddress,
           proxyBridgeAddress,
-          await factoryContract.hyperlaneMailbox(),
+          await factoryContract.HYPERLANE_MAILBOX(),
         ],
       })
 

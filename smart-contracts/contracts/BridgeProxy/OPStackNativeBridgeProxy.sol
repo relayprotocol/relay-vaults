@@ -9,7 +9,7 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
   address public constant STANDARD_BRIDGE =
     address(0x4200000000000000000000000000000000000010);
 
-  uint256 public constant MIN_GAS_LIMIT = 200000;
+  uint32 public constant MIN_GAS_LIMIT = 200000;
 
   constructor(
     uint256 relayPoolChainId,

@@ -31,6 +31,11 @@ export interface NetworkConfig {
       disputeGame?: string
       messagePasser?: string
     }
+    lisk?: {
+      portalProxy?: string
+      disputeGame?: string
+      messagePasser?: string
+    }
     base?: {
       portalProxy?: string
       disputeGame?: string

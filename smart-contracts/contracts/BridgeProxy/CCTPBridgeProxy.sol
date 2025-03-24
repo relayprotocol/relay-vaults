@@ -12,6 +12,7 @@ import {IUSDC} from "../interfaces/IUSDC.sol";
 contract CCTPBridgeProxy is BridgeProxy {
   ITokenMessenger public immutable MESSENGER;
   address public immutable USDC;
+  uint32 public constant ETHEREUM_DOMAIN = 0;
 
   /**
    * @param messenger the CCTP TokenMessenger address
@@ -47,7 +48,7 @@ contract CCTPBridgeProxy is BridgeProxy {
     bytes32 targetAddressBytes32 = bytes32(uint256(uint160(L1_BRIDGE_PROXY)));
     MESSENGER.depositForBurn(
       amount,
-      0, // mainnet domain is zero
+      ETHEREUM_DOMAIN,
       targetAddressBytes32,
       USDC
     );

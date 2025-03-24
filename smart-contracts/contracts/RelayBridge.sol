@@ -101,7 +101,6 @@ contract RelayBridge is IRelayBridge {
       StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 
-    // Get the funds. If the L2 is halted/reorged, the funds will remain in this contract
     if (ASSET != address(0)) {
       // Take the ERC20 tokens from the sender
       SafeERC20.safeTransferFrom(

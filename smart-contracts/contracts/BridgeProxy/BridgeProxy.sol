@@ -8,7 +8,7 @@ pragma solidity ^0.8.28;
 contract BridgeProxy {
   // errors
   error TokenNotBridged(address token);
-  error UnexpectedL1Asset(address expected, address receive);
+  error UnexpectedL1Asset(address expected, address received);
   error NotAuthorized(address user, uint256 chainId);
   error BridgeNotImplemented();
   error TransferFailed(uint256 amount);

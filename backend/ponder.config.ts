@@ -12,18 +12,8 @@ import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-protocol/addresses'
 import networks from '@relay-protocol/networks'
 import { L2NetworkConfig } from '@relay-protocol/types'
-import { start } from 'repl'
 
 const deployedAddresses = getAddresses()
-
-// TODO: remove!
-const earliestBlocks = {
-  'arbitrum-sepolia': 115000000,
-  'base-sepolia': 21000000,
-  ethereum: 22000000,
-  'op-sepolia': 22000000,
-  sepolia: 7500000,
-}
 
 // RPC configurations
 const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {

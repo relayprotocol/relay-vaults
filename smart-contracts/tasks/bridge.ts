@@ -1,9 +1,7 @@
 import { getBalance, checkAllowance, getEvent } from '@relay-protocol/helpers'
 import { Mailbox, InterchainGasPaymaster } from '@relay-protocol/helpers/abis'
 import { Select, Input } from 'enquirer'
-
 import { task } from 'hardhat/config'
-import { getBalance, checkAllowance } from '@relay-protocol/helpers'
 import { networks } from '@relay-protocol/networks'
 import { getBridgesForNetwork } from './deploy/bridge-proxy'
 
@@ -38,10 +36,8 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
           `Unsupported network ${chainId}. Please add it to networks.ts`
         )
       }
-      const { assets, l1ChainId } = net
 
       if (!bridgeAddress) {
-        // TODO: lookup!
         const bridges = await getBridgesForNetwork(Number(chainId))
         // TODO: select based on the asset?
         bridgeAddress = await new Select({
@@ -56,12 +52,12 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         }).run()
       }
 
-      const bridge = await ethers.getContractAt('RelayBridge', bridgeAddress)
+      const bridge = await rawEthers.getContractAt('RelayBridge', bridgeAddress)
       const assetAddress = await bridge.ASSET()
 
       let decimals = 18n
       if (assetAddress !== rawEthers.ZeroAddress) {
-        const asset = await ethers.getContractAt('MyToken', assetAddress)
+        const asset = await rawEthers.getContractAt('MyToken', assetAddress)
         decimals = await asset.decimals()
       }
 
@@ -71,14 +67,14 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
           message: 'How much do you want to bridge?',
           name: 'amount',
         }).run()
-        amount = ethers.parseUnits(amountInDecimals, decimals)
+        amount = rawEthers.parseUnits(amountInDecimals, decimals)
       }
 
       // parse default values
       if (!recipient) recipient = userAddress
 
       // TODO: check balance on pool as well and warn if insufficient balance on the pool!
-      // TODO: check if the root actually works! (origin supported!)
+      // TODO: check if the route actually works! (origin supported!)
 
       // check balance of asset to transfer
       const balance = await getBalance(

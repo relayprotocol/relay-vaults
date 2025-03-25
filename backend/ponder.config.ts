@@ -1,5 +1,6 @@
 import { createConfig, factory } from 'ponder'
 import { Portal2, Outbox } from '@relay-protocol/helpers/abis'
+import { http } from 'viem'
 
 import {
   RelayPool,
@@ -7,135 +8,220 @@ import {
   RelayPoolFactory,
   RelayBridgeFactory,
 } from '@relay-protocol/abis'
-import { createNetworkConfig } from './src/utils/rpc'
 import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-protocol/addresses'
 import networks from '@relay-protocol/networks'
+import { L2NetworkConfig } from '@relay-protocol/types'
 
 const deployedAddresses = getAddresses()
 
-const earliestBlocks = {
-  arbSepolia: 115000000,
-  baseSepolia: 21000000,
-  opSepolia: 22000000,
-  sepolia: 7500000,
-}
+// RPC configurations
+const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
+  return {
+    ...usedNetworks,
+    [networks[chainId].slug]: {
+      chainId,
+      transport: http(networks[chainId].rpc[0]),
+    },
+  }
+}, {})
+
+// VaultSnapshot networks
+const vaultSnapshotNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((vaultSnapshotNetworks, chainId) => {
+    const network = networks[chainId]
+    return {
+      ...vaultSnapshotNetworks,
+      [network.slug]: {
+        startBlock: network.earliestBlock,
+      },
+    }
+  }, {})
+
+// RelayBridge networks
+const relayBridgeNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    return (networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((relayBridgeNetworks, chainId) => {
+    const network = networks[chainId]
+    const addresses = deployedAddresses[chainId]
+    if (!addresses?.RelayBridgeFactory) {
+      return relayBridgeNetworks
+    }
+    return {
+      [network.slug]: {
+        address: factory({
+          address: addresses.RelayBridgeFactory,
+          event: RelayBridgeFactory.find(
+            (e) => e.name === 'BridgeDeployed'
+          ) as AbiEvent,
+          parameter: 'bridge',
+        }),
+        startBlock: network.earliestBlock,
+      },
+      ...relayBridgeNetworks,
+    }
+  }, {})
+
+// RelayBridgeFactory networks
+const relayBridgeFactoryNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    return (networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((relayBridgeFactoryNetworks, chainId) => {
+    const network = networks[chainId]
+    const addresses = deployedAddresses[chainId]
+
+    if (!addresses?.RelayBridgeFactory) {
+      return relayBridgeFactoryNetworks
+    }
+    return {
+      [network.slug]: {
+        address: addresses.RelayBridgeFactory,
+        startBlock: network.earliestBlock,
+      },
+      ...relayBridgeFactoryNetworks,
+    }
+  }, {})
+
+// RelayPoolFactory networks
+const relayPoolFactoryNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((relayPoolFactoryNetworks, chainId) => {
+    const network = networks[chainId]
+    const addresses = deployedAddresses[chainId]
+
+    if (!addresses?.RelayPoolFactory) {
+      return relayPoolFactoryNetworks
+    }
+
+    return {
+      ...relayPoolFactoryNetworks,
+      [network.slug]: {
+        address: addresses.RelayPoolFactory,
+        startBlock: network.earliestBlock,
+      },
+    }
+  }, {})
+
+const relayPoolNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((relayPoolNetworks, chainId) => {
+    const network = networks[chainId]
+    const addresses = deployedAddresses[chainId]
+    if (!addresses?.RelayPoolFactory) {
+      return relayPoolNetworks
+    }
+    return {
+      ...relayPoolNetworks,
+      [network.slug]: {
+        address: factory({
+          address: addresses.RelayPoolFactory,
+          event: RelayPoolFactory.find(
+            (e) => e.name === 'PoolDeployed'
+          ) as AbiEvent,
+          parameter: 'pool',
+        }),
+        startBlock: network.earliestBlock,
+      },
+    }
+  }, {})
+
+const oPPortalNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    // on the L1 chain
+    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((oPPortalNetworks, chainId) => {
+    const network = networks[chainId]
+    // Addresses of all the portalProxy?
+    const addresses = Object.values(network.bridges)
+      .map((bridge) => {
+        return bridge.portalProxy
+      })
+      .filter((address) => !!address)
+
+    return {
+      ...oPPortalNetworks,
+      [network.slug]: {
+        address: addresses, //
+        startBlock: network.earliestBlock,
+      },
+    }
+  }, {})
+
+const orbitOutboxNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    // on the L1 chain
+    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+  })
+  .reduce((orbitOutboxNetworks, chainId) => {
+    const network = networks[chainId]
+    // Addresses of all the portalProxy?
+    const addresses = Object.values(network.bridges)
+      .map((bridge) => {
+        return bridge.outbox
+      })
+      .filter((address) => !!address)
+
+    return {
+      ...orbitOutboxNetworks,
+      [network.slug]: {
+        address: addresses, //
+        startBlock: network.earliestBlock,
+      },
+    }
+  }, {})
 
 export default createConfig({
   blocks: {
     VaultSnapshot: {
       interval: 25,
-      network: 'sepolia', // ~5 minutes with 12s block time
-      startBlock: earliestBlocks.sepolia,
+      network: vaultSnapshotNetworks,
     },
   },
   contracts: {
-    // Third-party contracts
     OPPortal: {
       abi: Portal2,
-      network: {
-        sepolia: {
-          address: [
-            networks['11155111']!.bridges!.op!.portalProxy! as `0x${string}`,
-            networks['11155111']!.bridges!.base!.portalProxy! as `0x${string}`,
-          ],
-          startBlock: earliestBlocks.sepolia,
-        },
-      },
+      network: oPPortalNetworks,
     },
+
     OrbitOutbox: {
       abi: Outbox,
-      network: {
-        sepolia: {
-          address: networks['11155111']!.bridges!.arb!.outbox! as `0x${string}`,
-          startBlock: earliestBlocks.sepolia,
-        },
-      },
+      network: orbitOutboxNetworks,
     },
 
     RelayBridge: {
       abi: RelayBridge as Abi,
-      network: {
-        arbSepolia: {
-          address: factory({
-            address: deployedAddresses['421614'].RelayBridgeFactory,
-            event: RelayBridgeFactory.find(
-              (e) => e.name === 'BridgeDeployed'
-            ) as AbiEvent,
-            parameter: 'bridge',
-          }),
-          startBlock: earliestBlocks.arbSepolia,
-        },
-        baseSepolia: {
-          address: factory({
-            address: deployedAddresses['84532'].RelayBridgeFactory,
-            event: RelayBridgeFactory.find(
-              (e) => e.name === 'BridgeDeployed'
-            ) as AbiEvent,
-            parameter: 'bridge',
-          }),
-          startBlock: earliestBlocks.baseSepolia,
-        },
-        opSepolia: {
-          address: factory({
-            address: deployedAddresses['11155420'].RelayBridgeFactory,
-            event: RelayBridgeFactory.find(
-              (e) => e.name === 'BridgeDeployed'
-            ) as AbiEvent,
-            parameter: 'bridge',
-          }),
-          startBlock: earliestBlocks.opSepolia,
-        },
-      },
+      network: relayBridgeNetworks,
     },
+
     RelayBridgeFactory: {
       abi: RelayBridgeFactory as Abi,
-      network: {
-        arbSepolia: {
-          address: deployedAddresses['421614'].RelayBridgeFactory,
-          startBlock: earliestBlocks.arbSepolia,
-        },
-        baseSepolia: {
-          address: deployedAddresses['84532'].RelayBridgeFactory,
-          startBlock: earliestBlocks.baseSepolia,
-        },
-        opSepolia: {
-          address: deployedAddresses['11155420'].RelayBridgeFactory,
-          startBlock: earliestBlocks.opSepolia,
-        },
-      },
+      network: relayBridgeFactoryNetworks,
     },
+
     RelayPool: {
       abi: RelayPool as Abi,
-      address: factory({
-        address: deployedAddresses['11155111'].RelayPoolFactory,
-        event: RelayPoolFactory.find(
-          (e) => e.name === 'PoolDeployed'
-        ) as AbiEvent,
-        parameter: 'pool',
-        startBlock: earliestBlocks.sepolia,
-      }),
-      network: 'sepolia',
+      network: relayPoolNetworks,
     },
-    // Relay contracts
+
     RelayPoolFactory: {
       abi: RelayPoolFactory as Abi,
-      network: {
-        sepolia: {
-          address: deployedAddresses['11155111'].RelayPoolFactory,
-          startBlock: earliestBlocks.sepolia,
-        },
-      },
+      network: relayPoolFactoryNetworks,
     },
   },
   database: {
     connectionString: process.env.DATABASE_URL,
     kind: 'postgres',
   },
-  networks: {
-    arbSepolia: createNetworkConfig(421614),
-    baseSepolia: createNetworkConfig(84532),
-    opSepolia: createNetworkConfig(11155420),
-    sepolia: createNetworkConfig(11155111),
-  },
+  networks: usedNetworks,
 })

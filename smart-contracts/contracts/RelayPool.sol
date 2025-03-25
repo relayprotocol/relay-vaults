@@ -475,9 +475,10 @@ contract RelayPool is ERC4626, Ownable {
     if (amount > 0) {
       updateStreamedAssets();
       // We adjust the end of the stream based on the new amount
-      uint amountLeft = remainsToStream();
-      uint timeLeft = Math.max(endOfStream, block.timestamp) - block.timestamp;
-      uint weightedStreamingPeriod = (amountLeft *
+      uint256 amountLeft = remainsToStream();
+      uint256 timeLeft = Math.max(endOfStream, block.timestamp) -
+        block.timestamp;
+      uint256 weightedStreamingPeriod = (amountLeft *
         timeLeft +
         amount *
         streamingPeriod) / (amountLeft + amount);

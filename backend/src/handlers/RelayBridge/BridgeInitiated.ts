@@ -14,7 +14,6 @@ export default async function ({
   context: Context<'RelayBridge:BridgeInitiated'>
 }) {
   const networkConfig = networks[context.network.chainId] as L2NetworkConfig
-
   const { nonce, sender, recipient, ASSET, amount, BRIDGE_PROXY } = event.args
 
   // Parse logs to find the DispatchId event and extract hyperlaneMessageId
@@ -76,12 +75,12 @@ export default async function ({
     context.client.readContract({
       abi: BridgeProxy,
       address: BRIDGE_PROXY,
-      functionName: 'relayPool',
+      functionName: 'RELAY_POOL',
     }),
     context.client.readContract({
       abi: BridgeProxy,
       address: BRIDGE_PROXY,
-      functionName: 'relayPoolChainId',
+      functionName: 'RELAY_POOL_CHAIN_ID',
     }),
   ])
 

@@ -29,10 +29,10 @@ contract RelayBridge is IRelayBridge {
     uint256 indexed nonce,
     address indexed sender,
     address recipient,
-    address asset,
+    address ASSET,
     address l1Asset,
     uint256 amount,
-    BridgeProxy bridgeProxy
+    BridgeProxy BRIDGE_PROXY
   );
 
   event BridgeExecuted(uint256 indexed nonce);

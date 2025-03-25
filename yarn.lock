@@ -4224,18 +4224,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@relay-protocol/abis@workspace:*, @relay-protocol/abis@workspace:packages/abis":
+"@relay-protocol/abis@npm:1.0.2, @relay-protocol/abis@workspace:packages/abis":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/abis@workspace:packages/abis"
   dependencies:
     "@relay-protocol/helpers": "^workspace:*"
-    "@relay-protocol/networks": "^workspace:*"
+    "@relay-protocol/networks": "npm:1.1.1"
     tsup: "npm:8.3.6"
     typescript: "npm:5.7.3"
   languageName: unknown
   linkType: soft
 
-"@relay-protocol/addresses@workspace:*, @relay-protocol/addresses@workspace:packages/addresses":
+"@relay-protocol/addresses@npm:1.0.5, @relay-protocol/addresses@workspace:packages/addresses":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/addresses@workspace:packages/addresses"
   dependencies:
@@ -4256,8 +4256,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-protocol/backend@workspace:backend"
   dependencies:
-    "@relay-protocol/abis": "workspace:*"
-    "@relay-protocol/addresses": "workspace:*"
+    "@relay-protocol/abis": "npm:1.0.2"
+    "@relay-protocol/addresses": "npm:1.0.5"
     "@types/node": "npm:22.13.0"
     "@typescript-eslint/eslint-plugin": "npm:8.23.0"
     "@typescript-eslint/parser": "npm:8.23.0"
@@ -4280,7 +4280,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-protocol/claimer@workspace:claimer"
   dependencies:
-    "@relay-protocol/client": "workspace:*"
+    "@relay-protocol/client": "npm:0.0.2"
     "@relay-protocol/eslint-config": "workspace:^"
     "@relay-protocol/helpers": "workspace:*"
     "@relay-protocol/networks": "workspace:*"
@@ -4294,7 +4294,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-protocol/client@workspace:*, @relay-protocol/client@workspace:packages/client":
+"@relay-protocol/client@npm:0.0.2, @relay-protocol/client@workspace:packages/client":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/client@workspace:packages/client"
   dependencies:
@@ -4365,7 +4365,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-protocol/networks@^workspace:*, @relay-protocol/networks@workspace:*, @relay-protocol/networks@workspace:^, @relay-protocol/networks@workspace:packages/networks":
+"@relay-protocol/networks@npm:1.1.1, @relay-protocol/networks@workspace:*, @relay-protocol/networks@workspace:^, @relay-protocol/networks@workspace:packages/networks":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/networks@workspace:packages/networks"
   dependencies:
@@ -4397,7 +4397,6 @@ __metadata:
     "@nomicfoundation/hardhat-verify": "npm:2.0.12"
     "@openzeppelin/contracts": "npm:5.2.0"
     "@openzeppelin/contracts-upgradeable": "npm:5.2.0"
-    "@relay-protocol/client": "workspace:*"
     "@relay-protocol/helpers": "workspace:*"
     "@typechain/ethers-v6": "npm:0.5.1"
     "@typechain/hardhat": "npm:9.1.0"

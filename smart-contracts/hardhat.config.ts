@@ -103,6 +103,8 @@ const etherscan = {
 
     linea: 'S66J314Q7PICPB4RP2G117KDFQRBEUYIFX',
 
+    lisk: 'hello',
+
     mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
 
     opSepolia: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
@@ -148,6 +150,14 @@ const etherscan = {
       urls: {
         apiURL: 'https://api-sepolia.arbiscan.io/api',
         browserURL: 'https://sepolia.arbiscan.io/',
+      },
+    },
+    {
+      chainId: 1135,
+      network: 'lisk',
+      urls: {
+        apiURL: 'https://blockscout.lisk.com/api',
+        browserURL: 'https://blockscout.lisk.com',
       },
     },
   ],

@@ -5,13 +5,13 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ITokenMessenger} from "../interfaces/cctp/ITokenMessenger.sol";
 import {BridgeProxy} from "./BridgeProxy.sol";
-import {IUSDC} from "../interfaces/IUSDC.sol";
 
 // docs
 // https://developers.circle.com/stablecoins/message-format
 contract CCTPBridgeProxy is BridgeProxy {
   ITokenMessenger public immutable MESSENGER;
   address public immutable USDC;
+  uint32 public constant ETHEREUM_DOMAIN = 0;
 
   /**
    * @param messenger the CCTP TokenMessenger address
@@ -47,7 +47,7 @@ contract CCTPBridgeProxy is BridgeProxy {
     bytes32 targetAddressBytes32 = bytes32(uint256(uint160(L1_BRIDGE_PROXY)));
     MESSENGER.depositForBurn(
       amount,
-      0, // mainnet domain is zero
+      ETHEREUM_DOMAIN,
       targetAddressBytes32,
       USDC
     );

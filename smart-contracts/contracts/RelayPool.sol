@@ -15,6 +15,8 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 
 struct OriginSettings {
+  uint32 chainId;
+  address bridge;
   address curator;
   uint256 maxDebt;
   uint256 outstandingDebt;
@@ -221,13 +223,15 @@ contract RelayPool is ERC4626, Ownable {
       newPool,
       withdrawnAssets
     );
-    depositAssetsInYieldPool(withdrawnAssets);
+    _depositAssetsInYieldPool(withdrawnAssets);
 
     emit YieldPoolChanged(oldPool, newPool);
   }
 
   function addOrigin(OriginParam memory origin) public onlyOwner {
     authorizedOrigins[origin.chainId][origin.bridge] = OriginSettings({
+      chainId: origin.chainId,
+      bridge: origin.bridge,
       curator: origin.curator, // We can't use msg.sender here, because we recommend msg.sender to be a timelock and this address should be able to disable an origin quickly!
       maxDebt: origin.maxDebt,
       outstandingDebt: 0,
@@ -255,7 +259,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function increaseOutstandingDebt(
+  function _increaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -272,7 +276,7 @@ contract RelayPool is ERC4626, Ownable {
     );
   }
 
-  function decreaseOutstandingDebt(
+  function _decreaseOutstandingDebt(
     uint256 amount,
     OriginSettings storage origin
   ) internal {
@@ -353,7 +357,7 @@ contract RelayPool is ERC4626, Ownable {
   // Note: a previous version used the full balance of assets.
   //       This creates a vulnerability where a 3rd party can inflate
   //       the share price and use that to capture the value created.
-  function depositAssetsInYieldPool(uint256 amount) internal {
+  function _depositAssetsInYieldPool(uint256 amount) internal {
     SafeERC20.safeIncreaseAllowance(IERC20(address(asset)), yieldPool, amount);
     ERC4626(yieldPool).deposit(amount, address(this));
     emit AssetsDepositedIntoYieldPool(amount, yieldPool);
@@ -362,7 +366,7 @@ contract RelayPool is ERC4626, Ownable {
   // Helper function
   // We withdraw only the required amount.
   // This function is internal for obvious reasons!
-  function withdrawAssetsFromYieldPool(
+  function _withdrawAssetsFromYieldPool(
     uint256 amount,
     address recipient
   ) internal {
@@ -430,10 +434,10 @@ contract RelayPool is ERC4626, Ownable {
         message.amount
       );
     }
-    increaseOutstandingDebt(message.amount, origin);
+    _increaseOutstandingDebt(message.amount, origin);
 
     // We only send the amount net of fees
-    sendFunds(message.amount - feeAmount, message.recipient);
+    _sendFunds(message.amount - feeAmount, message.recipient);
 
     emit LoanEmitted(
       message.nonce,
@@ -467,13 +471,14 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   // Internal function to add assets to be accounted in a streaming fashgion
-  function addToStreamingAssets(uint256 amount) internal returns (uint256) {
+  function _addToStreamingAssets(uint256 amount) internal returns (uint256) {
     if (amount > 0) {
       updateStreamedAssets();
       // We adjust the end of the stream based on the new amount
-      uint amountLeft = remainsToStream();
-      uint timeLeft = Math.max(endOfStream, block.timestamp) - block.timestamp;
-      uint weightedStreamingPeriod = (amountLeft *
+      uint256 amountLeft = remainsToStream();
+      uint256 timeLeft = Math.max(endOfStream, block.timestamp) -
+        block.timestamp;
+      uint256 weightedStreamingPeriod = (amountLeft *
         timeLeft +
         amount *
         streamingPeriod) / (amountLeft + amount);
@@ -500,31 +505,31 @@ contract RelayPool is ERC4626, Ownable {
     );
 
     // We should have received funds
-    decreaseOutstandingDebt(amount, origin);
+    _decreaseOutstandingDebt(amount, origin);
     // and we should deposit these funds into the yield pool
-    depositAssetsInYieldPool(amount);
+    _depositAssetsInYieldPool(amount);
 
     // The amount is the amount that was loaned + the fees
     uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion
-    addToStreamingAssets(feeAmount);
+    _addToStreamingAssets(feeAmount);
 
     emit BridgeCompleted(chainId, bridge, amount, feeAmount);
   }
 
   // Internal function to send funds to a recipient,
   // based on whether this is an ERC20 or native ETH.
-  function sendFunds(uint256 amount, address recipient) internal {
+  function _sendFunds(uint256 amount, address recipient) internal {
     if (address(asset) == WETH) {
-      withdrawAssetsFromYieldPool(amount, address(this));
+      _withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
       (bool success, ) = recipient.call{value: amount}("");
       if (!success) {
         revert FailedTransfer(recipient, amount);
       }
     } else {
-      withdrawAssetsFromYieldPool(amount, recipient);
+      _withdrawAssetsFromYieldPool(amount, recipient);
     }
   }
 
@@ -566,8 +571,8 @@ contract RelayPool is ERC4626, Ownable {
   function collectNonDepositedAssets() public {
     uint256 balance = ERC20(asset).balanceOf(address(this));
     if (balance > 0) {
-      depositAssetsInYieldPool(balance);
-      addToStreamingAssets(balance);
+      _depositAssetsInYieldPool(balance);
+      _addToStreamingAssets(balance);
     }
   }
 
@@ -576,7 +581,7 @@ contract RelayPool is ERC4626, Ownable {
     uint256 /* shares */
   ) internal override {
     // We need to withdraw the assets from the yield pool
-    withdrawAssetsFromYieldPool(assets, address(this));
+    _withdrawAssetsFromYieldPool(assets, address(this));
   }
 
   function afterDeposit(
@@ -584,7 +589,7 @@ contract RelayPool is ERC4626, Ownable {
     uint256 /* shares */
   ) internal override {
     // We need to deposit the assets into the yield pool
-    depositAssetsInYieldPool(assets);
+    _depositAssetsInYieldPool(assets);
   }
 
   // @notice This function is used to handle failed (fast) messages manually
@@ -611,7 +616,7 @@ contract RelayPool is ERC4626, Ownable {
     messages[chainId][bridge][message.nonce] = data;
 
     // Increase the outstanding debt with the amount
-    increaseOutstandingDebt(message.amount, origin);
+    _increaseOutstandingDebt(message.amount, origin);
     // And immediately claim from the bridge to get the funds (and decrease the outstanding debt!)
     uint256 amount = claim(chainId, bridge);
     if (amount < message.amount) {
@@ -619,7 +624,7 @@ contract RelayPool is ERC4626, Ownable {
     }
 
     // Send the funds to the recipient (we should not take fees because the funds have taken more time to arrive...)
-    sendFunds(message.amount, message.recipient);
+    _sendFunds(message.amount, message.recipient);
   }
 
   // Needed to receive ETH from WETH for the `handle` function

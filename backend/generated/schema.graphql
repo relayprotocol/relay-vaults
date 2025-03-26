@@ -37,11 +37,11 @@ type Query {
 }
 
 type yieldPool {
-  contractAddress: String!
   asset: String!
-  name: String!
-  lastUpdated: BigInt!
   chainId: Int!
+  contractAddress: String!
+  lastUpdated: BigInt!
+  name: String!
 }
 
 type yieldPoolPage {
@@ -53,16 +53,6 @@ type yieldPoolPage {
 input yieldPoolFilter {
   AND: [yieldPoolFilter]
   OR: [yieldPoolFilter]
-  contractAddress: String
-  contractAddress_not: String
-  contractAddress_in: [String]
-  contractAddress_not_in: [String]
-  contractAddress_contains: String
-  contractAddress_not_contains: String
-  contractAddress_starts_with: String
-  contractAddress_ends_with: String
-  contractAddress_not_starts_with: String
-  contractAddress_not_ends_with: String
   asset: String
   asset_not: String
   asset_in: [String]
@@ -73,6 +63,32 @@ input yieldPoolFilter {
   asset_ends_with: String
   asset_not_starts_with: String
   asset_not_ends_with: String
+  chainId: Int
+  chainId_not: Int
+  chainId_in: [Int]
+  chainId_not_in: [Int]
+  chainId_gt: Int
+  chainId_lt: Int
+  chainId_gte: Int
+  chainId_lte: Int
+  contractAddress: String
+  contractAddress_not: String
+  contractAddress_in: [String]
+  contractAddress_not_in: [String]
+  contractAddress_contains: String
+  contractAddress_not_contains: String
+  contractAddress_starts_with: String
+  contractAddress_ends_with: String
+  contractAddress_not_starts_with: String
+  contractAddress_not_ends_with: String
+  lastUpdated: BigInt
+  lastUpdated_not: BigInt
+  lastUpdated_in: [BigInt]
+  lastUpdated_not_in: [BigInt]
+  lastUpdated_gt: BigInt
+  lastUpdated_lt: BigInt
+  lastUpdated_gte: BigInt
+  lastUpdated_lte: BigInt
   name: String
   name_not: String
   name_in: [String]
@@ -83,41 +99,25 @@ input yieldPoolFilter {
   name_ends_with: String
   name_not_starts_with: String
   name_not_ends_with: String
-  lastUpdated: BigInt
-  lastUpdated_not: BigInt
-  lastUpdated_in: [BigInt]
-  lastUpdated_not_in: [BigInt]
-  lastUpdated_gt: BigInt
-  lastUpdated_lt: BigInt
-  lastUpdated_gte: BigInt
-  lastUpdated_lte: BigInt
-  chainId: Int
-  chainId_not: Int
-  chainId_in: [Int]
-  chainId_not_in: [Int]
-  chainId_gt: Int
-  chainId_lt: Int
-  chainId_gte: Int
-  chainId_lte: Int
 }
 
 type relayPool {
-  contractAddress: String!
-  curator: String!
   asset: String!
-  yieldPool: String!
-  outstandingDebt: BigInt!
-  totalAssets: BigInt!
-  totalShares: BigInt!
-  totalBridgeFees: BigInt!
   chainId: Int!
+  contractAddress: String!
   createdAt: BigInt!
   createdAtBlock: BigInt!
+  curator: String!
   name: String!
+  outstandingDebt: BigInt!
   symbol: String!
+  totalAssets: BigInt!
+  totalBridgeFees: BigInt!
+  totalShares: BigInt!
+  yieldPool: String!
   origins(where: poolOriginFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolOriginPage
-  userBalances(where: userBalanceFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): userBalancePage
   snapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage
+  userBalances(where: userBalanceFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): userBalancePage
 }
 
 type poolOriginPage {
@@ -127,16 +127,16 @@ type poolOriginPage {
 }
 
 type poolOrigin {
+  bridgeFee: Int!
   chainId: Int!
+  coolDown: Int!
+  curator: String!
+  currentOutstandingDebt: BigInt!
+  maxDebt: BigInt!
+  originBridge: String!
+  originChainId: Int!
   pool: relayPool
   proxyBridge: String!
-  originChainId: Int!
-  originBridge: String!
-  maxDebt: BigInt!
-  currentOutstandingDebt: BigInt!
-  curator: String!
-  bridgeFee: Int!
-  coolDown: Int!
   transactions(where: bridgeTransactionFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): bridgeTransactionPage
 }
 
@@ -147,56 +147,56 @@ type bridgeTransactionPage {
 }
 
 type bridgeTransaction {
-  originBridgeAddress: String!
-  nonce: BigInt!
-  originChainId: Int!
+  amount: BigInt!
+  arbTransactionIndex: BigInt
+  asset: String!
   destinationPoolAddress: String!
   destinationPoolChainId: Int!
-  originSender: String!
   destinationRecipient: String!
-  asset: String!
-  amount: BigInt!
   hyperlaneMessageId: String!
-  nativeBridgeStatus: String!
-  opProofTxHash: String
-  nativeBridgeFinalizedTxHash: String
   loanEmittedTxHash: String
+  nativeBridgeFinalizedTxHash: String
+  nativeBridgeStatus: String!
+  nonce: BigInt!
+  opProofTxHash: String
+  opWithdrawalHash: String
+  originBridgeAddress: String!
+  originChainId: Int!
+  originSender: String!
   originTimestamp: BigInt!
   originTxHash: String!
-  opWithdrawalHash: String
-  arbTransactionIndex: BigInt
   origin: poolOrigin
 }
 
 input bridgeTransactionFilter {
   AND: [bridgeTransactionFilter]
   OR: [bridgeTransactionFilter]
-  originBridgeAddress: String
-  originBridgeAddress_not: String
-  originBridgeAddress_in: [String]
-  originBridgeAddress_not_in: [String]
-  originBridgeAddress_contains: String
-  originBridgeAddress_not_contains: String
-  originBridgeAddress_starts_with: String
-  originBridgeAddress_ends_with: String
-  originBridgeAddress_not_starts_with: String
-  originBridgeAddress_not_ends_with: String
-  nonce: BigInt
-  nonce_not: BigInt
-  nonce_in: [BigInt]
-  nonce_not_in: [BigInt]
-  nonce_gt: BigInt
-  nonce_lt: BigInt
-  nonce_gte: BigInt
-  nonce_lte: BigInt
-  originChainId: Int
-  originChainId_not: Int
-  originChainId_in: [Int]
-  originChainId_not_in: [Int]
-  originChainId_gt: Int
-  originChainId_lt: Int
-  originChainId_gte: Int
-  originChainId_lte: Int
+  amount: BigInt
+  amount_not: BigInt
+  amount_in: [BigInt]
+  amount_not_in: [BigInt]
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  arbTransactionIndex: BigInt
+  arbTransactionIndex_not: BigInt
+  arbTransactionIndex_in: [BigInt]
+  arbTransactionIndex_not_in: [BigInt]
+  arbTransactionIndex_gt: BigInt
+  arbTransactionIndex_lt: BigInt
+  arbTransactionIndex_gte: BigInt
+  arbTransactionIndex_lte: BigInt
+  asset: String
+  asset_not: String
+  asset_in: [String]
+  asset_not_in: [String]
+  asset_contains: String
+  asset_not_contains: String
+  asset_starts_with: String
+  asset_ends_with: String
+  asset_not_starts_with: String
+  asset_not_ends_with: String
   destinationPoolAddress: String
   destinationPoolAddress_not: String
   destinationPoolAddress_in: [String]
@@ -215,16 +215,6 @@ input bridgeTransactionFilter {
   destinationPoolChainId_lt: Int
   destinationPoolChainId_gte: Int
   destinationPoolChainId_lte: Int
-  originSender: String
-  originSender_not: String
-  originSender_in: [String]
-  originSender_not_in: [String]
-  originSender_contains: String
-  originSender_not_contains: String
-  originSender_starts_with: String
-  originSender_ends_with: String
-  originSender_not_starts_with: String
-  originSender_not_ends_with: String
   destinationRecipient: String
   destinationRecipient_not: String
   destinationRecipient_in: [String]
@@ -235,24 +225,6 @@ input bridgeTransactionFilter {
   destinationRecipient_ends_with: String
   destinationRecipient_not_starts_with: String
   destinationRecipient_not_ends_with: String
-  asset: String
-  asset_not: String
-  asset_in: [String]
-  asset_not_in: [String]
-  asset_contains: String
-  asset_not_contains: String
-  asset_starts_with: String
-  asset_ends_with: String
-  asset_not_starts_with: String
-  asset_not_ends_with: String
-  amount: BigInt
-  amount_not: BigInt
-  amount_in: [BigInt]
-  amount_not_in: [BigInt]
-  amount_gt: BigInt
-  amount_lt: BigInt
-  amount_gte: BigInt
-  amount_lte: BigInt
   hyperlaneMessageId: String
   hyperlaneMessageId_not: String
   hyperlaneMessageId_in: [String]
@@ -263,36 +235,6 @@ input bridgeTransactionFilter {
   hyperlaneMessageId_ends_with: String
   hyperlaneMessageId_not_starts_with: String
   hyperlaneMessageId_not_ends_with: String
-  nativeBridgeStatus: String
-  nativeBridgeStatus_not: String
-  nativeBridgeStatus_in: [String]
-  nativeBridgeStatus_not_in: [String]
-  nativeBridgeStatus_contains: String
-  nativeBridgeStatus_not_contains: String
-  nativeBridgeStatus_starts_with: String
-  nativeBridgeStatus_ends_with: String
-  nativeBridgeStatus_not_starts_with: String
-  nativeBridgeStatus_not_ends_with: String
-  opProofTxHash: String
-  opProofTxHash_not: String
-  opProofTxHash_in: [String]
-  opProofTxHash_not_in: [String]
-  opProofTxHash_contains: String
-  opProofTxHash_not_contains: String
-  opProofTxHash_starts_with: String
-  opProofTxHash_ends_with: String
-  opProofTxHash_not_starts_with: String
-  opProofTxHash_not_ends_with: String
-  nativeBridgeFinalizedTxHash: String
-  nativeBridgeFinalizedTxHash_not: String
-  nativeBridgeFinalizedTxHash_in: [String]
-  nativeBridgeFinalizedTxHash_not_in: [String]
-  nativeBridgeFinalizedTxHash_contains: String
-  nativeBridgeFinalizedTxHash_not_contains: String
-  nativeBridgeFinalizedTxHash_starts_with: String
-  nativeBridgeFinalizedTxHash_ends_with: String
-  nativeBridgeFinalizedTxHash_not_starts_with: String
-  nativeBridgeFinalizedTxHash_not_ends_with: String
   loanEmittedTxHash: String
   loanEmittedTxHash_not: String
   loanEmittedTxHash_in: [String]
@@ -303,6 +245,82 @@ input bridgeTransactionFilter {
   loanEmittedTxHash_ends_with: String
   loanEmittedTxHash_not_starts_with: String
   loanEmittedTxHash_not_ends_with: String
+  nativeBridgeFinalizedTxHash: String
+  nativeBridgeFinalizedTxHash_not: String
+  nativeBridgeFinalizedTxHash_in: [String]
+  nativeBridgeFinalizedTxHash_not_in: [String]
+  nativeBridgeFinalizedTxHash_contains: String
+  nativeBridgeFinalizedTxHash_not_contains: String
+  nativeBridgeFinalizedTxHash_starts_with: String
+  nativeBridgeFinalizedTxHash_ends_with: String
+  nativeBridgeFinalizedTxHash_not_starts_with: String
+  nativeBridgeFinalizedTxHash_not_ends_with: String
+  nativeBridgeStatus: String
+  nativeBridgeStatus_not: String
+  nativeBridgeStatus_in: [String]
+  nativeBridgeStatus_not_in: [String]
+  nativeBridgeStatus_contains: String
+  nativeBridgeStatus_not_contains: String
+  nativeBridgeStatus_starts_with: String
+  nativeBridgeStatus_ends_with: String
+  nativeBridgeStatus_not_starts_with: String
+  nativeBridgeStatus_not_ends_with: String
+  nonce: BigInt
+  nonce_not: BigInt
+  nonce_in: [BigInt]
+  nonce_not_in: [BigInt]
+  nonce_gt: BigInt
+  nonce_lt: BigInt
+  nonce_gte: BigInt
+  nonce_lte: BigInt
+  opProofTxHash: String
+  opProofTxHash_not: String
+  opProofTxHash_in: [String]
+  opProofTxHash_not_in: [String]
+  opProofTxHash_contains: String
+  opProofTxHash_not_contains: String
+  opProofTxHash_starts_with: String
+  opProofTxHash_ends_with: String
+  opProofTxHash_not_starts_with: String
+  opProofTxHash_not_ends_with: String
+  opWithdrawalHash: String
+  opWithdrawalHash_not: String
+  opWithdrawalHash_in: [String]
+  opWithdrawalHash_not_in: [String]
+  opWithdrawalHash_contains: String
+  opWithdrawalHash_not_contains: String
+  opWithdrawalHash_starts_with: String
+  opWithdrawalHash_ends_with: String
+  opWithdrawalHash_not_starts_with: String
+  opWithdrawalHash_not_ends_with: String
+  originBridgeAddress: String
+  originBridgeAddress_not: String
+  originBridgeAddress_in: [String]
+  originBridgeAddress_not_in: [String]
+  originBridgeAddress_contains: String
+  originBridgeAddress_not_contains: String
+  originBridgeAddress_starts_with: String
+  originBridgeAddress_ends_with: String
+  originBridgeAddress_not_starts_with: String
+  originBridgeAddress_not_ends_with: String
+  originChainId: Int
+  originChainId_not: Int
+  originChainId_in: [Int]
+  originChainId_not_in: [Int]
+  originChainId_gt: Int
+  originChainId_lt: Int
+  originChainId_gte: Int
+  originChainId_lte: Int
+  originSender: String
+  originSender_not: String
+  originSender_in: [String]
+  originSender_not_in: [String]
+  originSender_contains: String
+  originSender_not_contains: String
+  originSender_starts_with: String
+  originSender_ends_with: String
+  originSender_not_starts_with: String
+  originSender_not_ends_with: String
   originTimestamp: BigInt
   originTimestamp_not: BigInt
   originTimestamp_in: [BigInt]
@@ -321,29 +339,19 @@ input bridgeTransactionFilter {
   originTxHash_ends_with: String
   originTxHash_not_starts_with: String
   originTxHash_not_ends_with: String
-  opWithdrawalHash: String
-  opWithdrawalHash_not: String
-  opWithdrawalHash_in: [String]
-  opWithdrawalHash_not_in: [String]
-  opWithdrawalHash_contains: String
-  opWithdrawalHash_not_contains: String
-  opWithdrawalHash_starts_with: String
-  opWithdrawalHash_ends_with: String
-  opWithdrawalHash_not_starts_with: String
-  opWithdrawalHash_not_ends_with: String
-  arbTransactionIndex: BigInt
-  arbTransactionIndex_not: BigInt
-  arbTransactionIndex_in: [BigInt]
-  arbTransactionIndex_not_in: [BigInt]
-  arbTransactionIndex_gt: BigInt
-  arbTransactionIndex_lt: BigInt
-  arbTransactionIndex_gte: BigInt
-  arbTransactionIndex_lte: BigInt
 }
 
 input poolOriginFilter {
   AND: [poolOriginFilter]
   OR: [poolOriginFilter]
+  bridgeFee: Int
+  bridgeFee_not: Int
+  bridgeFee_in: [Int]
+  bridgeFee_not_in: [Int]
+  bridgeFee_gt: Int
+  bridgeFee_lt: Int
+  bridgeFee_gte: Int
+  bridgeFee_lte: Int
   chainId: Int
   chainId_not: Int
   chainId_in: [Int]
@@ -352,6 +360,58 @@ input poolOriginFilter {
   chainId_lt: Int
   chainId_gte: Int
   chainId_lte: Int
+  coolDown: Int
+  coolDown_not: Int
+  coolDown_in: [Int]
+  coolDown_not_in: [Int]
+  coolDown_gt: Int
+  coolDown_lt: Int
+  coolDown_gte: Int
+  coolDown_lte: Int
+  curator: String
+  curator_not: String
+  curator_in: [String]
+  curator_not_in: [String]
+  curator_contains: String
+  curator_not_contains: String
+  curator_starts_with: String
+  curator_ends_with: String
+  curator_not_starts_with: String
+  curator_not_ends_with: String
+  currentOutstandingDebt: BigInt
+  currentOutstandingDebt_not: BigInt
+  currentOutstandingDebt_in: [BigInt]
+  currentOutstandingDebt_not_in: [BigInt]
+  currentOutstandingDebt_gt: BigInt
+  currentOutstandingDebt_lt: BigInt
+  currentOutstandingDebt_gte: BigInt
+  currentOutstandingDebt_lte: BigInt
+  maxDebt: BigInt
+  maxDebt_not: BigInt
+  maxDebt_in: [BigInt]
+  maxDebt_not_in: [BigInt]
+  maxDebt_gt: BigInt
+  maxDebt_lt: BigInt
+  maxDebt_gte: BigInt
+  maxDebt_lte: BigInt
+  originBridge: String
+  originBridge_not: String
+  originBridge_in: [String]
+  originBridge_not_in: [String]
+  originBridge_contains: String
+  originBridge_not_contains: String
+  originBridge_starts_with: String
+  originBridge_ends_with: String
+  originBridge_not_starts_with: String
+  originBridge_not_ends_with: String
+  originChainId: Int
+  originChainId_not: Int
+  originChainId_in: [Int]
+  originChainId_not_in: [Int]
+  originChainId_gt: Int
+  originChainId_lt: Int
+  originChainId_gte: Int
+  originChainId_lte: Int
   pool: String
   pool_not: String
   pool_in: [String]
@@ -372,66 +432,81 @@ input poolOriginFilter {
   proxyBridge_ends_with: String
   proxyBridge_not_starts_with: String
   proxyBridge_not_ends_with: String
-  originChainId: Int
-  originChainId_not: Int
-  originChainId_in: [Int]
-  originChainId_not_in: [Int]
-  originChainId_gt: Int
-  originChainId_lt: Int
-  originChainId_gte: Int
-  originChainId_lte: Int
-  originBridge: String
-  originBridge_not: String
-  originBridge_in: [String]
-  originBridge_not_in: [String]
-  originBridge_contains: String
-  originBridge_not_contains: String
-  originBridge_starts_with: String
-  originBridge_ends_with: String
-  originBridge_not_starts_with: String
-  originBridge_not_ends_with: String
-  maxDebt: BigInt
-  maxDebt_not: BigInt
-  maxDebt_in: [BigInt]
-  maxDebt_not_in: [BigInt]
-  maxDebt_gt: BigInt
-  maxDebt_lt: BigInt
-  maxDebt_gte: BigInt
-  maxDebt_lte: BigInt
-  currentOutstandingDebt: BigInt
-  currentOutstandingDebt_not: BigInt
-  currentOutstandingDebt_in: [BigInt]
-  currentOutstandingDebt_not_in: [BigInt]
-  currentOutstandingDebt_gt: BigInt
-  currentOutstandingDebt_lt: BigInt
-  currentOutstandingDebt_gte: BigInt
-  currentOutstandingDebt_lte: BigInt
-  curator: String
-  curator_not: String
-  curator_in: [String]
-  curator_not_in: [String]
-  curator_contains: String
-  curator_not_contains: String
-  curator_starts_with: String
-  curator_ends_with: String
-  curator_not_starts_with: String
-  curator_not_ends_with: String
-  bridgeFee: Int
-  bridgeFee_not: Int
-  bridgeFee_in: [Int]
-  bridgeFee_not_in: [Int]
-  bridgeFee_gt: Int
-  bridgeFee_lt: Int
-  bridgeFee_gte: Int
-  bridgeFee_lte: Int
-  coolDown: Int
-  coolDown_not: Int
-  coolDown_in: [Int]
-  coolDown_not_in: [Int]
-  coolDown_gt: Int
-  coolDown_lt: Int
-  coolDown_gte: Int
-  coolDown_lte: Int
+}
+
+type vaultSnapshotPage {
+  items: [vaultSnapshot!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type vaultSnapshot {
+  blockNumber: BigInt!
+  chainId: Int!
+  sharePrice: String!
+  timestamp: BigInt!
+  vault: String!
+  yieldPoolSharePrice: String!
+  pool: relayPool
+}
+
+input vaultSnapshotFilter {
+  AND: [vaultSnapshotFilter]
+  OR: [vaultSnapshotFilter]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_in: [BigInt]
+  blockNumber_not_in: [BigInt]
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  chainId: Int
+  chainId_not: Int
+  chainId_in: [Int]
+  chainId_not_in: [Int]
+  chainId_gt: Int
+  chainId_lt: Int
+  chainId_gte: Int
+  chainId_lte: Int
+  sharePrice: String
+  sharePrice_not: String
+  sharePrice_in: [String]
+  sharePrice_not_in: [String]
+  sharePrice_contains: String
+  sharePrice_not_contains: String
+  sharePrice_starts_with: String
+  sharePrice_ends_with: String
+  sharePrice_not_starts_with: String
+  sharePrice_not_ends_with: String
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_in: [BigInt]
+  timestamp_not_in: [BigInt]
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  vault: String
+  vault_not: String
+  vault_in: [String]
+  vault_not_in: [String]
+  vault_contains: String
+  vault_not_contains: String
+  vault_starts_with: String
+  vault_ends_with: String
+  vault_not_starts_with: String
+  vault_not_ends_with: String
+  yieldPoolSharePrice: String
+  yieldPoolSharePrice_not: String
+  yieldPoolSharePrice_in: [String]
+  yieldPoolSharePrice_not_in: [String]
+  yieldPoolSharePrice_contains: String
+  yieldPoolSharePrice_not_contains: String
+  yieldPoolSharePrice_starts_with: String
+  yieldPoolSharePrice_ends_with: String
+  yieldPoolSharePrice_not_starts_with: String
+  yieldPoolSharePrice_not_ends_with: String
 }
 
 type userBalancePage {
@@ -441,29 +516,35 @@ type userBalancePage {
 }
 
 type userBalance {
-  wallet: String!
-  relayPool: String!
   chainId: Int!
+  lastUpdated: BigInt!
+  relayPool: String!
   shareBalance: BigInt!
   totalDeposited: BigInt!
   totalWithdrawn: BigInt!
-  lastUpdated: BigInt!
+  wallet: String!
   pool: relayPool
 }
 
 input userBalanceFilter {
   AND: [userBalanceFilter]
   OR: [userBalanceFilter]
-  wallet: String
-  wallet_not: String
-  wallet_in: [String]
-  wallet_not_in: [String]
-  wallet_contains: String
-  wallet_not_contains: String
-  wallet_starts_with: String
-  wallet_ends_with: String
-  wallet_not_starts_with: String
-  wallet_not_ends_with: String
+  chainId: Int
+  chainId_not: Int
+  chainId_in: [Int]
+  chainId_not_in: [Int]
+  chainId_gt: Int
+  chainId_lt: Int
+  chainId_gte: Int
+  chainId_lte: Int
+  lastUpdated: BigInt
+  lastUpdated_not: BigInt
+  lastUpdated_in: [BigInt]
+  lastUpdated_not_in: [BigInt]
+  lastUpdated_gt: BigInt
+  lastUpdated_lt: BigInt
+  lastUpdated_gte: BigInt
+  lastUpdated_lte: BigInt
   relayPool: String
   relayPool_not: String
   relayPool_in: [String]
@@ -474,14 +555,6 @@ input userBalanceFilter {
   relayPool_ends_with: String
   relayPool_not_starts_with: String
   relayPool_not_ends_with: String
-  chainId: Int
-  chainId_not: Int
-  chainId_in: [Int]
-  chainId_not_in: [Int]
-  chainId_gt: Int
-  chainId_lt: Int
-  chainId_gte: Int
-  chainId_lte: Int
   shareBalance: BigInt
   shareBalance_not: BigInt
   shareBalance_in: [BigInt]
@@ -506,89 +579,16 @@ input userBalanceFilter {
   totalWithdrawn_lt: BigInt
   totalWithdrawn_gte: BigInt
   totalWithdrawn_lte: BigInt
-  lastUpdated: BigInt
-  lastUpdated_not: BigInt
-  lastUpdated_in: [BigInt]
-  lastUpdated_not_in: [BigInt]
-  lastUpdated_gt: BigInt
-  lastUpdated_lt: BigInt
-  lastUpdated_gte: BigInt
-  lastUpdated_lte: BigInt
-}
-
-type vaultSnapshotPage {
-  items: [vaultSnapshot!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type vaultSnapshot {
-  vault: String!
-  chainId: Int!
-  blockNumber: BigInt!
-  timestamp: BigInt!
-  sharePrice: String!
-  yieldPoolSharePrice: String!
-  pool: relayPool
-}
-
-input vaultSnapshotFilter {
-  AND: [vaultSnapshotFilter]
-  OR: [vaultSnapshotFilter]
-  vault: String
-  vault_not: String
-  vault_in: [String]
-  vault_not_in: [String]
-  vault_contains: String
-  vault_not_contains: String
-  vault_starts_with: String
-  vault_ends_with: String
-  vault_not_starts_with: String
-  vault_not_ends_with: String
-  chainId: Int
-  chainId_not: Int
-  chainId_in: [Int]
-  chainId_not_in: [Int]
-  chainId_gt: Int
-  chainId_lt: Int
-  chainId_gte: Int
-  chainId_lte: Int
-  blockNumber: BigInt
-  blockNumber_not: BigInt
-  blockNumber_in: [BigInt]
-  blockNumber_not_in: [BigInt]
-  blockNumber_gt: BigInt
-  blockNumber_lt: BigInt
-  blockNumber_gte: BigInt
-  blockNumber_lte: BigInt
-  timestamp: BigInt
-  timestamp_not: BigInt
-  timestamp_in: [BigInt]
-  timestamp_not_in: [BigInt]
-  timestamp_gt: BigInt
-  timestamp_lt: BigInt
-  timestamp_gte: BigInt
-  timestamp_lte: BigInt
-  sharePrice: String
-  sharePrice_not: String
-  sharePrice_in: [String]
-  sharePrice_not_in: [String]
-  sharePrice_contains: String
-  sharePrice_not_contains: String
-  sharePrice_starts_with: String
-  sharePrice_ends_with: String
-  sharePrice_not_starts_with: String
-  sharePrice_not_ends_with: String
-  yieldPoolSharePrice: String
-  yieldPoolSharePrice_not: String
-  yieldPoolSharePrice_in: [String]
-  yieldPoolSharePrice_not_in: [String]
-  yieldPoolSharePrice_contains: String
-  yieldPoolSharePrice_not_contains: String
-  yieldPoolSharePrice_starts_with: String
-  yieldPoolSharePrice_ends_with: String
-  yieldPoolSharePrice_not_starts_with: String
-  yieldPoolSharePrice_not_ends_with: String
+  wallet: String
+  wallet_not: String
+  wallet_in: [String]
+  wallet_not_in: [String]
+  wallet_contains: String
+  wallet_not_contains: String
+  wallet_starts_with: String
+  wallet_ends_with: String
+  wallet_not_starts_with: String
+  wallet_not_ends_with: String
 }
 
 type relayPoolPage {
@@ -600,26 +600,6 @@ type relayPoolPage {
 input relayPoolFilter {
   AND: [relayPoolFilter]
   OR: [relayPoolFilter]
-  contractAddress: String
-  contractAddress_not: String
-  contractAddress_in: [String]
-  contractAddress_not_in: [String]
-  contractAddress_contains: String
-  contractAddress_not_contains: String
-  contractAddress_starts_with: String
-  contractAddress_ends_with: String
-  contractAddress_not_starts_with: String
-  contractAddress_not_ends_with: String
-  curator: String
-  curator_not: String
-  curator_in: [String]
-  curator_not_in: [String]
-  curator_contains: String
-  curator_not_contains: String
-  curator_starts_with: String
-  curator_ends_with: String
-  curator_not_starts_with: String
-  curator_not_ends_with: String
   asset: String
   asset_not: String
   asset_in: [String]
@@ -630,48 +610,6 @@ input relayPoolFilter {
   asset_ends_with: String
   asset_not_starts_with: String
   asset_not_ends_with: String
-  yieldPool: String
-  yieldPool_not: String
-  yieldPool_in: [String]
-  yieldPool_not_in: [String]
-  yieldPool_contains: String
-  yieldPool_not_contains: String
-  yieldPool_starts_with: String
-  yieldPool_ends_with: String
-  yieldPool_not_starts_with: String
-  yieldPool_not_ends_with: String
-  outstandingDebt: BigInt
-  outstandingDebt_not: BigInt
-  outstandingDebt_in: [BigInt]
-  outstandingDebt_not_in: [BigInt]
-  outstandingDebt_gt: BigInt
-  outstandingDebt_lt: BigInt
-  outstandingDebt_gte: BigInt
-  outstandingDebt_lte: BigInt
-  totalAssets: BigInt
-  totalAssets_not: BigInt
-  totalAssets_in: [BigInt]
-  totalAssets_not_in: [BigInt]
-  totalAssets_gt: BigInt
-  totalAssets_lt: BigInt
-  totalAssets_gte: BigInt
-  totalAssets_lte: BigInt
-  totalShares: BigInt
-  totalShares_not: BigInt
-  totalShares_in: [BigInt]
-  totalShares_not_in: [BigInt]
-  totalShares_gt: BigInt
-  totalShares_lt: BigInt
-  totalShares_gte: BigInt
-  totalShares_lte: BigInt
-  totalBridgeFees: BigInt
-  totalBridgeFees_not: BigInt
-  totalBridgeFees_in: [BigInt]
-  totalBridgeFees_not_in: [BigInt]
-  totalBridgeFees_gt: BigInt
-  totalBridgeFees_lt: BigInt
-  totalBridgeFees_gte: BigInt
-  totalBridgeFees_lte: BigInt
   chainId: Int
   chainId_not: Int
   chainId_in: [Int]
@@ -680,6 +618,16 @@ input relayPoolFilter {
   chainId_lt: Int
   chainId_gte: Int
   chainId_lte: Int
+  contractAddress: String
+  contractAddress_not: String
+  contractAddress_in: [String]
+  contractAddress_not_in: [String]
+  contractAddress_contains: String
+  contractAddress_not_contains: String
+  contractAddress_starts_with: String
+  contractAddress_ends_with: String
+  contractAddress_not_starts_with: String
+  contractAddress_not_ends_with: String
   createdAt: BigInt
   createdAt_not: BigInt
   createdAt_in: [BigInt]
@@ -696,6 +644,16 @@ input relayPoolFilter {
   createdAtBlock_lt: BigInt
   createdAtBlock_gte: BigInt
   createdAtBlock_lte: BigInt
+  curator: String
+  curator_not: String
+  curator_in: [String]
+  curator_not_in: [String]
+  curator_contains: String
+  curator_not_contains: String
+  curator_starts_with: String
+  curator_ends_with: String
+  curator_not_starts_with: String
+  curator_not_ends_with: String
   name: String
   name_not: String
   name_in: [String]
@@ -706,6 +664,14 @@ input relayPoolFilter {
   name_ends_with: String
   name_not_starts_with: String
   name_not_ends_with: String
+  outstandingDebt: BigInt
+  outstandingDebt_not: BigInt
+  outstandingDebt_in: [BigInt]
+  outstandingDebt_not_in: [BigInt]
+  outstandingDebt_gt: BigInt
+  outstandingDebt_lt: BigInt
+  outstandingDebt_gte: BigInt
+  outstandingDebt_lte: BigInt
   symbol: String
   symbol_not: String
   symbol_in: [String]
@@ -716,18 +682,52 @@ input relayPoolFilter {
   symbol_ends_with: String
   symbol_not_starts_with: String
   symbol_not_ends_with: String
+  totalAssets: BigInt
+  totalAssets_not: BigInt
+  totalAssets_in: [BigInt]
+  totalAssets_not_in: [BigInt]
+  totalAssets_gt: BigInt
+  totalAssets_lt: BigInt
+  totalAssets_gte: BigInt
+  totalAssets_lte: BigInt
+  totalBridgeFees: BigInt
+  totalBridgeFees_not: BigInt
+  totalBridgeFees_in: [BigInt]
+  totalBridgeFees_not_in: [BigInt]
+  totalBridgeFees_gt: BigInt
+  totalBridgeFees_lt: BigInt
+  totalBridgeFees_gte: BigInt
+  totalBridgeFees_lte: BigInt
+  totalShares: BigInt
+  totalShares_not: BigInt
+  totalShares_in: [BigInt]
+  totalShares_not_in: [BigInt]
+  totalShares_gt: BigInt
+  totalShares_lt: BigInt
+  totalShares_gte: BigInt
+  totalShares_lte: BigInt
+  yieldPool: String
+  yieldPool_not: String
+  yieldPool_in: [String]
+  yieldPool_not_in: [String]
+  yieldPool_contains: String
+  yieldPool_not_contains: String
+  yieldPool_starts_with: String
+  yieldPool_ends_with: String
+  yieldPool_not_starts_with: String
+  yieldPool_not_ends_with: String
 }
 
 type poolAction {
-  type: String!
-  user: String!
-  relayPool: String!
   assets: BigInt!
+  blockNumber: BigInt!
+  chainId: Int!
+  relayPool: String!
   shares: BigInt!
   timestamp: BigInt!
-  blockNumber: BigInt!
   transactionHash: String!
-  chainId: Int!
+  type: String!
+  user: String!
 }
 
 type poolActionPage {
@@ -739,6 +739,66 @@ type poolActionPage {
 input poolActionFilter {
   AND: [poolActionFilter]
   OR: [poolActionFilter]
+  assets: BigInt
+  assets_not: BigInt
+  assets_in: [BigInt]
+  assets_not_in: [BigInt]
+  assets_gt: BigInt
+  assets_lt: BigInt
+  assets_gte: BigInt
+  assets_lte: BigInt
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_in: [BigInt]
+  blockNumber_not_in: [BigInt]
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  chainId: Int
+  chainId_not: Int
+  chainId_in: [Int]
+  chainId_not_in: [Int]
+  chainId_gt: Int
+  chainId_lt: Int
+  chainId_gte: Int
+  chainId_lte: Int
+  relayPool: String
+  relayPool_not: String
+  relayPool_in: [String]
+  relayPool_not_in: [String]
+  relayPool_contains: String
+  relayPool_not_contains: String
+  relayPool_starts_with: String
+  relayPool_ends_with: String
+  relayPool_not_starts_with: String
+  relayPool_not_ends_with: String
+  shares: BigInt
+  shares_not: BigInt
+  shares_in: [BigInt]
+  shares_not_in: [BigInt]
+  shares_gt: BigInt
+  shares_lt: BigInt
+  shares_gte: BigInt
+  shares_lte: BigInt
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_in: [BigInt]
+  timestamp_not_in: [BigInt]
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_in: [String]
+  transactionHash_not_in: [String]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_not_ends_with: String
   type: String
   type_not: String
   type_in: [String]
@@ -759,75 +819,15 @@ input poolActionFilter {
   user_ends_with: String
   user_not_starts_with: String
   user_not_ends_with: String
-  relayPool: String
-  relayPool_not: String
-  relayPool_in: [String]
-  relayPool_not_in: [String]
-  relayPool_contains: String
-  relayPool_not_contains: String
-  relayPool_starts_with: String
-  relayPool_ends_with: String
-  relayPool_not_starts_with: String
-  relayPool_not_ends_with: String
-  assets: BigInt
-  assets_not: BigInt
-  assets_in: [BigInt]
-  assets_not_in: [BigInt]
-  assets_gt: BigInt
-  assets_lt: BigInt
-  assets_gte: BigInt
-  assets_lte: BigInt
-  shares: BigInt
-  shares_not: BigInt
-  shares_in: [BigInt]
-  shares_not_in: [BigInt]
-  shares_gt: BigInt
-  shares_lt: BigInt
-  shares_gte: BigInt
-  shares_lte: BigInt
-  timestamp: BigInt
-  timestamp_not: BigInt
-  timestamp_in: [BigInt]
-  timestamp_not_in: [BigInt]
-  timestamp_gt: BigInt
-  timestamp_lt: BigInt
-  timestamp_gte: BigInt
-  timestamp_lte: BigInt
-  blockNumber: BigInt
-  blockNumber_not: BigInt
-  blockNumber_in: [BigInt]
-  blockNumber_not_in: [BigInt]
-  blockNumber_gt: BigInt
-  blockNumber_lt: BigInt
-  blockNumber_gte: BigInt
-  blockNumber_lte: BigInt
-  transactionHash: String
-  transactionHash_not: String
-  transactionHash_in: [String]
-  transactionHash_not_in: [String]
-  transactionHash_contains: String
-  transactionHash_not_contains: String
-  transactionHash_starts_with: String
-  transactionHash_ends_with: String
-  transactionHash_not_starts_with: String
-  transactionHash_not_ends_with: String
-  chainId: Int
-  chainId_not: Int
-  chainId_in: [Int]
-  chainId_not_in: [Int]
-  chainId_gt: Int
-  chainId_lt: Int
-  chainId_gte: Int
-  chainId_lte: Int
 }
 
 type relayBridge {
+  asset: String!
   chainId: Int!
   contractAddress: String!
-  asset: String!
-  transferNonce: BigInt!
   createdAt: BigInt!
   createdAtBlock: BigInt!
+  transferNonce: BigInt!
 }
 
 type relayBridgePage {
@@ -839,6 +839,16 @@ type relayBridgePage {
 input relayBridgeFilter {
   AND: [relayBridgeFilter]
   OR: [relayBridgeFilter]
+  asset: String
+  asset_not: String
+  asset_in: [String]
+  asset_not_in: [String]
+  asset_contains: String
+  asset_not_contains: String
+  asset_starts_with: String
+  asset_ends_with: String
+  asset_not_starts_with: String
+  asset_not_ends_with: String
   chainId: Int
   chainId_not: Int
   chainId_in: [Int]
@@ -857,24 +867,6 @@ input relayBridgeFilter {
   contractAddress_ends_with: String
   contractAddress_not_starts_with: String
   contractAddress_not_ends_with: String
-  asset: String
-  asset_not: String
-  asset_in: [String]
-  asset_not_in: [String]
-  asset_contains: String
-  asset_not_contains: String
-  asset_starts_with: String
-  asset_ends_with: String
-  asset_not_starts_with: String
-  asset_not_ends_with: String
-  transferNonce: BigInt
-  transferNonce_not: BigInt
-  transferNonce_in: [BigInt]
-  transferNonce_not_in: [BigInt]
-  transferNonce_gt: BigInt
-  transferNonce_lt: BigInt
-  transferNonce_gte: BigInt
-  transferNonce_lte: BigInt
   createdAt: BigInt
   createdAt_not: BigInt
   createdAt_in: [BigInt]
@@ -891,4 +883,12 @@ input relayBridgeFilter {
   createdAtBlock_lt: BigInt
   createdAtBlock_gte: BigInt
   createdAtBlock_lte: BigInt
+  transferNonce: BigInt
+  transferNonce_not: BigInt
+  transferNonce_in: [BigInt]
+  transferNonce_not_in: [BigInt]
+  transferNonce_gt: BigInt
+  transferNonce_lt: BigInt
+  transferNonce_gte: BigInt
+  transferNonce_lte: BigInt
 }

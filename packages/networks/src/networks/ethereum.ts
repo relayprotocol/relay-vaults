@@ -21,6 +21,10 @@ export const ethereum: L1NetworkConfig = {
       messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
       transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
     },
+    lisk: {
+      disputeGame: '0x0479e6757eb4743843b309DDDF78E6bA242F38BE',
+      portalProxy: '0x26dB93F8b8b4f7016240af62F7730979d353f9A7',
+    },
     op: {
       disputeGame: '0xe5965Ab5962eDc7477C8520243A95517CD252fA9',
       portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',

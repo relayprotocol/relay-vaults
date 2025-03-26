@@ -15,7 +15,7 @@ export const parseExports = async (folderName: string, destFolder: string) => {
   const files = await walk(path.resolve('src', folderName))
 
   const exportsList = files!
-    .flat()
+    .flat(Infinity)
     .filter((f: string) => f.includes('.json'))
     .map((f: string) => {
       // make sure all path exists

@@ -67,7 +67,7 @@ describe('Fees', () => {
     const recipientAddress = ethers.Wallet.createRandom().address
 
     const amount = ethers.parseUnits('1')
-    const [, , , , bridgeFee] = await relayPool.authorizedOrigins(
+    const [, , , , , , bridgeFee] = await relayPool.authorizedOrigins(
       10,
       relayBridgeOptimism
     )

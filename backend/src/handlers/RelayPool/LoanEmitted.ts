@@ -19,7 +19,8 @@ export default async function ({
   event: Event<'RelayPool:LoanEmitted'>
   context: Context<'RelayPool:LoanEmitted'>
 }) {
-  const { nonce, bridge, bridgeChainId, amount } = event.args
+  const { nonce, origin, amount } = event.args
+  const { bridge, chainId: bridgeChainId } = origin
 
   // Update the corresponding bridgeTransaction record with loanEmittedTxHash
   await context.db

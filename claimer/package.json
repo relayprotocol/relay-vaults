@@ -7,7 +7,7 @@
     "lint": "eslint"
   },
   "devDependencies": {
-    "@relay-protocol/client": "workspace:*",
+    "@relay-protocol/client": "0.0.2",
     "@relay-protocol/eslint-config": "workspace:^",
     "@relay-protocol/helpers": "workspace:*",
     "@relay-protocol/networks": "workspace:*",

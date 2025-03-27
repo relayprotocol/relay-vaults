@@ -2,10 +2,11 @@ import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { AutoComplete, Input } from 'enquirer'
 import { getEvent } from '@relay-protocol/helpers'
+import VerifiableBridgeModule from '../../ignition/modules/VerifiableBridgeModule'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 
-task('deploy:bridge', 'Deploy a bridge proxy')
+task('deploy:bridge', 'Deploy a bridge from the factory.')
   .addOptionalParam('factory', 'The Bridge Factory address')
   .addOptionalParam('proxyBridge', 'The Proxy bridge asset')
   .addOptionalParam('asset', 'An ERC20 asset')
@@ -81,3 +82,26 @@ task('deploy:bridge', 'Deploy a bridge proxy')
       console.log(`✅ RelayBridge deployed to: ${bridgeAddress}`)
     }
   )
+
+task(
+  'deploy:bridge-verifiable',
+  'Deploy a bridge contract by itself and verifies it'
+).setAction(async (_, { ethers, ignition }) => {
+  const { chainId } = await ethers.provider.getNetwork()
+
+  const { relayBridge } = await ignition.deploy(VerifiableBridgeModule, {
+    deploymentId: `VerifiableBridge-${chainId.toString()}`,
+  })
+  const relayBridgeAddress = await relayBridge.getAddress()
+
+  await run('deploy:verify', {
+    address: relayBridgeAddress,
+    constructorArguments: [
+      ethers.ZeroAddress,
+      ethers.ZeroAddress,
+      ethers.ZeroAddress,
+    ],
+  })
+
+  console.log(`✅ RelayBridge deployed to: ${relayBridgeAddress}`)
+})

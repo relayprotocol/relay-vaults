@@ -3,6 +3,7 @@ import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
 import { networks as nets } from '@relay-protocol/networks'
 import '@matterlabs/hardhat-zksync'
+import registry from '@hyperlane-xyz/registry'
 
 // Interracting
 import './tasks/pool'
@@ -85,73 +86,36 @@ if (forkUrl) {
 
 const etherscan = {
   apiKey: {
-    'arbitrum-sepolia': 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
-
     arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
-
+    arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
-
     base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-
     baseSepolia: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-
     bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
-
-    celo: '6KBKUFYV3NQR4Y1BQN3Q34S2U7NTZBBPQZ',
-
     gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-
-    linea: 'S66J314Q7PICPB4RP2G117KDFQRBEUYIFX',
-
     mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-
-    opSepolia: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
-
     optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
-    // xdai requires only placeholder api key
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
-    scroll: 'BZEXNPN6KKKJQ8VIMNXZDZNEX7QQZWZQ3P',
     sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    zksyncmainnet: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
-    zksyncsepolia: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
   },
-  customChains: [
-    {
-      chainId: 84532,
-      network: 'baseSepolia',
-      urls: {
-        apiURL: 'https://api-sepolia.basescan.org/api',
-        browserURL: 'https://sepolia.basescan.org/',
-      },
-    },
-    {
-      chainId: 11155420,
-      network: 'opSepolia',
-      urls: {
-        apiURL: 'https://api-sepolia-optimism.etherscan.io/api',
-        browserURL: 'https://sepolia-optimism.etherscan.io/',
-      },
-    },
-    {
-      chainId: 8453,
-      network: 'base',
-      urls: {
-        apiURL: 'https://api.basescan.org/api',
-        browserURL: 'https://basescan.org/',
-      },
-    },
-    {
-      chainId: 421614,
-      network: 'arbitrum-sepolia',
-      urls: {
-        apiURL: 'https://api-sepolia.arbiscan.io/api',
-        browserURL: 'https://sepolia.arbiscan.io/',
-      },
-    },
-  ],
+  customChains: [],
 }
+
+Object.values(registry).forEach((v) => {
+  if (nets[v.chainId] && !etherscan.apiKey[v.name]) {
+    etherscan.apiKey[v.name] = 'hello' // placeholder for blocksncout specifically!
+    etherscan.customChains.push({
+      chainId: v.chainId,
+      network: v.name,
+      urls: {
+        apiURL: v.blockExplorers[0].apiUrl.replace('/eth-rpc', ''),
+        browserURL: v.blockExplorers[0].url,
+      },
+    })
+  }
+})
 
 const config: HardhatUserConfig = {
   etherscan,

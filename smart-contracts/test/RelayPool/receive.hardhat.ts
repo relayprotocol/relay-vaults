@@ -4,7 +4,7 @@ import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { MyWeth } from '../../typechain-types'
 
-describe('RelayBridge: receive', () => {
+describe('RelayPool: receive', () => {
   let myWeth: MyWeth
 
   before(async () => {
@@ -26,14 +26,13 @@ describe('RelayBridge: receive', () => {
     // deploy using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myWeth.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await myWeth.name()} Relay Pool`,
         symbol: `${await myWeth.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     const { relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -68,14 +67,13 @@ describe('RelayBridge: receive', () => {
 
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await myWeth.name()} Relay Pool`,
         symbol: `${await myWeth.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: thirdPartyPoolAddress,
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     const { relayPool } = await ignition.deploy(RelayPoolModule, {

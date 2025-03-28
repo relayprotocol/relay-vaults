@@ -10,10 +10,12 @@ const {
   hyperlaneMailbox,
 } = networks[1]
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
+import { ZeroAddress } from 'ethers'
 
 let weth: IWETH
 let relayPool: RelayPool
 let nativeGateway: RelayPoolNativeGateway
+let relayPoolAddress: string
 let thirdPartyPoolAddress: string
 
 describe('RelayPoolNativeGateway', () => {
@@ -36,24 +38,23 @@ describe('RelayPoolNativeGateway', () => {
       // deploy the WETH pool
       const parameters = {
         RelayPool: {
-          hyperlaneMailbox,
           asset: WETH,
+          curator: userAddress,
+          hyperlaneMailbox,
           name: 'WETH RELAY POOL',
           symbol: 'WETH-REL',
-          origins: [],
           thirdPartyPool: thirdPartyPoolAddress,
           weth: WETH,
-          curator: userAddress,
         },
       }
       ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
         parameters,
       }))
+      relayPoolAddress = await relayPool.getAddress()
 
       // deploy native wrapper
       nativeGateway = await ethers.deployContract('RelayPoolNativeGateway', [
         WETH,
-        await relayPool.getAddress(),
       ])
     })
 
@@ -84,10 +85,10 @@ describe('RelayPoolNativeGateway', () => {
       const newShares = await relayPool.previewDeposit(amount)
       expect(newShares).to.equal(ethers.parseUnits('1', 18)) // 1 for 1
 
-      // Deposit tokens to the RelayPool via the gateway
+      // Deposit tokens to the RelayPool via the gateway with slippage protection
       await nativeGateway
         .connect(user)
-        .depositNative(userAddress, { value: amount })
+        .deposit(relayPoolAddress, userAddress, newShares, { value: amount })
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(totalAssets + amount)
@@ -103,6 +104,25 @@ describe('RelayPoolNativeGateway', () => {
       ).to.equal(tokenBalance + amount)
     })
 
+    it('should revert deposit when slippage is exceeded', async () => {
+      const [user] = await ethers.getSigners()
+      const amount = ethers.parseUnits('1', 18)
+      const userAddress = await user.getAddress()
+
+      // Set minimum shares higher than expected output
+      const minSharesOut = ethers.parseUnits('1.1', 18) // Expecting 1:1, so this should fail
+
+      // Attempt deposit with too high minSharesOut
+      await reverts(
+        nativeGateway
+          .connect(user)
+          .deposit(relayPoolAddress, userAddress, minSharesOut, {
+            value: amount,
+          }),
+        'SlippageExceeded()'
+      )
+    })
+
     it('should let user mint shares (by approving assets first)', async () => {
       const [user] = await ethers.getSigners()
       const newShares = ethers.parseUnits('1', 18)
@@ -116,10 +136,10 @@ describe('RelayPoolNativeGateway', () => {
       const amount = await relayPool.previewMint(newShares)
       expect(amount).to.equal(ethers.parseUnits('1', 18)) // 1 for 1!
 
-      // Mint shares
+      // Mint shares with slippage protection
       await nativeGateway
         .connect(user)
-        .mintNative(userAddress, { value: amount })
+        .mint(relayPoolAddress, userAddress, newShares, { value: amount })
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(totalAssets + amount)
@@ -132,6 +152,23 @@ describe('RelayPoolNativeGateway', () => {
       // Balance of assets for the pool should be correct!
       expect(await weth.balanceOf(thirdPartyPoolAddress)).to.equal(
         totalAssets + amount
+      )
+    })
+
+    it('should revert mint when slippage is exceeded', async () => {
+      const [user] = await ethers.getSigners()
+      const amount = ethers.parseUnits('1', 18)
+      const userAddress = await user.getAddress()
+
+      // Set minimum shares higher than expected output
+      const minSharesOut = ethers.parseUnits('1.1', 18) // Expecting 1:1, so this should fail
+
+      // Attempt mint with too high minSharesOut
+      await reverts(
+        nativeGateway
+          .connect(user)
+          .mint(relayPoolAddress, userAddress, minSharesOut, { value: amount }),
+        'SlippageExceeded()'
       )
     })
 
@@ -150,7 +187,7 @@ describe('RelayPoolNativeGateway', () => {
       // Deposit tokens to the RelayPool
       await nativeGateway
         .connect(secondUser)
-        .depositNative(userAddress, { value: amount })
+        .deposit(relayPoolAddress, userAddress, newShares, { value: amount })
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(totalAssets + amount)
@@ -168,16 +205,14 @@ describe('RelayPoolNativeGateway', () => {
       expect(assetsToReceive).to.equal(ethers.parseUnits('0.5', 18))
 
       // Approve shares to be withdraw by the Gateway
-      await (
-        await relayPool
-          .connect(secondUser)
-          .approve(await nativeGateway.getAddress(), amount)
-      ).wait()
+      await relayPool
+        .connect(secondUser)
+        .approve(await nativeGateway.getAddress(), amount)
 
-      // redeem
+      // redeem with slippage protection
       await nativeGateway
         .connect(secondUser)
-        .redeemNative(sharesToBurn, userAddress)
+        .redeem(relayPoolAddress, sharesToBurn, userAddress, assetsToReceive)
 
       // Total assets should have decreased
       expect(await relayPool.totalAssets()).to.equal(
@@ -190,6 +225,35 @@ describe('RelayPoolNativeGateway', () => {
       // Balance of shares for user should be correct
       expect(await relayPool.balanceOf(userAddress)).to.equal(
         sharesBalance + newShares - sharesToBurn
+      )
+    })
+
+    it('should revert redeem when slippage is exceeded', async () => {
+      const [, secondUser] = await ethers.getSigners()
+      const amount = ethers.parseUnits('1', 18)
+      const userAddress = await secondUser.getAddress()
+
+      // Deposit first
+      const newShares = await relayPool.previewDeposit(amount)
+      await nativeGateway
+        .connect(secondUser)
+        .deposit(relayPoolAddress, userAddress, newShares, { value: amount })
+
+      // Approve shares
+      await relayPool
+        .connect(secondUser)
+        .approve(await nativeGateway.getAddress(), amount)
+
+      const sharesToBurn = ethers.parseUnits('0.5', 18)
+      // Set minimum assets higher than expected output
+      const minAssetsOut = ethers.parseUnits('0.6', 18) // Expecting 0.5, so this should fail
+
+      // Attempt redeem with too high minAssetsOut
+      await reverts(
+        nativeGateway
+          .connect(secondUser)
+          .redeem(relayPoolAddress, sharesToBurn, userAddress, minAssetsOut),
+        'SlippageExceeded()'
       )
     })
 
@@ -209,7 +273,9 @@ describe('RelayPoolNativeGateway', () => {
       // Deposit tokens to the RelayPool
       await nativeGateway
         .connect(secondUser)
-        .mintNative(userAddress, { value: amount })
+        .mint(relayPoolAddress, userAddress, ethers.parseUnits('0.4', 18), {
+          value: amount,
+        })
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(totalAssets + amount)
@@ -236,7 +302,12 @@ describe('RelayPoolNativeGateway', () => {
 
       await nativeGateway
         .connect(secondUser)
-        .redeemNative(sharesToBurn, userAddress)
+        .redeem(
+          relayPoolAddress,
+          sharesToBurn,
+          userAddress,
+          ethers.parseUnits('0.2', 18)
+        )
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(
@@ -267,7 +338,7 @@ describe('RelayPoolNativeGateway', () => {
       // Deposit tokens to the RelayPool
       await nativeGateway
         .connect(secondUser)
-        .depositNative(userAddress, { value: amount })
+        .deposit(relayPoolAddress, userAddress, newShares, { value: amount })
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(totalAssets + amount)
@@ -285,15 +356,19 @@ describe('RelayPoolNativeGateway', () => {
       expect(sharesToBeBurnt).to.equal(ethers.parseUnits('0.5', 18))
 
       // Approve shares to be withdraw by the Gateway
-      await (
-        await relayPool
-          .connect(secondUser)
-          .approve(await nativeGateway.getAddress(), amount)
-      ).wait()
+      await relayPool
+        .connect(secondUser)
+        .approve(await nativeGateway.getAddress(), amount)
 
+      // withdraw with slippage protection
       await nativeGateway
         .connect(secondUser)
-        .withdrawNative(assetsToReceive, userAddress)
+        .withdraw(
+          relayPoolAddress,
+          assetsToReceive,
+          userAddress,
+          sharesToBeBurnt
+        )
 
       expect(await relayPool.totalAssets()).to.equal(
         totalAssets + amount - assetsToReceive
@@ -304,6 +379,40 @@ describe('RelayPoolNativeGateway', () => {
       // Balance of shares for user should be correct
       expect(await relayPool.balanceOf(userAddress)).to.equal(
         sharesBalance + newShares - sharesToBeBurnt
+      )
+    })
+
+    it('should revert withdraw when slippage is exceeded', async () => {
+      const [, secondUser] = await ethers.getSigners()
+      const amount = ethers.parseUnits('1', 18)
+      const userAddress = await secondUser.getAddress()
+
+      // Deposit first
+      const newShares = await relayPool.previewDeposit(amount)
+      await nativeGateway
+        .connect(secondUser)
+        .deposit(relayPoolAddress, userAddress, newShares, { value: amount })
+
+      // Approve shares
+      await relayPool
+        .connect(secondUser)
+        .approve(await nativeGateway.getAddress(), amount)
+
+      const assetsToReceive = ethers.parseUnits('0.5', 18)
+      // Set maximum shares lower than required
+      const maxSharesIn = ethers.parseUnits('0.4', 18) // Expecting 0.5, so this should fail
+
+      // Attempt withdraw with too low maxSharesIn
+      await reverts(
+        nativeGateway
+          .connect(secondUser)
+          .withdraw(
+            relayPoolAddress,
+            assetsToReceive,
+            userAddress,
+            maxSharesIn
+          ),
+        'SlippageExceeded()'
       )
     })
 
@@ -323,7 +432,9 @@ describe('RelayPoolNativeGateway', () => {
       // Deposit tokens to the RelayPool
       await nativeGateway
         .connect(secondUser)
-        .mintNative(userAddress, { value: amount })
+        .mint(relayPoolAddress, userAddress, ethers.parseUnits('0.4', 18), {
+          value: amount,
+        })
 
       // Total assets should have increased
       expect(await relayPool.totalAssets()).to.equal(totalAssets + amount)
@@ -350,7 +461,12 @@ describe('RelayPoolNativeGateway', () => {
 
       await nativeGateway
         .connect(secondUser)
-        .withdrawNative(assetsToReceive, userAddress)
+        .withdraw(
+          relayPoolAddress,
+          assetsToReceive,
+          userAddress,
+          ethers.parseUnits('0.1', 18)
+        )
 
       expect(await relayPool.totalAssets()).to.equal(
         totalAssets + amount - assetsToReceive
@@ -373,8 +489,75 @@ describe('RelayPoolNativeGateway', () => {
           to: await nativeGateway.getAddress(),
           value: ethers.parseUnits('1', 18),
         }),
-        'onlyWethCanSendEth()'
+        'OnlyWethCanSendEth()'
       )
+    })
+
+    it('should not allow any balance to get locked in the contract', async () => {
+      const [, secondUser] = await ethers.getSigners()
+      const userAddress = await secondUser.getAddress()
+
+      const amount = ethers.parseUnits('1', 18)
+
+      // Deposit tokens to the RelayPool
+      await nativeGateway
+        .connect(secondUser)
+        .mint(relayPoolAddress, userAddress, amount, { value: amount })
+
+      // redeem the shares
+      const shares = await relayPool.balanceOf(userAddress)
+      await (
+        await relayPool
+          .connect(secondUser)
+          .approve(await nativeGateway.getAddress(), shares)
+      ).wait()
+      await nativeGateway
+        .connect(secondUser)
+        .redeem(relayPoolAddress, shares, userAddress, amount)
+
+      expect(await weth.balanceOf(await nativeGateway.getAddress())).to.equal(0)
+    })
+
+    it('should make sure assets deposited directly dont break redeem', async () => {
+      const [, secondUser] = await ethers.getSigners()
+      const userAddress = await secondUser.getAddress()
+      const amount = ethers.parseUnits('0.1', 18)
+      const initAmount = ethers.parseUnits('0.0001', 18)
+
+      const getGatewayBalance = async () =>
+        await getBalance(
+          await nativeGateway.getAddress(),
+          ZeroAddress,
+          ethers.provider
+        )
+
+      // send funds to gateway contract
+      await ethers.deployContract(
+        'SelfDestructible',
+        [await nativeGateway.getAddress()],
+        {
+          value: initAmount,
+        }
+      )
+      const initBalance = await getGatewayBalance()
+      expect(initBalance).to.equal(initAmount)
+
+      // Deposit tokens to the RelayPool
+      await nativeGateway
+        .connect(secondUser)
+        .mint(relayPoolAddress, userAddress, amount, { value: amount })
+
+      // redeem the shares
+      const shares = await relayPool.balanceOf(userAddress)
+      await (
+        await relayPool
+          .connect(secondUser)
+          .approve(await nativeGateway.getAddress(), shares)
+      ).wait()
+      await nativeGateway
+        .connect(secondUser)
+        .redeem(relayPoolAddress, shares, userAddress, amount)
+      expect(await getGatewayBalance()).to.equal(initAmount)
     })
   })
 })

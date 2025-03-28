@@ -43,29 +43,30 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // using the user address as the mailbox so we can send transactions!
+        // using the user address as the mailbox so we can send transactions!
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: 'ERC20 RELAY POOL',
+
         symbol: 'ERC20-REL',
-        origins: [
-          {
-            chainId: 10,
-            bridge: relayBridgeOptimism,
-            maxDebt: ethers.parseEther('10'),
-            proxyBridge: oPStackNativeBridgeProxy,
-            bridgeFee: 0,
-            curator: userAddress,
-            coolDown: 10, // 10 seconds!
-          },
-        ],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    await relayPool.addOrigin({
+      bridge: relayBridgeOptimism,
+      bridgeFee: 0,
+      chainId: 10,
+      coolDown: 10,
+      curator: userAddress,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: oPStackNativeBridgeProxy, // 10 seconds!
+    })
 
     const liquidity = ethers.parseUnits('100', 18)
     await myToken.connect(user).mint(liquidity)
@@ -192,7 +193,7 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
       originChainId,
       originBridge
     )
-    expect(originSettingsAfter[2]).to.equal(originSettingsBefore[2] + amount)
+    expect(originSettingsAfter[4]).to.equal(originSettingsBefore[4] + amount)
   })
 
   it('should transfer the assets from the pool to the recipient', async () => {
@@ -284,8 +285,7 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
     expect(loanEmittedEvent.args.recipient).to.equal(userAddress)
     expect(loanEmittedEvent.args.asset).to.equal(await myToken.getAddress())
     expect(loanEmittedEvent.args.amount).to.equal(amount)
-    expect(loanEmittedEvent.args.bridgeChainId).to.equal(10)
-    expect(loanEmittedEvent.args.bridge).to.equal(relayBridgeOptimism)
+    expect(loanEmittedEvent.args.origin[5]).to.equal(relayBridgeOptimism)
     const { event: outstandingDebtChanged } = await getEvent(
       receipt,
       'OutstandingDebtChanged',
@@ -342,29 +342,30 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
     const userAddress = await user.getAddress()
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // using the user address as the mailbox so we can send transactions!
+        // using the user address as the mailbox so we can send transactions!
         asset: await myWeth.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: 'WETH RELAY POOL',
+
         symbol: 'WETH-REL',
-        origins: [
-          {
-            chainId: 10,
-            bridge: relayBridgeOptimism,
-            maxDebt: ethers.parseEther('10'),
-            proxyBridge: oPStackNativeBridgeProxy,
-            bridgeFee: 0,
-            curator: userAddress,
-            coolDown: 0,
-          },
-        ],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    await relayPool.addOrigin({
+      bridge: relayBridgeOptimism,
+      bridgeFee: 0,
+      chainId: 10,
+      coolDown: 0,
+      curator: userAddress,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: oPStackNativeBridgeProxy,
+    })
 
     const liquidity = ethers.parseUnits('1', 18)
     await myWeth.connect(user).approve(await relayPool.getAddress(), liquidity)

@@ -19,22 +19,23 @@ export default async function ({
   event: Event<'RelayPool:LoanEmitted'>
   context: Context<'RelayPool:LoanEmitted'>
 }) {
-  const { nonce, bridge, bridgeChainId, amount } = event.args
+  const { nonce, origin, amount } = event.args
+  const { bridge, chainId: bridgeChainId } = origin
 
   // Update the corresponding bridgeTransaction record with loanEmittedTxHash
   await context.db
     .update(bridgeTransaction, {
-      originChainId: bridgeChainId,
-      originBridgeAddress: bridge,
       nonce,
+      originBridgeAddress: bridge,
+      originChainId: bridgeChainId,
     })
     .set({ loanEmittedTxHash: event.transaction.hash })
 
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
   // Retrieve the RelayPool record based on the contract address that emitted the event
   const poolRecord = await context.db.find(relayPool, {
-    contractAddress: event.log.address,
     chainId: context.network.chainId,
+    contractAddress: event.log.address,
   })
   if (!poolRecord) {
     console.warn(`RelayPool record not found for address ${event.log.address}.`)
@@ -44,9 +45,9 @@ export default async function ({
   // Retrieve the corresponding poolOrigin record to obtain the bridgeFee
   const originRecord = await context.db.find(poolOrigin, {
     chainId: poolRecord.chainId,
-    pool: event.log.address,
-    originChainId: bridgeChainId,
     originBridge: bridge,
+    originChainId: bridgeChainId,
+    pool: event.log.address,
   })
   if (!originRecord) {
     console.warn(
@@ -63,8 +64,8 @@ export default async function ({
 
   await context.db
     .update(relayPool, {
-      contractAddress: event.log.address,
       chainId: context.network.chainId,
+      contractAddress: event.log.address,
     })
     .set({ totalBridgeFees: updatedTotalBridgeFees.toString() })
 }

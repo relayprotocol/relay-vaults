@@ -37,19 +37,18 @@ describe('RelayBridge: use Morpho yield pool (WETH)', () => {
     // deploy the pool
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await usdc.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await usdc.name()} Relay Pool`,
         symbol: `${await usdc.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: USDC_MORPHO_POOL,
         weth,
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
-      parameters,
       deploymentId: `RelayPool-${parameters.RelayPool.symbol}-${chainId.toString()}`,
+      parameters,
     }))
   })
 

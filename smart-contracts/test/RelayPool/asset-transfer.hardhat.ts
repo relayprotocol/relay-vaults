@@ -26,14 +26,14 @@ describe('RelayPool: asset transfers', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // using the user address as the mailbox so we can send transactions!
+        // using the user address as the mailbox so we can send transactions!
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
-        origins: [],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -170,6 +170,39 @@ describe('RelayPool: asset transfers', () => {
       expect(totalAssetsAfterMoreTime).to.equal(
         totalAssetsAfter + balanceOfTokenBefore
       )
+    })
+
+    it('should adjust the end of stream based on whether they are any existing assets streaming', async () => {
+      const relayPoolAddress = await relayPool.getAddress()
+
+      const streamingPeriod = await relayPool.streamingPeriod()
+      await ethers.provider.send('evm_increaseTime', [
+        Number(streamingPeriod * 2n),
+      ])
+      await relayPool.updateStreamedAssets()
+
+      // We add a lot of assets!
+      const amountToMint = ethers.parseUnits('10000', 18)
+      await myToken.mintFor(amountToMint, relayPoolAddress)
+      // Collect assets and start streaming them!
+      await relayPool.collectNonDepositedAssets()
+      // Let's check the "end" of the stream
+      const endOfStreamBefore = Number(await relayPool.endOfStream())
+
+      // Advance time by 3/5 of the streaming period
+      await ethers.provider.send('evm_increaseTime', [
+        3 * Number(streamingPeriod / 4n),
+      ])
+
+      // and now add a very small amount of assets
+      const smallAmountToMint = ethers.parseUnits('1', 18)
+      await myToken.mintFor(smallAmountToMint, relayPoolAddress)
+      // Collect assets and start streaming them!
+      await relayPool.collectNonDepositedAssets()
+
+      // endOfStreamBefore should be almost unchanged!
+      const endOfStreamAfter = Number(await relayPool.endOfStream())
+      expect(endOfStreamAfter - endOfStreamBefore).to.be.lessThan(200) // less than 200 second change
     })
   })
 })

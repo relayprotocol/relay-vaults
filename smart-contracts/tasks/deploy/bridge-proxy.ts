@@ -1,155 +1,267 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { type BaseContract } from 'ethers'
-import { AutoComplete } from 'enquirer'
+import { Select, Confirm, Input } from 'enquirer'
+import fs from 'fs'
 
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
-import { getZkSyncBridgeContracts, deployContract } from '../../lib/zksync'
+import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
+import { L2NetworkConfig } from '@relay-protocol/types'
+
+const ignitionPath = __dirname + '/../../ignition/deployments/'
+
+export const getPoolsForNetwork = async (chainId: number) => {
+  const pools = await fs.promises.readdir(`${ignitionPath}/pools/${chainId}`)
+  return pools.map((address) => {
+    return {
+      address: address,
+      params: require(
+        `${ignitionPath}/pools/${chainId}/${address}/params.json`
+      ),
+    }
+  })
+}
+
+export const getBridgesForNetwork = async (chainId: number) => {
+  const bridges = await fs.promises.readdir(
+    `${ignitionPath}/bridges/${chainId}`
+  )
+  return bridges.map((address) => {
+    return {
+      address: address,
+      params: require(
+        `${ignitionPath}/bridges/${chainId}/${address}/params.json`
+      ),
+    }
+  })
+}
 
 task('deploy:bridge-proxy', 'Deploy a bridge proxy')
   .addOptionalParam('type', 'the type of bridge to deploy')
-  .setAction(async (_, hre) => {
-    const { ethers, ignition, network } = hre
+  .addOptionalParam(
+    'poolAddress',
+    'the relay vault address where the funds are eventually sent'
+  )
+  .addOptionalParam('l1BridgeProxy', 'The address of the bridge proxy on L1')
+  .setAction(async ({ type, poolAddress, l1BridgeProxy }, hre) => {
+    const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
+    const networkConfig = networks[chainId.toString()]
+    const { bridges, isZKsync, name: networkName } = networkConfig
 
-    const { bridges, isZKsync } = networks[chainId.toString()]
+    // eslint-disable-next-line prefer-const
+    let { l1ChainId, stack } = networkConfig as L2NetworkConfig
 
+    const isL2 = !!l1ChainId
+
+    // pick a type
+    const types = ['cctp', 'op', 'arb', 'zksync']
     if (!type) {
-      type = await new AutoComplete({
-        name: 'type',
+      type = await new Select({
+        choices: types,
+        default: stack,
         message: 'Please choose a proxy type?',
-        choices: Object.keys(bridges),
+        name: 'type',
       }).run()
     }
+    console.log(
+      `Deploying ${isL2 ? Number(l1ChainId) : Number(chainId)} bridge proxy...`
+    )
+
+    if (!poolAddress) {
+      const pools = await getPoolsForNetwork(
+        isL2 ? Number(l1ChainId) : Number(chainId)
+      )
+      poolAddress = await new Select({
+        choices: pools.map((pool) => {
+          return {
+            message: pool.params.name,
+            value: pool.address,
+          }
+        }),
+        message: 'Please choose the relay vault address:',
+        name: 'poolAddress',
+      }).run()
+    }
+
+    // double check if our L2 stack is correct
+    if (isL2) {
+      if (stack != type && type != 'cctp') {
+        const confirmType = await new Confirm({
+          message: `Are you sure ${type} is correct stack for ${networkName} ?`,
+          name: 'confirmType',
+        }).run()
+        if (!confirmType) {
+          return
+        }
+      }
+    }
+
+    if (isL2) {
+      if (!l1BridgeProxy) {
+        // Get it from the file!
+        try {
+          const l1BridgeProxyFile = `BridgeProxy-${l1ChainId}-${poolAddress}-${type}/deployed_addresses.json`
+          const addresses = require(ignitionPath + l1BridgeProxyFile)
+          l1BridgeProxy = Object.values(addresses)[0]
+        } catch (error) {
+          // Ignore
+        }
+
+        if (!l1BridgeProxy) {
+          l1BridgeProxy = await new Input({
+            message:
+              'Please enter the address of the corresponding BridgeProxy on the l1 :',
+            name: 'l1BridgeProxy',
+          }).run()
+        }
+
+        // TODO: can we check that this is the same type of bridge?
+      }
+    } else {
+      // We are deploying the BridgeProxy on an L1 chain
+      l1ChainId = chainId
+      l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
+    }
+
+    // parse args for all proxies
+    const defaultProxyModuleArguments = {
+      l1BridgeProxy,
+      relayPool: poolAddress,
+      relayPoolChainId: l1ChainId,
+    }
+
+    // for verification
+    let constructorArguments: any[]
 
     // get args value
     const { name } = networks[chainId.toString()]
     console.log(`deploying ${type} proxy bridge on ${name} (${chainId})...`)
 
-    let proxyBridgeAddress
-
     // deploy bridge proxy
+    let proxyBridgeAddress
     let proxyBridge: BaseContract
+
+    const deploymentId = `BridgeProxy-${chainId}-${poolAddress}-${type}`
+
     if (type === 'cctp') {
       const {
         bridges: {
-          cctp: { messenger, transmitter },
+          cctp: { messenger },
         },
         assets: { usdc: USDC },
       } = networks[chainId.toString()]
       const parameters = {
         CCTPBridgeProxy: {
           messenger,
-          transmitter,
           usdc: USDC,
+          ...defaultProxyModuleArguments,
         },
       }
-      const deploymentId = `BridgeProxy-cctp-${chainId.toString()}`
+
+      // for verification
+      constructorArguments = [messenger, USDC]
+
       // deploy CCTP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(CCTPBridgeProxyModule, {
-        parameters,
         deploymentId,
+        parameters,
       }))
       proxyBridgeAddress = await proxyBridge.getAddress()
-
-      // verify!
-      await run('verify:verify', {
-        address: proxyBridgeAddress,
-        constructorArguments: [messenger, transmitter, USDC],
-      })
-      console.log(`CCTP bridge deployed at: ${proxyBridgeAddress}`)
+      console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'op') {
-      const portalProxy = bridges.op!.portalProxy! || ethers.ZeroAddress // Only used on the L1 deployments (to claim the assets)
       const parameters = {
         OPStackNativeBridgeProxy: {
-          portalProxy,
+          ...defaultProxyModuleArguments,
         },
       }
-      const deploymentId = `BridgeProxy-op-${chainId.toString()}`
+
       // deploy OP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
         OPStackNativeBridgeProxyModule,
         {
-          parameters,
           deploymentId,
+          parameters,
         }
       ))
       proxyBridgeAddress = await proxyBridge.getAddress()
 
-      // verify!
-      await run('verify:verify', {
-        address: proxyBridgeAddress,
-        constructorArguments: [portalProxy],
-      })
-      console.log(`OPStack bridge deployed at: ${proxyBridgeAddress}`)
+      // for verification
+      constructorArguments = []
+      console.log(`✅ OPStack bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'arb') {
       const routerGateway = bridges.arb!.routerGateway
-      const outbox = bridges.arb!.outbox || ethers.ZeroAddress // Only used on the L1 deployments (to claim the assets)
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {
           routerGateway,
-          outbox,
+          ...defaultProxyModuleArguments,
         },
       }
-      const deploymentId = `BridgeProxy-arb-${chainId.toString()}`
       // deploy ARB bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
         ArbitrumOrbitNativeBridgeProxyModule,
         {
-          parameters,
           deploymentId,
+          parameters,
         }
       ))
       proxyBridgeAddress = await proxyBridge.getAddress()
 
-      // verify!
-      await run('verify:verify', {
-        address: proxyBridgeAddress,
-        constructorArguments: [routerGateway, outbox],
-      })
-      console.log(`ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
+      // for verification
+      constructorArguments = [routerGateway]
+      console.log(`✅ ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'zksync') {
-      let zkSyncBridgeAddress: string
       const l2SharedDefaultBridge = bridges.zksync!.l2SharedDefaultBridge!
       const l1SharedDefaultBridge = bridges.zksync!.l1SharedDefaultBridge!
+      // for verification
+      constructorArguments = [l2SharedDefaultBridge]
       if (isZKsync) {
-        // deploy using `deployContract` helper (for zksync L2s)
-        const deployArgs = [l2SharedDefaultBridge, l1SharedDefaultBridge]
+        // recompile with zksync flag
+        await run('compile', { zksync: true })
 
-        ;({ address: zkSyncBridgeAddress } = await deployContract(
+        // deploy using `deployContract` helper (for zksync L2s)
+        ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
           'ZkSyncBridgeProxy',
-          deployArgs as any
+          [l2SharedDefaultBridge, l1ChainId, poolAddress, l1BridgeProxy]
         ))
       } else {
         // used ignition to deploy bridge on L1
         const parameters = {
           ZkSyncBridgeProxy: {
-            l2SharedDefaultBridge,
             l1SharedDefaultBridge,
+            l2SharedDefaultBridge,
+            ...defaultProxyModuleArguments,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(
           ZkSyncBridgeProxyModule,
           {
+            deploymentId,
             parameters,
-            deploymentId: `BridgeProxy-ZkSync-${chainId.toString()}`,
           }
         ))
         proxyBridgeAddress = await proxyBridge.getAddress()
-        console.log(
-          `Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
-        )
-        await run('verify:verify', {
-          address: proxyBridgeAddress,
-          constructorArguments: [routerGateway, outbox],
-        })
       }
+      console.log(
+        `✅ Zksync BridgeProxy contract deployed at ${proxyBridgeAddress}`
+      )
     }
+
+    // verify!
+    await run('deploy:verify', {
+      address: proxyBridgeAddress,
+      constructorArguments: [
+        ...constructorArguments,
+        defaultProxyModuleArguments.relayPoolChainId,
+        defaultProxyModuleArguments.relayPool,
+        defaultProxyModuleArguments.l1BridgeProxy,
+      ],
+    })
 
     return proxyBridgeAddress
   })

@@ -3,6 +3,7 @@ import { ethers, ignition } from 'hardhat'
 import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { mintUSDC, stealERC20 } from '../utils/hardhat'
+import { reverts } from '../utils/errors'
 
 import {
   MyToken,
@@ -40,12 +41,17 @@ const tokenSwapBehavior = async (
   )
   expect(balanceBefore).to.be.equal(amount)
 
+  // compute deadline 5 minutes from now
+  const deadline = Math.floor(Date.now() / 1000) + 300
+
   // swap that amount
   const tx = await relayPool.swapAndDeposit(
     token,
     amount,
     tokenPoolFee,
-    assetPoolFee
+    assetPoolFee,
+    deadline,
+    0 // amountOutMinimum - setting to 0 for tests since we're not concerned with slippage
   )
 
   const receipt = await tx.wait()
@@ -76,9 +82,10 @@ describe('RelayPool / Swap and Deposit', () => {
   let curatorAddress: string
   let user: Signer
   let userAddress: string
+  let attacker: Signer
 
   before(async () => {
-    ;[user, curator] = await ethers.getSigners()
+    ;[curator, user, attacker] = await ethers.getSigners()
     curatorAddress = await curator.getAddress()
     userAddress = await user.getAddress()
     myToken = await ethers.getContractAt('MyToken', myTokenAddress)
@@ -93,15 +100,14 @@ describe('RelayPool / Swap and Deposit', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
-        name: `${await myToken.name()} Relay Pool`,
-        symbol: `${await myToken.symbol()}-REL`,
-        origins: [],
-        thirdPartyPool: await thirdPartyPool.getAddress(),
-        weth: WETH,
         bridgeFee: 0,
         curator: curatorAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
+        name: `${await myToken.name()} Relay Pool`,
+        symbol: `${await myToken.symbol()}-REL`,
+        thirdPartyPool: await thirdPartyPool.getAddress(),
+        weth: WETH,
       },
       TokenSwap: {
         uniswapUniversalRouter: universalRouterAddress,
@@ -122,8 +128,22 @@ describe('RelayPool / Swap and Deposit', () => {
   })
 
   it('has correct constructor params', async () => {
-    expect(await tokenSwap.uniswapUniversalRouter()).to.equal(
+    expect(await tokenSwap.UNISWAP_UNIVERSAL_ROUTER()).to.equal(
       universalRouterAddress
+    )
+  })
+
+  it('can only be called by contract owner', async () => {
+    await reverts(
+      relayPool.connect(attacker).swapAndDeposit(
+        ZeroAddress,
+        1000,
+        1000,
+        1000,
+        Math.floor(Date.now() / 1000) + 300,
+        0 // amountOutMinimum
+      ),
+      `OwnableUnauthorizedAccount("${await attacker.getAddress()}")`
     )
   })
 
@@ -167,7 +187,7 @@ describe('RelayPool / Swap and Deposit', () => {
 
       // get some WETH
       const weth = await ethers.getContractAt('IWETH', WETH)
-      await weth.deposit({ value: amount })
+      await weth.connect(user).deposit({ value: amount })
       await weth.connect(user).transfer(relayPoolAddress, amount)
     })
 
@@ -188,8 +208,6 @@ describe('RelayPool / Swap and Deposit', () => {
     let relayPoolAddress: string
 
     before(async () => {
-      const [user] = await ethers.getSigners()
-      const userAddress = await user.getAddress()
       relayPoolAddress = await relayPool.getAddress()
 
       // get some USDC
@@ -209,6 +227,34 @@ describe('RelayPool / Swap and Deposit', () => {
         3000, // uniswapPoolFee
         0
       )
+    })
+    describe('swap minimum amount out is not reached', () => {
+      it('fails when attempting to swap (direct SWAP USDC > DAI)', async () => {
+        const amount = ethers.parseUnits('1000', 6)
+        const relayPoolAddress = await relayPool.getAddress()
+
+        // get some USDC
+        await mintUSDC(USDC, userAddress, amount)
+        const usdc = await ethers.getContractAt('IUSDC', USDC)
+
+        // send some USDC to the pool
+        await usdc.connect(user).transfer(relayPoolAddress, amount)
+
+        // compute deadline 5 minutes from now
+        const deadline = Math.floor(Date.now() / 1000) + 300
+
+        // swap that amount
+        await reverts(
+          relayPool.swapAndDeposit(
+            USDC,
+            amount,
+            3000,
+            30000,
+            deadline,
+            ethers.parseUnits('100000', 6) //
+          )
+        )
+      })
     })
   })
 })

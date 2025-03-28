@@ -3,6 +3,7 @@ import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
 import { networks as nets } from '@relay-protocol/networks'
 import '@matterlabs/hardhat-zksync'
+import registry from '@hyperlane-xyz/registry'
 
 // Interracting
 import './tasks/pool'
@@ -19,12 +20,15 @@ import './tasks/deploy/relay-bridge'
 import './tasks/deploy/bridge-proxy'
 import './tasks/deploy/relay-pool-factory'
 import './tasks/deploy/relay-bridge-factory'
+import './tasks/deploy/verify'
+import './tasks/deploy/timelock'
 
 // Helpers/tests
 import './tasks/networks'
 import './tasks/deploy/native-gateway'
 import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
+import './tasks/utils/zksync-contracts.ts'
 
 // get pk from shell
 const { DEPLOYER_PRIVATE_KEY } = process.env
@@ -45,19 +49,19 @@ Object.keys(nets).forEach((id) => {
   let accounts
   let zksync = {}
   const network = {
-    url: rpc[0],
     chainId: Number(id),
+    url: rpc[0],
   }
   if (DEPLOYER_PRIVATE_KEY) {
     accounts = [DEPLOYER_PRIVATE_KEY]
   }
   if (isZKsync) {
     zksync = {
-      zksync: true,
       ethNetwork: isTestnet ? 'sepolia' : 'mainnet',
       verifyURL: isTestnet
         ? 'https://explorer.sepolia.era.zksync.dev/contract_verification'
         : 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
+      zksync: true,
     }
   }
   networks[slug] = {
@@ -70,91 +74,79 @@ Object.keys(nets).forEach((id) => {
 // parse fork URL for tests
 const forkUrl = process.env.RPC_URL
 if (forkUrl) {
+  // check if fork is zksync
+  const isZKsync = !!process.env.ZKSYNC
   networks.hardhat = {
     forking: {
       url: forkUrl,
     },
+    zksync: isZKsync,
   }
 }
 
 const etherscan = {
   apiKey: {
-    // xdai requires only placeholder api key
-    polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
-    mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-    sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-    bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
-    gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
     arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
+    arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
-    celo: '6KBKUFYV3NQR4Y1BQN3Q34S2U7NTZBBPQZ',
     base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
     baseSepolia: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-    linea: 'S66J314Q7PICPB4RP2G117KDFQRBEUYIFX',
+    bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
+    gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
+    mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
+    optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
+    polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
-    scroll: 'BZEXNPN6KKKJQ8VIMNXZDZNEX7QQZWZQ3P',
-    opSepolia: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
-    'arbitrum-sepolia': 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
-    zksyncsepolia: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
-    zksyncmainnet: '9RJM97KMNID76WJQZD7SFB5QE7Q1342ANF',
+    sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
+    xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
   },
-  customChains: [
-    {
-      network: 'baseSepolia',
-      chainId: 84532,
-      urls: {
-        apiURL: 'https://api-sepolia.basescan.org/api',
-        browserURL: 'https://sepolia.basescan.org/',
-      },
-    },
-    {
-      network: 'opSepolia',
-      chainId: 11155420,
-      urls: {
-        apiURL: 'https://api-sepolia-optimism.etherscan.io/api',
-        browserURL: 'https://sepolia-optimism.etherscan.io/',
-      },
-    },
-    {
-      network: 'base',
-      chainId: 8453,
-      urls: {
-        apiURL: 'https://api.basescan.org/api',
-        browserURL: 'https://basescan.org/',
-      },
-    },
-    {
-      network: 'arbitrum-sepolia',
-      chainId: 421614,
-      urls: {
-        apiURL: 'https://api-sepolia.arbiscan.io/api',
-        browserURL: 'https://sepolia.arbiscan.io/',
-      },
-    },
-  ],
+  customChains: [],
 }
 
+Object.values(registry).forEach((v) => {
+  if (nets[v.chainId] && !etherscan.apiKey[v.name]) {
+    etherscan.apiKey[v.name] = 'hello' // placeholder for blocksncout specifically!
+    etherscan.customChains.push({
+      chainId: v.chainId,
+      network: v.name,
+      urls: {
+        apiURL: v.blockExplorers[0].apiUrl.replace('/eth-rpc', ''),
+        browserURL: v.blockExplorers[0].url,
+      },
+    })
+  }
+})
+
 const config: HardhatUserConfig = {
-  networks,
   etherscan,
-  sourcify: {
-    enabled: true,
-  },
+  networks,
   solidity: {
     compilers: [
       {
-        version: '0.8.28',
         settings: {
           optimizer: {
+            details: { yul: false },
             enabled: true,
             runs: 200,
-            details: { yul: false },
           },
         },
+        version: '0.8.28',
       },
     ],
+  },
+  sourcify: {
+    enabled: false,
+  },
+  zksolc: {
+    settings: {
+      contractsToCompile: [
+        'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
+        'contracts/interfaces/IUSDC.sol',
+      ],
+      // for '<address payable>.send/transfer(<X>)'
+      // contracts/RelayBridge.sol:189:5
+      suppressedErrors: ['sendtransfer'],
+    },
   },
 }
 

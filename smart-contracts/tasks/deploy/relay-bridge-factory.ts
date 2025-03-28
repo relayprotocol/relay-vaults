@@ -38,12 +38,18 @@ task('deploy:bridge-factory', 'Deploy a relay bridge factory').setAction(
       const { relayBridgeFactory } = await ignition.deploy(
         RelayBridgeFactoryModule,
         {
-          parameters,
           deploymentId: `RelayBridgeFactory-${chainId.toString()}`,
+          parameters,
         }
       )
       relayBridgeAddress = await relayBridgeFactory.getAddress()
     }
-    console.log(`relayBridgeFactory deployed to: ${relayBridgeAddress}`)
+    // Deploy a bridge contract by itself and verifies it to make sure all future bridges are verified as well.
+    await run('deploy:bridge-verifiable')
+    await run('deploy:verify', {
+      address: relayBridgeAddress,
+      constructorArguments: [hyperlaneMailbox],
+    })
+    console.log(`✅ relayBridgeFactory deployed to: ${relayBridgeAddress}`)
   }
 )

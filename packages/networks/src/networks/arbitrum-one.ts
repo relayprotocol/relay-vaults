@@ -1,7 +1,11 @@
 import { L2NetworkConfig } from '@relay-protocol/types'
 
 export const arbitrumOne: L2NetworkConfig = {
-  stack: 'arb',
+  assets: {
+    arb: '0x912CE59144191C1204E64559FE8253a0e49E6548',
+    udt: '0xd5d3aA404D7562d09a848F96a8a8d5D65977bF90',
+    usdc: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  },
   bridges: {
     arb: {
       arbSys: '0x0000000000000000000000000000000000000064',
@@ -14,14 +18,14 @@ export const arbitrumOne: L2NetworkConfig = {
     },
   },
   chainId: 42161,
+  earliestBlock: 0,
   hyperlaneMailbox: '0x979Ca5202784112f4738403dBec5D0F3B9daabB9',
   isTestnet: false,
   l1ChainId: 1,
   name: 'Arbitrum',
+  rpc: process.env.RPC_42161
+    ? [process.env.RPC_42161]
+    : ['https://arb1.arbitrum.io/rpc'],
   slug: 'arb',
-  assets: {
-    udt: '0xd5d3aA404D7562d09a848F96a8a8d5D65977bF90',
-    usdc: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-  },
-  rpc: ['https://rpc.unlock-protocol.com/42161'],
+  stack: 'arb',
 }

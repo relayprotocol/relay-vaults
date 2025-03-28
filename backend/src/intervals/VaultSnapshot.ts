@@ -10,6 +10,7 @@
  * 4. Stores the snapshot with block metadata in the vaultSnapshot table.
  */
 
+import { eq } from 'ponder'
 import { ponder } from 'ponder:registry'
 import { vaultSnapshot, relayPool } from 'ponder:schema'
 import { erc4626Abi, erc20Abi } from 'viem'
@@ -19,8 +20,8 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   async function fetchSharePrice(contractAddress: string) {
     // Retrieve the contract's decimals
     const decimals = await context.client.readContract({
-      address: contractAddress,
       abi: erc20Abi,
+      address: contractAddress,
       functionName: 'decimals',
     })
 
@@ -29,17 +30,21 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
 
     // Query the current share price from convertToAssets with the calculated share unit
     const sharePrice = await context.client.readContract({
-      address: contractAddress,
       abi: erc4626Abi,
-      functionName: 'convertToAssets',
+      address: contractAddress,
       args: [shareUnit],
+      functionName: 'convertToAssets',
     })
 
     return sharePrice
   }
 
   // Retrieve all vaults from the relayPool table
-  const vaults = await context.db.sql.select().from(relayPool).execute()
+  const vaults = await context.db.sql
+    .select()
+    .from(relayPool)
+    .where(eq(relayPool.chainId, context.network.chainId))
+    .execute()
 
   for (const vault of vaults) {
     // Fetch vault and yield pool share prices concurrently (they are independent)
@@ -49,11 +54,12 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
     ])
 
     const snapshot = {
-      vault: vault.contractAddress,
-      chainId: vault.chainId,
       blockNumber: event.block.number,
-      timestamp: event.block.timestamp,
+      chainId: vault.chainId,
+      id,
       sharePrice: vaultSharePrice.toString(),
+      timestamp: event.block.timestamp,
+      vault: vault.contractAddress,
       yieldPoolSharePrice: yieldPoolSharePrice.toString(),
     }
 

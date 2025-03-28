@@ -15,12 +15,12 @@ describe('RelayBridgeFactory: deployment', () => {
     myToken = await ethers.deployContract('MyToken', ['My Token', 'TOKEN'])
     expect(await myToken.totalSupply()).to.equal(1000000000000000000000000000n)
     ;({ relayBridgeFactory } = await ignition.deploy(RelayBridgeFactoryModule, {
+      deploymentId: `RelayBridgeFactory-${chainId.toString()}`,
       parameters: {
         RelayBridgeFactory: {
           hyperlaneMailbox,
         },
       },
-      deploymentId: `RelayBridgeFactory-${chainId.toString()}`,
     }))
   })
 
@@ -41,7 +41,7 @@ describe('RelayBridgeFactory: deployment', () => {
     )
     const bridgeAddress = event.args.bridge
     const bridge = await ethers.getContractAt('RelayBridge', bridgeAddress)
-    expect(await bridge.asset()).to.equal(await myToken.getAddress())
+    expect(await bridge.ASSET()).to.equal(await myToken.getAddress())
     expect(event.args.asset).to.equal(await myToken.getAddress())
     expect(event.args.proxyBridge).to.equal(oPStackNativeBridgeProxy)
 

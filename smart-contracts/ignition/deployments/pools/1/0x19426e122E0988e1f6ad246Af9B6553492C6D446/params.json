@@ -1,0 +1,9 @@
+{
+  "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  "hyperlaneMailbox": "0xc005dc82818d67AF737725bD4bf75435d065D239",
+  "name": "Wrapped Ether Relay Vault",
+  "symbol": "relayWETH",
+  "timelock": "0x1Ed47efb9252E6FE586C8bda9af7bc67e97D4f2D",
+  "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  "yieldPool": "0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0"
+}

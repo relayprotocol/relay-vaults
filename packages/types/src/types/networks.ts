@@ -13,6 +13,7 @@ export interface NetworkConfig {
   chainId: number | bigint
   name: string
   slug: string
+  earliestBlock: number
   bridges: {
     cctp?: {
       domain: bigint
@@ -30,6 +31,11 @@ export interface NetworkConfig {
       disputeGame?: string
       messagePasser?: string
     }
+    lisk?: {
+      portalProxy?: string
+      disputeGame?: string
+      messagePasser?: string
+    }
     base?: {
       portalProxy?: string
       disputeGame?: string
@@ -42,6 +48,7 @@ export interface NetworkConfig {
   }
   isZKsync?: boolean
   hyperlaneMailbox: string
+  hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
   isTestnet: boolean
   assets: NetworkAssets
   rpc: [string, ...string[]]

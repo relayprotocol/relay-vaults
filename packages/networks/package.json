@@ -10,7 +10,7 @@
       "require": "./dist/index.js"
     }
   },
-  "version": "1.0.0",
+  "version": "1.1.1",
   "license": "MIT",
   "scripts": {
     "start": "tsc --watch",
@@ -24,7 +24,6 @@
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
     "eslint": "9.19.0",
-    "eslint-plugin-sort-keys-fix": "1.1.2",
     "fs-extra": "11.3.0",
     "tsup": "8.3.6",
     "typescript": "5.7.3"

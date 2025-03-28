@@ -1,19 +1,91 @@
 import { task } from 'hardhat/config'
 import { Select, Input } from 'enquirer'
 import { networks } from '@relay-protocol/networks'
+import { L2NetworkConfig } from '@relay-protocol/types'
 import {
-  GET_POOLS_BY_CURATOR,
-  GET_RELAY_BRIDGES_BY_NETWORK_AND_ASSET,
-  GET_RELAY_POOL,
-  RelayVaultService,
-} from '@relay-protocol/client'
-import { getAddresses } from '@relay-protocol/addresses'
+  getPoolsForNetwork,
+  getBridgesForNetwork,
+} from '../deploy/bridge-proxy'
+
+export const executeThruTimelock = async (
+  ethers,
+  timelockAddress,
+  user,
+  payload,
+  target,
+  value
+) => {
+  const timelock = await ethers.getContractAt(
+    'TimelockControllerUpgradeable',
+    timelockAddress
+  )
+
+  const userAddress = await user.getAddress()
+  // Check if the user is a submutter on the timelock!
+  const PROPOSER_ROLE = await timelock.PROPOSER_ROLE()
+
+  const isProposer = await timelock.hasRole(PROPOSER_ROLE, userAddress)
+  if (!isProposer) {
+    throw Error(`User ${userAddress} is not a proposer on the timelock!`)
+  }
+
+  // Get the current timestamp for the timelock
+  const currentTimestamp = Date.now()
+  const delaySeconds = await timelock.getMinDelay()
+  const eta = new Date(
+    currentTimestamp + Number(delaySeconds) * 1000
+  ).toLocaleString()
+
+  console.log(
+    `Scheduling transaction through timelock with delay: ${delaySeconds} seconds`
+  )
+  console.log(`Estimated execution time: ${eta}`)
+
+  // schedule the tx through the timelock
+  const predecessor = ethers.ZeroHash // predecessor
+  const salt = ethers.id(`OP_${payload}_${Date.now()}`) //salt
+  const delay = delaySeconds // delay
+
+  const tx = await timelock.schedule(
+    target,
+    value,
+    payload,
+    predecessor,
+    salt,
+    delay
+  )
+
+  await tx.wait()
+  console.log('✅ Transaction scheduled through timelock!')
+
+  const executeTx = await timelock.execute.populateTransaction(
+    target,
+    value,
+    payload,
+    predecessor,
+    salt
+  )
+
+  if (delaySeconds < 60 * 60) {
+    console.log('Waiting...')
+    await new Promise((resolve) =>
+      setTimeout(resolve, (Number(delaySeconds) + 60) * 1000)
+    )
+    const tx = await user.sendTransaction(executeTx)
+    await tx.wait()
+    console.log('✅ Transaction executed!')
+  } else {
+    console.log(`Transaction can be executed after: ${eta}`)
+    console.log('To execute this transaction use the following:')
+    console.log(executeTx)
+  }
+}
 
 task('pool:add-origin', 'Add origin for a pool')
-  .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
-  .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
-  .addOptionalParam('proxyBridge', 'the origin proxyBridge (on this L1)')
   .addOptionalParam('pool', 'the pool address')
+  .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
+  .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
+  .addOptionalParam('proxyBridge', 'the origin proxyBridge (on this L1)')
   .addOptionalParam('maxDebt', 'the maximum debt coming from the origin')
   .addOptionalParam('bridgeFee', 'the fee (basis point) applied to this bridge')
   .addOptionalParam('curator', "the curator's address for this origin")
@@ -21,171 +93,180 @@ task('pool:add-origin', 'Add origin for a pool')
   .setAction(
     async (
       {
-        l2ChainId,
         pool: poolAddress,
-        proxyBridge,
+        l2ChainId,
         bridge: bridgeAddress,
+        proxyBridge,
         maxDebt,
         bridgeFee,
         curator,
         coolDown,
       },
-      { ethers, run }
+      { ethers }
     ) => {
       const [user] = await ethers.getSigners()
       const userAddress = await user.getAddress()
       const { chainId } = await ethers.provider.getNetwork()
-      const network = networks[chainId.toString()]
-      const vaultService = new RelayVaultService(
-        'https://relay-protocol-production.up.railway.app/' // TODO: add to config?
-      )
+      const network = networks[chainId.toString()] as L2NetworkConfig
 
-      let pool
+      if (network.l1ChainId) {
+        throw Error('Origins can only be added on L1')
+      }
 
       if (!poolAddress) {
-        const { relayPools } = await vaultService.query(GET_POOLS_BY_CURATOR, {
-          curatorAddress: userAddress,
-        })
-        if (relayPools.items.length === 0) {
-          throw new Error(
-            `No pools found curated by ${userAddress} on ${chainId}!`
-          )
-        }
-        const poolName = await new Select({
-          message: 'Which pool do you want to add an origin to?',
-          choices: relayPools.items.map((pool) => pool.name),
+        const pools = await getPoolsForNetwork(Number(chainId))
+        poolAddress = await new Select({
+          choices: pools.map((pool) => {
+            return {
+              message: pool.params.name,
+              value: pool.address,
+            }
+          }),
+          message: 'Please choose the relay vault address:',
+          name: 'poolAddress',
         }).run()
-        pool = relayPools.items.find((pool) => pool.name === poolName)
-      } else {
-        const { relayPool } = await vaultService.query(GET_RELAY_POOL, {
-          contractAddress: poolAddress,
-        })
-        if (relayPool) {
-          pool = relayPool
-        }
       }
 
-      if (!pool) {
-        throw new Error('Pool not found!')
-      }
+      const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
       if (!l2ChainId) {
         // We need to select the L2 chain!
         const possibleL2s = Object.values(networks).filter(
-          (network) => network.l1ChainId == chainId
+          (n) => (n as L2NetworkConfig).l1ChainId == chainId
         )
         const l2chainName = await new Select({
-          message: 'On what network is this origin?',
           choices: possibleL2s.map((network) => network.name),
+          message: 'On what network is this origin?',
         }).run()
         l2ChainId = possibleL2s.find(
           (network) => network.name === l2chainName
         )?.chainId
       }
-      const l2Network = networks[l2ChainId.toString()]
-
-      const { BridgeProxy } = (await getAddresses())[chainId.toString()]
-      if (!proxyBridge) {
-        const bridgeProxyType = await new Select({
-          message:
-            'From what type of the bridge the funds will be coming from?',
-          choices: Object.keys(network.bridges),
-        }).run()
-        if (!BridgeProxy || !BridgeProxy[bridgeProxyType]) {
-          proxyBridge = await run('deploy:bridge-proxy', {
-            type: bridgeProxyType,
-          })
-        } else {
-          proxyBridge = BridgeProxy[bridgeProxyType]
-        }
-      }
 
       if (!bridgeAddress) {
-        let assetName
-        Object.keys(network.assets).forEach((name) => {
-          if (network.assets[name].toLowerCase() === pool.asset.toLowerCase()) {
-            assetName = name
-          }
-        })
-        let l2AssetAddress
-        if (assetName === 'weth') {
-          l2AssetAddress = ethers.ZeroAddress
-        } else {
-          l2AssetAddress = l2Network.assets[assetName]
-        }
-        // And now let's get the
-        // Ok, let's list all the bridges we have!
-        const { relayBridges } = await vaultService.query(
-          GET_RELAY_BRIDGES_BY_NETWORK_AND_ASSET,
-          {
-            assetAddress: l2AssetAddress,
-            chainId: Number(l2ChainId), // This is the origin chain (L2)
-          }
+        const bridges = await getBridgesForNetwork(Number(l2ChainId))
+        bridgeAddress = await new Select({
+          choices: bridges.map((bridge) => {
+            return {
+              message: bridge.params.name,
+              value: bridge.address,
+            }
+          }),
+          message: 'Please choose the bridge address:',
+          name: 'bridgeAddress',
+        }).run()
+      }
+
+      // Check that the bridge asset matches the pool?
+
+      // get L2 bridge contracts settings
+      const l2Network = networks[l2ChainId.toString()]
+      const l2provider = new ethers.JsonRpcProvider(l2Network.rpc[0])
+
+      // Create contract instances with the L2 provider (read-only)
+      const relayBridgeInterface = (
+        await ethers.getContractAt('RelayBridge', ethers.ZeroAddress)
+      ).interface
+      const relayBridge = new ethers.Contract(
+        bridgeAddress,
+        relayBridgeInterface,
+        l2provider
+      )
+
+      const bridgeProxyAddress = await relayBridge.BRIDGE_PROXY()
+      console.log(`BridgeProxy L2 address: ${bridgeProxyAddress}`)
+
+      const bridgeProxyInterface = (
+        await ethers.getContractAt('BridgeProxy', ethers.ZeroAddress)
+      ).interface
+      const l2BridgeProxy = new ethers.Contract(
+        bridgeProxyAddress,
+        bridgeProxyInterface,
+        l2provider
+      )
+
+      if (
+        (await l2BridgeProxy.RELAY_POOL_CHAIN_ID()) !== chainId ||
+        (await l2BridgeProxy.RELAY_POOL()) !== poolAddress
+      ) {
+        throw Error(
+          `Wrong bridge config on L2 chain (${l2ChainId}): ${bridgeAddress}`
         )
-        if (relayBridges.items.length === 0) {
-          throw new Error(
-            `No bridge found for ${assetName} on ${l2Network.name}!`
-          )
-        } else if (relayBridges.items.length === 1) {
-          bridgeAddress = relayBridges.items[0].contractAddress
-        } else {
-          // TODO: Ask user to chose
-          bridgeAddress = relayBridges.items[0].contractAddress
-        }
+      }
+
+      // get L1 bridge proxy from L2 contract
+      if (!proxyBridge) {
+        proxyBridge = await l2BridgeProxy.L1_BRIDGE_PROXY()
       }
 
       let decimals = 18n
-      if (pool.asset !== ethers.ZeroAddress) {
-        const asset = await ethers.getContractAt('MyToken', pool.asset)
+      if ((await pool.asset()) !== ethers.ZeroAddress) {
+        const asset = await ethers.getContractAt('MyToken', await pool.asset())
         decimals = await asset.decimals()
       }
 
       if (!maxDebt) {
         const maxDebtInDecimals = await new Input({
+          default: 100,
           message: 'What is the maximum debt for this origin?',
         }).run()
-        maxDebt = ethers.parseUnits(maxDebtInDecimals, decimals)
+        maxDebt = ethers.parseUnits(maxDebtInDecimals.toString(), decimals)
       }
 
       if (!bridgeFee) {
         bridgeFee = await new Input({
-          message: 'What is the bridge fee, in basis points?',
           default: 10,
+          message: 'What is the bridge fee, in basis points?',
         }).run()
       }
-      const relayPool = await ethers.getContractAt(
-        'RelayPool',
-        pool.contractAddress
-      )
 
+      const timelockAddress = await pool.owner()
       if (!curator) {
-        const poolCurator = await relayPool.owner()
         curator = await new Input({
+          default: userAddress,
           message:
-            "Who should be curator for that origin? They can instantly suspend the origin. (default is the pool's curator)",
-          default: poolCurator,
+            'Who should be curator for that origin? They can instantly suspend the origin. (default is you)',
         }).run()
       }
 
       if (!coolDown) {
         coolDown = await new Input({
+          default: 60 * 30,
           message:
-            'Who should the the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)',
-          default: 60 * 30, // 30 minutes
+            'What should the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)', // 30 minutes
         }).run()
       }
 
-      const tx = await relayPool.addOrigin({
-        chainId: l2ChainId,
+      // Get the timelock that owns the pool
+      console.log(`Pool is owned by timelock at: ${timelockAddress}`)
+
+      // addOrigin parameters
+      const addOriginParams = {
         bridge: bridgeAddress,
-        proxyBridge,
-        maxDebt,
         bridgeFee,
-        curator,
+        chainId: l2ChainId,
         coolDown,
-      })
-      console.log('Adding origin...')
-      await tx.wait()
-      console.log('Origin added!')
+        curator,
+        maxDebt,
+        proxyBridge,
+      }
+
+      // Encode the function call to addOrigin
+      const encodedCall = pool.interface.encodeFunctionData('addOrigin', [
+        addOriginParams,
+      ])
+
+      // schedule the tx through the timelock
+      const target = poolAddress // target
+      const value = 0n // value
+      const payload = encodedCall // data
+      await executeThruTimelock(
+        ethers,
+        timelockAddress,
+        user,
+        payload,
+        target,
+        value
+      )
     }
   )

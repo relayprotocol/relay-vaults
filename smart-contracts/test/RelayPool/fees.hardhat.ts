@@ -30,29 +30,32 @@ describe('Fees', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: userAddress, // using the user address as the mailbox so we can send transactions!
+        // using the user address as the mailbox so we can send transactions!
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: userAddress,
         name: 'ERC20 RELAY POOL',
         symbol: 'ERC20-REL',
-        origins: [
-          {
-            chainId: 10,
-            bridge: relayBridgeOptimism,
-            maxDebt: ethers.parseEther('10'),
-            proxyBridge: oPStackNativeBridgeProxy,
-            bridgeFee: 5, // (0.05%)
-            curator: userAddress,
-            coolDown: 0,
-          },
-        ],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: await myWeth.getAddress(),
-        curator: userAddress,
       },
     }
     ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
       parameters,
     }))
+
+    await relayPool.addOrigin({
+      bridge: relayBridgeOptimism,
+      bridgeFee: 5,
+      chainId: 10,
+      coolDown: 0,
+      // (0.05%)
+      curator: userAddress,
+
+      maxDebt: ethers.parseEther('10'),
+
+      proxyBridge: oPStackNativeBridgeProxy,
+    })
 
     const liquidity = ethers.parseUnits('100', 18)
     await myToken.connect(user).mint(liquidity)
@@ -64,7 +67,7 @@ describe('Fees', () => {
     const recipientAddress = ethers.Wallet.createRandom().address
 
     const amount = ethers.parseUnits('1')
-    const [, , , , bridgeFee] = await relayPool.authorizedOrigins(
+    const [, , , , , , bridgeFee] = await relayPool.authorizedOrigins(
       10,
       relayBridgeOptimism
     )

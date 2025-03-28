@@ -1,42 +1,49 @@
 import { task } from 'hardhat/config'
 import { AutoComplete, Input } from 'enquirer'
 import { networks } from '@relay-protocol/networks'
-import { getStataToken, getEvent, getProvider } from '@relay-protocol/helpers'
-import { getAddresses } from '@relay-protocol/addresses'
+import { getStataToken, getEvent } from '@relay-protocol/helpers'
+import fs from 'fs'
 
-task('deploy:pool', 'Deploy a relay pool')
+const ignitionPath = __dirname + '/../../ignition/deployments/'
+
+task('deploy:pool', 'Deploy a relay vault')
+  .addOptionalParam('factory', 'Address of the factory')
   .addOptionalParam('name', 'name of the pool')
   .addOptionalParam('symbol', 'symbol of the pool')
-  .addOptionalParam('factory', 'Address of the factory')
   .addOptionalParam('asset', 'An ERC20 asset')
   .addOptionalParam('yieldPool', 'A yield pool address')
+  .addOptionalParam('delay', 'Timelock delay in seconds. Defaults to 7 days')
   .addOptionalParam(
-    'origins',
-    'Origins, as JSON array: [{"chainId": 11155420, "bridge": "0xD26c05a33349a6DeD02DD9360e1ef303d1246fb6", "maxDebt": 1000000000000, "proxyBridge": "0x4e46Dc422c61d41Ce835234D29e7f9f1C54968Fb"}]'
+    'deposit',
+    'The initial deposit to be added to the pool. This will be locked in the timelock'
   )
   .setAction(
     async (
-      { name, symbol, factory, asset, yieldPool, origins = '[]' },
+      { name, symbol, factory, asset, yieldPool, delay, deposit },
       { ethers, run }
     ) => {
       const [user] = await ethers.getSigners()
+      const userAddress = await user.getAddress()
       const { chainId } = await ethers.provider.getNetwork()
       const { name: networkName, assets } = networks[chainId.toString()]
 
       console.log(`deploying on ${networkName} (${chainId})...`)
 
-      // pool factory
       if (!factory) {
-        const { RelayPoolFactory } = (await getAddresses())[chainId.toString()]
-        factory = RelayPoolFactory
+        // Read it from the files!
+        const folder = `RelayPoolFactory-${chainId.toString()}`
+        const factoryData = require(
+          ignitionPath + `${folder}/deployed_addresses.json`
+        )
+        factory = factoryData['RelayPoolFactory#RelayPoolFactory']
       }
 
       if (!asset) {
         const assetName = await new AutoComplete({
-          name: 'asset',
+          choices: Object.keys(assets),
           message:
             'Please choose the asset for your relay bridge (make sure it is supported by the proxy bridge you selected):',
-          choices: Object.keys(assets),
+          name: 'asset',
         }).run()
         asset = assets[assetName]
       }
@@ -44,9 +51,9 @@ task('deploy:pool', 'Deploy a relay pool')
       // yield pool
       if (!yieldPool) {
         const yieldPoolName = await new AutoComplete({
-          name: 'yieldPoolName',
-          message: 'Please choose a yield pool:',
           choices: ['aave', 'dummy'],
+          message: 'Please choose a yield pool:',
+          name: 'yieldPoolName',
         }).run()
         if (yieldPoolName === 'aave') {
           yieldPool = await getStataToken(asset, chainId)
@@ -60,22 +67,23 @@ task('deploy:pool', 'Deploy a relay pool')
       const assetContract = await ethers.getContractAt('MyToken', asset)
       const assetName = await assetContract.name()
       const assetSymbol = await assetContract.symbol()
+      const assetDecimals = await assetContract.decimals()
 
       if (!name) {
-        const defaultName = `${assetName} Relay Pool`
+        const defaultName = `${assetName} Relay Vault`
         name = await new Input({
-          name: 'name',
-          message: 'Please enter a pool name:',
           default: defaultName,
+          message: 'Please enter a pool name:',
+          name: 'name',
         }).run()
       }
 
       if (!symbol) {
         const defaultSymbol = `${assetSymbol}-REL`
         symbol = await new Input({
-          name: 'symbol',
-          message: 'Please enter a pool symbol:',
           default: defaultSymbol,
+          message: 'Please enter a pool symbol:',
+          name: 'symbol',
         }).run()
       }
 
@@ -102,56 +110,71 @@ task('deploy:pool', 'Deploy a relay pool')
         factory
       )
 
-      // Check that each origin's asset matches
-      // We need to check the symbols...
-      const authorizedOrigins = JSON.parse(origins)
-      for (let i = 0; i < authorizedOrigins.length; i++) {
-        const origin = authorizedOrigins[i]
-        const originProvider = await getProvider(origin.chainId)
-        const originBridgeContract = new ethers.Contract(
-          origin.bridge,
-          ['function asset() view returns (address)'],
-          originProvider
-        )
-        const originAsset = await originBridgeContract.asset()
-        if (assetSymbol === 'WETH') {
-          if (originAsset !== ethers.ZeroAddress) {
-            console.error(
-              `Asset mismatch! The pool expects the wrapped native token but the origin bridge's ${origin.bridge} asset is not the native token!`
-            )
-            process.exit(1)
-          }
-        } else {
-          if (originAsset === ethers.ZeroAddress) {
-            console.error(
-              `Asset mismatch! The pool expects ${assetSymbol} but the origin bridge's ${origin.bridge} asset is the native token!`
-            )
-            process.exit(1)
-          }
-          const originAssetContract = new ethers.Contract(
-            originAsset,
-            ['function symbol() view returns (string)'],
-            originProvider
-          )
-          const originAssetSymbol = await originAssetContract.symbol()
-          if (originAssetSymbol !== assetSymbol) {
-            console.error(
-              `Asset mismatch! The pool expects ${assetSymbol} but the origin bridge's ${origin.bridge} asset is ${originAssetSymbol}`
-            )
-            process.exit(1)
-          }
+      if (!delay) {
+        const minimumDelay = await factoryContract.MIN_TIMELOCK_DELAY()
+        delay = await new Input({
+          default: minimumDelay,
+          message: `Please enter a pool timelock delay (in seconds, more than ${minimumDelay.toString()}):`,
+          name: 'delay',
+        }).run()
+      }
+
+      if (!deposit) {
+        // Get the default amount as the balance of the user
+        deposit = await new Input({
+          default: 1,
+          message: 'Please enter a pool initial deposit:',
+          name: 'deposit',
+        }).run()
+      }
+
+      const depositAmount = ethers.parseUnits(deposit.toString(), assetDecimals)
+
+      if (assetSymbol == 'WETH') {
+        const balance = await assetContract.balanceOf(userAddress)
+        if (balance < depositAmount) {
+          console.log('Wrapping WETH...')
+          // Wrap WETH!
+          const tx = await user.sendTransaction({
+            to: asset,
+            value: depositAmount,
+          })
+          await tx.wait()
         }
       }
 
+      const allowance = await assetContract.allowance(userAddress, factory)
+      if (allowance < depositAmount) {
+        // Approve the factory to spend the asset
+        const tx = await assetContract.approve(factory, depositAmount)
+        await tx.wait()
+      }
+
+      const balance = await assetContract.balanceOf(userAddress)
+      if (balance < depositAmount) {
+        throw Error(
+          `Insufficient balance (actual: ${balance}, expected: ${depositAmount})`
+        )
+      }
+
+      console.log(`Deploying relay vault using factory ${factory}...`)
       // deploy the pool
-      const tx = await factoryContract.deployPool(
-        asset,
-        name,
-        symbol,
-        JSON.parse(origins),
-        yieldPool
-      )
-      const receipt = await tx.wait()
+
+      const tx = await factoryContract
+        .deployPool(
+          asset,
+          name,
+          symbol,
+          yieldPool,
+          delay,
+          depositAmount,
+          userAddress
+        )
+        .catch((e) => {
+          console.log(e)
+        })
+
+      const receipt = await tx!.wait()
       const event = await getEvent(
         receipt!,
         'PoolDeployed',
@@ -159,33 +182,43 @@ task('deploy:pool', 'Deploy a relay pool')
       )
 
       const poolAddress = event.args.pool
+      const timelock = event.args.timelock
       console.log(`relayPool deployed to: ${poolAddress}`)
-      let verified = false
-      let attempts = 0
-      while (!verified) {
-        attempts += 1
-        await tx.wait(attempts)
-        await run('verify:verify', {
-          address: poolAddress,
-          constructorArguments: [
-            await factoryContract.hyperlaneMailbox(),
+
+      const path = ignitionPath + `pools/${chainId}/${poolAddress}/`
+      await fs.promises.mkdir(path, { recursive: true })
+      await fs.promises.writeFile(
+        `${path}/params.json`,
+        JSON.stringify(
+          {
             asset,
+            hyperlaneMailbox: await factoryContract.HYPERLANE_MAILBOX(),
             name,
             symbol,
-            authorizedOrigins,
+            timelock,
+            weth: await factoryContract.WETH(),
             yieldPool,
-            await factoryContract.wrappedEth(),
-            await user.getAddress(),
-          ],
-        })
-          .then(() => {
-            verified = true
-          })
-          .catch((e) => {
-            if (attempts >= 10) {
-              throw e
-            }
-          })
-      }
+          },
+          null,
+          2
+        )
+      )
+
+      await run('deploy:verify', {
+        address: poolAddress,
+        constructorArguments: [
+          await factoryContract.HYPERLANE_MAILBOX(),
+          asset,
+          name,
+          symbol,
+          yieldPool,
+          await factoryContract.WETH(),
+          timelock,
+        ],
+      })
+
+      console.log(
+        `✅ relayPool '${name}' deployed successfully at: ${poolAddress}`
+      )
     }
   )

@@ -23,14 +23,13 @@ describe('RelayPool: initialization of ERC20 pool', () => {
     // deploy the pool using ignition
     const parameters = {
       RelayPool: {
-        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         asset: await myToken.getAddress(),
+        curator: userAddress,
+        hyperlaneMailbox: networks[1].hyperlaneMailbox,
         name: `${await myToken.name()} Relay Pool`,
         symbol: `${await myToken.symbol()}-REL`,
-        origins: [],
         thirdPartyPool: await thirdPartyPool.getAddress(),
         weth: ethers.ZeroAddress,
-        curator: userAddress,
       },
     }
 

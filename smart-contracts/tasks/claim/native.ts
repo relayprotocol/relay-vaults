@@ -3,8 +3,8 @@
  */
 import { task } from 'hardhat/config'
 import {
-  buildFinalizeWithdrawal,
-  buildProveWithdrawal,
+  buildFinalizeOpWithdrawal,
+  buildOpProveWithdrawal,
 } from '@relay-protocol/helpers'
 import { AbiCoder } from 'ethers'
 import { networks } from '@relay-protocol/networks'
@@ -15,7 +15,7 @@ task('claim:native', 'Claim ETH from bridge for the pool')
   .addParam('origin', 'Origin chain id')
   .addParam('pool', 'The pool on dest chain')
   .setAction(async ({ txHash, origin, pool }, { ethers }) => {
-    const finalizeParams = await buildFinalizeWithdrawal(origin, txHash)
+    const finalizeParams = await buildFinalizeOpWithdrawal(origin, txHash)
     const claimParams = new AbiCoder().encode(
       ['bytes', 'address'],
       [finalizeParams, '0xA7c11bfB42f4221a7091a42f35022FE106bc9dEE']
@@ -41,7 +41,7 @@ task('claim:native:prove', 'Prooves ETH was deposited on native bridge')
     const { chainId } = await ethers.provider.getNetwork()
     const [signer] = await ethers.getSigners()
 
-    const proveParams = await buildProveWithdrawal(
+    const proveParams = await buildOpProveWithdrawal(
       origin,
       txHash,
       Number(chainId)

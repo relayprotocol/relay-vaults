@@ -1,6 +1,7 @@
 import {
-  buildFinalizeWithdrawal,
-  buildProveWithdrawal,
+  buildFinalizeOpWithdrawal,
+  buildOpProveWithdrawal,
+  buildLegacyOpProveWithdrawal,
 } from '@relay-protocol/helpers'
 import { Portal2 } from '@relay-protocol/helpers/abis'
 import * as ABIs from '@relay-protocol/abis'
@@ -15,26 +16,37 @@ export const submitProof = async ({
   destinationPoolChainId,
 }) => {
   const destinationNetwork = networks[destinationPoolChainId.toString()]
+  const originNetwork = networks[originChainId.toString()]
 
   const signer = await getSignerForNetwork(destinationNetwork)
-  const proveParams = await buildProveWithdrawal(
-    originChainId,
-    originTxHash,
-    Number(destinationPoolChainId)
-  )
 
-  // TODO: check if already proven!
-  // This will avoid wasting gas (and resetting the counter?)
-
-  const portal = new ethers.Contract(proveParams.portalAddress, Portal2, signer)
-  const tx = await portal.proveWithdrawalTransaction(
-    proveParams.transaction,
-    proveParams.disputeGameIndex,
-    proveParams.outputRootProof,
-    proveParams.withdrawalProof
-  )
-  await tx.wait()
-  return tx.hash
+  if (destinationNetwork.bridges[originNetwork.slug].disputeGame) {
+    const proveParams = await buildOpProveWithdrawal(
+      originChainId,
+      originTxHash,
+      Number(destinationPoolChainId)
+    )
+    const portal = new ethers.Contract(
+      proveParams.portalAddress,
+      Portal2,
+      signer
+    )
+    const tx = await portal.proveWithdrawalTransaction(
+      proveParams.transaction,
+      proveParams.disputeGameIndex,
+      proveParams.outputRootProof,
+      proveParams.withdrawalProof
+    )
+    await tx.wait()
+    return tx.hash
+  } else {
+    const proveParams = await buildLegacyOpProveWithdrawal(
+      originChainId,
+      originTxHash,
+      Number(destinationPoolChainId)
+    )
+    console.log(proveParams)
+  }
 }
 
 export const claimWithdrawal = async (bridgeTransaction) => {
@@ -47,7 +59,7 @@ export const claimWithdrawal = async (bridgeTransaction) => {
     signer
   )
 
-  const proveParams = await buildProveWithdrawal(
+  const proveParams = await buildOpProveWithdrawal(
     bridgeTransaction.originChainId,
     bridgeTransaction.originTxHash,
     Number(bridgeTransaction.destinationPoolChainId)
@@ -90,9 +102,8 @@ export const claimWithdrawal = async (bridgeTransaction) => {
   if (!ready) {
     return // Not ready yet!
   }
-  console.log({ ready })
 
-  const finalizeParams = await buildFinalizeWithdrawal(
+  const finalizeParams = await buildFinalizeOpWithdrawal(
     bridgeTransaction.originChainId,
     bridgeTransaction.originTxHash
   )

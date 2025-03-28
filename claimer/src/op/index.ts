@@ -13,6 +13,7 @@ export const submitProof = async ({
   originTxHash,
   destinationPoolChainId,
 }) => {
+  console.log({ originChainId, originTxHash, destinationPoolChainId })
   const destinationNetwork = networks[destinationPoolChainId.toString()]
 
   const signer = await getSignerForNetwork(destinationNetwork)
@@ -22,19 +23,23 @@ export const submitProof = async ({
     Number(destinationPoolChainId)
   )
 
-  const portal = new ethers.Contract(
-    destinationNetwork.bridges.op!.portalProxy!,
-    Portal2,
-    signer
-  )
-  const tx = await portal.proveWithdrawalTransaction(
-    finalizeParams.transaction,
-    finalizeParams.disputeGameIndex,
-    finalizeParams.outputRootProof,
-    finalizeParams.withdrawalProof
-  )
-  await tx.wait()
-  return tx.hash
+  if (destinationNetwork.bridges.op!.disputeGame) {
+    const portal = new ethers.Contract(
+      destinationNetwork.bridges.op!.portalProxy!,
+      Portal2,
+      signer
+    )
+    const tx = await portal.proveWithdrawalTransaction(
+      finalizeParams.transaction,
+      finalizeParams.disputeGameIndex,
+      finalizeParams.outputRootProof,
+      finalizeParams.withdrawalProof
+    )
+    await tx.wait()
+    return tx.hash
+  } else {
+    console.log('OK I WAS HERE!')
+  }
 }
 
 export default {

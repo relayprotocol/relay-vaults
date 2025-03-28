@@ -18,9 +18,11 @@ export const getGame = async (
   disputeGameAddress: string,
   portalAddress: string
 ) => {
+  console.log('I WAS HERE!')
   const abiCoder = new AbiCoder()
   const provider = await getProvider(chainId)
-
+  console.log({ disputeGameAddress })
+  console.log('I WAS HERE TOO!')
   const disputeGameContract = new ethers.Contract(
     disputeGameAddress,
     DisputeGameFactory,
@@ -32,6 +34,8 @@ export const getGame = async (
     disputeGameContract.gameCount(),
     portal2Contract.respectedGameType(),
   ])
+
+  console.log({ gameCount, gameType })
 
   const allGames = await disputeGameContract.findLatestGames(
     gameType,
@@ -78,6 +82,8 @@ export const buildProveWithdrawal = async (
   if (!receipt) {
     throw new Error('No receipt found for withdrawal transaction')
   }
+
+  console.log(receipt)
 
   // Extract event
   const event = await getEvent(
@@ -150,6 +156,8 @@ export const buildProveWithdrawal = async (
   // )
 
   const disputeGameIndex = game[0]
+
+  console.log(disputeGameIndex)
 
   // Ok so that is the next step that's wrong. We need to check both the params
   // and the implementation of the function to see if we can get the right values!

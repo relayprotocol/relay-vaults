@@ -4238,6 +4238,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-protocol/abis@workspace:packages/abis"
   dependencies:
+    "@relay-protocol/helper-bedrock": "workspace:*"
     "@relay-protocol/helpers": "^workspace:*"
     "@relay-protocol/networks": "npm:1.1.1"
     tsup: "npm:8.3.6"

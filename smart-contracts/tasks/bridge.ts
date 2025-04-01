@@ -1,5 +1,5 @@
 import { getBalance, checkAllowance, getEvent } from '@relay-protocol/helpers'
-import { Mailbox, InterchainGasPaymaster } from '@relay-protocol/helpers/abis'
+import { ABIs } from '@relay-protocol/helpers'
 import { Select, Input } from 'enquirer'
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
@@ -132,7 +132,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       const event = await getEvent(
         receipt!,
         'DispatchId',
-        new ethers.Interface(Mailbox)
+        new ethers.Interface(ABIs.Mailbox)
       )
       const dispatchId = event.args[0].substring(2)
 
@@ -156,7 +156,7 @@ task('bridge:pay-gas', 'Pay extra gas when a message is stuck')
     }
     const paymaster = await new ethers.Contract(
       hyperlaneHook,
-      InterchainGasPaymaster,
+      ABIs.InterchainGasPaymaster,
       user
     )
     const userAddress = await user.getAddress()

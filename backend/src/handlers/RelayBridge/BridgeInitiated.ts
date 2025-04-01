@@ -1,6 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction } from 'ponder:schema'
-import * as ABIs from '@relay-protocol/helpers/abis'
+import { ABIs } from '@relay-protocol/helpers'
 import { BridgeProxy } from '@relay-protocol/abis'
 import networks from '@relay-protocol/networks'
 import { decodeEventLog } from 'viem'

@@ -8,3 +8,5 @@ export * from './cctp'
 export * from './arb'
 export * from './package'
 export * from './zksync'
+import * as ABIs from './abis'
+export { ABIs }

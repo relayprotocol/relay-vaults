@@ -1,6 +1,6 @@
-import { buildProveWithdrawal } from '@relay-protocol/helpers'
+import { buildProveWithdrawal } from '@relay-protocol/helper-bedrock'
 import networks from '@relay-protocol/networks'
-import { Portal2 } from '@relay-protocol/helpers/abis'
+import { ABIs } from '@relay-protocol/helpers'
 
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
@@ -25,7 +25,7 @@ describe('RelayBridge: prove', () => {
 
       const portal = new ethers.Contract(
         proveParams.portalAddress,
-        Portal2,
+        ABIs.Portal2,
         signer
       )
       const tx = await portal.proveWithdrawalTransaction(

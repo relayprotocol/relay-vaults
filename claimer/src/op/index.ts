@@ -1,8 +1,5 @@
-import {
-  buildProveWithdrawal,
-  getWithdrawalHash,
-} from '@relay-protocol/helpers'
-import { Portal2 } from '@relay-protocol/helpers/abis'
+import { buildProveWithdrawal } from '@relay-protocol/helper-bedrock'
+import { ABIs } from '@relay-protocol/helpers'
 
 import networks from '@relay-protocol/networks'
 import { ethers } from 'ethers'
@@ -24,7 +21,7 @@ export const submitProof = async ({
 
   const portal = new ethers.Contract(
     destinationNetwork.bridges.op!.portalProxy!,
-    Portal2,
+    ABIs.Portal2,
     signer
   )
   const tx = await portal.proveWithdrawalTransaction(

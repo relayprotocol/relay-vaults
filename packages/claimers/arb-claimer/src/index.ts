@@ -1,6 +1,8 @@
 import { ethers } from 'ethers'
-import { L2ToL1MessageStatus, L2ToL1MessageReader } from '@arbitrum/sdk'
-import { networks } from '@relay-protocol/networks'
+import {
+  ChildTransactionReceipt,
+  ChildToParentMessageStatus,
+} from '@arbitrum/sdk'
 import { getProvider } from './provider'
 
 export async function constructArbProof(
@@ -13,35 +15,36 @@ export async function constructArbProof(
     l1Provider = await getProvider(l1ChainId)
   }
 
-  const l2Provider = await getProvider(l2ChainId)
-  const l2Receipt = await l2Provider.getTransactionReceipt(l2TransactionHash)
-
-  // Get the L2ToL1MessageReader instance
-  const l2ToL1MessageReader = new L2ToL1MessageReader(
-    l1Provider,
-    l2Provider,
-    l2Receipt,
-    networks[l1ChainId.toString()].bridges.arb!.outbox!
-  )
-
-  // Get the message status
-  const messageStatus = await l2ToL1MessageReader.getStatus()
-  if (messageStatus === L2ToL1MessageStatus.REDEEMED) {
-    throw new Error('Message already redeemed')
+  // get child provider
+  const claimerPk = process.env.CLAIMER_PK
+  if (!claimerPk) {
+    throw new Error('Missing claimer private key')
   }
 
-  // Get the proof data
-  const proofData = await l2ToL1MessageReader.getProofData()
+  // get tx receipt on child chain
+  const childSigner = new ethers.Wallet(claimerPk)
+  const childProvider = await getProvider(l2ChainId)
+  const childRawReceipt =
+    await childProvider.getTransactionReceipt(l2TransactionHash)
 
-  return {
-    arbBlockNum: proofData.arbBlockNum,
-    caller: proofData.caller,
-    callvalue: proofData.callvalue,
-    data: proofData.data,
-    destination: proofData.destination,
-    ethBlockNum: proofData.ethBlockNum,
-    leaf: proofData.leaf,
-    proof: proofData.proof,
-    timestamp: proofData.timestamp,
+  const childReceipt = new ChildTransactionReceipt(childRawReceipt)
+
+  // read message from child chain tx
+  const [childToParentMessage] =
+    await childReceipt.getChildToParentMessages(childSigner)
+
+  // Check /validate the message status
+  const status = await childToParentMessage.status(childProvider)
+  console.log(status)
+  if (status === ChildToParentMessageStatus.UNCONFIRMED) {
+    throw new Error('Message not confirmed yet')
+  } else if (status === ChildToParentMessageStatus.EXECUTED) {
+    throw new Error('Message already executed / claimed')
+  } else if (status === ChildToParentMessageStatus.CONFIRMED) {
+    // Get the proof data
+    const proofData = await childToParentMessage.getOutboxProof(childProvider)
+    console.log(proofData)
+    return proofData
   }
+  throw new Error(`Unexpected message status: ${status}`)
 }

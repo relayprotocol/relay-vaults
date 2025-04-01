@@ -19,7 +19,6 @@
 
 import { Context, Event } from 'ponder:registry'
 import { relayPool, poolOrigin } from 'ponder:schema'
-import { eq } from 'drizzle-orm'
 
 export default async function ({
   event,
@@ -29,7 +28,7 @@ export default async function ({
   context: Context<'RelayPool:OutstandingDebtChanged'>
 }) {
   // Extract the new debt value from the event arguments.
-  const { newDebt } = event.args
+  const { newDebt, origin, newOriginDebt } = event.args
 
   // Retrieve the pool using the contract address from the event log.
   const poolAddress = event.log.address
@@ -44,42 +43,14 @@ export default async function ({
       outstandingDebt: newDebt,
     })
 
-  // Fetch all poolOrigin records associated with this pool using the SQL-based API.
-  const origins = await context.db.sql
-    .select()
-    .from(poolOrigin)
-    .where(eq(poolOrigin.pool, poolAddress))
-    .execute()
-
-  // For each origin record, we query the pool contract's authorizedOrigins mapping.
-  // Note that the authorizedOrigins mapping is keyed by (originChainId, originBridge).
-  for (const origin of origins) {
-    // Read the origin's settings from the on-chain RelayPool contract.
-    const originSettings = await context.client.readContract({
-      abi: context.contracts.RelayPool.abi,
-      address: poolAddress,
-      args: [origin.originChainId, origin.originBridge],
-      functionName: 'authorizedOrigins',
+  await context.db
+    .update(poolOrigin, {
+      chainId: context.network.chainId,
+      originBridge: origin.bridge,
+      originChainId: origin.chainId,
+      pool: poolAddress,
     })
-
-    // Extract the outstandingDebt from the returned struct.
-    // Sometimes named keys are not included in the returned struct,
-    // so fall back to accessing via array index (2).
-    const updatedOriginDebt =
-      originSettings.outstandingDebt !== undefined
-        ? originSettings.outstandingDebt
-        : originSettings[2]
-
-    // Update the poolOrigin record with this per-origin outstanding debt.
-    await context.db
-      .update(poolOrigin, {
-        chainId: origin.chainId,
-        originBridge: origin.originBridge,
-        originChainId: origin.originChainId,
-        pool: origin.pool,
-      })
-      .set({
-        currentOutstandingDebt: updatedOriginDebt.toString(),
-      })
-  }
+    .set({
+      currentOutstandingDebt: newOriginDebt,
+    })
 }

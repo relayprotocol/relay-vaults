@@ -10,27 +10,25 @@ export const getProvider = (chainId: bigint | string | number) => {
   return new ethers.providers.JsonRpcProvider(rpc[0]) // pick the first rpc endpoint
 }
 
-export async function constructArbProof(
-  l2TransactionHash: string,
-  l2ChainId: bigint | string,
-  l1ChainId = 11155111n, //default to sepolia
-  l1Provider?: ethers.providers.Provider
-) {
-  if (!l1Provider) {
-    l1Provider = await getProvider(l1ChainId)
-  }
-
+export async function constructArbProof({
+  childTransactionHash,
+  childChainId,
+  claimerPk = process.env.CLAIMER_PK,
+}: {
+  childTransactionHash: string
+  childChainId: bigint | string
+  claimerPk: string | undefined
+}) {
   // get child provider
-  const claimerPk = process.env.CLAIMER_PK
   if (!claimerPk) {
     throw new Error('Missing claimer private key')
   }
 
   // get tx receipt on child chain
   const childSigner = new ethers.Wallet(claimerPk)
-  const childProvider = await getProvider(l2ChainId)
+  const childProvider = await getProvider(childChainId)
   const childRawReceipt =
-    await childProvider.getTransactionReceipt(l2TransactionHash)
+    await childProvider.getTransactionReceipt(childTransactionHash)
 
   const childReceipt = new ChildTransactionReceipt(childRawReceipt)
 

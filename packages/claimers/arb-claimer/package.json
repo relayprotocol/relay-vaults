@@ -1,0 +1,21 @@
+{
+  "name": "@relay-protocol/arb-claimer",
+  "version": "0.1.0",
+  "description": "Arbitrum L2 to L1 message claimer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "ethers": "5.7.2",
+    "@arbitrum/sdk": "3.0.9",
+    "@relay-protocol/networks": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.0.4",
+    "@types/node": "20.0.0",
+    "@relay-protocol/tsconfig": "workspace:*"
+  }
+}

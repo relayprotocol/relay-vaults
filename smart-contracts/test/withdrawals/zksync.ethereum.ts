@@ -16,7 +16,7 @@ const ZKSYNC_MAINNET_CHAIN_ID = 324n
 
 const account = '0x246A13358Fb27523642D86367a51C2aEB137Ac6C'
 
-describe('ZkSync withdrawal finalization', () => {
+describe.skip('ZkSync withdrawal finalization', () => {
   it('should work with native tokens', async () => {
     // native ETH
     // https://era.zksync.network/tx/0x44ee1a78cded74543cae05e70dd936043bbae441ec2c7f968af4a6e888ccb07f

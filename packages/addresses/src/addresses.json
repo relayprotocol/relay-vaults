@@ -7,6 +7,7 @@
     "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
   },
   "11155111": {
+    "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
     "RelayPoolNativeGateway": "0xb3DF7D7fEDc3Be5b7746031e72b408b077ABa593"
   }
 }

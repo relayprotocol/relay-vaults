@@ -1,5 +1,5 @@
 import { createConfig, factory } from 'ponder'
-import { Portal2, Outbox } from '@relay-protocol/helpers/abis'
+import { ABIs } from '@relay-protocol/helpers'
 import { http } from 'viem'
 
 import {
@@ -190,12 +190,12 @@ export default createConfig({
   },
   contracts: {
     OPPortal: {
-      abi: Portal2,
+      abi: ABIs.Portal2,
       network: oPPortalNetworks,
     },
 
     OrbitOutbox: {
-      abi: Outbox,
+      abi: ABIs.Outbox,
       network: orbitOutboxNetworks,
     },
 

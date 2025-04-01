@@ -1,5 +1,5 @@
 import { ethers, ignition } from 'hardhat'
-import * as ABIs from '@relay-protocol/helpers/abis'
+import { ABIs } from '@relay-protocol/helpers'
 import { expect } from 'chai'
 import { stealERC20 } from '../utils/hardhat'
 import { networks } from '@relay-protocol/networks'

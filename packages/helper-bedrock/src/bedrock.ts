@@ -1,10 +1,7 @@
 import { AbiCoder, ethers } from 'ethers'
-import { getEvent } from './events'
-import L2ToL1MessagePasserAbi from './abis/L2ToL1MessagePasser.json'
+import { getEvent, getProvider } from '@relay-protocol/helpers'
 import * as rlp from 'rlp'
-import Portal2 from './abis/op/Portal2.json'
-import DisputeGameFactory from './abis/op/DisputeGameFactory.json'
-import { getProvider } from './provider'
+import { ABIs } from '@relay-protocol/helpers'
 
 import { networks } from '@relay-protocol/networks'
 import { L1NetworkConfig, L2NetworkConfig } from '@relay-protocol/types'
@@ -23,10 +20,14 @@ export const getGame = async (
 
   const disputeGameContract = new ethers.Contract(
     disputeGameAddress,
-    DisputeGameFactory,
+    ABIs.DisputeGameFactory,
     provider
   )
-  const portal2Contract = new ethers.Contract(portalAddress, Portal2, provider)
+  const portal2Contract = new ethers.Contract(
+    portalAddress,
+    ABIs.Portal2,
+    provider
+  )
 
   const [gameCount, gameType] = await Promise.all([
     disputeGameContract.gameCount(),
@@ -58,7 +59,7 @@ export const getWithdrawalHash = async (
   const event = await getEvent(
     receipt!,
     'MessagePassed',
-    new ethers.Interface(L2ToL1MessagePasserAbi)
+    new ethers.Interface(ABIs.L2ToL1MessagePasser)
   )
 
   return event.args.withdrawalHash
@@ -83,7 +84,7 @@ export const buildProveWithdrawal = async (
   const event = await getEvent(
     receipt!,
     'MessagePassed',
-    new ethers.Interface(L2ToL1MessagePasserAbi)
+    new ethers.Interface(ABIs.L2ToL1MessagePasser)
   )
 
   if (!event || !event.args) {
@@ -195,7 +196,7 @@ export const buildFinalizeWithdrawal = async (
   const event = await getEvent(
     receipt!,
     'MessagePassed',
-    new ethers.Interface(L2ToL1MessagePasserAbi)
+    new ethers.Interface(ABIs.L2ToL1MessagePasser)
   )
   if (!event) {
     throw new Error('No MessagePassed event found')

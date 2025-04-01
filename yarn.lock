@@ -4339,7 +4339,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-protocol/helpers@^workspace:*, @relay-protocol/helpers@workspace:*, @relay-protocol/helpers@workspace:packages/helpers":
+"@relay-protocol/helpers@^workspace:*, @relay-protocol/helpers@workspace:*, @relay-protocol/helpers@workspace:^, @relay-protocol/helpers@workspace:packages/helpers":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/helpers@workspace:packages/helpers"
   dependencies:
@@ -10077,6 +10077,20 @@ __metadata:
   checksum: 10/6374f6510af79bf47f2cfcee265bf608e6ed2b2694875974d1cb5654ddc98af05347dcf3a42ee9a7de318b576022d6f4d00fe06fa65a4a65c4c60638375eabfe
   languageName: node
   linkType: hard
+
+"helper-bedrock-c47e77@workspace:packages/helper-bedrock":
+  version: 0.0.0-use.local
+  resolution: "helper-bedrock-c47e77@workspace:packages/helper-bedrock"
+  dependencies:
+    "@relay-protocol/helpers": "workspace:^"
+    "@relay-protocol/networks": "workspace:^"
+    "@relay-protocol/tsconfig": "workspace:^"
+    eslint: "npm:9.19.0"
+    ethers: "npm:6.13.5"
+    tsup: "npm:8.3.6"
+    typescript: "npm:5.7.3"
+  languageName: unknown
+  linkType: soft
 
 "hmac-drbg@npm:^1.0.1":
   version: 1.0.1

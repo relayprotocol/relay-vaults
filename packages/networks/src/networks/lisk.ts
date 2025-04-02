@@ -11,7 +11,7 @@ export const lisk: L2NetworkConfig = {
     },
   },
   chainId: 1135,
-  earliestBlock: 0,
+  earliestBlock: 14049767,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   hyperlaneHook: '0x9844aFFaBE17c37F791ff99ABa58B0FbB75e22AF',
   isTestnet: false,

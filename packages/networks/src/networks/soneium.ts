@@ -11,7 +11,7 @@ export const soneium: L2NetworkConfig = {
     },
   },
   chainId: 1868,
-  earliestBlock: 0,
+  earliestBlock: 5241889,
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
   l1ChainId: 1,

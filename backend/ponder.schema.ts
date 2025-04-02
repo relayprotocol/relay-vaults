@@ -100,8 +100,8 @@ export const poolOriginsRelation = relations(relayPool, ({ many }) => ({
 
 export const originPoolRelation = relations(poolOrigin, ({ one }) => ({
   pool: one(relayPool, {
-    fields: [poolOrigin.pool],
-    references: [relayPool.contractAddress],
+    fields: [poolOrigin.pool, poolOrigin.chainId],
+    references: [relayPool.contractAddress, relayPool.chainId],
   }),
 }))
 
@@ -168,7 +168,7 @@ export const userBalance = onchainTable(
 export const userBalanceRelations = relations(userBalance, ({ one }) => ({
   pool: one(relayPool, {
     fields: [userBalance.relayPool, userBalance.chainId],
-    references: [relayPool.contractAddress, relayPool.chainId], // TODO: Add chainId!
+    references: [relayPool.contractAddress, relayPool.chainId],
   }),
 }))
 

@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { AutoComplete, Input } from 'enquirer'
@@ -78,6 +79,21 @@ task('deploy:bridge', 'Deploy a bridge from the factory.')
           await factoryContract.HYPERLANE_MAILBOX(),
         ],
       })
+
+      const path = ignitionPath + `bridges/${chainId}/${bridgeAddress}/`
+      await fs.promises.mkdir(path, { recursive: true })
+      await fs.promises.writeFile(
+        `${path}/params.json`,
+        JSON.stringify(
+          {
+            assetAddress,
+            hyperlaneMailbox: await factoryContract.HYPERLANE_MAILBOX(),
+            proxyBridgeAddress,
+          },
+          null,
+          2
+        )
+      )
 
       console.log(`✅ RelayBridge deployed to: ${bridgeAddress}`)
     }

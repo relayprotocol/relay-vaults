@@ -72,17 +72,16 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     )
 
     if (!poolAddress) {
-      const pools = await getPoolsForNetwork(
-        isL2 ? Number(l1ChainId) : Number(chainId)
-      )
+      const poolNetwork = isL2 ? Number(l1ChainId) : Number(chainId)
+      const pools = await getPoolsForNetwork(poolNetwork)
       poolAddress = await new Select({
         choices: pools.map((pool) => {
           return {
-            message: pool.params.name,
+            message: `${pool.params.name} (${pool.address})`,
             value: pool.address,
           }
         }),
-        message: 'Please choose the relay vault address:',
+        message: `Please choose the relay vault address on ${poolNetwork}:`,
         name: 'poolAddress',
       }).run()
     }

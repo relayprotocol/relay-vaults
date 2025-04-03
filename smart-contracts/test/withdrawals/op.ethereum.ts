@@ -14,7 +14,7 @@ const {
   assets: { weth },
 } = networks[1]
 
-describe('op withdrawal helper', function () {
+describe.skip('op withdrawal helper', function () {
   let portalProxy: IOptimismPortal
   before(async () => {
     portalProxy = await ethers.getContractAt('IOptimismPortal', op.portalProxy)

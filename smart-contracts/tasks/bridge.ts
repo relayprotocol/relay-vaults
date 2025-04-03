@@ -103,9 +103,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       if (!recipient) recipient = userAddress
 
       const poolNetwork = networks[poolChainId]
-      const provider = new rawEthers.JsonRpcProvider(
-        'https://rpc.unlock-protocol.com/11155111'
-      )
+      const provider = new rawEthers.JsonRpcProvider(poolNetwork.rpc[0])
 
       const pool = new rawEthers.Contract(
         poolAddress,

@@ -30,7 +30,6 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
     ROUTER = IL2GatewayRouter(routerGateway);
   }
 
-  // TODO: BUG: we should pass the L2 token, and get the L1 token... not the other way around!
   // DOCS https://docs.arbitrum.io/build-decentralized-apps/token-bridging/token-bridge-erc20
   function bridge(
     address asset, //l2 token

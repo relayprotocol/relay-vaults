@@ -1,9 +1,10 @@
 import { getBalance, checkAllowance, getEvent } from '@relay-protocol/helpers'
 import { ABIs } from '@relay-protocol/helpers'
-import { Select, Input } from 'enquirer'
+import { Select, Input, Confirm } from 'enquirer'
 import { task } from 'hardhat/config'
 import { networks } from '@relay-protocol/networks'
 import { getBridgesForNetwork } from './deploy/bridge-proxy'
+import { AbiCoder } from 'ethers'
 
 task('bridge:send', 'Send tokens to a pool across a relay bridge')
   .addOptionalParam('asset', 'The address of the asset you want to bridge')
@@ -16,11 +17,12 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
   )
   .setAction(
     async (
-      { bridge: bridgeAddress, amount, recipient },
+      { bridge: bridgeAddress, amount, recipient, asset },
       { ethers: rawEthers, zksyncEthers }
     ) => {
       const { chainId } = await rawEthers.provider.getNetwork()
       const net = networks[chainId.toString()]
+
       if (!net) {
         throw Error(
           `Unsupported network ${chainId}. Please add it to networks.ts`
@@ -37,23 +39,50 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         )
       }
 
+      if (!asset) {
+        const assetName = await new Select({
+          choices: ['native', ...Object.keys(net.assets)],
+          message: 'Please choose the asset you want to bridge:',
+          name: 'asset',
+        }).run()
+        if (assetName === 'native') {
+          asset = rawEthers.ZeroAddress
+        } else {
+          asset = net.assets[assetName]
+        }
+      }
+
       if (!bridgeAddress) {
         const bridges = await getBridgesForNetwork(Number(chainId))
-        // TODO: select based on the asset?
-        bridgeAddress = await new Select({
-          choices: bridges.map((bridge) => {
-            return {
-              message: bridge.address,
-              value: bridge.address,
-            }
-          }),
-          message: 'Please choose the relay bridge you want to use:',
-          name: 'poolAddress',
-        }).run()
+
+        for (let i = 0; i < bridges.length; i++) {
+          const bridgeContract = await rawEthers.getContractAt(
+            'RelayBridge',
+            bridges[i].address
+          )
+          const bridgeAsset = await bridgeContract.ASSET()
+          if (bridgeAsset === asset) {
+            bridgeAddress = bridges[i].address
+            break
+          }
+        }
+        if (!bridgeAddress) {
+          throw Error(
+            `No relay bridge found for asset ${asset} on network ${net.name}`
+          )
+        }
       }
 
       const bridge = await rawEthers.getContractAt('RelayBridge', bridgeAddress)
       const assetAddress = await bridge.ASSET()
+      const l2BridgeProxy = await bridge.BRIDGE_PROXY()
+      const bridgeProxyContract = await rawEthers.getContractAt(
+        'BridgeProxy',
+        l2BridgeProxy
+      )
+      const poolChainId = await bridgeProxyContract.RELAY_POOL_CHAIN_ID()
+      const poolAddress = await bridgeProxyContract.RELAY_POOL()
+      const l1BridgeProxyAddress = await bridgeProxyContract.L1_BRIDGE_PROXY()
 
       let decimals = 18n
       if (assetAddress !== rawEthers.ZeroAddress) {
@@ -73,8 +102,66 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       // parse default values
       if (!recipient) recipient = userAddress
 
-      // TODO: check balance on pool as well and warn if insufficient balance on the pool!
-      // TODO: check if the route actually works! (origin supported!)
+      const poolNetwork = networks[poolChainId]
+      const provider = new rawEthers.JsonRpcProvider(poolNetwork.rpc[0])
+
+      const pool = new rawEthers.Contract(
+        poolAddress,
+        (await ethers.getContractAt('RelayPool', ethers.ZeroAddress)).interface,
+        provider
+      )
+      const origin = await pool.authorizedOrigins(chainId, bridgeAddress)
+
+      const totalAssets = await pool.totalAssets()
+      const outstandingDebt = await pool.outstandingDebt()
+
+      if (origin.outstandingDebt + amount > origin.maxDebt) {
+        throw Error(
+          `The amount you are trying to bridge (${amount}) exceeds the maximum debt (${origin.maxDebt}) from this origin (${origin})`
+        )
+      }
+
+      if (outstandingDebt + amount > totalAssets) {
+        throw Error(
+          `The pool currently does not have enough assets (${totalAssets}) to cover the amount you are trying to bridge (${amount})`
+        )
+      }
+
+      const l1BridgeProxy = await new rawEthers.Contract(
+        l1BridgeProxyAddress,
+        (
+          await ethers.getContractAt('BridgeProxy', ethers.ZeroAddress)
+        ).interface,
+        provider
+      )
+      const l1BridgeProxyPool = await l1BridgeProxy.RELAY_POOL()
+      const l1BridgeProxyChainId = await l1BridgeProxy.RELAY_POOL_CHAIN_ID()
+
+      if (l1BridgeProxyAddress !== origin.proxyBridge) {
+        throw Error(
+          `The L1 bridge proxy (${l1BridgeProxyAddress}) does not match the origin (${origin.proxyBridge})`
+        )
+      }
+
+      if (
+        !(
+          l1BridgeProxyPool === poolAddress &&
+          l1BridgeProxyChainId === poolChainId
+        )
+      ) {
+        throw Error(
+          `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${poolChainId})`
+        )
+      }
+
+      const confirm = await new Confirm({
+        message: `Are you sure you want to bridge ${rawEthers.formatUnits(amount, decimals)} of ${asset === rawEthers.ZeroAddress ? 'native asset' : asset} to the pool ${poolAddress} on ${poolChainId}? There is a ${Number(origin.bridgeFee) / 100.0}% fee and you will get it in at least ${origin.coolDown} seconds.`,
+        name: 'confirm',
+      }).run()
+
+      if (!confirm) {
+        process.exit()
+      }
 
       // check balance of asset to transfer
       const balance = await getBalance(
@@ -95,9 +182,30 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         await checkAllowance(asset, bridgeAddress, amount, userAddress)
       }
 
-      // TODO: actually compute the gas (simulation!)
-      const l1Gas = 1700000
-      const hyperlaneFee = await bridge.getFee(amount, recipient, l1Gas)
+      const nonce = await bridge.transferNonce()
+      const abiCoder = new AbiCoder()
+      const types = ['uint256', 'address', 'uint256', 'uint256']
+      const bridgeData = abiCoder.encode(types, [
+        nonce,
+        recipient,
+        amount,
+        Math.floor(new Date().getTime() / 1000) - Number(origin.coolDown) - 60, // 1 minute before
+      ])
+      const handleTx = await pool.handle.populateTransaction(
+        chainId,
+        rawEthers.zeroPadValue(bridgeAddress, 32),
+        bridgeData
+      )
+      const l1Gas = await provider.estimateGas({
+        ...handleTx,
+        from: poolNetwork.hyperlaneMailbox,
+      })
+
+      const hyperlaneFee = await bridge.getFee(
+        amount,
+        recipient,
+        (l1Gas * 11n) / 10n // add 10%
+      )
 
       const value =
         assetAddress === rawEthers.ZeroAddress

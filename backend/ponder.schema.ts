@@ -240,7 +240,7 @@ export const relayBridge = onchainTable(
  * - arbTransactionIndex
  *
  * ZKSYNC Specifics:
- * - zksyncWithdrawalHash: hash of the tx where withdrawal was initiated (on L2)
+ * - zksyncWithdrawalHash: hash of the message passed from L2 to L1
  * - zksyncFinalizeHash: hash of the tx where withdrawal was finalized (on L1)
  */
 export const bridgeTransaction = onchainTable(

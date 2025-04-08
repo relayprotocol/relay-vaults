@@ -79,9 +79,8 @@ export default async function ({
         data: log.data,
         topics: log.topics,
       })
-      if (eventLog.eventName === 'WithdrawalInitiated') {
-        // Q: do we really need this?
-        zksyncWithdrawalHash = event.transaction.hash
+      if (eventLog.eventName === 'L1MessageSent') {
+        zksyncWithdrawalHash = eventLog.args._hash
       }
     }
   }

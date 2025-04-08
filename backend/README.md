@@ -27,7 +27,6 @@ touch env.local
 # start the development server
 yarn dev
 
-
 # To stop and remove the container:
 docker stop relay-postgres && docker rm relay-postgres
 

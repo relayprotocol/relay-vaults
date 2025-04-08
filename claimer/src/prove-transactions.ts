@@ -1,8 +1,8 @@
 import { gql } from 'graphql-request'
 import { RelayVaultService } from '@relay-protocol/client'
 import networks from '@relay-protocol/networks'
-import OPstack from './op'
 import { L2NetworkConfig } from '@relay-protocol/types'
+import { submitProof } from './relay'
 
 const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
   query GetAllBridgeTransactionsToProve(
@@ -55,17 +55,14 @@ export const proveTransactions = async ({
     GET_ALL_TRANSACTIONS_TO_PROVE,
     {
       nativeBridgeStatus: 'INITIATED',
-      originTimestamp: Math.floor(new Date().getTime() / 1000) - 60 * 30, // 30 minutes required for OP proofs: TODO:  move to config since some networks may have different rules?
       originChainIds: OpChains,
+      originTimestamp: Math.floor(new Date().getTime() / 1000) - 60 * 30,
     }
   )
   for (let i = 0; i < bridgeTransactions.items.length; i++) {
     try {
       const bridgeTransaction = bridgeTransactions.items[i]
-      // TODO: use `proxyBridge` to identify which underlying bridge was actually used and
-      // how to process it.
-      // For now we use the chainId to identify the bridge (that won't work for USDC!)
-      await OPstack.submitProof(bridgeTransaction)
+      await submitProof(bridgeTransaction)
     } catch (error) {
       console.error(error)
     }

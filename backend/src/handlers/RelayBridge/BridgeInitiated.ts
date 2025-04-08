@@ -20,6 +20,7 @@ export default async function ({
   let hyperlaneMessageId
   let opWithdrawalHash
   let arbTransactionIndex
+  let zksyncWithdrawalHash
   const receipt = await context.client.getTransactionReceipt({
     hash: event.transaction.hash,
   })
@@ -66,6 +67,21 @@ export default async function ({
 
       if (event.eventName === 'L2ToL1Tx') {
         arbTransactionIndex = event.args.position
+      }
+    } else if (
+      // Zksync event
+      networkConfig.bridges.zksync?.l1SharedDefaultBridge &&
+      log.address.toLowerCase() ===
+        networkConfig.bridges.zksync?.l1SharedDefaultBridge.toLowerCase()
+    ) {
+      const eventLog = decodeEventLog({
+        abi: ABIs.IL1SharedBridge,
+        data: log.data,
+        topics: log.topics,
+      })
+      if (eventLog.eventName === 'WithdrawalInitiated') {
+        // Q: do we really need this?
+        zksyncWithdrawalHash = event.transaction.hash
       }
     }
   }
@@ -125,5 +141,8 @@ export default async function ({
     originTimestamp: event.block.timestamp,
 
     originTxHash: event.transaction.hash,
+
+    // ZKsync specifics
+    zksyncWithdrawalHash,
   })
 }

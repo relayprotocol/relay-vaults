@@ -2,7 +2,7 @@ import { ZeroAddress } from 'ethers'
 import networks from '@relay-protocol/networks'
 import { L2NetworkConfig } from '@relay-protocol/types'
 
-const endpoint = 'https://api.relay.link/admin/execute-withdrawal'
+const ENDPOINT = 'https://api.relay.link/admin/execute-withdrawal'
 
 interface BridgeTransaction {
   amount: string
@@ -19,7 +19,7 @@ const relayChainStackMapping = {
 }
 
 const sendRequest = async (body: any) => {
-  return fetch(endpoint, {
+  return fetch(ENDPOINT, {
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',

@@ -42,7 +42,7 @@ const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
 const OpChains: (number | bigint)[] = (
   Object.values(networks) as L2NetworkConfig[]
 )
-  .filter((n) => n.stack === 'op')
+  .filter((n) => n.stack === 'optimism')
   .map((n) => n.chainId)
 
 // Take all transactions that are initiated and attempts to prove them!

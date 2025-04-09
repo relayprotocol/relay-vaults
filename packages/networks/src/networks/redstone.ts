@@ -6,8 +6,13 @@ export const redstone: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 690,
@@ -20,5 +25,5 @@ export const redstone: L2NetworkConfig = {
     ? [process.env.RPC_690]
     : ['https://rpc.redstonechain.com'],
   slug: 'redstone',
-  stack: 'op',
+  stack: 'optimism',
 }

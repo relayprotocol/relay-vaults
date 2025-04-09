@@ -7,12 +7,24 @@ export const baseSepolia: L2NetworkConfig = {
   },
   bridges: {
     cctp: {
-      domain: 6n,
-      messenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
-      transmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
+      l1: {
+        domain: 0n,
+        messenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
+        transmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
+      },
+      l2: {
+        domain: 6n,
+        messenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
+        transmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
+      },
     },
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0x49f53e41452C74589E85cA1677426Ba426459e85',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 84532,
@@ -25,5 +37,5 @@ export const baseSepolia: L2NetworkConfig = {
     ? [process.env.RPC_84532]
     : ['https://base-sepolia.gateway.tenderly.co'],
   slug: 'base-sepolia',
-  stack: 'op',
+  stack: 'optimism',
 }

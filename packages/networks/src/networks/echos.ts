@@ -6,8 +6,13 @@ export const echos: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0xA08E14278283f2C1dD53d3E772448729E78851ae',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 4321,
@@ -20,5 +25,5 @@ export const echos: L2NetworkConfig = {
     ? [process.env.RPC_17777]
     : ['https://api.echos.exchange'],
   slug: 'echos',
-  stack: 'op',
+  stack: 'optimism',
 }

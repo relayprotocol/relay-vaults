@@ -4,6 +4,26 @@ import { Deployer } from '@matterlabs/hardhat-zksync'
 import { type JsonRpcResult } from 'ethers'
 import networks from '@relay-protocol/networks'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
+import { outputJSON } from 'fs-extra'
+import path from 'path'
+
+// add json manifest to ignition deployments folder
+async function createIgnitionManifest(
+  deploymentId: string,
+  contractName: string,
+  deployedAddress: string
+) {
+  const key = `${contractName}#${contractName}`
+  const data = {
+    [key]: deployedAddress,
+  }
+  const manifestPath = path.join(
+    __dirname,
+    '..',
+    `ignition/deployments/${deploymentId}/deployed_addresses.json`
+  )
+  await outputJSON(manifestPath, data, { spaces: 2 })
+}
 
 export async function getZkSyncBridgeContracts(chainId: bigint) {
   const { rpc } = networks[chainId!.toString()]
@@ -66,8 +86,13 @@ export const verifyContract = async ({
 export async function deployContract(
   hre: HardhatRuntimeEnvironment,
   contractNameOrFullyQualifiedName: string,
-  deployArgs = []
+  deployArgs = [],
+  deploymentId?: string
 ) {
+  console.log('Deploying for zksync...')
+  // recompile contracts for zksync beforehand
+  await hre.run('compile', { zksync: true })
+
   const { deployer } = await zkSyncSetupDeployer(hre)
   const artifact = await deployer.loadArtifact(contractNameOrFullyQualifiedName)
 
@@ -76,9 +101,17 @@ export async function deployContract(
   console.log(`Deployment is estimated to cost ${parsedFee} ETH`)
 
   const contract = await deployer.deploy(artifact, deployArgs)
-
   await contract.waitForDeployment()
   const address = await contract.getAddress()
+
+  // create ignition manifest by reproducing similar naming pattern
+  const contractName = contractNameOrFullyQualifiedName.split(':')[0]
+  if (!deploymentId) {
+    const { chainId } = await hre.ethers.provider.getNetwork()
+    deploymentId = `${contractName}-${chainId.toString()}`
+  }
+  await createIgnitionManifest(deploymentId, contractName, address)
+
   const { hash } = await contract.deploymentTransaction()
 
   // verify

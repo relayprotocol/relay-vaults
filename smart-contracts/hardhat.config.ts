@@ -58,9 +58,6 @@ Object.keys(nets).forEach((id) => {
   if (isZKsync) {
     zksync = {
       ethNetwork: isTestnet ? 'sepolia' : 'mainnet',
-      verifyURL: isTestnet
-        ? 'https://explorer.sepolia.era.zksync.dev/contract_verification'
-        : 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
       zksync: true,
     }
   }
@@ -86,15 +83,16 @@ if (forkUrl) {
 
 const etherscan = {
   apiKey: {
+    abstract: 'UU3TIIASIBJ6GZ5NIHG2T5QDY2PVUGTCMI',
     arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
     base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
     baseSepolia: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
     bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
+    ethereum: 'C1KDFD2PHN7FXXXT1AW5PG27I5JB23J41D',
     'ethereum sepolia': 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    mainnet: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
@@ -105,8 +103,8 @@ const etherscan = {
 }
 
 Object.values(registry).forEach((v) => {
-  if (nets[v.chainId] && !etherscan.apiKey[v.name]) {
-    etherscan.apiKey[v.name] = 'hello' // placeholder for blocksncout specifically!
+  if (nets[v.chainId]) {
+    etherscan.apiKey[v.name] = etherscan.apiKey[v.name] || 'default-api-key' // placeholder for blocksncout specifically!
     etherscan.customChains.push({
       chainId: v.chainId,
       network: v.name,
@@ -138,9 +136,11 @@ const config: HardhatUserConfig = {
   sourcify: {
     enabled: false,
   },
+  // zkSyncEtherscan: etherscan,
   zksolc: {
     settings: {
       contractsToCompile: [
+        'contracts/RelayBridgeFactory.sol',
         'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
         'contracts/interfaces/IUSDC.sol',
       ],

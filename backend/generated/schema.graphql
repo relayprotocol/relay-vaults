@@ -165,6 +165,8 @@ type bridgeTransaction {
   originSender: String!
   originTimestamp: BigInt!
   originTxHash: String!
+  zksyncFinalizeHash: String!
+  zksyncWithdrawalHash: String!
   origin: poolOrigin
 }
 
@@ -339,6 +341,26 @@ input bridgeTransactionFilter {
   originTxHash_ends_with: String
   originTxHash_not_starts_with: String
   originTxHash_not_ends_with: String
+  zksyncFinalizeHash: String
+  zksyncFinalizeHash_not: String
+  zksyncFinalizeHash_in: [String]
+  zksyncFinalizeHash_not_in: [String]
+  zksyncFinalizeHash_contains: String
+  zksyncFinalizeHash_not_contains: String
+  zksyncFinalizeHash_starts_with: String
+  zksyncFinalizeHash_ends_with: String
+  zksyncFinalizeHash_not_starts_with: String
+  zksyncFinalizeHash_not_ends_with: String
+  zksyncWithdrawalHash: String
+  zksyncWithdrawalHash_not: String
+  zksyncWithdrawalHash_in: [String]
+  zksyncWithdrawalHash_not_in: [String]
+  zksyncWithdrawalHash_contains: String
+  zksyncWithdrawalHash_not_contains: String
+  zksyncWithdrawalHash_starts_with: String
+  zksyncWithdrawalHash_ends_with: String
+  zksyncWithdrawalHash_not_starts_with: String
+  zksyncWithdrawalHash_not_ends_with: String
 }
 
 input poolOriginFilter {

@@ -17,3 +17,6 @@ yarn-error.log*
 /generated/*
 !/generated/schema.graphql
 /.ponder/
+
+#
+relay-postgres-data

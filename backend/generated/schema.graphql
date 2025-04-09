@@ -165,8 +165,8 @@ type bridgeTransaction {
   originSender: String!
   originTimestamp: BigInt!
   originTxHash: String!
-  zksyncFinalizeHash: String!
-  zksyncWithdrawalHash: String!
+  zksyncFinalizeHash: String
+  zksyncWithdrawalHash: String
   origin: poolOrigin
 }
 

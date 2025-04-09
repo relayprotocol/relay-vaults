@@ -12,7 +12,7 @@ export const sepolia: L1NetworkConfig = {
       rollup: '0x042B2E6C5E99d4c521bd49beeD5E99651D9B0Cf4',
       routerGateway: '0xcE18836b233C83325Cc8848CA4487e94C6288264',
     },
-    base: {
+    'base-sepolia': {
       portalProxy: '0x49f53e41452C74589E85cA1677426Ba426459e85',
     },
     cctp: {
@@ -20,7 +20,7 @@ export const sepolia: L1NetworkConfig = {
       messenger: '0x9f3B8679c73C2Fef8b59B4f3444d4e156fb70AA5',
       transmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
     },
-    op: {
+    'op-sepolia': {
       portalProxy: '0x16Fc5058F25648194471939df75CF27A2fdC48BC',
     },
     zksync: {

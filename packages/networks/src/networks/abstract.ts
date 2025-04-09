@@ -23,4 +23,5 @@ export const abstract: L2NetworkConfig = {
     : ['https://api.mainnet.abs.xyz'],
   slug: 'abstract',
   stack: 'zksync',
+  verifyURL: 'https://api.abscan.org/api',
 }

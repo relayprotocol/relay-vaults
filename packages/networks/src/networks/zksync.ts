@@ -35,4 +35,5 @@ export const zksync: L2NetworkConfig = {
     : ['https://mainnet.era.zksync.io'],
   slug: 'zksync',
   stack: 'zksync',
+  verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
 }

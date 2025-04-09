@@ -23,4 +23,5 @@ export const zkSyncSepolia: L2NetworkConfig = {
     : ['https://sepolia.era.zksync.dev'],
   slug: 'zksync-sepolia',
   stack: 'zksync',
+  verifyURL: 'https://explorer.sepolia.era.zksync.dev/contract_verification',
 }

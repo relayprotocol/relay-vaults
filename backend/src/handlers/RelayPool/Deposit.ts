@@ -37,34 +37,31 @@ export default async function ({
     }),
   ])
 
-  // Update states
-  await Promise.all([
-    // Update relay pool
-    context.db
-      .update(relayPool, {
-        chainId: context.network.chainId,
-        contractAddress: event.log.address,
-      })
-      .set({
-        totalAssets: relayTotalAssets,
-        totalShares: relayTotalShares,
-      }),
-
-    // Record pool action
-    context.db.insert(poolAction).values({
-      assets,
-      blockNumber,
+  // Update relay pool
+  await context.db
+    .update(relayPool, {
       chainId: context.network.chainId,
-      owner: event.log.address,
-      receiver: event.log.address,
-      relayPool: event.log.address,
-      shares,
-      timestamp,
-      transactionHash,
-      type: 'DEPOSIT',
-      user: owner,
-    }),
-  ])
+      contractAddress: event.log.address,
+    })
+    .set({
+      totalAssets: relayTotalAssets,
+      totalShares: relayTotalShares,
+    })
+
+  // Record pool action
+  await context.db.insert(poolAction).values({
+    assets,
+    blockNumber,
+    chainId: context.network.chainId,
+    owner: event.log.address,
+    receiver: event.log.address,
+    relayPool: event.log.address,
+    shares,
+    timestamp,
+    transactionHash,
+    type: 'DEPOSIT',
+    user: owner,
+  })
 
   await context.db
     .insert(userBalance)

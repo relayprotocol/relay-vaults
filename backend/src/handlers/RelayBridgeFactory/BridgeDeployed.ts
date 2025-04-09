@@ -16,6 +16,6 @@ export default async function ({
     contractAddress: bridge as `0x${string}`,
     createdAt: event.block.timestamp,
     createdAtBlock: event.block.number,
-    transferNonce: BigInt(0),
+    transferNonce: 0,
   })
 }

@@ -187,7 +187,7 @@ export const relayBridge = onchainTable(
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
     createdAt: t.timestamp().notNull(),
-    createdAtBlock: t.timestamp().notNull(),
+    createdAtBlock: t.integer().notNull(),
     transferNonce: t.integer().notNull(),
   }),
   (table) => ({

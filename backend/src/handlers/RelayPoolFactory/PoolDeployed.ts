@@ -38,11 +38,11 @@ export default async function ({
       asset: asset as `0x${string}`,
       chainId: context.network.chainId,
       contractAddress: thirdPartyPool as `0x${string}`,
-      lastUpdated: BigInt(event.block.timestamp),
+      lastUpdated: event.block.timestamp,
       name: yieldName,
     })
     .onConflictDoUpdate({
-      lastUpdated: BigInt(event.block.timestamp),
+      lastUpdated: event.block.timestamp,
       name: yieldName,
     })
 

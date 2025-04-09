@@ -860,7 +860,7 @@ type relayBridge {
   chainId: Int!
   contractAddress: String!
   createdAt: String!
-  createdAtBlock: String!
+  createdAtBlock: Int!
   transferNonce: Int!
 }
 
@@ -911,16 +911,14 @@ input relayBridgeFilter {
   createdAt_ends_with: String
   createdAt_not_starts_with: String
   createdAt_not_ends_with: String
-  createdAtBlock: String
-  createdAtBlock_not: String
-  createdAtBlock_in: [String]
-  createdAtBlock_not_in: [String]
-  createdAtBlock_contains: String
-  createdAtBlock_not_contains: String
-  createdAtBlock_starts_with: String
-  createdAtBlock_ends_with: String
-  createdAtBlock_not_starts_with: String
-  createdAtBlock_not_ends_with: String
+  createdAtBlock: Int
+  createdAtBlock_not: Int
+  createdAtBlock_in: [Int]
+  createdAtBlock_not_in: [Int]
+  createdAtBlock_gt: Int
+  createdAtBlock_lt: Int
+  createdAtBlock_gte: Int
+  createdAtBlock_lte: Int
   transferNonce: Int
   transferNonce_not: Int
   transferNonce_in: [Int]

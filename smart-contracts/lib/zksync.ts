@@ -68,6 +68,10 @@ export async function deployContract(
   contractNameOrFullyQualifiedName: string,
   deployArgs = []
 ) {
+  console.log('Deploying for zksync...')
+  // recompile contracts for zksync beforehand
+  await hre.run('compile', { zksync: true })
+
   const { deployer } = await zkSyncSetupDeployer(hre)
   const artifact = await deployer.loadArtifact(contractNameOrFullyQualifiedName)
 

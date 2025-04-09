@@ -141,6 +141,7 @@ const config: HardhatUserConfig = {
   zksolc: {
     settings: {
       contractsToCompile: [
+        'contracts/RelayBridgeFactory.sol',
         'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
         'contracts/interfaces/IUSDC.sol',
       ],

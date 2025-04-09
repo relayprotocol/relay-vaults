@@ -14,13 +14,6 @@ interface BridgeTransaction {
   destinationPoolChainId: string
 }
 
-const relayChainStackMapping = {
-  arb: 'arbitrum',
-  op: 'optimism',
-  zkevm: 'zkevm',
-  zksync: 'zksync',
-}
-
 const sendRequest = async (endpoint: string, body: any) => {
   return fetch(endpoint, {
     body: JSON.stringify(body),
@@ -57,7 +50,7 @@ export const finalizeWithdrawal = async (
     currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
     needsProving: false,
     originChainId: bridgeTransaction.originChainId,
-    stack: relayChainStackMapping[stack],
+    stack: stack,
     txHash: bridgeTransaction.originTxHash,
   })
 }

@@ -7,24 +7,22 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { outputJSON } from 'fs-extra'
 import path from 'path'
 
-// add to ignition deployments folder
+// add json manifest to ignition deployments folder
 async function createIgnitionManifest(
-  chainId: bigint,
+  deploymentId: string,
   contractName: string,
   deployedAddress: string
 ) {
-  const jsonFilePath = path.join(
-    __dirname,
-    '..',
-    `ignition/deployments/${contractName}-${chainId.toString()}/deployed_addresses.json`
-  )
-  console.log(jsonFilePath)
   const key = `${contractName}#${contractName}`
   const data = {
     [key]: deployedAddress,
   }
-  console.log(data)
-  await outputJSON(jsonFilePath, data, { spaces: 2 })
+  const manifestPath = path.join(
+    __dirname,
+    '..',
+    `ignition/deployments/${deploymentId}/deployed_addresses.json`
+  )
+  await outputJSON(manifestPath, data, { spaces: 2 })
 }
 
 export async function getZkSyncBridgeContracts(chainId: bigint) {
@@ -88,7 +86,8 @@ export const verifyContract = async ({
 export async function deployContract(
   hre: HardhatRuntimeEnvironment,
   contractNameOrFullyQualifiedName: string,
-  deployArgs = []
+  deployArgs = [],
+  deploymentId?: string
 ) {
   console.log('Deploying for zksync...')
   // recompile contracts for zksync beforehand
@@ -105,9 +104,13 @@ export async function deployContract(
   await contract.waitForDeployment()
   const address = await contract.getAddress()
 
+  // create ignition manifest by reproducing similar naming pattern
   const contractName = contractNameOrFullyQualifiedName.split(':')[0]
-  const { chainId } = await hre.ethers.provider.getNetwork()
-  await createIgnitionManifest(chainId, contractName, address)
+  if (!deploymentId) {
+    const { chainId } = await hre.ethers.provider.getNetwork()
+    deploymentId = `${contractName}-${chainId.toString()}`
+  }
+  await createIgnitionManifest(deploymentId, contractName, address)
 
   const { hash } = await contract.deploymentTransaction()
 

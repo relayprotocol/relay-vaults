@@ -3,12 +3,15 @@ import networks from '@relay-protocol/networks'
 import { L2NetworkConfig } from '@relay-protocol/types'
 
 const ENDPOINT = 'https://api.relay.link/admin/execute-withdrawal'
+const TESTNETS_ENDPOINT =
+  'https://api.testnets.relay.link/admin/execute-withdrawal'
 
 interface BridgeTransaction {
   amount: string
   asset: string
   originChainId: string
   originTxHash: string
+  destinationPoolChainId: string
 }
 
 const relayChainStackMapping = {
@@ -18,8 +21,8 @@ const relayChainStackMapping = {
   zksync: 'zksync',
 }
 
-const sendRequest = async (body: any) => {
-  return fetch(ENDPOINT, {
+const sendRequest = async (endpoint: string, body: any) => {
+  return fetch(endpoint, {
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
@@ -31,7 +34,8 @@ const sendRequest = async (body: any) => {
 
 // Submits a proof (OP stack only)
 export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
-  await sendRequest({
+  const network = networks[bridgeTransaction.destinationPoolChainId]
+  await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
     amount: bridgeTransaction.amount,
     currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
     needsProving: true,
@@ -47,7 +51,8 @@ export const finalizeWithdrawal = async (
 ) => {
   const stack = (networks[bridgeTransaction.originChainId] as L2NetworkConfig)
     .stack
-  await sendRequest({
+  const network = networks[bridgeTransaction.destinationPoolChainId]
+  await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
     amount: bridgeTransaction.amount,
     currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
     needsProving: false,
@@ -63,7 +68,8 @@ export const claimFunds = async (
   originChainId: number,
   originBridgeAddress: string
 ) => {
-  await sendRequest({
+  const network = networks[chainId]
+  await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
     chainId,
     originBridgeAddress,
     originChainId,

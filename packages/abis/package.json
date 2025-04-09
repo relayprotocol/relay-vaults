@@ -31,8 +31,5 @@
     "abis",
     "index.js",
     "dist"
-  ],
-  "dependencies": {
-    "@relay-protocol/helper-bedrock": "workspace:*"
-  }
+  ]
 }

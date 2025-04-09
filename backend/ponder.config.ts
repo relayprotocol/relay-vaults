@@ -165,7 +165,6 @@ const orbitOutboxNetworks = Object.keys(networks)
   })
   .reduce((orbitOutboxNetworks, chainId) => {
     const network = networks[chainId]
-    // Addresses of all the portalProxy?
     const addresses = Object.values(network.bridges)
       .map((bridge) => {
         return bridge.outbox

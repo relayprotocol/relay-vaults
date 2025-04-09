@@ -28,17 +28,18 @@ export interface NetworkConfig {
     }
     op?: {
       portalProxy?: string
-      disputeGame?: string
       messagePasser?: string
     }
     lisk?: {
       portalProxy?: string
-      disputeGame?: string
+      messagePasser?: string
+    }
+    soneium?: {
+      portalProxy?: string
       messagePasser?: string
     }
     base?: {
       portalProxy?: string
-      disputeGame?: string
       messagePasser?: string
     }
     zksync?: {

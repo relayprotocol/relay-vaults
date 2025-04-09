@@ -264,8 +264,8 @@ export const bridgeTransaction = onchainTable(
     originSender: t.hex().notNull(),
     originTimestamp: t.bigint().notNull(),
     originTxHash: t.hex().notNull(),
-    zksyncFinalizeHash: t.hex().notNull(),
-    zksyncWithdrawalHash: t.hex().notNull(),
+    zksyncFinalizeHash: t.hex(),
+    zksyncWithdrawalHash: t.hex(),
   }),
   (table) => ({
     arbTransactionIndex: index().on(table.arbTransactionIndex),

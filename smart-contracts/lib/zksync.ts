@@ -4,6 +4,28 @@ import { Deployer } from '@matterlabs/hardhat-zksync'
 import { type JsonRpcResult } from 'ethers'
 import networks from '@relay-protocol/networks'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
+import { outputJSON } from 'fs-extra'
+import path from 'path'
+
+// add to ignition deployments folder
+async function createIgnitionManifest(
+  chainId: bigint,
+  contractName: string,
+  deployedAddress: string
+) {
+  const jsonFilePath = path.join(
+    __dirname,
+    '..',
+    `ignition/deployments/${contractName}-${chainId.toString()}/deployed_addresses.json`
+  )
+  console.log(jsonFilePath)
+  const key = `${contractName}#${contractName}`
+  const data = {
+    [key]: deployedAddress,
+  }
+  console.log(data)
+  await outputJSON(jsonFilePath, data, { spaces: 2 })
+}
 
 export async function getZkSyncBridgeContracts(chainId: bigint) {
   const { rpc } = networks[chainId!.toString()]
@@ -80,9 +102,13 @@ export async function deployContract(
   console.log(`Deployment is estimated to cost ${parsedFee} ETH`)
 
   const contract = await deployer.deploy(artifact, deployArgs)
-
   await contract.waitForDeployment()
   const address = await contract.getAddress()
+
+  const contractName = contractNameOrFullyQualifiedName.split(':')[0]
+  const { chainId } = await hre.ethers.provider.getNetwork()
+  await createIgnitionManifest(chainId, contractName, address)
+
   const { hash } = await contract.deploymentTransaction()
 
   // verify

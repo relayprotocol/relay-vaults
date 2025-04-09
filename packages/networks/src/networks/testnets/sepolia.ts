@@ -13,7 +13,6 @@ export const sepolia: L1NetworkConfig = {
       routerGateway: '0xcE18836b233C83325Cc8848CA4487e94C6288264',
     },
     base: {
-      disputeGame: '0xd6E6dBf4F7EA0ac412fD8b65ED297e64BB7a06E1',
       portalProxy: '0x49f53e41452C74589E85cA1677426Ba426459e85',
     },
     cctp: {
@@ -22,7 +21,6 @@ export const sepolia: L1NetworkConfig = {
       transmitter: '0x7865fAfC2db2093669d92c0F33AeEF291086BEFD',
     },
     op: {
-      disputeGame: '0x05F9613aDB30026FFd634f38e5C4dFd30a197Fa1',
       portalProxy: '0x16Fc5058F25648194471939df75CF27A2fdC48BC',
     },
     zksync: {

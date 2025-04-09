@@ -219,14 +219,12 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       // for verification
       constructorArguments = [l2SharedDefaultBridge]
       if (isZKsync) {
-        // recompile with zksync flag
-        await run('compile', { zksync: true })
-
         // deploy using `deployContract` helper (for zksync L2s)
         ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
           'ZkSyncBridgeProxy',
-          [l2SharedDefaultBridge, l1ChainId, poolAddress, l1BridgeProxy]
+          [l2SharedDefaultBridge, l1ChainId, poolAddress, l1BridgeProxy],
+          deploymentId
         ))
       } else {
         // used ignition to deploy bridge on L1

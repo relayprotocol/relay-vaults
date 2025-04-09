@@ -58,9 +58,6 @@ Object.keys(nets).forEach((id) => {
   if (isZKsync) {
     zksync = {
       ethNetwork: isTestnet ? 'sepolia' : 'mainnet',
-      verifyURL: isTestnet
-        ? 'https://explorer.sepolia.era.zksync.dev/contract_verification'
-        : 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
       zksync: true,
     }
   }
@@ -86,6 +83,7 @@ if (forkUrl) {
 
 const etherscan = {
   apiKey: {
+    abstract: 'UU3TIIASIBJ6GZ5NIHG2T5QDY2PVUGTCMI',
     arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
@@ -105,8 +103,8 @@ const etherscan = {
 }
 
 Object.values(registry).forEach((v) => {
-  if (nets[v.chainId] && !etherscan.apiKey[v.name]) {
-    etherscan.apiKey[v.name] = 'hello' // placeholder for blocksncout specifically!
+  if (nets[v.chainId]) {
+    etherscan.apiKey[v.name] = etherscan.apiKey[v.name] || 'default-api-key' // placeholder for blocksncout specifically!
     etherscan.customChains.push({
       chainId: v.chainId,
       network: v.name,
@@ -138,9 +136,11 @@ const config: HardhatUserConfig = {
   sourcify: {
     enabled: false,
   },
+  // zkSyncEtherscan: etherscan,
   zksolc: {
     settings: {
       contractsToCompile: [
+        'contracts/RelayBridgeFactory.sol',
         'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
         'contracts/interfaces/IUSDC.sol',
       ],

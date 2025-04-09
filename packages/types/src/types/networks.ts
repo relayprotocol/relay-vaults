@@ -47,7 +47,6 @@ export interface NetworkConfig {
     }
   }
   isZKsync?: boolean
-  verifyURL?: string // only for zksync networks
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
   isTestnet: boolean

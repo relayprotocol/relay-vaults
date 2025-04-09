@@ -6,8 +6,13 @@ export const soneium: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0x88e529A6ccd302c948689Cd5156C83D4614FAE92',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 1868,
@@ -18,5 +23,5 @@ export const soneium: L2NetworkConfig = {
   name: 'Soneium',
   rpc: ['https://rpc.soneium.org'],
   slug: 'soneium',
-  stack: 'op',
+  stack: 'optimism',
 }

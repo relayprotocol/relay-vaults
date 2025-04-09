@@ -8,12 +8,24 @@ export const optimism: L2NetworkConfig = {
   },
   bridges: {
     cctp: {
-      domain: 2n,
-      messenger: '0x2B4069517957735bE00ceE0fadAE88a26365528f',
-      transmitter: '0x4D41f22c5a0e5c74090899E5a8Fb597a8842b3e8',
+      l1: {
+        domain: 0n,
+        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
+        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
+      },
+      l2: {
+        domain: 2n,
+        messenger: '0x2B4069517957735bE00ceE0fadAE88a26365528f',
+        transmitter: '0x4D41f22c5a0e5c74090899E5a8Fb597a8842b3e8',
+      },
     },
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 10,
@@ -26,5 +38,5 @@ export const optimism: L2NetworkConfig = {
     ? [process.env.RPC_10]
     : ['https://gateway.tenderly.co/public/optimism'],
   slug: 'op',
-  stack: 'op',
+  stack: 'optimism',
 }

@@ -10,7 +10,6 @@ import './tasks/pool'
 import './tasks/bridge'
 import './tasks/claim/cctp'
 import './tasks/claim/arb'
-import './tasks/claim/native'
 import './tasks/claim/zksync'
 import './tasks/origins/add'
 

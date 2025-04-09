@@ -29,6 +29,9 @@ export const ethereum: L1NetworkConfig = {
     soneium: {
       portalProxy: '0x88e529A6ccd302c948689Cd5156C83D4614FAE92',
     },
+    ancient8: {
+      portalProxy: '0x639F2AECE398Aa76b07e59eF6abe2cFe32bacb68',
+    },
     zksync: {
       l1SharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
       l2SharedDefaultBridge: '0x11f943b2c77b743AB90f4A0Ae7d5A4e7FCA3E102',

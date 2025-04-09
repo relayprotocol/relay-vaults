@@ -38,6 +38,10 @@ export interface NetworkConfig {
       portalProxy?: string
       messagePasser?: string
     }
+    ancient8?: {
+      portalProxy?: string
+      messagePasser?: string
+    }
     base?: {
       portalProxy?: string
       messagePasser?: string

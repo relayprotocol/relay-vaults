@@ -11,7 +11,7 @@ import {
 import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-protocol/addresses'
 import networks from '@relay-protocol/networks'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { L1NetworkConfig, L2NetworkConfig } from '@relay-protocol/types'
 
 const deployedAddresses = getAddresses()
 
@@ -135,50 +135,60 @@ const relayPoolNetworks = Object.keys(networks)
     }
   }, {})
 
-const oPPortalNetworks = Object.keys(networks)
+interface OPPortalNetworks {
+  [key: string]: {
+    address: string[]
+    startBlock: number
+  }
+}
+
+const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
   .filter((chainId) => {
-    // on the L1 chain
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    // Get the chains that have an optimism bridge to the l1
+    return (networks[chainId] as L2NetworkConfig).bridges?.optimism?.l1
+      .portalProxy
   })
   .reduce((oPPortalNetworks, chainId) => {
-    const network = networks[chainId]
-    // Addresses of all the portalProxy?
-    const addresses = Object.values(network.bridges)
-      .map((bridge) => {
-        return bridge.portalProxy
-      })
-      .filter((address) => !!address)
-
-    return {
-      ...oPPortalNetworks,
-      [network.slug]: {
-        address: addresses, //
-        startBlock: network.earliestBlock,
-      },
+    const l2Network = networks[chainId] as L2NetworkConfig
+    const l1Network = networks[l2Network.l1ChainId] as L1NetworkConfig
+    if (!oPPortalNetworks[l1Network.slug]) {
+      oPPortalNetworks[l1Network.slug] = {
+        address: [],
+        startBlock: l1Network.earliestBlock,
+      }
     }
-  }, {})
+    oPPortalNetworks[l1Network.slug].address.push(
+      l2Network.bridges.optimism!.l1.portalProxy
+    )
+    return oPPortalNetworks
+  }, {} as OPPortalNetworks)
 
-const orbitOutboxNetworks = Object.keys(networks)
+interface OrbitOutboxNetworks {
+  [key: string]: {
+    address: string[]
+    startBlock: number
+  }
+}
+
+const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return (networks[chainId] as L2NetworkConfig).bridges?.arbitrum?.l1.outbox
   })
   .reduce((orbitOutboxNetworks, chainId) => {
-    const network = networks[chainId]
-    const addresses = Object.values(network.bridges)
-      .map((bridge) => {
-        return bridge.outbox
-      })
-      .filter((address) => !!address)
-
-    return {
-      ...orbitOutboxNetworks,
-      [network.slug]: {
-        address: addresses, //
-        startBlock: network.earliestBlock,
-      },
+    const l2Network = networks[chainId] as L2NetworkConfig
+    const l1Network = networks[l2Network.l1ChainId] as L1NetworkConfig
+    if (!orbitOutboxNetworks[l1Network.slug]) {
+      orbitOutboxNetworks[l1Network.slug] = {
+        address: [],
+        startBlock: l1Network.earliestBlock,
+      }
     }
-  }, {})
+    orbitOutboxNetworks[l1Network.slug].address.push(
+      l2Network.bridges.arbitrum!.l1.outbox
+    )
+    return orbitOutboxNetworks
+  }, {} as OrbitOutboxNetworks)
 
 export default createConfig({
   blocks: {

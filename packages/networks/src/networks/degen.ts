@@ -7,9 +7,9 @@ export const degen: L2NetworkConfig = {
   bridges: {
     arbitrum: {
       l1: {
-        outbox: 'TK',
-        rollup: 'TK',
-        routerGateway: 'TK',
+        outbox: '',
+        rollup: '',
+        routerGateway: '',
       },
       l2: {
         arbSys: '',

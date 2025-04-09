@@ -8,7 +8,7 @@ export const redstone: L2NetworkConfig = {
   bridges: {
     optimism: {
       l1: {
-        portalProxy: 'TK',
+        portalProxy: '',
       },
       l2: {
         messagePasser: '0x4200000000000000000000000000000000000016',

@@ -5,7 +5,7 @@ export interface L1NetworkConfig extends NetworkConfig {
 }
 
 export interface L2NetworkConfig extends NetworkConfig {
-  l1ChainId: number | bigint
+  l1ChainId: number
   stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
   bridges: {
     optimism?: {

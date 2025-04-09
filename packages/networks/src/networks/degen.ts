@@ -5,8 +5,16 @@ export const degen: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    arbitrum: {
+      l1: {
+        outbox: 'TK',
+        rollup: 'TK',
+        routerGateway: 'TK',
+      },
+      l2: {
+        arbSys: '',
+        routerGateway: '',
+      },
     },
   },
   chainId: 666666666,
@@ -19,5 +27,5 @@ export const degen: L2NetworkConfig = {
     ? [process.env.RPC_666666666]
     : ['https://rpc.degen.tips'],
   slug: 'degen',
-  stack: 'op',
+  stack: 'arbitrum',
 }

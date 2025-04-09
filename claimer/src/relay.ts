@@ -56,3 +56,17 @@ export const finalizeWithdrawal = async (
     txHash: bridgeTransaction.originTxHash,
   })
 }
+
+export const claimFunds = async (
+  chainId: number,
+  poolAddress: string,
+  originChainId: number,
+  originBridgeAddress: string
+) => {
+  await sendRequest({
+    chainId,
+    originBridgeAddress,
+    originChainId,
+    poolAddress,
+  })
+}

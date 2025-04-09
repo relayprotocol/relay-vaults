@@ -6,8 +6,13 @@ export const ancient8: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0x639F2AECE398Aa76b07e59eF6abe2cFe32bacb68',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 888888888,
@@ -18,5 +23,5 @@ export const ancient8: L2NetworkConfig = {
   name: 'Ancient8',
   rpc: ['https://rpc.ancient8.gg'],
   slug: 'ancient8',
-  stack: 'op',
+  stack: 'optimism',
 }

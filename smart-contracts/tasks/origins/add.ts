@@ -275,23 +275,9 @@ task('pool:remove-origin', 'Removes an origin from a pool')
   .addOptionalParam('pool', 'the pool address')
   .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
   .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
-  .addOptionalParam('proxyBridge', 'the origin proxyBridge (on this L1)')
-  .addOptionalParam('maxDebt', 'the maximum debt coming from the origin')
-  .addOptionalParam('bridgeFee', 'the fee (basis point) applied to this bridge')
-  .addOptionalParam('curator', "the curator's address for this origin")
-  .addOptionalParam('coolDown', 'the cool down period for this origin')
   .setAction(
     async (
-      {
-        pool: poolAddress,
-        l2ChainId,
-        bridge: bridgeAddress,
-        proxyBridge,
-        maxDebt,
-        bridgeFee,
-        curator,
-        coolDown,
-      },
+      { pool: poolAddress, l2ChainId, bridge: bridgeAddress },
       { ethers }
     ) => {
       const [user] = await ethers.getSigners()

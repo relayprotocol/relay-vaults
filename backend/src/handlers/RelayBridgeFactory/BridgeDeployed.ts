@@ -14,7 +14,7 @@ export default async function ({
     asset: asset as `0x${string}`,
     chainId: context.network.chainId,
     contractAddress: bridge as `0x${string}`,
-    createdAt: BigInt(new Date().getTime()),
+    createdAt: event.block.timestamp,
     createdAtBlock: event.block.number,
     transferNonce: BigInt(0),
   })

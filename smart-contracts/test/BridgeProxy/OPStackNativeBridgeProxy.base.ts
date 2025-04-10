@@ -6,11 +6,9 @@ import { networks } from '@relay-protocol/networks'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 import { AbiCoder, Log } from 'ethers'
-const {
-  assets: ethereumAssets,
-  bridges: { op },
-} = networks[1]
-const { assets: baseAssets } = networks[8453]
+import { L2NetworkConfig } from '@relay-protocol/types'
+const { assets: ethereumAssets } = networks[1]
+const { assets: baseAssets, bridges } = networks[8453] as L2NetworkConfig
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
@@ -23,7 +21,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     const parameters = {
       OPStackNativeBridgeProxy: {
         l1BridgeProxy,
-        portalProxy: op!.portalProxy,
+        portalProxy: bridges.optimism!.l1!.portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },
@@ -200,13 +198,10 @@ describe('OPStackNativeBridgeProxy:Base', function () {
   })
 
   it('should work for the base sequence using ERC20', async () => {
-    // We use ethereumAssets.udt for example as it has already been bridged to OP
-    const [user] = await ethers.getSigners()
-
     const parameters = {
       OPStackNativeBridgeProxy: {
         l1BridgeProxy,
-        portalProxy: op!.portalProxy,
+        portalProxy: bridges.optimism!.l1!.portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },

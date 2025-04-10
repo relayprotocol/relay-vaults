@@ -10,9 +10,16 @@ export const game7: L2NetworkConfig = {
   },
   // currently not in https://github.com/hyperlane-xyz/hyperlane-registry
   bridges: {
-    arb: {
-      arbSys: '0x0000000000000000000000000000000000000064',
-      routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
+    arbitrum: {
+      l1: {
+        outbox: '',
+        rollup: '',
+        routerGateway: '',
+      },
+      l2: {
+        arbSys: '0x0000000000000000000000000000000000000064',
+        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
+      },
     },
   },
 
@@ -33,5 +40,5 @@ export const game7: L2NetworkConfig = {
     : ['https://mainnet-rpc.game7.io'],
 
   slug: 'game7',
-  stack: 'arb',
+  stack: 'arbitrum',
 }

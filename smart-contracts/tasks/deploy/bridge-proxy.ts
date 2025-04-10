@@ -104,7 +104,6 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         // Get it from the file!
         try {
           const l1BridgeProxyFile = `BridgeProxy-${l1ChainId}-${poolAddress}-${type}/deployed_addresses.json`
-          console.log(l1BridgeProxyFile)
           const addresses = require(ignitionPath + l1BridgeProxyFile)
           l1BridgeProxy = Object.values(addresses)[0]
         } catch (error) {

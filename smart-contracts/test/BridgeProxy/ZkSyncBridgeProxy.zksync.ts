@@ -1,25 +1,22 @@
-import hre from 'hardhat'
 import { ethers, zksyncEthers } from 'hardhat'
 import { expect } from 'chai'
-import {
-  parseUnits,
-  TransactionReceipt,
-  ZeroAddress,
-  type Signer,
-} from 'ethers'
+import { parseUnits, TransactionReceipt, type Signer } from 'ethers'
 import { getBalance, getEvent } from '@relay-protocol/helpers'
 import { networks } from '@relay-protocol/networks'
 import { ZkSyncBridgeProxy } from '../../typechain-types'
-import { stealERC20 } from '../utils/hardhat'
+
+import { L2NetworkConfig } from '@relay-protocol/types'
 
 const chainId = 324 // zkSync Era mainnet
 const destinationChainId = 1 // Ethereum mainnet
 const {
   bridges: {
-    zksync: { l2SharedDefaultBridge },
+    zksync: {
+      l2: { sharedDefaultBridge },
+    },
   },
   assets,
-} = networks[chainId]
+} = networks[chainId] as L2NetworkConfig
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
@@ -33,7 +30,7 @@ describe('ZkSyncBridgeProxy', function () {
 
     // deploy using ignition
     const deployArgs = [
-      l2SharedDefaultBridge,
+      sharedDefaultBridge,
       destinationChainId,
       relayPool,
       l1BridgeProxy,

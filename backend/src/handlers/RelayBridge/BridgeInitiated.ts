@@ -40,9 +40,9 @@ export default async function ({
       }
     } else if (
       // OP event
-      networkConfig.bridges.op?.messagePasser &&
+      networkConfig.bridges.optimism?.l2.messagePasser &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.op?.messagePasser.toLowerCase()
+        networkConfig.bridges.optimism?.l2.messagePasser.toLowerCase()
     ) {
       const event = decodeEventLog({
         abi: ABIs.L2ToL1MessagePasser,
@@ -55,9 +55,9 @@ export default async function ({
       }
     } else if (
       // ARB event
-      networkConfig.bridges.arb?.arbSys &&
+      networkConfig.bridges.arbitrum?.l2.arbSys &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.arb?.arbSys.toLowerCase()
+        networkConfig.bridges.arbitrum?.l2.arbSys.toLowerCase()
     ) {
       const event = decodeEventLog({
         abi: ABIs.IArbSys,
@@ -70,9 +70,9 @@ export default async function ({
       }
     } else if (
       // Zksync event
-      networkConfig.bridges.zksync?.l1SharedDefaultBridge &&
+      networkConfig.bridges.zksync?.l2.sharedDefaultBridge &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.zksync?.l1SharedDefaultBridge.toLowerCase()
+        networkConfig.bridges.zksync?.l2.sharedDefaultBridge.toLowerCase()
     ) {
       const eventLog = decodeEventLog({
         abi: ABIs.IL1SharedBridge,

@@ -5,8 +5,13 @@ export const b3: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0x3a314A6a3c1470Bf2854960D3Ce9D2435c7Ba794',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 8333,
@@ -19,5 +24,5 @@ export const b3: L2NetworkConfig = {
     ? [process.env.RPC_84531]
     : ['https://mainnet-rpc.b3.fun'],
   slug: 'b3',
-  stack: 'op',
+  stack: 'optimism',
 }

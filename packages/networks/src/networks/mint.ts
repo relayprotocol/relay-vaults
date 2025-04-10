@@ -6,8 +6,13 @@ export const mint: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0x59625d1FE0Eeb8114a4d13c863978F39b3471781',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 185,
@@ -20,5 +25,5 @@ export const mint: L2NetworkConfig = {
     ? [process.env.RPC_1337]
     : ['https://rpc.mintchain.com'],
   slug: 'mint',
-  stack: 'op',
+  stack: 'optimism',
 }

@@ -6,8 +6,13 @@ export const cyber: L2NetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    op: {
-      messagePasser: '0x4200000000000000000000000000000000000016',
+    optimism: {
+      l1: {
+        portalProxy: '0xACfD93B4887cef4F05cF3440d150D2cE97339142',
+      },
+      l2: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
     },
   },
   chainId: 7560,
@@ -20,5 +25,5 @@ export const cyber: L2NetworkConfig = {
     ? [process.env.RPC_7560]
     : ['https://cyber.rpc.thirdweb.com'],
   slug: 'cyber',
-  stack: 'op',
+  stack: 'optimism',
 }

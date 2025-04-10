@@ -5,8 +5,49 @@ export interface L1NetworkConfig extends NetworkConfig {
 }
 
 export interface L2NetworkConfig extends NetworkConfig {
-  l1ChainId: number | bigint
-  stack: 'op' | 'arb' | 'zksync'
+  l1ChainId: number
+  stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
+  bridges: {
+    optimism?: {
+      l1: {
+        portalProxy: string
+      }
+      l2: {
+        messagePasser: string
+      }
+    }
+    arbitrum?: {
+      l1: {
+        outbox: string
+        rollup: string
+        routerGateway: string
+      }
+      l2: {
+        arbSys: string
+        routerGateway: string
+      }
+    }
+    cctp?: {
+      l1: {
+        domain: bigint
+        messenger: string
+        transmitter: string
+      }
+      l2: {
+        domain: bigint
+        messenger: string
+        transmitter: string
+      }
+    }
+    zksync?: {
+      l1: {
+        sharedDefaultBridge: string
+      }
+      l2: {
+        sharedDefaultBridge: string
+      }
+    }
+  }
 }
 
 export interface NetworkConfig {
@@ -14,39 +55,6 @@ export interface NetworkConfig {
   name: string
   slug: string
   earliestBlock: number
-  bridges: {
-    cctp?: {
-      domain: bigint
-      messenger: string
-      transmitter: string
-    }
-    arb?: {
-      arbSys?: string
-      routerGateway: string
-      outbox?: string
-      rollup?: string
-    }
-    op?: {
-      portalProxy?: string
-      messagePasser?: string
-    }
-    lisk?: {
-      portalProxy?: string
-      messagePasser?: string
-    }
-    soneium?: {
-      portalProxy?: string
-      messagePasser?: string
-    }
-    base?: {
-      portalProxy?: string
-      messagePasser?: string
-    }
-    zksync?: {
-      l1SharedDefaultBridge: string
-      l2SharedDefaultBridge: string
-    }
-  }
   isZKsync?: boolean
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}

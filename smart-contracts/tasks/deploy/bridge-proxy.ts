@@ -191,8 +191,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       // for verification
       constructorArguments = []
       console.log(`✅ OPStack bridge deployed at: ${proxyBridgeAddress}`)
-    } else if (type === 'arb') {
-      const routerGateway = bridges.arb!.routerGateway
+    } else if (type === 'arbitrum') {
+      const routerGateway = bridges.arbitrum.routerGateway
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {

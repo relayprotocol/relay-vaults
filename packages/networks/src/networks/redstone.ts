@@ -16,7 +16,7 @@ export const redstone: L2NetworkConfig = {
     },
   },
   chainId: 690,
-  earliestBlock: 0,
+  earliestBlock: 16065000,
   hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   isTestnet: false,
   l1ChainId: 1,

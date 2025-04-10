@@ -8,9 +8,11 @@ import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyMod
 import { reverts } from '../utils/errors'
 import { impersonate } from '../utils/hardhat'
 import { ZeroAddress } from 'ethers'
+import { L2NetworkConfig } from '@relay-protocol/types'
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
+const chainId = 10 // Optimism
 
 describe('BridgeProxies accept native token', function () {
   const amount = ethers.parseEther('1')
@@ -18,20 +20,16 @@ describe('BridgeProxies accept native token', function () {
   describe('CCTP Bridge Proxy', () => {
     it('should reject native tokens', async () => {
       const [user] = await ethers.getSigners()
-      const chainId = 10 // Optimism
-      const {
-        bridges: { cctp },
-        assets,
-      } = networks[chainId]
+      const { bridges, assets } = networks[chainId] as L2NetworkConfig
 
-      if (!cctp) {
+      if (!bridges.cctp) {
         throw new Error('CCTP bridge configuration not found')
       }
 
       const parameters = {
         CCTPBridgeProxy: {
           l1BridgeProxy,
-          messenger: cctp.messenger,
+          messenger: bridges.cctp.l2.messenger,
           relayPool,
           relayPoolChainId: 1,
           usdc: assets.usdc,
@@ -64,18 +62,16 @@ describe('BridgeProxies accept native token', function () {
   describe('OPStack Native Bridge Proxy', () => {
     it('should handle native token', async () => {
       const [user] = await ethers.getSigners()
-      const {
-        bridges: { op },
-      } = networks[1] // Ethereum mainnet
+      const { bridges } = networks[chainId] as L2NetworkConfig
 
-      if (!op?.portalProxy) {
+      if (!bridges.optimism?.l1.portalProxy) {
         throw new Error('OPStack bridge configuration not found')
       }
 
       const parameters = {
         OPStackNativeBridgeProxy: {
           l1BridgeProxy,
-          portalProxy: op.portalProxy,
+          portalProxy: bridges.optimism?.l1.portalProxy,
           relayPool,
           relayPoolChainId: 31337,
         },
@@ -117,21 +113,19 @@ describe('BridgeProxies accept native token', function () {
     it('should handle native token', async () => {
       const [user] = await ethers.getSigners()
       const chainId = 42161 // Arbitrum One
-      const {
-        bridges: { arb },
-      } = networks[chainId]
+      const { bridges } = networks[chainId] as L2NetworkConfig
 
-      if (!arb?.routerGateway) {
+      if (!bridges.arbitrum?.l2.routerGateway) {
         throw new Error('Arbitrum bridge configuration not found')
       }
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {
           l1BridgeProxy,
-          outbox: arb.outbox || ethers.ZeroAddress,
+          outbox: bridges.arbitrum?.l1.outbox || ethers.ZeroAddress,
           relayPool,
           relayPoolChainId: 31337,
-          routerGateway: arb.routerGateway,
+          routerGateway: bridges.arbitrum?.l2.routerGateway,
         },
       } as const // Use const assertion to fix type error
 
@@ -172,18 +166,16 @@ describe('BridgeProxies accept native token', function () {
     it('should handle native token', async () => {
       const [user] = await ethers.getSigners()
       const chainId = 324 // zkSync Era mainnet
-      const {
-        bridges: { zksync },
-      } = networks[chainId]
+      const { bridges } = networks[chainId] as L2NetworkConfig
 
-      if (!zksync?.l2SharedDefaultBridge) {
+      if (!bridges.zksync?.l2.sharedDefaultBridge) {
         throw new Error('ZkSync bridge configuration not found')
       }
 
       const parameters = {
         ZkSyncBridgeProxy: {
           l1BridgeProxy,
-          l2SharedDefaultBridge: zksync.l2SharedDefaultBridge,
+          l2SharedDefaultBridge: bridges.zksync.l2.sharedDefaultBridge,
           relayPool,
           relayPoolChainId: 31337,
         },

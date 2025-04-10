@@ -51,7 +51,7 @@ export default async function ({
     asset: asset as `0x${string}`,
     chainId: context.network.chainId,
     contractAddress: pool as `0x${string}`,
-    createdAt: BigInt(new Date().getTime()),
+    createdAt: event.block.timestamp,
     createdAtBlock: event.block.number,
     curator: creator as `0x${string}`,
     name: poolName,

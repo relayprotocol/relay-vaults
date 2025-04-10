@@ -1,7 +1,8 @@
 import { RelayVaultService } from '@relay-protocol/client'
 
 const vaultService = new RelayVaultService(
-  (process.env.BACKEND_URL = 'http://localhost:42069/')
+  (process.env.BACKEND_URL =
+    'https://relay-protocol-production-2dce.up.railway.app/')
 )
 
 export const start = async () => {

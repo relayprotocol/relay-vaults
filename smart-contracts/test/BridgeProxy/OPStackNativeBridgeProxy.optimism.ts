@@ -6,11 +6,16 @@ import { networks } from '@relay-protocol/networks'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 import { AbiCoder, Log } from 'ethers'
+import { L2NetworkConfig } from '@relay-protocol/types'
+const { assets: ethereumAssets } = networks[1]
 const {
-  assets: ethereumAssets,
-  bridges: { op },
-} = networks[1]
-const { assets: op1Assets } = networks[10]
+  assets: op1Assets,
+  bridges: {
+    optimism: {
+      l1: { portalProxy },
+    },
+  },
+} = networks[10] as L2NetworkConfig
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
@@ -23,7 +28,7 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
     const parameters = {
       OPStackNativeBridgeProxy: {
         l1BridgeProxy,
-        portalProxy: op.portalProxy,
+        portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },
@@ -33,7 +38,6 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
     })
     const bridgeAddress = await bridge.getAddress()
 
-    const recipient = await user.getAddress()
     const amount = ethers.parseEther('1')
 
     const crossDomainMessenger = new ethers.Contract(
@@ -207,7 +211,7 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
     const parameters = {
       OPStackNativeBridgeProxy: {
         l1BridgeProxy,
-        portalProxy: op.portalProxy,
+        portalProxy: portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },

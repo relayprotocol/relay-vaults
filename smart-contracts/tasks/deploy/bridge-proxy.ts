@@ -58,7 +58,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const isL2 = !!l1ChainId
 
     // pick a type
-    const types = ['cctp', 'op', 'arb', 'zksync']
+    const types = ['cctp', 'optimism', 'arbitrum', 'zksync']
     if (!type) {
       type = await new Select({
         choices: types,
@@ -171,7 +171,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       }))
       proxyBridgeAddress = await proxyBridge.getAddress()
       console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
-    } else if (type === 'op') {
+    } else if (type === 'optimism') {
       const parameters = {
         OPStackNativeBridgeProxy: {
           ...defaultProxyModuleArguments,
@@ -191,8 +191,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       // for verification
       constructorArguments = []
       console.log(`✅ OPStack bridge deployed at: ${proxyBridgeAddress}`)
-    } else if (type === 'arb') {
-      const routerGateway = bridges.arb!.routerGateway
+    } else if (type === 'arbitrum') {
+      const routerGateway = bridges.arbitrum.routerGateway
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {

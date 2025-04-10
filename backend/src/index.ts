@@ -22,6 +22,7 @@ import PoolDeployed from './handlers/RelayPoolFactory/PoolDeployed'
 import BridgeDeployed from './handlers/RelayBridgeFactory/BridgeDeployed'
 import BridgeInitiated from './handlers/RelayBridge/BridgeInitiated'
 import OriginAdded from './handlers/RelayPool/OriginAdded'
+import OriginDisabled from './handlers/RelayPool/OriginDisabled'
 import LoanEmitted from './handlers/RelayPool/LoanEmitted'
 import OutstandingDebtChanged from './handlers/RelayPool/OutstandingDebtChanged'
 import WithdrawalProven from './handlers/OPPortal/WithdrawalProven'
@@ -84,6 +85,11 @@ ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Sets initial debt limits
  */
 ponder.on('RelayPool:OriginAdded', OriginAdded)
+
+/**
+ * Handles the disabling of an origin in a RelayPool
+ */
+ponder.on('RelayPool:OriginDisabled', OriginDisabled)
 
 /**
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted

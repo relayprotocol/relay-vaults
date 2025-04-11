@@ -153,9 +153,11 @@ const config: HardhatUserConfig = {
   zksolc: {
     settings: {
       contractsToCompile: [
+        'contracts/RelayPool.sol',
         'contracts/RelayBridgeFactory.sol',
         'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
         'contracts/interfaces/IUSDC.sol',
+        'contracts/utils/tests/MyToken.sol',
       ],
       // for '<address payable>.send/transfer(<X>)'
       // contracts/RelayBridge.sol:189:5

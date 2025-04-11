@@ -8,7 +8,7 @@ export const echos: L2NetworkConfig = {
   bridges: {
     optimism: {
       l1: {
-        portalProxy: '0xA08E14278283f2C1dD53d3E772448729E78851ae',
+        portalProxy: '',
       },
       l2: {
         messagePasser: '0x4200000000000000000000000000000000000016',

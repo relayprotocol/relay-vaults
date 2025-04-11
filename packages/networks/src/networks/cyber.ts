@@ -16,7 +16,7 @@ export const cyber: L2NetworkConfig = {
     },
   },
   chainId: 7560,
-  earliestBlock: 0,
+  earliestBlock: 15439700,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   l1ChainId: 1,

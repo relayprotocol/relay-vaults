@@ -222,7 +222,6 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       const l1SharedDefaultBridge = bridges.zksync!.l1.sharedDefaultBridge!
       // for verification
       constructorArguments = [l2SharedDefaultBridge]
-      console.log(constructorArguments)
       if (isZKsync) {
         // deploy using `deployContract` helper (for zksync L2s)
         ;({ address: proxyBridgeAddress } = await deployContract(

@@ -16,14 +16,14 @@ export const mint: L2NetworkConfig = {
     },
   },
   chainId: 185,
-  earliestBlock: 0,
+  earliestBlock: 14354000,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   l1ChainId: 1,
   name: 'Mint',
   rpc: process.env.RPC_1337
     ? [process.env.RPC_1337]
-    : ['https://rpc.mintchain.com'],
+    : ['https://rpc.mintchain.io'],
   slug: 'mint',
   stack: 'optimism',
 }

@@ -9,7 +9,7 @@ import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNative
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { L1NetworkConfig, L2NetworkConfig } from '@relay-protocol/types'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 
@@ -50,7 +50,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
-    const { bridges, isZKsync, name: networkName } = networkConfig
+    const {
+      bridges,
+      isZKsync,
+      name: networkName,
+    } = networkConfig as L1NetworkConfig
 
     // eslint-disable-next-line prefer-const
     let { l1ChainId, stack } = networkConfig as L2NetworkConfig
@@ -214,10 +218,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       constructorArguments = [routerGateway]
       console.log(`✅ ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'zksync') {
-      const l2SharedDefaultBridge = bridges.zksync!.l2SharedDefaultBridge!
-      const l1SharedDefaultBridge = bridges.zksync!.l1SharedDefaultBridge!
+      const l2SharedDefaultBridge = bridges.zksync!.l2.sharedDefaultBridge!
+      const l1SharedDefaultBridge = bridges.zksync!.l1.sharedDefaultBridge!
       // for verification
       constructorArguments = [l2SharedDefaultBridge]
+      console.log(constructorArguments)
       if (isZKsync) {
         // deploy using `deployContract` helper (for zksync L2s)
         ;({ address: proxyBridgeAddress } = await deployContract(

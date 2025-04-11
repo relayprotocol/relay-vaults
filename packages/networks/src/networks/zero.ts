@@ -22,7 +22,7 @@ export const zero: L2NetworkConfig = {
   isZKsync: true,
   l1ChainId: 1,
   name: 'Zero',
-  rpc: ['https://zero.drpc.org'],
+  rpc: ['https://rpc.zerion.io/v1/zero'],
   slug: 'zero',
   stack: 'zksync',
 }

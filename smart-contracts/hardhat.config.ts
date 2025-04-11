@@ -97,12 +97,26 @@ const etherscan = {
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
     sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
+    zero: 'default-api-key',
   },
-  customChains: [],
+  customChains: [
+    {
+      chainId: 543210,
+      network: 'zero',
+      urls: {
+        apiURL: 'https://explorer.zero.network/api',
+        browserURL: 'https://explorer.zero.network',
+      },
+    },
+  ],
 }
 
 Object.values(registry).forEach((v) => {
-  if (nets[v.chainId]) {
+  // prevent overriding chains declared in customChains array
+  const customChain = etherscan.customChains.find(
+    ({ chainId }) => chainId === v.chainId
+  )
+  if (nets[v.chainId] && !customChain) {
     etherscan.apiKey[v.name] = etherscan.apiKey[v.name] || 'default-api-key' // placeholder for blocksncout specifically!
     etherscan.customChains.push({
       chainId: v.chainId,

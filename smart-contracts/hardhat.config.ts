@@ -8,9 +8,6 @@ import registry from '@hyperlane-xyz/registry'
 // Interracting
 import './tasks/pool'
 import './tasks/bridge'
-import './tasks/claim/cctp'
-import './tasks/claim/arb'
-import './tasks/claim/zksync'
 import './tasks/origins/add'
 
 // Actual contracts

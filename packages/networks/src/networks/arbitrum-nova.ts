@@ -22,7 +22,7 @@ export const arbitrumNova: L2NetworkConfig = {
   earliestBlock: 83282400,
   hyperlaneMailbox: '0x3a867fCfFeC2B790970eeBDC9023E75B0a172aa7',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Arbitrum Nova',
   rpc: process.env.RPC_42170
     ? [process.env.RPC_42170]

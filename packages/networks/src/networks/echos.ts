@@ -19,7 +19,7 @@ export const echos: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x2cA13C25A48B5A98c5AD47808Efa983D29543a9a',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Echos',
   rpc: process.env.RPC_4321
     ? [process.env.RPC_4321]

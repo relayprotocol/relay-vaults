@@ -32,7 +32,7 @@ export const optimism: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0xd4C1905BB1D26BC93DAC913e13CaCC278CdCC80D',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'OP Mainnet',
   rpc: process.env.RPC_10
     ? [process.env.RPC_10]

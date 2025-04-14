@@ -20,7 +20,7 @@ export const zero: L2NetworkConfig = {
   hyperlaneMailbox: '0xd7b351D2dE3495eA259DD10ab4b9300A378Afbf3',
   isTestnet: false,
   isZKsync: true,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Zero',
   rpc: ['https://rpc.zerion.io/v1/zero'],
   slug: 'zero',

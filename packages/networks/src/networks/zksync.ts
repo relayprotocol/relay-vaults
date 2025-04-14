@@ -31,7 +31,7 @@ export const zksync: L2NetworkConfig = {
 
   isZKsync: true,
 
-  l1ChainId: 1,
+  baseChainId: 1,
 
   name: 'Zksync',
   rpc: process.env.RPC_324

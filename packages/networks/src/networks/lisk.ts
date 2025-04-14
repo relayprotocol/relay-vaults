@@ -20,7 +20,7 @@ export const lisk: L2NetworkConfig = {
   hyperlaneHook: '0x9844aFFaBE17c37F791ff99ABa58B0FbB75e22AF',
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Lisk',
   rpc: process.env.RPC_1135
     ? [process.env.RPC_1135]

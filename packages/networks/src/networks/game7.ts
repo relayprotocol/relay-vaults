@@ -8,6 +8,9 @@ export const game7: L2NetworkConfig = {
     usdc: '0x401eCb1D350407f13ba348573E5630B83638E30D',
     weth: '0xB1116517a980DA056E05Fa521d524E1AFD8D885f',
   },
+
+  baseChainId: 1,
+
   // currently not in https://github.com/hyperlane-xyz/hyperlane-registry
   bridges: {
     arbitrum: {
@@ -30,8 +33,6 @@ export const game7: L2NetworkConfig = {
   hyperlaneMailbox: '',
 
   isTestnet: false,
-
-  l1ChainId: 1,
 
   name: 'Game7',
 

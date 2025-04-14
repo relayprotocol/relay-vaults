@@ -34,7 +34,7 @@ export const arbSepolia: L2NetworkConfig = {
   earliestBlock: 130000000,
   hyperlaneMailbox: '0x598facE78a4302f11E3de0bee1894Da0b2Cb71F8',
   isTestnet: true,
-  l1ChainId: 11155111,
+  baseChainId: 11155111,
   name: 'Arbitrum Sepolia',
   rpc: process.env.RPC_421614
     ? [process.env.RPC_421614]

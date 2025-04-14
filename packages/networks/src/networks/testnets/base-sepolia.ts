@@ -31,7 +31,7 @@ export const baseSepolia: L2NetworkConfig = {
   earliestBlock: 23000000,
   hyperlaneMailbox: '0x6966b0E55883d49BFB24539356a2f8A673E02039',
   isTestnet: true,
-  l1ChainId: 11155111,
+  baseChainId: 11155111,
   name: 'Base Sepolia',
   rpc: process.env.RPC_84532
     ? [process.env.RPC_84532]

@@ -18,7 +18,7 @@ export const b3: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x3a867fCfFeC2B790970eeBDC9023E75B0a172aa7',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'B3',
   rpc: process.env.RPC_84531
     ? [process.env.RPC_84531]

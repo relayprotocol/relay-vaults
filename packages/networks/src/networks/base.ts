@@ -32,7 +32,7 @@ export const base: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Base',
   rpc: process.env.RPC_8453
     ? [process.env.RPC_8453]

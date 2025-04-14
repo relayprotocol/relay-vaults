@@ -20,7 +20,7 @@ export const abstract: L2NetworkConfig = {
   hyperlaneMailbox: '0x9BbDf86b272d224323136E15594fdCe487F40ce7',
   isTestnet: false,
   isZKsync: true,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Abstract',
   rpc: process.env.RPC_2741
     ? [process.env.RPC_2741]

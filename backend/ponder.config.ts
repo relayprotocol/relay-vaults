@@ -29,7 +29,7 @@ const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
 // VaultSnapshot networks
 const vaultSnapshotNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return !(networks[chainId] as L2NetworkConfig).baseChainId
   })
   .reduce((vaultSnapshotNetworks, chainId) => {
     const network = networks[chainId]
@@ -44,7 +44,7 @@ const vaultSnapshotNetworks = Object.keys(networks)
 // RelayBridge networks
 const relayBridgeNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return (networks[chainId] as L2NetworkConfig).l1ChainId
+    return (networks[chainId] as L2NetworkConfig).baseChainId
   })
   .reduce((relayBridgeNetworks, chainId) => {
     const network = networks[chainId]
@@ -70,7 +70,7 @@ const relayBridgeNetworks = Object.keys(networks)
 // RelayBridgeFactory networks
 const relayBridgeFactoryNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return (networks[chainId] as L2NetworkConfig).l1ChainId
+    return (networks[chainId] as L2NetworkConfig).baseChainId
   })
   .reduce((relayBridgeFactoryNetworks, chainId) => {
     const network = networks[chainId]
@@ -91,7 +91,7 @@ const relayBridgeFactoryNetworks = Object.keys(networks)
 // RelayPoolFactory networks
 const relayPoolFactoryNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return !(networks[chainId] as L2NetworkConfig).baseChainId
   })
   .reduce((relayPoolFactoryNetworks, chainId) => {
     const network = networks[chainId]
@@ -112,7 +112,7 @@ const relayPoolFactoryNetworks = Object.keys(networks)
 
 const relayPoolNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return !(networks[chainId] as L2NetworkConfig).baseChainId
   })
   .reduce((relayPoolNetworks, chainId) => {
     const network = networks[chainId]
@@ -150,7 +150,7 @@ const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
   })
   .reduce((oPPortalNetworks, chainId) => {
     const l2Network = networks[chainId] as L2NetworkConfig
-    const l1Network = networks[l2Network.l1ChainId] as L1NetworkConfig
+    const l1Network = networks[l2Network.baseChainId] as L1NetworkConfig
     if (!oPPortalNetworks[l1Network.slug]) {
       oPPortalNetworks[l1Network.slug] = {
         address: [],
@@ -177,7 +177,7 @@ const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
   })
   .reduce((orbitOutboxNetworks, chainId) => {
     const l2Network = networks[chainId] as L2NetworkConfig
-    const l1Network = networks[l2Network.l1ChainId] as L1NetworkConfig
+    const l1Network = networks[l2Network.baseChainId] as L1NetworkConfig
     if (!orbitOutboxNetworks[l1Network.slug]) {
       orbitOutboxNetworks[l1Network.slug] = {
         address: [],

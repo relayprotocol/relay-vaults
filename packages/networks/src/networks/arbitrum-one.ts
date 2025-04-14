@@ -35,7 +35,7 @@ export const arbitrumOne: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x979Ca5202784112f4738403dBec5D0F3B9daabB9',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Arbitrum',
   rpc: process.env.RPC_42161
     ? [process.env.RPC_42161]

@@ -19,7 +19,7 @@ export const soneium: L2NetworkConfig = {
   earliestBlock: 5241889,
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Soneium',
   rpc: ['https://rpc.soneium.org'],
   slug: 'soneium',

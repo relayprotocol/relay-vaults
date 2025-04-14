@@ -20,7 +20,7 @@ export const zkSyncSepolia: L2NetworkConfig = {
   hyperlaneMailbox: '0x1E45f767d51FA1Ec326d35e3BD4904fF0f30fCDa',
   isTestnet: true,
   isZKsync: true,
-  l1ChainId: 11155111,
+  baseChainId: 11155111,
   name: 'ZKsync Sepolia Testnet',
   rpc: process.env.RPC_300
     ? [process.env.RPC_300]

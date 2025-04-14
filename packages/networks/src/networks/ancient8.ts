@@ -19,7 +19,7 @@ export const ancient8: L2NetworkConfig = {
   earliestBlock: 19096500,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
-  l1ChainId: 1,
+  baseChainId: 1,
   name: 'Ancient8',
   rpc: ['https://rpc.ancient8.gg'],
   slug: 'ancient8',

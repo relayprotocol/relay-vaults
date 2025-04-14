@@ -11,8 +11,7 @@ export const hemi: L2NetworkConfig = {
         portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
       },
       l2: {
-        // TODO
-        messagePasser: '',
+        messagePasser: '0x4200000000000000000000000000000000000016',
       },
     },
   },

@@ -2,7 +2,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 
 export const rari: L2NetworkConfig = {
   assets: {
-    // Add asset addresses once available
+    // TODO: add USDC
   },
   bridges: {
     arbitrum: {

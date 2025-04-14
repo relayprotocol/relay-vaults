@@ -2,7 +2,8 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 
 export const hemi: L2NetworkConfig = {
   assets: {
-    // Add asset addresses once available
+    weth: '0x4200000000000000000000000000000000000006',
+    // TODO: add USDC
   },
   bridges: {
     optimism: {

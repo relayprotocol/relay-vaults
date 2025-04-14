@@ -1,5 +1,6 @@
 import { L2NetworkConfig } from '@relay-protocol/types'
 
+// L3
 export const rari: L2NetworkConfig = {
   assets: {
     // TODO: add USDC
@@ -22,7 +23,7 @@ export const rari: L2NetworkConfig = {
   earliestBlock: 0, // Update with actual earliest block
   hyperlaneMailbox: '0x65dCf8F6b3f6a0ECEdf3d0bdCB036AEa47A1d615',
   isTestnet: false,
-  l1ChainId: 1,
+  l1ChainId: 42161,
   name: 'Rari',
   rpc: process.env.RPC_1380012617
     ? [process.env.RPC_1380012617]

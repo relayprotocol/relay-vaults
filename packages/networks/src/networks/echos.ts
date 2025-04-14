@@ -1,5 +1,7 @@
 import { L2NetworkConfig } from '@relay-protocol/types'
 
+// Base L3
+// https://echos.fun
 export const echos: L2NetworkConfig = {
   assets: {
     usdc: '0x37234506262FF64d97694eA1F0461414c9e8A39e',

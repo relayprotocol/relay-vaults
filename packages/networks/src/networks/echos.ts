@@ -2,7 +2,7 @@ import { L2NetworkConfig } from '@relay-protocol/types'
 
 export const echos: L2NetworkConfig = {
   assets: {
-    usdc: '0x9c5e286e1eB95e8BEeE3058bc0CE642B9f798a41',
+    usdc: '0x37234506262FF64d97694eA1F0461414c9e8A39e',
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
@@ -21,9 +21,9 @@ export const echos: L2NetworkConfig = {
   isTestnet: false,
   l1ChainId: 1,
   name: 'Echos',
-  rpc: process.env.RPC_17777
-    ? [process.env.RPC_17777]
-    : ['https://api.echos.exchange'],
+  rpc: process.env.RPC_4321
+    ? [process.env.RPC_4321]
+    : ['https://rpc-echos-mainnet-0.t.conduit.xyz'],
   slug: 'echos',
   stack: 'optimism',
 }

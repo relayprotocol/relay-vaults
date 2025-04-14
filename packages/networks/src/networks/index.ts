@@ -16,6 +16,10 @@ export * from './base'
 export * from './ethereum'
 export * from './optimism'
 export * from './zksync'
+export * from './bob'
+export * from './swellchain'
+export * from './hemi'
+export * from './rari'
 
 // testnets
 export * from './testnets/arbitrum-sepolia'

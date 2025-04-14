@@ -5,13 +5,21 @@ export const bob: L2NetworkConfig = {
     // Add asset addresses once available
   },
   bridges: {
-    // Add bridge configurations once available
+    optimism: {
+      l1: {
+        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
+      },
+      l2: {
+        // TODO
+        messagePasser: '',
+      },
+    },
   },
   chainId: 60808,
   earliestBlock: 0, // Update with actual earliest block
   hyperlaneMailbox: '0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147',
   isTestnet: false,
-  l1ChainId: 1, // Assuming Ethereum mainnet as L1
+  l1ChainId: 1,
   name: 'BOB',
   rpc: process.env.RPC_60808
     ? [process.env.RPC_60808]

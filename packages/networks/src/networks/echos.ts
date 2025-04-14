@@ -11,6 +11,7 @@ export const echos: L2NetworkConfig = {
         portalProxy: '',
       },
       l2: {
+        // TODO
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
     },

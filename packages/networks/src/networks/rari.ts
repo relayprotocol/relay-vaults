@@ -5,13 +5,24 @@ export const rari: L2NetworkConfig = {
     // Add asset addresses once available
   },
   bridges: {
-    // Add bridge configurations once available
+    arbitrum: {
+      l1: {
+        outbox: '',
+        rollup: '',
+        routerGateway: '',
+      },
+      l2: {
+        arbSys: '0x0000000000000000000000000000000000000064',
+        // TODO
+        routerGateway: '',
+      },
+    },
   },
   chainId: 1380012617,
   earliestBlock: 0, // Update with actual earliest block
-  hyperlaneMailbox: '', // No mailbox address available for deprecated chain
+  hyperlaneMailbox: '0x65dCf8F6b3f6a0ECEdf3d0bdCB036AEa47A1d615',
   isTestnet: false,
-  l1ChainId: 1, // Assuming Ethereum mainnet as L1
+  l1ChainId: 1,
   name: 'Rari',
   rpc: process.env.RPC_1380012617
     ? [process.env.RPC_1380012617]

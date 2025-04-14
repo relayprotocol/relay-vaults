@@ -8,8 +8,7 @@ export const swell: L2NetworkConfig = {
   bridges: {
     optimism: {
       l1: {
-        // TODO: add portalProxy
-        portalProxy: '',
+        portalProxy: '0x758E0EE66102816F5C3Ec9ECc1188860fbb87812',
       },
       l2: {
         messagePasser: '0x4200000000000000000000000000000000000016',

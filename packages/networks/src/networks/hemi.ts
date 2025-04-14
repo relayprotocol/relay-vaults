@@ -8,8 +8,7 @@ export const hemi: L2NetworkConfig = {
   bridges: {
     optimism: {
       l1: {
-        // TODO: add portalProxy
-        portalProxy: '',
+        portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
       },
       l2: {
         messagePasser: '0x4200000000000000000000000000000000000016',

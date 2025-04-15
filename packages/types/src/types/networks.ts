@@ -5,7 +5,7 @@ export interface childNetworkConfig extends NetworkConfig {
 }
 
 export interface ChildNetworkConfig extends NetworkConfig {
-  baseChainId: number
+  parentChainId: number
   stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
   bridges: {
     optimism?: {

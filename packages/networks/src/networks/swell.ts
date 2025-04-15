@@ -5,7 +5,6 @@ export const swell: ChildNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
     // TODO: add USDC
   },
-  baseChainId: 1,
   bridges: {
     optimism: {
       child: {
@@ -17,10 +16,12 @@ export const swell: ChildNetworkConfig = {
     },
   },
   chainId: 1923,
-  earliestBlock: 0, // Update with actual earliest block
+  earliestBlock: 0,
+  // Update with actual earliest block
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
   name: 'Swellchain',
+  parentChainId: 1,
   rpc: process.env.RPC_1923
     ? [process.env.RPC_1923]
     : ['https://swell-mainnet.alt.technology'],

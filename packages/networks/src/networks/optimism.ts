@@ -6,7 +6,6 @@ export const optimism: ChildNetworkConfig = {
     usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
     weth: '0x4200000000000000000000000000000000000006',
   },
-  baseChainId: 1,
   bridges: {
     cctp: {
       child: {
@@ -34,6 +33,7 @@ export const optimism: ChildNetworkConfig = {
   hyperlaneMailbox: '0xd4C1905BB1D26BC93DAC913e13CaCC278CdCC80D',
   isTestnet: false,
   name: 'OP Mainnet',
+  parentChainId: 1,
   rpc: process.env.RPC_10
     ? [process.env.RPC_10]
     : ['https://gateway.tenderly.co/public/optimism'],

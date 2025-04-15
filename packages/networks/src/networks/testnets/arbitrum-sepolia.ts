@@ -5,7 +5,6 @@ export const arbSepolia: ChildNetworkConfig = {
     udt: '0xeCf77F1D5bB9d40BCc79343DB16ACB86795050fC',
     usdc: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
   },
-  baseChainId: 11155111,
   bridges: {
     arbitrum: {
       child: {
@@ -36,6 +35,7 @@ export const arbSepolia: ChildNetworkConfig = {
   hyperlaneMailbox: '0x598facE78a4302f11E3de0bee1894Da0b2Cb71F8',
   isTestnet: true,
   name: 'Arbitrum Sepolia',
+  parentChainId: 11155111,
   rpc: process.env.RPC_421614
     ? [process.env.RPC_421614]
     : ['https://sepolia-rollup.arbitrum.io/rpc'],

@@ -5,7 +5,6 @@ export const baseSepolia: ChildNetworkConfig = {
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
     weth: '0x999B45BB215209e567FaF486515af43b8353e393',
   },
-  baseChainId: 11155111,
   bridges: {
     cctp: {
       child: {
@@ -33,6 +32,7 @@ export const baseSepolia: ChildNetworkConfig = {
   hyperlaneMailbox: '0x6966b0E55883d49BFB24539356a2f8A673E02039',
   isTestnet: true,
   name: 'Base Sepolia',
+  parentChainId: 11155111,
   rpc: process.env.RPC_84532
     ? [process.env.RPC_84532]
     : ['https://base-sepolia.gateway.tenderly.co'],

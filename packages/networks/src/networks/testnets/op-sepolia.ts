@@ -4,7 +4,6 @@ export const opSepolia: ChildNetworkConfig = {
   assets: {
     usdc: '0x5fd84259d66Cd46123540766Be93DFE6D43130D7',
   },
-  baseChainId: 11155111,
   bridges: {
     cctp: {
       child: {
@@ -32,6 +31,7 @@ export const opSepolia: ChildNetworkConfig = {
   hyperlaneMailbox: '0x6966b0E55883d49BFB24539356a2f8A673E02039',
   isTestnet: true,
   name: 'OP Sepolia',
+  parentChainId: 11155111,
   rpc: process.env.RPC_11155420
     ? [process.env.RPC_11155420]
     : ['https://optimism-sepolia.gateway.tenderly.co'],

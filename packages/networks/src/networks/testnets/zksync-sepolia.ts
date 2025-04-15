@@ -5,7 +5,6 @@ export const zkSyncSepolia: ChildNetworkConfig = {
     usdc: '0xAe045DE5638162fa134807Cb558E15A3F5A7F853',
     weth: '0x2D6Db36B3117802E996f13073A08A685D3FeF7eD',
   },
-  baseChainId: 11155111,
   bridges: {
     zksync: {
       child: {
@@ -22,6 +21,7 @@ export const zkSyncSepolia: ChildNetworkConfig = {
   isTestnet: true,
   isZKsync: true,
   name: 'ZKsync Sepolia Testnet',
+  parentChainId: 11155111,
   rpc: process.env.RPC_300
     ? [process.env.RPC_300]
     : ['https://sepolia.era.zksync.dev'],

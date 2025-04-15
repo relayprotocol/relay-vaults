@@ -5,7 +5,6 @@ export const zero: ChildNetworkConfig = {
     usdc: '0x6a6394F47DD0BAF794808F2749C09bd4Ee874E70',
     weth: '0xAc98B49576B1C892ba6BFae08fE1BB0d80Cf599c',
   },
-  baseChainId: 1,
   bridges: {
     zksync: {
       child: {
@@ -22,6 +21,7 @@ export const zero: ChildNetworkConfig = {
   isTestnet: false,
   isZKsync: true,
   name: 'Zero',
+  parentChainId: 1,
   rpc: ['https://rpc.zerion.io/v1/zero'],
   slug: 'zero',
   stack: 'zksync',

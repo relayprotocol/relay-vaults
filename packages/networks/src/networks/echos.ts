@@ -7,7 +7,6 @@ export const echos: ChildNetworkConfig = {
     usdc: '0x37234506262FF64d97694eA1F0461414c9e8A39e',
     weth: '0x4200000000000000000000000000000000000006',
   },
-  baseChainId: 1,
   bridges: {
     optimism: {
       child: {
@@ -23,6 +22,7 @@ export const echos: ChildNetworkConfig = {
   hyperlaneMailbox: '0x2cA13C25A48B5A98c5AD47808Efa983D29543a9a',
   isTestnet: false,
   name: 'Echos',
+  parentChainId: 1,
   rpc: process.env.RPC_4321
     ? [process.env.RPC_4321]
     : ['https://rpc-echos-mainnet-0.t.conduit.xyz'],

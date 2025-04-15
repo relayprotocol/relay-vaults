@@ -5,7 +5,6 @@ export const bob: ChildNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
     // TODO: add USDC
   },
-  baseChainId: 1,
   bridges: {
     optimism: {
       child: {
@@ -17,10 +16,12 @@ export const bob: ChildNetworkConfig = {
     },
   },
   chainId: 60808,
-  earliestBlock: 0, // Update with actual earliest block
+  earliestBlock: 0,
+  // Update with actual earliest block
   hyperlaneMailbox: '0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147',
   isTestnet: false,
   name: 'BOB',
+  parentChainId: 1,
   rpc: process.env.RPC_60808
     ? [process.env.RPC_60808]
     : ['https://rpc.gobob.xyz'],

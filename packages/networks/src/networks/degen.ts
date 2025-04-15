@@ -4,7 +4,6 @@ export const degen: ChildNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
   },
-  baseChainId: 1,
   bridges: {
     arbitrum: {
       child: {
@@ -23,6 +22,7 @@ export const degen: ChildNetworkConfig = {
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   name: 'Degen',
+  parentChainId: 1,
   rpc: process.env.RPC_666666666
     ? [process.env.RPC_666666666]
     : ['https://rpc.degen.tips'],

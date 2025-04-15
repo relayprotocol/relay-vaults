@@ -57,9 +57,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     } = networkConfig as L1NetworkConfig
 
     // eslint-disable-next-line prefer-const
-    let { baseChainId, stack } = networkConfig as ChildNetworkConfig
+    let { parentChainId, stack } = networkConfig as ChildNetworkConfig
 
-    const isL2 = !!baseChainId
+    const isL2 = !!parentChainId
 
     // pick a type
     const types = ['cctp', 'optimism', 'arbitrum', 'zksync']
@@ -72,11 +72,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       }).run()
     }
     console.log(
-      `Deploying ${isL2 ? Number(baseChainId) : Number(chainId)} bridge proxy...`
+      `Deploying ${isL2 ? Number(parentChainId) : Number(chainId)} bridge proxy...`
     )
 
     if (!poolAddress) {
-      const poolNetwork = isL2 ? Number(baseChainId) : Number(chainId)
+      const poolNetwork = isL2 ? Number(parentChainId) : Number(chainId)
       const pools = await getPoolsForNetwork(poolNetwork)
       poolAddress = await new Select({
         choices: pools.map((pool) => {
@@ -107,7 +107,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       if (!l1BridgeProxy) {
         // Get it from the file!
         try {
-          const l1BridgeProxyFile = `BridgeProxy-${baseChainId}-${poolAddress}-${type}/deployed_addresses.json`
+          const l1BridgeProxyFile = `BridgeProxy-${parentChainId}-${poolAddress}-${type}/deployed_addresses.json`
           const addresses = require(ignitionPath + l1BridgeProxyFile)
           l1BridgeProxy = Object.values(addresses)[0]
         } catch (error) {
@@ -126,7 +126,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       }
     } else {
       // We are deploying the BridgeProxy on an L1 chain
-      baseChainId = chainId
+      parentChainId = chainId
       l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
     }
 
@@ -134,7 +134,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const defaultProxyModuleArguments = {
       l1BridgeProxy,
       relayPool: poolAddress,
-      relayPoolChainId: baseChainId,
+      relayPoolChainId: parentChainId,
     }
 
     // for verification
@@ -230,7 +230,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
           'ZkSyncBridgeProxy',
-          [l2SharedDefaultBridge, baseChainId, poolAddress, l1BridgeProxy],
+          [l2SharedDefaultBridge, parentChainId, poolAddress, l1BridgeProxy],
           deploymentId
         ))
       } else {

@@ -9,8 +9,6 @@ export const game7: ChildNetworkConfig = {
     weth: '0xB1116517a980DA056E05Fa521d524E1AFD8D885f',
   },
 
-  baseChainId: 1,
-
   // currently not in https://github.com/hyperlane-xyz/hyperlane-registry
   bridges: {
     arbitrum: {
@@ -35,6 +33,8 @@ export const game7: ChildNetworkConfig = {
   isTestnet: false,
 
   name: 'Game7',
+
+  parentChainId: 1,
 
   rpc: process.env.RPC_2187
     ? [process.env.RPC_2187]

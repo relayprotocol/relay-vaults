@@ -6,7 +6,6 @@ export const base: ChildNetworkConfig = {
     usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     weth: '0x4200000000000000000000000000000000000006',
   },
-  baseChainId: 1,
   bridges: {
     cctp: {
       child: {
@@ -34,6 +33,7 @@ export const base: ChildNetworkConfig = {
   hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   isTestnet: false,
   name: 'Base',
+  parentChainId: 1,
   rpc: process.env.RPC_8453
     ? [process.env.RPC_8453]
     : ['https://gateway.tenderly.co/public/base'],

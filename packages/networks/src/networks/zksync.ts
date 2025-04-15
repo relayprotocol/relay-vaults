@@ -7,8 +7,6 @@ export const zksync: ChildNetworkConfig = {
     usdc: '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4',
   },
 
-  baseChainId: 1,
-
   // no CCTP on zksync https://developers.circle.com/stablecoins/evm-smart-contracts
   // see https://www.circle.com/blog/zksync-migration-guide
   bridges: {
@@ -34,6 +32,8 @@ export const zksync: ChildNetworkConfig = {
   isZKsync: true,
 
   name: 'Zksync',
+
+  parentChainId: 1,
   rpc: process.env.RPC_324
     ? [process.env.RPC_324]
     : ['https://mainnet.era.zksync.io'],

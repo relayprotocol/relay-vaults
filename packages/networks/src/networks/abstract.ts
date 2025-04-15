@@ -5,7 +5,6 @@ export const abstract: ChildNetworkConfig = {
     usdc: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1',
     weth: '0x3439153EB7AF838Ad19d56E1571FBD09333C2809',
   },
-  baseChainId: 1,
   bridges: {
     zksync: {
       child: {
@@ -22,6 +21,7 @@ export const abstract: ChildNetworkConfig = {
   isTestnet: false,
   isZKsync: true,
   name: 'Abstract',
+  parentChainId: 1,
   rpc: process.env.RPC_2741
     ? [process.env.RPC_2741]
     : ['https://api.mainnet.abs.xyz'],

@@ -6,7 +6,6 @@ export const arbitrumOne: ChildNetworkConfig = {
     udt: '0xd5d3aA404D7562d09a848F96a8a8d5D65977bF90',
     usdc: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
   },
-  baseChainId: 1,
   bridges: {
     arbitrum: {
       child: {
@@ -37,6 +36,7 @@ export const arbitrumOne: ChildNetworkConfig = {
   hyperlaneMailbox: '0x979Ca5202784112f4738403dBec5D0F3B9daabB9',
   isTestnet: false,
   name: 'Arbitrum',
+  parentChainId: 1,
   rpc: process.env.RPC_42161
     ? [process.env.RPC_42161]
     : ['https://arb1.arbitrum.io/rpc'],

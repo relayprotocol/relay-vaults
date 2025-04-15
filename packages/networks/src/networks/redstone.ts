@@ -5,7 +5,6 @@ export const redstone: ChildNetworkConfig = {
     usdc: '0xD5d59fC063e7548b6015A36fEb10B875924A19be',
     weth: '0x4200000000000000000000000000000000000006',
   },
-  baseChainId: 1,
   bridges: {
     optimism: {
       child: {
@@ -21,6 +20,7 @@ export const redstone: ChildNetworkConfig = {
   hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   isTestnet: false,
   name: 'Redstone',
+  parentChainId: 1,
   rpc: process.env.RPC_690
     ? [process.env.RPC_690]
     : ['https://rpc.redstonechain.com'],

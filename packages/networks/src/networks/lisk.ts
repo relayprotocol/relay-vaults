@@ -5,7 +5,6 @@ export const lisk: ChildNetworkConfig = {
     usdc: '0xF242275d3a6527d877f2c927a82D9b057609cc71',
     weth: '0x4200000000000000000000000000000000000006',
   },
-  baseChainId: 1,
   bridges: {
     optimism: {
       child: {
@@ -22,6 +21,7 @@ export const lisk: ChildNetworkConfig = {
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   name: 'Lisk',
+  parentChainId: 1,
   rpc: process.env.RPC_1135
     ? [process.env.RPC_1135]
     : ['https://rpc.api.lisk.com'],

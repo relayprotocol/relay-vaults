@@ -109,7 +109,7 @@ task('pool:add-origin', 'Add origin for a pool')
       const { chainId } = await ethers.provider.getNetwork()
       const network = networks[chainId.toString()] as ChildNetworkConfig
 
-      if (network.baseChainId) {
+      if (network.parentChainId) {
         throw Error('Origins can only be added on L1')
       }
 
@@ -132,7 +132,7 @@ task('pool:add-origin', 'Add origin for a pool')
       if (!l2ChainId) {
         // We need to select the L2 chain!
         const possibleL2s = Object.values(networks).filter(
-          (n) => (n as ChildNetworkConfig).baseChainId == chainId
+          (n) => (n as ChildNetworkConfig).parentChainId == chainId
         )
         const l2chainName = await new Select({
           choices: possibleL2s.map((network) => network.name),
@@ -285,7 +285,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       const { chainId } = await ethers.provider.getNetwork()
       const network = networks[chainId.toString()] as ChildNetworkConfig
 
-      if (network.baseChainId) {
+      if (network.parentChainId) {
         throw Error('Origins can only be added on L1')
       }
 
@@ -308,7 +308,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       if (!l2ChainId) {
         // We need to select the L2 chain!
         const possibleL2s = Object.values(networks).filter(
-          (n) => (n as ChildNetworkConfig).baseChainId == chainId
+          (n) => (n as ChildNetworkConfig).parentChainId == chainId
         )
         const l2chainName = await new Select({
           choices: possibleL2s.map((network) => network.name),

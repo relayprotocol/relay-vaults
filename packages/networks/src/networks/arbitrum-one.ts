@@ -9,26 +9,26 @@ export const arbitrumOne: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     arbitrum: {
-      l1: {
+      child: {
+        arbSys: '0x0000000000000000000000000000000000000064',
+        routerGateway: '0x5288c571Fd7aD117beA99bF60FE0846C4E84F933',
+      },
+      parent: {
         outbox: '0x0B9857ae2D4A3DBe74ffE1d7DF045bb7F96E4840',
         rollup: '0x5eF0D09d1E6204141B4d37530808eD19f60FBa35',
         routerGateway: '0x72Ce9c846789fdB6fC1f34aC4AD25Dd9ef7031ef',
       },
-      l2: {
-        arbSys: '0x0000000000000000000000000000000000000064',
-        routerGateway: '0x5288c571Fd7aD117beA99bF60FE0846C4E84F933',
-      },
     },
     cctp: {
-      l1: {
-        domain: 0n,
-        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
-        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
-      },
-      l2: {
+      child: {
         domain: 3n,
         messenger: '0x19330d10D9Cc8751218eaf51E8885D058642E08A',
         transmitter: '0xC30362313FBBA5cf9163F0bb16a0e01f01A896ca',
+      },
+      parent: {
+        domain: 0n,
+        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
+        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
       },
     },
   },

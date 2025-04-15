@@ -8,11 +8,11 @@ export const swell: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x758E0EE66102816F5C3Ec9ECc1188860fbb87812',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x758E0EE66102816F5C3Ec9ECc1188860fbb87812',
       },
     },
   },

@@ -8,11 +8,11 @@ export const bob: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x8AdeE124447435fE03e3CD24dF3f4cAE32E65a3E',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x8AdeE124447435fE03e3CD24dF3f4cAE32E65a3E',
       },
     },
   },

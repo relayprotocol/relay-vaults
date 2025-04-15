@@ -8,11 +8,11 @@ export const hemi: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
       },
     },
   },

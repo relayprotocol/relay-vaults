@@ -9,23 +9,23 @@ export const optimism: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     cctp: {
-      l1: {
-        domain: 0n,
-        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
-        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
-      },
-      l2: {
+      child: {
         domain: 2n,
         messenger: '0x2B4069517957735bE00ceE0fadAE88a26365528f',
         transmitter: '0x4D41f22c5a0e5c74090899E5a8Fb597a8842b3e8',
       },
+      parent: {
+        domain: 0n,
+        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
+        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
+      },
     },
     optimism: {
-      l1: {
-        portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
       },
     },
   },

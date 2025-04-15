@@ -8,11 +8,11 @@ export const redstone: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '',
       },
     },
   },

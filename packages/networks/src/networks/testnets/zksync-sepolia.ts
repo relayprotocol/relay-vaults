@@ -8,11 +8,11 @@ export const zkSyncSepolia: ChildNetworkConfig = {
   baseChainId: 11155111,
   bridges: {
     zksync: {
-      l1: {
-        sharedDefaultBridge: '0x3E8b2fe58675126ed30d0d12dea2A9bda72D18Ae',
-      },
-      l2: {
+      child: {
         sharedDefaultBridge: '0x681A1AFdC2e06776816386500D2D461a6C96cB45',
+      },
+      parent: {
+        sharedDefaultBridge: '0x3E8b2fe58675126ed30d0d12dea2A9bda72D18Ae',
       },
     },
   },

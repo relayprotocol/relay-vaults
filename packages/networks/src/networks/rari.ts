@@ -8,14 +8,14 @@ export const rari: ChildNetworkConfig = {
   baseChainId: 42161,
   bridges: {
     arbitrum: {
-      l1: {
-        outbox: '',
-        rollup: '',
-        routerGateway: '',
-      },
-      l2: {
+      child: {
         arbSys: '0x0000000000000000000000000000000000000064',
         // TODO
+        routerGateway: '',
+      },
+      parent: {
+        outbox: '',
+        rollup: '',
         routerGateway: '',
       },
     },

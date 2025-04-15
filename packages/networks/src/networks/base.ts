@@ -9,23 +9,23 @@ export const base: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     cctp: {
-      l1: {
-        domain: 0n,
-        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
-        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
-      },
-      l2: {
+      child: {
         domain: 6n,
         messenger: '0x1682Ae6375C4E4A97e4B583BC394c861A46D8962',
         transmitter: '0xAD09780d193884d503182aD4588450C416D6F9D4',
       },
+      parent: {
+        domain: 0n,
+        messenger: '0xBd3fa81B58Ba92a82136038B25aDec7066af3155',
+        transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
+      },
     },
     optimism: {
-      l1: {
-        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
       },
     },
   },

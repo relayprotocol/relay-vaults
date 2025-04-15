@@ -8,11 +8,11 @@ export const soneium: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x88e529A6ccd302c948689Cd5156C83D4614FAE92',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x88e529A6ccd302c948689Cd5156C83D4614FAE92',
       },
     },
   },

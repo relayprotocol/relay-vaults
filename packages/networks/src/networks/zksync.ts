@@ -14,11 +14,11 @@ export const zksync: ChildNetworkConfig = {
   bridges: {
     // can refresh these values by runinng `getZkSyncBridgeContracts(chainId)` from utils
     zksync: {
-      l1: {
-        sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
-      },
-      l2: {
+      child: {
         sharedDefaultBridge: '0x11f943b2c77b743AB90f4A0Ae7d5A4e7FCA3E102',
+      },
+      parent: {
+        sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
       },
     },
   },

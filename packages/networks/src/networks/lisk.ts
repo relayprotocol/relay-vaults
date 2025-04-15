@@ -8,11 +8,11 @@ export const lisk: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x26dB93F8b8b4f7016240af62F7730979d353f9A7',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x26dB93F8b8b4f7016240af62F7730979d353f9A7',
       },
     },
   },

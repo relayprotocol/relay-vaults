@@ -14,14 +14,14 @@ export const game7: ChildNetworkConfig = {
   // currently not in https://github.com/hyperlane-xyz/hyperlane-registry
   bridges: {
     arbitrum: {
-      l1: {
+      child: {
+        arbSys: '0x0000000000000000000000000000000000000064',
+        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
+      },
+      parent: {
         outbox: '',
         rollup: '',
         routerGateway: '',
-      },
-      l2: {
-        arbSys: '0x0000000000000000000000000000000000000064',
-        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
       },
     },
   },

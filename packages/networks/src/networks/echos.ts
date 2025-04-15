@@ -10,11 +10,11 @@ export const echos: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
       },
     },
   },

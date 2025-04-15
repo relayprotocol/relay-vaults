@@ -7,13 +7,13 @@ export const degen: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     arbitrum: {
-      l1: {
-        outbox: '',
-        rollup: '',
+      child: {
+        arbSys: '',
         routerGateway: '',
       },
-      l2: {
-        arbSys: '',
+      parent: {
+        outbox: '',
+        rollup: '',
         routerGateway: '',
       },
     },

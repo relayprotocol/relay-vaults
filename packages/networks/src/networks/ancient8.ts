@@ -8,11 +8,11 @@ export const ancient8: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x639F2AECE398Aa76b07e59eF6abe2cFe32bacb68',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x639F2AECE398Aa76b07e59eF6abe2cFe32bacb68',
       },
     },
   },

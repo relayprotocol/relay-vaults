@@ -8,11 +8,11 @@ export const mint: ChildNetworkConfig = {
   baseChainId: 1,
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x59625d1FE0Eeb8114a4d13c863978F39b3471781',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x59625d1FE0Eeb8114a4d13c863978F39b3471781',
       },
     },
   },

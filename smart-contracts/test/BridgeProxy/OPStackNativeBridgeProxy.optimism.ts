@@ -12,7 +12,7 @@ const {
   assets: op1Assets,
   bridges: {
     optimism: {
-      l1: { portalProxy },
+      parent: { portalProxy },
     },
   },
 } = networks[10] as ChildNetworkConfig

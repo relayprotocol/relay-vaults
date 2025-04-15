@@ -145,7 +145,7 @@ interface OPPortalNetworks {
 const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
-    return (networks[chainId] as ChildNetworkConfig).bridges?.optimism?.l1
+    return (networks[chainId] as ChildNetworkConfig).bridges?.optimism?.parent
       .portalProxy
   })
   .reduce((oPPortalNetworks, chainId) => {
@@ -158,7 +158,7 @@ const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
       }
     }
     oPPortalNetworks[l1Network.slug].address.push(
-      l2Network.bridges.optimism!.l1.portalProxy
+      l2Network.bridges.optimism!.parent.portalProxy
     )
     return oPPortalNetworks
   }, {} as OPPortalNetworks)
@@ -173,7 +173,7 @@ interface OrbitOutboxNetworks {
 const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
-    return (networks[chainId] as ChildNetworkConfig).bridges?.arbitrum?.l1
+    return (networks[chainId] as ChildNetworkConfig).bridges?.arbitrum?.parent
       .outbox
   })
   .reduce((orbitOutboxNetworks, chainId) => {
@@ -186,7 +186,7 @@ const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
       }
     }
     orbitOutboxNetworks[l1Network.slug].address.push(
-      l2Network.bridges.arbitrum!.l1.outbox
+      l2Network.bridges.arbitrum!.parent.outbox
     )
     return orbitOutboxNetworks
   }, {} as OrbitOutboxNetworks)

@@ -29,7 +29,7 @@ describe('BridgeProxies accept native token', function () {
       const parameters = {
         CCTPBridgeProxy: {
           l1BridgeProxy,
-          messenger: bridges.cctp.l2.messenger,
+          messenger: bridges.cctp.child.messenger,
           relayPool,
           relayPoolChainId: 1,
           usdc: assets.usdc,
@@ -64,14 +64,14 @@ describe('BridgeProxies accept native token', function () {
       const [user] = await ethers.getSigners()
       const { bridges } = networks[chainId] as ChildNetworkConfig
 
-      if (!bridges.optimism?.l1.portalProxy) {
+      if (!bridges.optimism?.parent.portalProxy) {
         throw new Error('OPStack bridge configuration not found')
       }
 
       const parameters = {
         OPStackNativeBridgeProxy: {
           l1BridgeProxy,
-          portalProxy: bridges.optimism?.l1.portalProxy,
+          portalProxy: bridges.optimism?.parent.portalProxy,
           relayPool,
           relayPoolChainId: 31337,
         },
@@ -115,17 +115,17 @@ describe('BridgeProxies accept native token', function () {
       const chainId = 42161 // Arbitrum One
       const { bridges } = networks[chainId] as ChildNetworkConfig
 
-      if (!bridges.arbitrum?.l2.routerGateway) {
+      if (!bridges.arbitrum?.child.routerGateway) {
         throw new Error('Arbitrum bridge configuration not found')
       }
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {
           l1BridgeProxy,
-          outbox: bridges.arbitrum?.l1.outbox || ethers.ZeroAddress,
+          outbox: bridges.arbitrum?.parent.outbox || ethers.ZeroAddress,
           relayPool,
           relayPoolChainId: 31337,
-          routerGateway: bridges.arbitrum?.l2.routerGateway,
+          routerGateway: bridges.arbitrum?.child.routerGateway,
         },
       } as const // Use const assertion to fix type error
 
@@ -168,14 +168,14 @@ describe('BridgeProxies accept native token', function () {
       const chainId = 324 // zkSync Era mainnet
       const { bridges } = networks[chainId] as ChildNetworkConfig
 
-      if (!bridges.zksync?.l2.sharedDefaultBridge) {
+      if (!bridges.zksync?.child.sharedDefaultBridge) {
         throw new Error('ZkSync bridge configuration not found')
       }
 
       const parameters = {
         ZkSyncBridgeProxy: {
           l1BridgeProxy,
-          l2SharedDefaultBridge: bridges.zksync.l2.sharedDefaultBridge,
+          l2SharedDefaultBridge: bridges.zksync.child.sharedDefaultBridge,
           relayPool,
           relayPoolChainId: 31337,
         },

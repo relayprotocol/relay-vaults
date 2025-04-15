@@ -21,7 +21,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     const parameters = {
       OPStackNativeBridgeProxy: {
         l1BridgeProxy,
-        portalProxy: bridges.optimism!.l1!.portalProxy,
+        portalProxy: bridges.optimism!.parent!.portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },
@@ -201,7 +201,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     const parameters = {
       OPStackNativeBridgeProxy: {
         l1BridgeProxy,
-        portalProxy: bridges.optimism!.l1!.portalProxy,
+        portalProxy: bridges.optimism!.parent!.portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },

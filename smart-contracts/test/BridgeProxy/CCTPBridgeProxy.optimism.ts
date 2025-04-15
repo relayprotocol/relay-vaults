@@ -114,7 +114,7 @@ describe('CCTPBridgeProxy', function () {
       expect(args?.burnToken).to.be.equal(assets.usdc)
       expect(args?.amount).to.be.equal(amount)
       expect(args?.destinationDomain).to.be.equal(
-        networks[chainId].bridges.cctp.l1.domain
+        networks[chainId].bridges.cctp.parent.domain
       )
       // expect(args?.mintRecipient).to.be.equal(await recipient.getAddress())
     })

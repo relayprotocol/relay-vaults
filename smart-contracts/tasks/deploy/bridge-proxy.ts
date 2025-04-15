@@ -198,7 +198,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     } else if (type === 'arbitrum') {
       // on L1 we don't need the routerGateway as it is only used in the `bridge` call
       const routerGateway = isL2
-        ? bridges?.arbitrum?.l2.routerGateway
+        ? bridges?.arbitrum?.child.routerGateway
         : ethers.ZeroAddress
 
       const parameters = {
@@ -221,8 +221,8 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       constructorArguments = [routerGateway]
       console.log(`✅ ArbOrbit bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'zksync') {
-      const l2SharedDefaultBridge = bridges.zksync!.l2.sharedDefaultBridge!
-      const l1SharedDefaultBridge = bridges.zksync!.l1.sharedDefaultBridge!
+      const l2SharedDefaultBridge = bridges.zksync!.child.sharedDefaultBridge!
+      const l1SharedDefaultBridge = bridges.zksync!.parent.sharedDefaultBridge!
       // for verification
       constructorArguments = [l2SharedDefaultBridge]
       if (isZKsync) {
@@ -263,7 +263,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         ...constructorArguments,
         defaultProxyModuleArguments.relayPoolChainId,
         defaultProxyModuleArguments.relayPool,
-        defaultProxyModuleArguments.l1BridgeProxy,
+        defaultProxyModuleArguments.parentBridgeProxy,
       ],
     })
 

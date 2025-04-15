@@ -1,11 +1,12 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const arbitrumOne: L2NetworkConfig = {
+export const arbitrumOne: ChildNetworkConfig = {
   assets: {
     arb: '0x912CE59144191C1204E64559FE8253a0e49E6548',
     udt: '0xd5d3aA404D7562d09a848F96a8a8d5D65977bF90',
     usdc: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
   },
+  baseChainId: 1,
   bridges: {
     arbitrum: {
       l1: {
@@ -35,7 +36,6 @@ export const arbitrumOne: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x979Ca5202784112f4738403dBec5D0F3B9daabB9',
   isTestnet: false,
-  baseChainId: 1,
   name: 'Arbitrum',
   rpc: process.env.RPC_42161
     ? [process.env.RPC_42161]

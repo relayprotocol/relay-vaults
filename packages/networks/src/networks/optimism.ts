@@ -1,11 +1,12 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const optimism: L2NetworkConfig = {
+export const optimism: ChildNetworkConfig = {
   assets: {
     udt: '0xc709c9116dBf29Da9c25041b13a07A0e68aC5d2D',
     usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
     weth: '0x4200000000000000000000000000000000000006',
   },
+  baseChainId: 1,
   bridges: {
     cctp: {
       l1: {
@@ -32,7 +33,6 @@ export const optimism: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0xd4C1905BB1D26BC93DAC913e13CaCC278CdCC80D',
   isTestnet: false,
-  baseChainId: 1,
   name: 'OP Mainnet',
   rpc: process.env.RPC_10
     ? [process.env.RPC_10]

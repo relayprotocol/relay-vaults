@@ -1,9 +1,9 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // Arbitrum L3
 // https://docs.game7.io/the-g7-network
 
-export const game7: L2NetworkConfig = {
+export const game7: ChildNetworkConfig = {
   assets: {
     usdc: '0x401eCb1D350407f13ba348573E5630B83638E30D',
     weth: '0xB1116517a980DA056E05Fa521d524E1AFD8D885f',

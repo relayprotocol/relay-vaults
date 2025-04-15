@@ -4,7 +4,7 @@ export interface L1NetworkConfig extends NetworkConfig {
   }
 }
 
-export interface L2NetworkConfig extends NetworkConfig {
+export interface ChildNetworkConfig extends NetworkConfig {
   baseChainId: number
   stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
   bridges: {

@@ -1,10 +1,11 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const arbSepolia: L2NetworkConfig = {
+export const arbSepolia: ChildNetworkConfig = {
   assets: {
     udt: '0xeCf77F1D5bB9d40BCc79343DB16ACB86795050fC',
     usdc: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
   },
+  baseChainId: 11155111,
   bridges: {
     arbitrum: {
       l1: {
@@ -34,7 +35,6 @@ export const arbSepolia: L2NetworkConfig = {
   earliestBlock: 130000000,
   hyperlaneMailbox: '0x598facE78a4302f11E3de0bee1894Da0b2Cb71F8',
   isTestnet: true,
-  baseChainId: 11155111,
   name: 'Arbitrum Sepolia',
   rpc: process.env.RPC_421614
     ? [process.env.RPC_421614]

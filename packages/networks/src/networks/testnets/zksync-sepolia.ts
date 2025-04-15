@@ -1,10 +1,11 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const zkSyncSepolia: L2NetworkConfig = {
+export const zkSyncSepolia: ChildNetworkConfig = {
   assets: {
     usdc: '0xAe045DE5638162fa134807Cb558E15A3F5A7F853',
     weth: '0x2D6Db36B3117802E996f13073A08A685D3FeF7eD',
   },
+  baseChainId: 11155111,
   bridges: {
     zksync: {
       l1: {
@@ -20,7 +21,6 @@ export const zkSyncSepolia: L2NetworkConfig = {
   hyperlaneMailbox: '0x1E45f767d51FA1Ec326d35e3BD4904fF0f30fCDa',
   isTestnet: true,
   isZKsync: true,
-  baseChainId: 11155111,
   name: 'ZKsync Sepolia Testnet',
   rpc: process.env.RPC_300
     ? [process.env.RPC_300]

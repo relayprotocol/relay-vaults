@@ -1,10 +1,11 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const arbitrumNova: L2NetworkConfig = {
+export const arbitrumNova: ChildNetworkConfig = {
   assets: {
     usdc: '0x750ba8b76187092B0D1E87E28daaf484d1b5273b',
     weth: '0x765277EebeCA2e31912C9946eAe1021199B39C61',
   },
+  baseChainId: 1,
   bridges: {
     arbitrum: {
       l1: {
@@ -22,7 +23,6 @@ export const arbitrumNova: L2NetworkConfig = {
   earliestBlock: 83282400,
   hyperlaneMailbox: '0x3a867fCfFeC2B790970eeBDC9023E75B0a172aa7',
   isTestnet: false,
-  baseChainId: 1,
   name: 'Arbitrum Nova',
   rpc: process.env.RPC_42170
     ? [process.env.RPC_42170]

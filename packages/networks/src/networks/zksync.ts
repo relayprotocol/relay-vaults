@@ -1,11 +1,13 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const zksync: L2NetworkConfig = {
+export const zksync: ChildNetworkConfig = {
   assets: {
     dai: '0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656',
     eth: '0x000000000000000000000000000000000000800A',
     usdc: '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4',
   },
+
+  baseChainId: 1,
 
   // no CCTP on zksync https://developers.circle.com/stablecoins/evm-smart-contracts
   // see https://www.circle.com/blog/zksync-migration-guide
@@ -30,8 +32,6 @@ export const zksync: L2NetworkConfig = {
   isTestnet: false,
 
   isZKsync: true,
-
-  baseChainId: 1,
 
   name: 'Zksync',
   rpc: process.env.RPC_324

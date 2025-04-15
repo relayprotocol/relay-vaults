@@ -1,10 +1,11 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const echos: L2NetworkConfig = {
+export const echos: ChildNetworkConfig = {
   assets: {
     usdc: '0x37234506262FF64d97694eA1F0461414c9e8A39e',
     weth: '0x4200000000000000000000000000000000000006',
   },
+  baseChainId: 1,
   bridges: {
     optimism: {
       l1: {
@@ -19,7 +20,6 @@ export const echos: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x2cA13C25A48B5A98c5AD47808Efa983D29543a9a',
   isTestnet: false,
-  baseChainId: 1,
   name: 'Echos',
   rpc: process.env.RPC_4321
     ? [process.env.RPC_4321]

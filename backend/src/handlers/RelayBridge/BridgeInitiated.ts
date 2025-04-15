@@ -4,7 +4,7 @@ import { ABIs } from '@relay-protocol/helpers'
 import { BridgeProxy } from '@relay-protocol/abis'
 import networks from '@relay-protocol/networks'
 import { decodeEventLog } from 'viem'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 export default async function ({
   event,
@@ -13,7 +13,7 @@ export default async function ({
   event: Event<'RelayBridge:BridgeInitiated'>
   context: Context<'RelayBridge:BridgeInitiated'>
 }) {
-  const networkConfig = networks[context.network.chainId] as L2NetworkConfig
+  const networkConfig = networks[context.network.chainId] as ChildNetworkConfig
   const { nonce, sender, recipient, ASSET, amount, BRIDGE_PROXY } = event.args
 
   // Parse logs to find the DispatchId event and extract hyperlaneMessageId

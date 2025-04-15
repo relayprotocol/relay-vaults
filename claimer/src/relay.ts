@@ -1,6 +1,6 @@
 import { ZeroAddress } from 'ethers'
 import networks from '@relay-protocol/networks'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 const ENDPOINT = 'https://api.relay.link/admin/execute-withdrawal'
 const TESTNETS_ENDPOINT =
@@ -42,8 +42,9 @@ export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
 export const finalizeWithdrawal = async (
   bridgeTransaction: BridgeTransaction
 ) => {
-  const stack = (networks[bridgeTransaction.originChainId] as L2NetworkConfig)
-    .stack
+  const stack = (
+    networks[bridgeTransaction.originChainId] as ChildNetworkConfig
+  ).stack
   const network = networks[bridgeTransaction.destinationPoolChainId]
   await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
     amount: bridgeTransaction.amount,

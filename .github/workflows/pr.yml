@@ -23,24 +23,24 @@ jobs:
             ${{ matrix.folders }}/**
 
       - uses: actions/setup-node@v4
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_modified == 'true'
         with:
           node-version: 22
 
       - run: yarn
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - run: 'yarn build'
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - name: 'run lint'
         run: yarn workspace @relay-protocol/${{matrix.folders}} lint
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - name: 'run tests'
         run: yarn workspace @relay-protocol/${{matrix.folders}} run test
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash

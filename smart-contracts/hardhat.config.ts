@@ -93,6 +93,7 @@ const etherscan = {
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
     sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
+    swellchain: 'default-api-key',
     xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
     zero: 'default-api-key',
   },

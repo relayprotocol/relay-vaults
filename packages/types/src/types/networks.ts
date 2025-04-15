@@ -1,4 +1,4 @@
-export interface childNetworkConfig extends NetworkConfig {
+export interface L1NetworkConfig extends NetworkConfig {
   uniswapV3: {
     universalRouterAddress: string
   }
@@ -9,41 +9,41 @@ export interface ChildNetworkConfig extends NetworkConfig {
   stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
   bridges: {
     optimism?: {
-      child: {
+      parent: {
         portalProxy: string
       }
-      parent: {
+      child: {
         messagePasser: string
       }
     }
     arbitrum?: {
-      child: {
+      parent: {
         outbox: string
         rollup: string
         routerGateway: string
       }
-      parent: {
+      child: {
         arbSys: string
         routerGateway: string
       }
     }
     cctp?: {
-      child: {
+      parent: {
         domain: bigint
         messenger: string
         transmitter: string
       }
-      parent: {
+      child: {
         domain: bigint
         messenger: string
         transmitter: string
       }
     }
     zksync?: {
-      child: {
+      parent: {
         sharedDefaultBridge: string
       }
-      parent: {
+      child: {
         sharedDefaultBridge: string
       }
     }

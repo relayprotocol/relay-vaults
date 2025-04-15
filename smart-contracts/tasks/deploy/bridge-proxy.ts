@@ -9,7 +9,7 @@ import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNative
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
-import { L1NetworkConfig, L2NetworkConfig } from '@relay-protocol/types'
+import { L1NetworkConfig, ChildNetworkConfig } from '@relay-protocol/types'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 
@@ -57,7 +57,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     } = networkConfig as L1NetworkConfig
 
     // eslint-disable-next-line prefer-const
-    let { baseChainId, stack } = networkConfig as L2NetworkConfig
+    let { baseChainId, stack } = networkConfig as ChildNetworkConfig
 
     const isL2 = !!baseChainId
 

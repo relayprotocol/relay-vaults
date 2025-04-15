@@ -8,7 +8,7 @@ import { reverts } from '../utils/errors'
 
 import { CCTPBridgeProxy } from '../../typechain-types'
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 const chainId = 10
 const {
@@ -19,7 +19,7 @@ const {
     },
   },
   assets,
-} = networks[chainId] as L2NetworkConfig
+} = networks[chainId] as ChildNetworkConfig
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'

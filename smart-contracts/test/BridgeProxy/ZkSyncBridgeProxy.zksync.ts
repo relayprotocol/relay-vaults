@@ -12,7 +12,7 @@ const destinationChainId = 1 // Ethereum mainnet
 const {
   bridges: {
     zksync: {
-      l2: { sharedDefaultBridge },
+      child: { sharedDefaultBridge },
     },
   },
   assets,

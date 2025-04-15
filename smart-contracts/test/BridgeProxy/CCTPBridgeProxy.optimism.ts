@@ -14,8 +14,7 @@ const chainId = 10
 const {
   bridges: {
     cctp: {
-      l1,
-      l2: { messenger, transmitter },
+      child: { messenger, transmitter },
     },
   },
   assets,

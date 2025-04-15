@@ -1,5 +1,7 @@
 import { L2NetworkConfig } from '@relay-protocol/types'
 
+// Base L3
+// https://echos.fun
 export const echos: L2NetworkConfig = {
   assets: {
     usdc: '0x37234506262FF64d97694eA1F0461414c9e8A39e',
@@ -8,7 +10,7 @@ export const echos: L2NetworkConfig = {
   bridges: {
     optimism: {
       l1: {
-        portalProxy: '',
+        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
       },
       l2: {
         messagePasser: '0x4200000000000000000000000000000000000016',

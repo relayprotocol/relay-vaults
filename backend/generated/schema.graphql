@@ -18,21 +18,90 @@ type Meta {
 
 type Query {
   yieldPool(chainId: Float!, contractAddress: String!): yieldPool
-  yieldPools(where: yieldPoolFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): yieldPoolPage!
+  yieldPools(
+    where: yieldPoolFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): yieldPoolPage!
   relayPool(chainId: Float!, contractAddress: String!): relayPool
-  relayPools(where: relayPoolFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): relayPoolPage!
-  poolOrigin(chainId: Float!, pool: String!, originChainId: Float!, originBridge: String!): poolOrigin
-  poolOrigins(where: poolOriginFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolOriginPage!
+  relayPools(
+    where: relayPoolFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): relayPoolPage!
+  poolOrigin(
+    chainId: Float!
+    pool: String!
+    originChainId: Float!
+    originBridge: String!
+  ): poolOrigin
+  poolOrigins(
+    where: poolOriginFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): poolOriginPage!
   poolAction(chainId: Float!, transactionHash: String!): poolAction
-  poolActions(where: poolActionFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolActionPage!
+  poolActions(
+    where: poolActionFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): poolActionPage!
   userBalance(chainId: Float!, wallet: String!, relayPool: String!): userBalance
-  userBalances(where: userBalanceFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): userBalancePage!
+  userBalances(
+    where: userBalanceFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): userBalancePage!
   relayBridge(chainId: Float!, contractAddress: String!): relayBridge
-  relayBridges(where: relayBridgeFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): relayBridgePage!
-  bridgeTransaction(originChainId: Float!, originBridgeAddress: String!, nonce: BigInt!): bridgeTransaction
-  bridgeTransactions(where: bridgeTransactionFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): bridgeTransactionPage!
-  vaultSnapshot(chainId: Float!, blockNumber: BigInt!, vault: String!): vaultSnapshot
-  vaultSnapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage!
+  relayBridges(
+    where: relayBridgeFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): relayBridgePage!
+  bridgeTransaction(
+    originChainId: Float!
+    originBridgeAddress: String!
+    nonce: BigInt!
+  ): bridgeTransaction
+  bridgeTransactions(
+    where: bridgeTransactionFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): bridgeTransactionPage!
+  vaultSnapshot(
+    chainId: Float!
+    blockNumber: BigInt!
+    vault: String!
+  ): vaultSnapshot
+  vaultSnapshots(
+    where: vaultSnapshotFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): vaultSnapshotPage!
   _meta: Meta
 }
 
@@ -115,9 +184,30 @@ type relayPool {
   totalBridgeFees: BigInt!
   totalShares: BigInt!
   yieldPool: String!
-  origins(where: poolOriginFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolOriginPage
-  snapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage
-  userBalances(where: userBalanceFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): userBalancePage
+  origins(
+    where: poolOriginFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): poolOriginPage
+  snapshots(
+    where: vaultSnapshotFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): vaultSnapshotPage
+  userBalances(
+    where: userBalanceFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): userBalancePage
 }
 
 type poolOriginPage {
@@ -137,7 +227,14 @@ type poolOrigin {
   originChainId: Int!
   pool: relayPool
   proxyBridge: String!
-  transactions(where: bridgeTransactionFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): bridgeTransactionPage
+  transactions(
+    where: bridgeTransactionFilter
+    orderBy: String
+    orderDirection: String
+    before: String
+    after: String
+    limit: Int
+  ): bridgeTransactionPage
 }
 
 type bridgeTransactionPage {
@@ -165,7 +262,6 @@ type bridgeTransaction {
   originSender: String!
   originTimestamp: BigInt!
   originTxHash: String!
-  zksyncFinalizeHash: String
   zksyncWithdrawalHash: String
   origin: poolOrigin
 }
@@ -341,16 +437,6 @@ input bridgeTransactionFilter {
   originTxHash_ends_with: String
   originTxHash_not_starts_with: String
   originTxHash_not_ends_with: String
-  zksyncFinalizeHash: String
-  zksyncFinalizeHash_not: String
-  zksyncFinalizeHash_in: [String]
-  zksyncFinalizeHash_not_in: [String]
-  zksyncFinalizeHash_contains: String
-  zksyncFinalizeHash_not_contains: String
-  zksyncFinalizeHash_starts_with: String
-  zksyncFinalizeHash_ends_with: String
-  zksyncFinalizeHash_not_starts_with: String
-  zksyncFinalizeHash_not_ends_with: String
   zksyncWithdrawalHash: String
   zksyncWithdrawalHash_not: String
   zksyncWithdrawalHash_in: [String]

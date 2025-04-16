@@ -20,7 +20,7 @@ const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
   return {
     ...usedNetworks,
     [networks[chainId].slug]: {
-      chainId,
+      chainId: Number(chainId),
       transport: http(networks[chainId].rpc[0]),
     },
   }

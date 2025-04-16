@@ -4,7 +4,7 @@ import { ABIs } from '@relay-protocol/helpers'
 import { BridgeProxy } from '@relay-protocol/abis'
 import networks from '@relay-protocol/networks'
 import { decodeEventLog } from 'viem'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 export default async function ({
   event,
@@ -13,7 +13,7 @@ export default async function ({
   event: Event<'RelayBridge:BridgeInitiated'>
   context: Context<'RelayBridge:BridgeInitiated'>
 }) {
-  const networkConfig = networks[context.network.chainId] as L2NetworkConfig
+  const networkConfig = networks[context.network.chainId] as ChildNetworkConfig
   const { nonce, sender, recipient, ASSET, amount, BRIDGE_PROXY } = event.args
 
   // Parse logs to find the DispatchId event and extract hyperlaneMessageId
@@ -40,9 +40,9 @@ export default async function ({
       }
     } else if (
       // OP event
-      networkConfig.bridges.optimism?.l2.messagePasser &&
+      networkConfig.bridges.optimism?.child.messagePasser &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.optimism?.l2.messagePasser.toLowerCase()
+        networkConfig.bridges.optimism?.child.messagePasser.toLowerCase()
     ) {
       const event = decodeEventLog({
         abi: ABIs.L2ToL1MessagePasser,
@@ -55,9 +55,9 @@ export default async function ({
       }
     } else if (
       // ARB event
-      networkConfig.bridges.arbitrum?.l2.arbSys &&
+      networkConfig.bridges.arbitrum?.child.arbSys &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.arbitrum?.l2.arbSys.toLowerCase()
+        networkConfig.bridges.arbitrum?.child.arbSys.toLowerCase()
     ) {
       const event = decodeEventLog({
         abi: ABIs.IArbSys,
@@ -70,9 +70,9 @@ export default async function ({
       }
     } else if (
       // Zksync event
-      networkConfig.bridges.zksync?.l2.sharedDefaultBridge &&
+      networkConfig.bridges.zksync?.child.sharedDefaultBridge &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.zksync?.l2.sharedDefaultBridge.toLowerCase()
+        networkConfig.bridges.zksync?.child.sharedDefaultBridge.toLowerCase()
     ) {
       const eventLog = decodeEventLog({
         abi: ABIs.IL1SharedBridge,

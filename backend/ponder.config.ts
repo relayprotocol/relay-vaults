@@ -11,7 +11,7 @@ import {
 import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-protocol/addresses'
 import networks from '@relay-protocol/networks'
-import { L1NetworkConfig, L2NetworkConfig } from '@relay-protocol/types'
+import { L1NetworkConfig, ChildNetworkConfig } from '@relay-protocol/types'
 
 const deployedAddresses = getAddresses()
 
@@ -29,7 +29,7 @@ const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
 // VaultSnapshot networks
 const vaultSnapshotNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
   .reduce((vaultSnapshotNetworks, chainId) => {
     const network = networks[chainId]
@@ -44,7 +44,7 @@ const vaultSnapshotNetworks = Object.keys(networks)
 // RelayBridge networks
 const relayBridgeNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return (networks[chainId] as L2NetworkConfig).l1ChainId
+    return (networks[chainId] as ChildNetworkConfig).parentChainId
   })
   .reduce((relayBridgeNetworks, chainId) => {
     const network = networks[chainId]
@@ -70,7 +70,7 @@ const relayBridgeNetworks = Object.keys(networks)
 // RelayBridgeFactory networks
 const relayBridgeFactoryNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return (networks[chainId] as L2NetworkConfig).l1ChainId
+    return (networks[chainId] as ChildNetworkConfig).parentChainId
   })
   .reduce((relayBridgeFactoryNetworks, chainId) => {
     const network = networks[chainId]
@@ -91,7 +91,7 @@ const relayBridgeFactoryNetworks = Object.keys(networks)
 // RelayPoolFactory networks
 const relayPoolFactoryNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
   .reduce((relayPoolFactoryNetworks, chainId) => {
     const network = networks[chainId]
@@ -112,7 +112,7 @@ const relayPoolFactoryNetworks = Object.keys(networks)
 
 const relayPoolNetworks = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as L2NetworkConfig).l1ChainId
+    return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
   .reduce((relayPoolNetworks, chainId) => {
     const network = networks[chainId]
@@ -145,12 +145,12 @@ interface OPPortalNetworks {
 const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
-    return (networks[chainId] as L2NetworkConfig).bridges?.optimism?.l1
+    return (networks[chainId] as ChildNetworkConfig).bridges?.optimism?.parent
       .portalProxy
   })
   .reduce((oPPortalNetworks, chainId) => {
-    const l2Network = networks[chainId] as L2NetworkConfig
-    const l1Network = networks[l2Network.l1ChainId] as L1NetworkConfig
+    const l2Network = networks[chainId] as ChildNetworkConfig
+    const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
     if (!oPPortalNetworks[l1Network.slug]) {
       oPPortalNetworks[l1Network.slug] = {
         address: [],
@@ -158,7 +158,7 @@ const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
       }
     }
     oPPortalNetworks[l1Network.slug].address.push(
-      l2Network.bridges.optimism!.l1.portalProxy
+      l2Network.bridges.optimism!.parent.portalProxy
     )
     return oPPortalNetworks
   }, {} as OPPortalNetworks)
@@ -173,11 +173,12 @@ interface OrbitOutboxNetworks {
 const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
-    return (networks[chainId] as L2NetworkConfig).bridges?.arbitrum?.l1.outbox
+    return (networks[chainId] as ChildNetworkConfig).bridges?.arbitrum?.parent
+      .outbox
   })
   .reduce((orbitOutboxNetworks, chainId) => {
-    const l2Network = networks[chainId] as L2NetworkConfig
-    const l1Network = networks[l2Network.l1ChainId] as L1NetworkConfig
+    const l2Network = networks[chainId] as ChildNetworkConfig
+    const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
     if (!orbitOutboxNetworks[l1Network.slug]) {
       orbitOutboxNetworks[l1Network.slug] = {
         address: [],
@@ -185,7 +186,7 @@ const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
       }
     }
     orbitOutboxNetworks[l1Network.slug].address.push(
-      l2Network.bridges.arbitrum!.l1.outbox
+      l2Network.bridges.arbitrum!.parent.outbox
     )
     return orbitOutboxNetworks
   }, {} as OrbitOutboxNetworks)

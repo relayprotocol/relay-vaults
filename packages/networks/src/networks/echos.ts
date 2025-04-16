@@ -1,19 +1,19 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // Base L3
 // https://echos.fun
-export const echos: L2NetworkConfig = {
+export const echos: ChildNetworkConfig = {
   assets: {
     usdc: '0x37234506262FF64d97694eA1F0461414c9e8A39e',
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
     optimism: {
-      l1: {
-        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
-      },
-      l2: {
+      child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e',
       },
     },
   },
@@ -21,8 +21,8 @@ export const echos: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x2cA13C25A48B5A98c5AD47808Efa983D29543a9a',
   isTestnet: false,
-  l1ChainId: 1,
   name: 'Echos',
+  parentChainId: 1,
   rpc: process.env.RPC_4321
     ? [process.env.RPC_4321]
     : ['https://rpc-echos-mainnet-0.t.conduit.xyz'],

@@ -1,18 +1,18 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const degen: L2NetworkConfig = {
+export const degen: ChildNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
     arbitrum: {
-      l1: {
-        outbox: '',
-        rollup: '',
+      child: {
+        arbSys: '',
         routerGateway: '',
       },
-      l2: {
-        arbSys: '',
+      parent: {
+        outbox: '',
+        rollup: '',
         routerGateway: '',
       },
     },
@@ -21,8 +21,8 @@ export const degen: L2NetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
-  l1ChainId: 1,
   name: 'Degen',
+  parentChainId: 1,
   rpc: process.env.RPC_666666666
     ? [process.env.RPC_666666666]
     : ['https://rpc.degen.tips'],

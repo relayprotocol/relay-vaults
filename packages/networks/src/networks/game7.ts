@@ -1,24 +1,25 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // Arbitrum L3
 // https://docs.game7.io/the-g7-network
 
-export const game7: L2NetworkConfig = {
+export const game7: ChildNetworkConfig = {
   assets: {
     usdc: '0x401eCb1D350407f13ba348573E5630B83638E30D',
     weth: '0xB1116517a980DA056E05Fa521d524E1AFD8D885f',
   },
+
   // currently not in https://github.com/hyperlane-xyz/hyperlane-registry
   bridges: {
     arbitrum: {
-      l1: {
+      child: {
+        arbSys: '0x0000000000000000000000000000000000000064',
+        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
+      },
+      parent: {
         outbox: '',
         rollup: '',
         routerGateway: '',
-      },
-      l2: {
-        arbSys: '0x0000000000000000000000000000000000000064',
-        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
       },
     },
   },
@@ -31,9 +32,9 @@ export const game7: L2NetworkConfig = {
 
   isTestnet: false,
 
-  l1ChainId: 1,
-
   name: 'Game7',
+
+  parentChainId: 1,
 
   rpc: process.env.RPC_2187
     ? [process.env.RPC_2187]

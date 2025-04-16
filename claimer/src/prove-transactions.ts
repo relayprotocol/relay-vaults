@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import { RelayVaultService } from '@relay-protocol/client'
 import networks from '@relay-protocol/networks'
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 import { submitProof } from './relay'
 
 const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
@@ -40,7 +40,7 @@ const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
 `
 
 const OpChains: (number | bigint)[] = (
-  Object.values(networks) as L2NetworkConfig[]
+  Object.values(networks) as ChildNetworkConfig[]
 )
   .filter((n) => n.stack === 'optimism')
   .map((n) => n.chainId)

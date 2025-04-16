@@ -12,6 +12,7 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
         asset
         amount
         originTxHash
+        originTimestamp
       }
     }
   }

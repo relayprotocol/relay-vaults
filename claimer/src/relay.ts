@@ -12,9 +12,11 @@ interface BridgeTransaction {
   originChainId: string
   originTxHash: string
   destinationPoolChainId: string
+  originTimestamp: number
 }
 
 const sendRequest = async (endpoint: string, body: any) => {
+  console.log(JSON.stringify(body))
   return fetch(endpoint, {
     body: JSON.stringify(body),
     headers: {
@@ -27,6 +29,7 @@ const sendRequest = async (endpoint: string, body: any) => {
 
 // Submits a proof (OP stack only)
 export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
+  console.log('Submitting proof for', bridgeTransaction)
   const network = networks[bridgeTransaction.destinationPoolChainId]
   await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
     amount: bridgeTransaction.amount,
@@ -45,6 +48,7 @@ export const finalizeWithdrawal = async (
   const stack = (
     networks[bridgeTransaction.originChainId] as ChildNetworkConfig
   ).stack
+  console.log(`Finalizing ${stack}`, bridgeTransaction)
   const network = networks[bridgeTransaction.destinationPoolChainId]
   await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
     amount: bridgeTransaction.amount,

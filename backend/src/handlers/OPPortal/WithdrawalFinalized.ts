@@ -12,8 +12,8 @@ export default async function ({
   await context.db.sql
     .update(bridgeTransaction)
     .set({
+      nativeBridgeFinalizedTxHash: event.transaction.hash,
       nativeBridgeStatus: 'FINALIZED',
-      opProofTxHash: event.transaction.hash,
     })
     .where(
       and(

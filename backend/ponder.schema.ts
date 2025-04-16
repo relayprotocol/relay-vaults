@@ -241,7 +241,6 @@ export const relayBridge = onchainTable(
  *
  * ZKSYNC Specifics:
  * - zksyncWithdrawalHash: hash of the message passed from L2 to L1
- * - zksyncFinalizeHash: hash of the tx where withdrawal was finalized (on L1)
  */
 export const bridgeTransaction = onchainTable(
   'bridge_transaction',
@@ -264,7 +263,6 @@ export const bridgeTransaction = onchainTable(
     originSender: t.hex().notNull(),
     originTimestamp: t.bigint().notNull(),
     originTxHash: t.hex().notNull(),
-    zksyncFinalizeHash: t.hex(),
     zksyncWithdrawalHash: t.hex(),
   }),
   (table) => ({
@@ -280,7 +278,6 @@ export const bridgeTransaction = onchainTable(
       table.destinationPoolAddress
     ),
     senderIdx: index().on(table.originSender),
-    zksyncFinalizeHashIdx: index().on(table.zksyncFinalizeHash),
     zksyncWithdrawalHashIdx: index().on(table.zksyncWithdrawalHash),
   })
 )

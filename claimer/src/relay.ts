@@ -2,9 +2,8 @@ import { ZeroAddress } from 'ethers'
 import networks from '@relay-protocol/networks'
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-const ENDPOINT = 'https://api.relay.link/admin/execute-withdrawal'
-const TESTNETS_ENDPOINT =
-  'https://api.testnets.relay.link/admin/execute-withdrawal'
+const ENDPOINT = 'https://api.relay.link'
+const TESTNETS_ENDPOINT = 'https://api.testnets.relay.link'
 
 interface BridgeTransaction {
   amount: string
@@ -16,8 +15,7 @@ interface BridgeTransaction {
 }
 
 const sendRequest = async (endpoint: string, body: any) => {
-  return
-  return fetch(endpoint, {
+  const response = await fetch(endpoint, {
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
@@ -25,18 +23,45 @@ const sendRequest = async (endpoint: string, body: any) => {
     },
     method: 'POST',
   })
+  if (response.status !== 200) {
+    const text = await response.text()
+    console.error(`Relay API returned ${response.status}: ${text}`)
+  }
+
+  return
+}
+
+const after = (timestamp: number) => {
+  const now = Math.floor(new Date().getTime() / 1000)
+  const diff = now - timestamp // in seconds
+  if (diff < 60 * 60) {
+    const minutes = Math.floor(diff / 60)
+    return `${minutes} minutes`
+  }
+  if (diff < 60 * 60 * 24) {
+    const hours = Math.floor(diff / (60 * 60))
+    return `${hours} hours`
+  }
+  const days = Math.floor(diff / (60 * 60 * 24))
+  return `${days} days`
 }
 
 // Submits a proof (OP stack only)
 export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
-  console.log('Submitting proof for', bridgeTransaction)
+  const originNetwork = networks[
+    bridgeTransaction.originChainId
+  ] as ChildNetworkConfig
+  console.log(
+    `Submitting proof after ${after(bridgeTransaction.originTimestamp)} for ${bridgeTransaction.originTxHash} on ${originNetwork.name}`
+  )
   const network = networks[bridgeTransaction.destinationPoolChainId]
-  await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
+  const endpoint = network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT
+  await sendRequest(`${endpoint}/admin/execute-withdrawal`, {
     amount: bridgeTransaction.amount,
     currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
     needsProving: true,
     originChainId: bridgeTransaction.originChainId,
-    stack: 'optimism',
+    stack: originNetwork.stack,
     txHash: bridgeTransaction.originTxHash,
   })
 }
@@ -48,9 +73,12 @@ export const finalizeWithdrawal = async (
   const stack = (
     networks[bridgeTransaction.originChainId] as ChildNetworkConfig
   ).stack
-  console.log(`Finalizing ${stack}`, bridgeTransaction)
+  console.log(
+    `Finalizing ${bridgeTransaction.originTxHash} on ${stack} after ${after(bridgeTransaction.originTimestamp)}`
+  )
   const network = networks[bridgeTransaction.destinationPoolChainId]
-  await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
+  const endpoint = network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT
+  await sendRequest(`${endpoint}/admin/execute-withdrawal`, {
     amount: bridgeTransaction.amount,
     currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
     needsProving: false,
@@ -67,7 +95,8 @@ export const claimFunds = async (
   originBridgeAddress: string
 ) => {
   const network = networks[chainId]
-  await sendRequest(network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT, {
+  const endpoint = network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT
+  await sendRequest(`${endpoint}/admin/vault-claim`, {
     chainId,
     originBridgeAddress,
     originChainId,

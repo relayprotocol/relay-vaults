@@ -16,8 +16,7 @@ export const bob: ChildNetworkConfig = {
     },
   },
   chainId: 60808,
-  earliestBlock: 0,
-  // Update with actual earliest block
+  earliestBlock: 15926900,
   hyperlaneMailbox: '0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147',
   isTestnet: false,
   name: 'BOB',

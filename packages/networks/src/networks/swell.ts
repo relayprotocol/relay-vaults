@@ -16,8 +16,7 @@ export const swell: ChildNetworkConfig = {
     },
   },
   chainId: 1923,
-  earliestBlock: 0,
-  // Update with actual earliest block
+  earliestBlock: 6009900,
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
   name: 'Swellchain',

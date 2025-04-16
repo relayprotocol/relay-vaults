@@ -1,6 +1,6 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const zksync: L2NetworkConfig = {
+export const zksync: ChildNetworkConfig = {
   assets: {
     dai: '0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656',
     eth: '0x000000000000000000000000000000000000800A',
@@ -12,11 +12,11 @@ export const zksync: L2NetworkConfig = {
   bridges: {
     // can refresh these values by runinng `getZkSyncBridgeContracts(chainId)` from utils
     zksync: {
-      l1: {
-        sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
-      },
-      l2: {
+      child: {
         sharedDefaultBridge: '0x11f943b2c77b743AB90f4A0Ae7d5A4e7FCA3E102',
+      },
+      parent: {
+        sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
       },
     },
   },
@@ -31,9 +31,9 @@ export const zksync: L2NetworkConfig = {
 
   isZKsync: true,
 
-  l1ChainId: 1,
-
   name: 'Zksync',
+
+  parentChainId: 1,
   rpc: process.env.RPC_324
     ? [process.env.RPC_324]
     : ['https://mainnet.era.zksync.io'],

@@ -1,30 +1,31 @@
-import { L2NetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // L3
-export const rari: L2NetworkConfig = {
+export const rari: ChildNetworkConfig = {
   assets: {
     // TODO: add USDC
   },
   bridges: {
     arbitrum: {
-      l1: {
-        outbox: '',
-        rollup: '',
-        routerGateway: '',
-      },
-      l2: {
+      child: {
         arbSys: '0x0000000000000000000000000000000000000064',
         // TODO
+        routerGateway: '',
+      },
+      parent: {
+        outbox: '',
+        rollup: '',
         routerGateway: '',
       },
     },
   },
   chainId: 1380012617,
-  earliestBlock: 0, // Update with actual earliest block
+  earliestBlock: 0,
+  // Update with actual earliest block
   hyperlaneMailbox: '0x65dCf8F6b3f6a0ECEdf3d0bdCB036AEa47A1d615',
   isTestnet: false,
-  l1ChainId: 42161,
   name: 'Rari',
+  parentChainId: 42161,
   rpc: process.env.RPC_1380012617
     ? [process.env.RPC_1380012617]
     : ['https://mainnet.rpc.rarichain.org/http'],

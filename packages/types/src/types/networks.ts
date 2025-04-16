@@ -4,46 +4,46 @@ export interface L1NetworkConfig extends NetworkConfig {
   }
 }
 
-export interface L2NetworkConfig extends NetworkConfig {
-  l1ChainId: number
+export interface ChildNetworkConfig extends NetworkConfig {
+  parentChainId: number
   stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
   bridges: {
     optimism?: {
-      l1: {
+      parent: {
         portalProxy: string
       }
-      l2: {
+      child: {
         messagePasser: string
       }
     }
     arbitrum?: {
-      l1: {
+      parent: {
         outbox: string
         rollup: string
         routerGateway: string
       }
-      l2: {
+      child: {
         arbSys: string
         routerGateway: string
       }
     }
     cctp?: {
-      l1: {
+      parent: {
         domain: bigint
         messenger: string
         transmitter: string
       }
-      l2: {
+      child: {
         domain: bigint
         messenger: string
         transmitter: string
       }
     }
     zksync?: {
-      l1: {
+      parent: {
         sharedDefaultBridge: string
       }
-      l2: {
+      child: {
         sharedDefaultBridge: string
       }
     }

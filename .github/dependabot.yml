@@ -1,0 +1,109 @@
+version: 2
+updates:
+  - package-ecosystem: "yarn"
+    directory: "/" # root workspace
+    schedule:
+      interval: "weekly"
+    groups:
+      all-yarn-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/backend" 
+    schedule:
+      interval: "weekly"
+    groups:
+      all-yarn-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/smart-contracts" 
+    schedule:
+      interval: "weekly"
+    groups:
+      all-yarn-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/claimer" 
+    schedule:
+      interval: "weekly"
+    groups:
+      all-yarn-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/abis"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/addresses"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/client"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/eslint-config"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/helpers"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/networks"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/tsconfig"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "yarn"
+    directory: "/packages/types"
+    schedule:
+      interval: "weekly"
+    groups:
+      core-dependencies:
+        patterns:
+          - "*"

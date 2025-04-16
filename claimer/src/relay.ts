@@ -16,7 +16,7 @@ interface BridgeTransaction {
 }
 
 const sendRequest = async (endpoint: string, body: any) => {
-  console.log(JSON.stringify(body))
+  return
   return fetch(endpoint, {
     body: JSON.stringify(body),
     headers: {

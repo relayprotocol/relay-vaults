@@ -1,6 +1,6 @@
 import { createConfig, factory } from 'ponder'
 import { ABIs } from '@relay-protocol/helpers'
-import { http } from 'viem'
+import { http, toHex } from 'viem'
 
 import {
   RelayPool,
@@ -20,7 +20,7 @@ const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
   return {
     ...usedNetworks,
     [networks[chainId].slug]: {
-      chainId,
+      chainId: toHex(Number(chainId)),
       transport: http(networks[chainId].rpc[0]),
     },
   }

@@ -25,5 +25,5 @@ export const mint: ChildNetworkConfig = {
     ? [process.env.RPC_1337]
     : ['https://rpc.mintchain.io'],
   slug: 'mint',
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }

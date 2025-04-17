@@ -18,22 +18,12 @@ const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
       }
     ) {
       items {
-        originBridgeAddress
-        nonce
         originChainId
-        destinationPoolAddress
         destinationPoolChainId
-        originSender
-        destinationRecipient
         asset
         amount
-        hyperlaneMessageId
-        nativeBridgeStatus
-        opProofTxHash
-        nativeBridgeFinalizedTxHash
-        loanEmittedTxHash
-        originTimestamp
         originTxHash
+        originTimestamp
       }
     }
   }

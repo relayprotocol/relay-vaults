@@ -6,6 +6,9 @@
   "185": {
     "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
   },
+  "300": {
+    "RelayBridgeFactory": "0x94DbA0312cA88CF19da1a7CA7A82F41086dbF14b"
+  },
   "690": {
     "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
   },
@@ -34,14 +37,21 @@
     "RelayBridgeFactory": "0x259813B665C8f6074391028ef782e27B65840d89"
   },
   "84532": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0xE32ec5A30e5a47a1A3074a4539C33cc83756818b"
+  },
+  "421614": {
+    "RelayBridgeFactory": "0xc9577b38ADA2B1b251EE99e54cC399027d547B68"
   },
   "543210": {
     "RelayBridgeFactory": "0x020d8F48E56F12C9213007186E2bbdD81Be45034"
   },
   "11155111": {
+    "RelayBridgeFactory": "0x1Ec95E37482105FfDB484AA69a9505F8334D243B",
     "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
     "RelayPoolNativeGateway": "0xb3DF7D7fEDc3Be5b7746031e72b408b077ABa593"
+  },
+  "11155420": {
+    "RelayBridgeFactory": "0x447B1492C5038203f1927eB2a374F5Fcdc25999d"
   },
   "888888888": {
     "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"

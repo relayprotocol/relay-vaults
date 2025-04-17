@@ -25,5 +25,5 @@ export const redstone: ChildNetworkConfig = {
     ? [process.env.RPC_690]
     : ['https://rpc.redstonechain.com'],
   slug: 'redstone',
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }

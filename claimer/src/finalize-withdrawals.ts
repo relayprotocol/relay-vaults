@@ -5,13 +5,19 @@ import { finalizeWithdrawal } from './relay'
 // TODO: handle delays? Each chain has its own delay
 const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
   query GetAllBridgeTransactionsToProve($originTimestamp: BigInt!) {
-    bridgeTransactions(where: { originTimestamp_lt: $originTimestamp }) {
+    bridgeTransactions(
+      where: {
+        originTimestamp_lt: $originTimestamp
+        nativeBridgeStatus_not: "FINALIZED"
+      }
+    ) {
       items {
         originChainId
         destinationPoolChainId
         asset
         amount
         originTxHash
+        originTimestamp
       }
     }
   }

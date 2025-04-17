@@ -1,6 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/" # root workspace
     schedule:
       interval: "weekly"
@@ -9,7 +9,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/backend" 
     schedule:
       interval: "weekly"
@@ -18,7 +18,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/smart-contracts" 
     schedule:
       interval: "weekly"
@@ -27,7 +27,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/claimer" 
     schedule:
       interval: "weekly"
@@ -36,7 +36,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/abis"
     schedule:
       interval: "weekly"
@@ -45,7 +45,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/addresses"
     schedule:
       interval: "weekly"
@@ -54,7 +54,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/client"
     schedule:
       interval: "weekly"
@@ -63,7 +63,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/eslint-config"
     schedule:
       interval: "weekly"
@@ -72,7 +72,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/helpers"
     schedule:
       interval: "weekly"
@@ -81,7 +81,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/networks"
     schedule:
       interval: "weekly"
@@ -90,7 +90,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/tsconfig"
     schedule:
       interval: "weekly"
@@ -99,7 +99,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/packages/types"
     schedule:
       interval: "weekly"

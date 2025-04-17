@@ -7,6 +7,7 @@ export interface L1NetworkConfig extends NetworkConfig {
 export interface ChildNetworkConfig extends NetworkConfig {
   parentChainId: number
   stack: 'optimism' | 'arbitrum' | 'zksync' | 'zkevm'
+  withdrawalDelay?: number // withdrawal delay in seconds
   bridges: {
     optimism?: {
       parent: {

@@ -23,10 +23,10 @@
     "@relay-protocol/eslint-config": "workspace:^",
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
-    "eslint": "9.19.0",
+    "eslint": "9.24.0",
     "fs-extra": "11.3.0",
-    "tsup": "8.3.6",
-    "typescript": "5.7.3"
+    "tsup": "8.4.0",
+    "typescript": "5.8.3"
   },
   "files": [
     "dist"

@@ -34,23 +34,27 @@ export const finalizeWithdrawals = async ({
   vaultService: RelayVaultService
 }) => {
   // query ready withdrawal for all chains
-  const bridgeTransactions = await Promise.all(
-    Object.values(networks)
-      .filter(({ chainId }) => chainId !== 1)
-      .map(async (network) => {
-        const { bridgeTransactions } = await vaultService.query(
-          GET_ALL_TRANSACTIONS_TO_FINALIZE,
-          {
-            // custom time for each chain
-            originTimestamp:
-              Math.floor(new Date().getTime() / 1000) -
-                (network as ChildNetworkConfig).withdrawalDelay! || SEVEN_DAYS, // 7 days for most chains
-          }
-        )
-        return bridgeTransactions.items
-      })
-      .flat()
-  )
+  const bridgeTransactions = (
+    await Promise.all(
+      Object.values(networks)
+        .filter(({ chainId }) => chainId !== 1)
+        .map(async (network) => {
+          const { bridgeTransactions } = await vaultService.query(
+            GET_ALL_TRANSACTIONS_TO_FINALIZE,
+            {
+              originChainId: network.chainId,
+              // custom time for each chain, 7 days for most
+              originTimestamp:
+                Math.floor(new Date().getTime() / 1000) -
+                  (network as ChildNetworkConfig).withdrawalDelay! ||
+                SEVEN_DAYS,
+            }
+          )
+
+          return bridgeTransactions.items
+        })
+    )
+  ).flat()
 
   for (let i = 0; i < bridgeTransactions.length; i++) {
     try {

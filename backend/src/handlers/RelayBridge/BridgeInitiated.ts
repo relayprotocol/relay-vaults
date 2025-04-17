@@ -103,15 +103,18 @@ export default async function ({
   // We use upsert (insert with onConflictDoUpdate) here because the record may already exist if the L1 indexing was faster than L2.
   const values = {
     amount,
+    arbTransactionIndex,
     asset: ASSET,
     destinationPoolAddress: pool,
     destinationPoolChainId: poolChainId,
     destinationRecipient: recipient,
     hyperlaneMessageId,
     nativeBridgeStatus: 'INITIATED',
+    opWithdrawalHash,
     originSender: sender,
     originTimestamp: event.block.timestamp,
     originTxHash: event.transaction.hash,
+    zksyncWithdrawalHash,
   }
   await context.db
     .insert(bridgeTransaction)

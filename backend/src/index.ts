@@ -26,8 +26,10 @@ import OriginDisabled from './handlers/RelayPool/OriginDisabled'
 import LoanEmitted from './handlers/RelayPool/LoanEmitted'
 import OutstandingDebtChanged from './handlers/RelayPool/OutstandingDebtChanged'
 import WithdrawalProven from './handlers/OPPortal/WithdrawalProven'
-import WithdrawalFinalized from './handlers/OPPortal/WithdrawalFinalized'
+import WithdrawlFinalized from './handlers/OPPortal/WithdrawalFinalized'
 import OutBoxTransactionExecuted from './handlers/OrbitOutbox/OutBoxTransactionExecuted'
+import ZkSyncWithdrawlFinalized from './handlers/Zksync/WithdrawalFinalized'
+import BridgeMint from './handlers/Zksync/BridgeMint'
 
 // ============= RelayPool Events =============
 
@@ -109,9 +111,14 @@ ponder.on('OPPortal:WithdrawalProven', WithdrawalProven)
 /**
  * Handles finalzied withdrawals from the OP portal
  */
-ponder.on('OPPortal:WithdrawalFinalized', WithdrawalFinalized)
+ponder.on('OPPortal:WithdrawalFinalized', WithdrawlFinalized)
 
 /**
  * Handles completed withdrawals from the Orbit Outbox
  */
 ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
+
+/**
+ * Handles finalzied withdrawals for the ZkSync stack
+ */
+// ponder.on('OPPortal:BridgeMint', BridgeMint)

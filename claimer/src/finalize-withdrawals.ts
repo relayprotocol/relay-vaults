@@ -4,7 +4,7 @@ import { finalizeWithdrawal } from './relay'
 
 // TODO: handle delays? Each chain has its own delay
 const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
-  query GetAllBridgeTransactionsToProve($originTimestamp: BigInt!) {
+  query GetAllBridgeTransactionsToFinalize($originTimestamp: BigInt!) {
     bridgeTransactions(where: { originTimestamp_lt: $originTimestamp }) {
       items {
         originChainId
@@ -25,8 +25,7 @@ export const finalizeWithdrawals = async ({
   const { bridgeTransactions } = await vaultService.query(
     GET_ALL_TRANSACTIONS_TO_FINALIZE,
     {
-      originTimestamp:
-        Math.floor(new Date().getTime() / 1000) - 60 * 60 * 24 * 7,
+      originTimestamp: Math.floor(new Date().getTime() / 1000),
     }
   )
   for (let i = 0; i < bridgeTransactions.items.length; i++) {

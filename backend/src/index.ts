@@ -28,7 +28,6 @@ import OutstandingDebtChanged from './handlers/RelayPool/OutstandingDebtChanged'
 import WithdrawalProven from './handlers/OPPortal/WithdrawalProven'
 import WithdrawlFinalized from './handlers/OPPortal/WithdrawalFinalized'
 import OutBoxTransactionExecuted from './handlers/OrbitOutbox/OutBoxTransactionExecuted'
-import ZkSyncWithdrawlFinalized from './handlers/Zksync/WithdrawalFinalized'
 import BridgeMint from './handlers/Zksync/BridgeMint'
 
 // ============= RelayPool Events =============
@@ -41,7 +40,7 @@ import BridgeMint from './handlers/Zksync/BridgeMint'
  * - Yield pool state
  * - Creates pool action record
  */
-ponder.on('RelayPool:Deposit', Deposit)
+// ponder.on('RelayPool:Deposit', Deposit)
 
 /**
  * Handles withdrawals from the RelayPool
@@ -51,7 +50,7 @@ ponder.on('RelayPool:Deposit', Deposit)
  * - Yield pool state
  * - Creates pool action record
  */
-ponder.on('RelayPool:Withdraw', Withdraw)
+// ponder.on('RelayPool:Withdraw', Withdraw)
 
 /**
  * Handles the deployment of a new RelayPool
@@ -60,7 +59,7 @@ ponder.on('RelayPool:Withdraw', Withdraw)
  * - Associated yield pool record
  * - Initial origin configurations
  */
-ponder.on('RelayPoolFactory:PoolDeployed', PoolDeployed)
+// ponder.on('RelayPoolFactory:PoolDeployed', PoolDeployed)
 
 /**
  * Handles the deployment of a new RelayBridge
@@ -68,7 +67,7 @@ ponder.on('RelayPoolFactory:PoolDeployed', PoolDeployed)
  * - New bridge contract record
  * - Initializes transfer nonce tracking
  */
-ponder.on('RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
+// ponder.on('RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
 
 /**
  * Handles the initiation of a RelayBridge transaction
@@ -77,7 +76,7 @@ ponder.on('RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
  * - Links origin and destination pools
  * - Tracks cross-chain message status
  */
-ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
+// ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
 
 /**
  * Handles the addition of a new origin to a RelayPool
@@ -86,39 +85,39 @@ ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Links bridge and proxy bridge contracts
  * - Sets initial debt limits
  */
-ponder.on('RelayPool:OriginAdded', OriginAdded)
+// ponder.on('RelayPool:OriginAdded', OriginAdded)
 
 /**
  * Handles the disabling of an origin in a RelayPool
  */
-ponder.on('RelayPool:OriginDisabled', OriginDisabled)
+// ponder.on('RelayPool:OriginDisabled', OriginDisabled)
 
 /**
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted
  */
-ponder.on('RelayPool:LoanEmitted', LoanEmitted)
+// ponder.on('RelayPool:LoanEmitted', LoanEmitted)
 
 /**
  * Handles the change of the outstanding debt of a relay pool
  */
-ponder.on('RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
+// ponder.on('RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
 
 /**
  * Handles proven withdrawals from the OP portal
  */
-ponder.on('OPPortal:WithdrawalProven', WithdrawalProven)
+// ponder.on('OPPortal:WithdrawalProven', WithdrawalProven)
 
 /**
  * Handles finalzied withdrawals from the OP portal
  */
-ponder.on('OPPortal:WithdrawalFinalized', WithdrawlFinalized)
+// ponder.on('OPPortal:WithdrawalFinalized', WithdrawlFinalized)
 
 /**
  * Handles completed withdrawals from the Orbit Outbox
  */
-ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
+// ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
 
 /**
  * Handles finalzied withdrawals for the ZkSync stack
  */
-// ponder.on('OPPortal:BridgeMint', BridgeMint)
+ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)

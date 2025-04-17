@@ -42,6 +42,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
     zksync?: {
       parent: {
         sharedDefaultBridge: string
+        nativeTokenVault: string
       }
       child: {
         sharedDefaultBridge: string

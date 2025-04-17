@@ -6,8 +6,8 @@ export default async function ({
   event,
   context,
 }: {
-  event: Event<'RelayBridge:WithdrawalProven'>
-  context: Context<'RelayBridge:WithdrawalProven'>
+  event: Event<'OPPortal:WithdrawalProven'>
+  context: Context<'OPPortal:WithdrawalProven'>
 }) {
   await context.db.sql
     .update(bridgeTransaction)

@@ -32,7 +32,8 @@ export const finalizeWithdrawals = async ({
   const { bridgeTransactions } = await vaultService.query(
     GET_ALL_TRANSACTIONS_TO_FINALIZE,
     {
-      originTimestamp: Math.floor(new Date().getTime() / 1000),
+      originTimestamp:
+        Math.floor(new Date().getTime() / 1000) - 60 * 60 * 24 * 7,
     }
   )
   for (let i = 0; i < bridgeTransactions.items.length; i++) {

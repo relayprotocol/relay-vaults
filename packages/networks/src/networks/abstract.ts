@@ -8,7 +8,7 @@ export const abstract: ChildNetworkConfig = {
   bridges: {
     zksync: {
       child: {
-        sharedDefaultBridge: '0x954ba8223a6BFEC1Cc3867139243A02BA0Bc66e4',
+        l1Messenger: '0x0000000000000000000000000000000000008008',
       },
       parent: {
         nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',

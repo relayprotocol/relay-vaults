@@ -45,7 +45,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
         nativeTokenVault: string
       }
       child: {
-        sharedDefaultBridge: string
+        l1Messenger: string
       }
     }
   }

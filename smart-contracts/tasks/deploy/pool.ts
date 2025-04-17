@@ -159,20 +159,15 @@ task('deploy:pool', 'Deploy a relay vault')
 
       console.log(`Deploying relay vault using factory ${factory}...`)
       // deploy the pool
-
-      const tx = await factoryContract
-        .deployPool(
-          asset,
-          name,
-          symbol,
-          yieldPool,
-          delay,
-          depositAmount,
-          userAddress
-        )
-        .catch((e) => {
-          console.log(e)
-        })
+      const tx = await factoryContract.deployPool(
+        asset,
+        name,
+        symbol,
+        yieldPool,
+        delay,
+        depositAmount,
+        userAddress
+      )
 
       const receipt = await tx!.wait()
       const event = await getEvent(

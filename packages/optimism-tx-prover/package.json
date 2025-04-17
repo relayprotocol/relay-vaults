@@ -1,0 +1,20 @@
+{
+  "name": "@relay/bridge-utils",
+  "version": "1.0.0",
+  "description": "A package to prove transactions on Optimism using viem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "viem": "^2.7.9"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}

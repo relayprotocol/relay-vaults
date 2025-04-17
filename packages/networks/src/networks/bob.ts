@@ -25,5 +25,5 @@ export const bob: ChildNetworkConfig = {
     ? [process.env.RPC_60808]
     : ['https://rpc.gobob.xyz'],
   slug: 'bob',
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }

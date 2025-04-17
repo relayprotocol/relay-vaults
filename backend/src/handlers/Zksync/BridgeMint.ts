@@ -13,13 +13,12 @@ export default async function ({
   context: Context<'L1NativeTokenVault:BridgeMint'>
 }) {
   const originNetwork = networks[event.args.chainId]
-  if (originNetwork?.bridges?.zksync?.parent.nativeTokenVault) {
+  if (originNetwork?.bridges?.zksync?.parent.sharedDefaultBridge) {
     // If it was sent to the sharedDefaultBridge
     if (
       event.transaction.to.toLowerCase() ==
       originNetwork?.bridges?.zksync?.parent.sharedDefaultBridge.toLowerCase()
     ) {
-      console.log(event.transaction.hash)
       // decode finalizeWithdrawal function data
       const { functionName, args } = decodeFunctionData({
         abi: ABIs.L1Nullifier,

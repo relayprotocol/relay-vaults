@@ -9,7 +9,6 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
       where: {
         originTimestamp_lt: $originTimestamp
         nativeBridgeStatus_not: "FINALIZED"
-        originChainId: 2741
       }
     ) {
       items {

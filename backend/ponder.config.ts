@@ -157,15 +157,9 @@ const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
         startBlock: l1Network.earliestBlock,
       }
     }
-    if (
-      !oPPortalNetworks[l1Network.slug].address.includes(
-        l2Network.bridges.optimism!.parent.portalProxy
-      )
-    ) {
-      oPPortalNetworks[l1Network.slug].address.push(
-        l2Network.bridges.optimism!.parent.portalProxy
-      )
-    }
+    oPPortalNetworks[l1Network.slug].address.push(
+      l2Network.bridges.optimism!.parent.portalProxy
+    )
     return oPPortalNetworks
   }, {} as OPPortalNetworks)
 
@@ -191,55 +185,11 @@ const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
         startBlock: l1Network.earliestBlock,
       }
     }
-    if (
-      !orbitOutboxNetworks[l1Network.slug].address.includes(
-        l2Network.bridges.arbitrum!.parent.outbox
-      )
-    ) {
-      orbitOutboxNetworks[l1Network.slug].address.push(
-        l2Network.bridges.arbitrum!.parent.outbox
-      )
-    }
+    orbitOutboxNetworks[l1Network.slug].address.push(
+      l2Network.bridges.arbitrum!.parent.outbox
+    )
     return orbitOutboxNetworks
   }, {} as OrbitOutboxNetworks)
-
-interface zkSyncNetworks {
-  [key: string]: {
-    address: string[]
-    startBlock: number
-  }
-}
-
-const zkSyncNetworks: zkSyncNetworks = Object.keys(networks)
-  .filter((chainId) => {
-    // on the L1 chain
-    return (networks[chainId] as ChildNetworkConfig).bridges?.zksync?.parent
-      .nativeTokenVault
-  })
-  .reduce((zkSyncNetworks, chainId) => {
-    // No sepolia while debugging!
-    if (chainId === '300') {
-      return zkSyncNetworks
-    }
-    const l2Network = networks[chainId] as ChildNetworkConfig
-    const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
-    if (!zkSyncNetworks[l1Network.slug]) {
-      zkSyncNetworks[l1Network.slug] = {
-        address: [],
-        startBlock: l1Network.earliestBlock,
-      }
-    }
-    if (
-      !zkSyncNetworks[l1Network.slug].address.includes(
-        l2Network.bridges.zksync!.parent.nativeTokenVault
-      )
-    ) {
-      zkSyncNetworks[l1Network.slug].address.push(
-        l2Network.bridges.zksync!.parent.nativeTokenVault
-      )
-    }
-    return zkSyncNetworks
-  }, {} as zkSyncNetworks)
 
 export default createConfig({
   blocks: {
@@ -249,11 +199,6 @@ export default createConfig({
     },
   },
   contracts: {
-    L1NativeTokenVault: {
-      abi: ABIs.L1NativeTokenVault,
-      network: zkSyncNetworks,
-    },
-
     OPPortal: {
       abi: ABIs.Portal2,
       network: oPPortalNetworks,

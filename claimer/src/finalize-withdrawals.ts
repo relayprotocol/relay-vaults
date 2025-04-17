@@ -9,7 +9,6 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
       where: {
         originTimestamp_lt: $originTimestamp
         nativeBridgeStatus_not: "FINALIZED"
-        originChainId: 2741
       }
     ) {
       items {
@@ -32,7 +31,8 @@ export const finalizeWithdrawals = async ({
   const { bridgeTransactions } = await vaultService.query(
     GET_ALL_TRANSACTIONS_TO_FINALIZE,
     {
-      originTimestamp: Math.floor(new Date().getTime() / 1000),
+      originTimestamp:
+        Math.floor(new Date().getTime() / 1000) - 60 * 60 * 24 * 7,
     }
   )
   for (let i = 0; i < bridgeTransactions.items.length; i++) {

@@ -19,7 +19,6 @@ import Portal from './op/Portal.json'
 import Portal2 from './op/Portal2.json'
 import IL1SharedBridge from './zksync/IL1SharedBridge.json'
 import IL2SharedBridge from './zksync/IL2SharedBridge.json'
-import L1NativeTokenVault from './zksync/L1NativeTokenVault.json'
 
 // exports
 export { ERC20 }
@@ -39,4 +38,3 @@ export { Portal }
 export { Portal2 }
 export { IL1SharedBridge }
 export { IL2SharedBridge }
-export { L1NativeTokenVault }

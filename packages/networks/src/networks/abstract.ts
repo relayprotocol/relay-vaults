@@ -27,4 +27,5 @@ export const abstract: ChildNetworkConfig = {
     : ['https://api.mainnet.abs.xyz'],
   slug: 'abstract',
   stack: 'zksync',
+  withdrawalDelay: 10800,
 }

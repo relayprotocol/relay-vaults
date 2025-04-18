@@ -25,6 +25,7 @@ import './tasks/deploy/native-gateway'
 import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
 import './tasks/utils/zksync-contracts.ts'
+import './tasks/utils/collect-morpho.ts'
 
 // get pk from shell
 const { DEPLOYER_PRIVATE_KEY } = process.env
@@ -89,6 +90,7 @@ const etherscan = {
     ethereum: 'C1KDFD2PHN7FXXXT1AW5PG27I5JB23J41D',
     'ethereum sepolia': 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
+    mainnet: 'C1KDFD2PHN7FXXXT1AW5PG27I5JB23J41D',
     optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',

@@ -153,6 +153,7 @@ type bridgeTransaction {
   destinationPoolAddress: String
   destinationPoolChainId: Int
   destinationRecipient: String
+  expectedFinalizationTimestamp: BigInt
   hyperlaneMessageId: String
   loanEmittedTxHash: String
   nativeBridgeFinalizedTxHash: String
@@ -226,6 +227,14 @@ input bridgeTransactionFilter {
   destinationRecipient_ends_with: String
   destinationRecipient_not_starts_with: String
   destinationRecipient_not_ends_with: String
+  expectedFinalizationTimestamp: BigInt
+  expectedFinalizationTimestamp_not: BigInt
+  expectedFinalizationTimestamp_in: [BigInt]
+  expectedFinalizationTimestamp_not_in: [BigInt]
+  expectedFinalizationTimestamp_gt: BigInt
+  expectedFinalizationTimestamp_lt: BigInt
+  expectedFinalizationTimestamp_gte: BigInt
+  expectedFinalizationTimestamp_lte: BigInt
   hyperlaneMessageId: String
   hyperlaneMessageId_not: String
   hyperlaneMessageId_in: [String]

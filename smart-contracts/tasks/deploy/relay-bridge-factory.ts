@@ -16,12 +16,12 @@ task('deploy:bridge-factory', 'Deploy a relay bridge factory').setAction(
         `Unsupported network ${chainId}. Please add it to networks.ts`
       )
     }
-    const { hyperlaneMailbox, name: networkName, isZKsync } = networkConfig
+    const { hyperlaneMailbox, name: networkName, stack } = networkConfig
 
     console.log(`deploying on ${networkName} (${chainId})...`)
 
     let relayBridgeAddress: string
-    if (isZKsync) {
+    if (stack === 'zksync') {
       ;({ address: relayBridgeAddress } = await deployContract(
         hre,
         'RelayBridgeFactory',

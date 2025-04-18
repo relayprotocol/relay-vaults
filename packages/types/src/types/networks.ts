@@ -48,6 +48,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
       }
       child: {
         l1Messenger: string
+        sharedDefaultBridge: string
       }
     }
   }
@@ -58,7 +59,6 @@ export interface NetworkConfig {
   name: string
   slug: string
   earliestBlock: number
-  isZKsync?: boolean
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
   isTestnet: boolean

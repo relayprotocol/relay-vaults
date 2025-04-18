@@ -13,6 +13,7 @@ export const zksync: ChildNetworkConfig = {
     zksync: {
       child: {
         l1Messenger: '0x11f943b2c77b743AB90f4A0Ae7d5A4e7FCA3E102',
+        sharedDefaultBridge: '0x11f943b2c77b743AB90f4A0Ae7d5A4e7FCA3E102',
       },
       parent: {
         nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',
@@ -28,8 +29,6 @@ export const zksync: ChildNetworkConfig = {
   hyperlaneMailbox: '0xf44AdA86a1f765A938d404699B8070Dd47bD2431',
 
   isTestnet: false,
-
-  isZKsync: true,
 
   name: 'Zksync',
 

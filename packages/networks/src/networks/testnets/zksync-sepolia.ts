@@ -9,6 +9,7 @@ export const zkSyncSepolia: ChildNetworkConfig = {
     zksync: {
       child: {
         l1Messenger: '0x681A1AFdC2e06776816386500D2D461a6C96cB45',
+        sharedDefaultBridge: '0x681A1AFdC2e06776816386500D2D461a6C96cB45',
       },
       parent: {
         nativeTokenVault: '0x746DBBa1edfBe1b547c87189eFE91B77d53d9E39',
@@ -20,7 +21,6 @@ export const zkSyncSepolia: ChildNetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x1E45f767d51FA1Ec326d35e3BD4904fF0f30fCDa',
   isTestnet: true,
-  isZKsync: true,
   name: 'ZKsync Sepolia Testnet',
   parentChainId: 11155111,
   rpc: process.env.RPC_300

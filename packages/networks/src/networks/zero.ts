@@ -20,7 +20,6 @@ export const zero: ChildNetworkConfig = {
   earliestBlock: 2173900,
   hyperlaneMailbox: '0xd7b351D2dE3495eA259DD10ab4b9300A378Afbf3',
   isTestnet: false,
-  isZKsync: true,
   name: 'Zero',
   parentChainId: 1,
   rpc: ['https://rpc.zerion.io/v1/zero'],

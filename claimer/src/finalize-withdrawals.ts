@@ -42,7 +42,7 @@ export const finalizeWithdrawals = async ({
         .filter(({ chainId }) => chainId !== 1)
         .map(async (network) => {
           const { bridgeTransactions } = await vaultService.query(
-            GET_ALL_TRANSACTIONS_TO_FINALIZE,
+            GET_ALL_TRANSACTIONS_TO_FINALIZE_BY_CHAIN,
             {
               originChainId: network.chainId,
               // custom time for each chain, 7 days for most

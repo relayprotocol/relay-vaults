@@ -30,8 +30,6 @@ export const zksync: ChildNetworkConfig = {
 
   isTestnet: false,
 
-  isZKsync: true,
-
   name: 'Zksync',
 
   parentChainId: 1,

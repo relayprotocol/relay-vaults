@@ -41,15 +41,15 @@ export const finalizeWithdrawals = async ({
       Object.values(networks)
         .filter(({ chainId }) => chainId !== 1)
         .map(async (network) => {
+          const now = Math.floor(new Date().getTime() / 1000)
+          const delay =
+            (network as ChildNetworkConfig).withdrawalDelay! || SEVEN_DAYS
+
           const { bridgeTransactions } = await vaultService.query(
             GET_ALL_TRANSACTIONS_TO_FINALIZE_BY_CHAIN,
             {
               originChainId: network.chainId,
-              // custom time for each chain, 7 days for most
-              originTimestamp:
-                Math.floor(new Date().getTime() / 1000) -
-                  (network as ChildNetworkConfig).withdrawalDelay! ||
-                SEVEN_DAYS,
+              originTimestamp: now - delay,
             }
           )
 

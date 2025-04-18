@@ -1,7 +1,7 @@
 {
-  "name": "@relay/bridge-utils",
+  "name": "@relay/helper-optimism",
   "version": "1.0.0",
-  "description": "A package to prove transactions on Optimism using viem",
+  "description": "A package to help with bridge transactions on Optimism",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

@@ -47,19 +47,22 @@ export default async function ({
     })
 
   // Create relay pool with its own name and symbol fetched from the relay pool contract.
-  await context.db.insert(relayPool).values({
-    asset: asset as `0x${string}`,
-    chainId: context.network.chainId,
-    contractAddress: pool as `0x${string}`,
-    createdAt: event.block.timestamp,
-    createdAtBlock: event.block.number,
-    curator: creator as `0x${string}`,
-    name: poolName,
-    outstandingDebt: BigInt(0),
-    symbol: poolSymbol,
-    totalAssets: BigInt(0),
-    totalBridgeFees: BigInt(0),
-    totalShares: BigInt(0),
-    yieldPool: thirdPartyPool as `0x${string}`,
-  })
+  await context.db
+    .insert(relayPool)
+    .values({
+      asset: asset as `0x${string}`,
+      chainId: context.network.chainId,
+      contractAddress: pool as `0x${string}`,
+      createdAt: event.block.timestamp,
+      createdAtBlock: event.block.number,
+      curator: creator as `0x${string}`,
+      name: poolName,
+      outstandingDebt: BigInt(0),
+      symbol: poolSymbol,
+      totalAssets: BigInt(0),
+      totalBridgeFees: BigInt(0),
+      totalShares: BigInt(0),
+      yieldPool: thirdPartyPool as `0x${string}`,
+    })
+    .onConflictDoNothing()
 }

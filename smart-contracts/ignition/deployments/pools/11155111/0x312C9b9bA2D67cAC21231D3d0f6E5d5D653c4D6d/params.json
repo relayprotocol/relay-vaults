@@ -1,0 +1,9 @@
+{
+  "asset": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "hyperlaneMailbox": "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766",
+  "name": "USDC Relay Vault",
+  "symbol": "USDC-REL",
+  "timelock": "0x04719a2c2bF08fE755297035337616662fA8d392",
+  "weth": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+  "yieldPool": "0x8A09BA164458bc52b05A86E43B33C67F02Fa36a8"
+}

@@ -6,7 +6,7 @@ import { ChildNetworkConfig } from '@relay-protocol/types'
 
 const SEVEN_DAYS = 60 * 60 * 24 * 7
 
-const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
+const GET_ALL_TRANSACTIONS_TO_FINALIZE_BY_CHAIN = gql`
   query GetAllBridgeTransactionsToProve(
     $originTimestamp: BigInt!
     $originChainId: Int!

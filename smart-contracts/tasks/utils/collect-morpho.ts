@@ -67,7 +67,6 @@ task(
         )
         return
       }
-      // compute deadline 5 minutes from now
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
       const timelockAddress = await pool.owner()
       const asset = await pool.asset()
@@ -119,6 +118,7 @@ task(
         )
       }
 
+      // And now prepare the swap
       const deadline = Math.floor(Date.now() / 1000) + 300
       const uniswapPoolFeeWethToAsset = asset === network.assets.weth ? 0 : 3000 // We assume 3000 for most assets... this may not be correct.
       console.log(

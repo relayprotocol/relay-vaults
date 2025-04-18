@@ -28,7 +28,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
           `Unsupported network ${chainId}. Please add it to networks.ts`
         )
       }
-      const ethers = net.isZksync ? zksyncEthers : rawEthers
+      const ethers = net.stack === 'zksync' ? zksyncEthers : rawEthers
 
       const [user] = await ethers.getSigners()
       const userAddress = await user.getAddress()

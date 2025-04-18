@@ -1,9 +1,13 @@
 import { createWalletClient, defineChain } from 'viem'
 import { createPublicClient, http, type PublicClient } from 'viem'
-import { mainnet, redstone, sepolia, optimismSepolia } from 'viem/chains'
+import * as viemChains from 'viem/chains'
 import { writeContract } from 'viem/actions'
-import { publicActionsL1, publicActionsL2 } from 'viem/op-stack'
-import { networks } from '@relay-protocol/networks'
+import {
+  optimismSepolia,
+  publicActionsL1,
+  publicActionsL2,
+} from 'viem/op-stack'
+import { networks, sepolia } from '@relay-protocol/networks'
 import { l1StandardBridgeAbi } from './abis'
 import { privateKeyToAccount } from 'viem/accounts'
 import { parseAbi } from 'viem'
@@ -28,18 +32,19 @@ interface BridgeTokensParams {
   gasLimit?: number
 }
 
-// // Optimism contract ABIs
-// const L2ToL1MessagePasserAbi = parseAbi([
-//   'function sentMessages(bytes32) view returns (bool)',
-//   'function messageNonce() view returns (uint256)',
-// ])
-
 const L1CrossDomainMessengerAbi = parseAbi([
   'function proveMessage(bytes32 _stateRoot, address _target, address _sender, bytes memory _message, uint256 _messageNonce, bytes32[] memory _proof)',
 ])
 
-// only mainnet
-const L1_CHAIN_ID = 1
+function findViemChainById(chainId: bigint) {
+  const chain = Object.values(viemChains).find(
+    (chain) => chain.id.toString() === chainId.toString()
+  )
+  if (!chain) {
+    throw new Error(`Chain with id ${chainId} not found`)
+  }
+  return chain
+}
 
 export async function proveTransaction({
   txHash,
@@ -47,29 +52,26 @@ export async function proveTransaction({
   contractAddress,
 }: ProveTxParams): Promise<void> {
   // Get networks config
-  const l1Network = networks[L1_CHAIN_ID]
-  const network = networks[chainId] as ChildNetworkConfig
+  const childNetwork = networks[chainId] as ChildNetworkConfig
+  const parentNetwork = networks[childNetwork.parentChainId]
 
-  console.log(`${l1Network.name} > ${network.name}`)
-  const l1Client = createPublicClient({
-    chain: sepolia,
+  console.log(`${parentNetwork.name} > ${childNetwork.name}`)
+
+  const childChain = findViemChainById(BigInt(childNetwork.chainId))
+  const parentChain = findViemChainById(BigInt(parentNetwork.chainId))
+
+  const parentClient = createPublicClient({
+    chain: parentChain,
     transport: http(),
   }).extend(publicActionsL1())
 
-  const l2Client = createPublicClient({
-    chain: optimismSepolia,
+  const childClient = createPublicClient({
+    chain: childChain,
     transport: http(),
   }).extend(publicActionsL2())
 
-  const account = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)
-  const l1WalletClient = createWalletClient({
-    chain: sepolia,
-    transport: http(),
-    account,
-  })
-
   // Get the L2 transaction receipt
-  const receipt = await l2Client.getTransactionReceipt({
+  const receipt = await childClient.getTransactionReceipt({
     hash: txHash,
   })
   if (!receipt) {
@@ -77,35 +79,43 @@ export async function proveTransaction({
   }
 
   // Check if withdrawal is ready to be proven
-  const status = await l1Client.getWithdrawalStatus({
+  const status = await parentClient.getWithdrawalStatus({
     receipt,
-    targetChain: l2Client.chain,
+    targetChain: childClient.chain,
   })
   console.log(status)
 
   // check remaining time
-  const { seconds, timestamp } = await l1Client.getTimeToProve({
+  const { seconds, timestamp } = await parentClient.getTimeToProve({
     receipt,
-    targetChain: l2Client.chain,
+    targetChain: childClient.chain,
   })
 
   console.log(seconds, timestamp, `${new Date(seconds)}`)
 
   if (status === 'ready-to-prove') {
     // Wait until the withdrawal is ready to prove
-    const { output, withdrawal } = await l1Client.waitToProve({
+    const { output, withdrawal } = await parentClient.waitToProve({
       receipt,
-      targetChain: l2Client.chain,
+      targetChain: childClient.chain,
     })
 
     try {
       // Build parameters to prove the withdrawal
-      const proof = await l2Client.buildProveWithdrawal({
+      const proof = await childClient.buildProveWithdrawal({
         output,
         withdrawal,
       })
 
       // Prove the withdrawal on L1
+      const account = privateKeyToAccount(
+        `0x${process.env.DEPLOYER_PRIVATE_KEY}`
+      )
+      const l1WalletClient = createWalletClient({
+        chain: parentChain,
+        transport: http(),
+        account,
+      })
       const hash = await writeContract(l1WalletClient, {
         abi: L1CrossDomainMessengerAbi,
         address: contractAddress as `0x${string}`,
@@ -118,11 +128,11 @@ export async function proveTransaction({
           proof.withdrawal.nonce,
           proof.withdrawalProof,
         ],
-        chain: l1Client.chain,
+        chain: parentClient.chain,
       })
 
       // Wait for the prove transaction to be processed
-      const proveReceipt = await l1Client.waitForTransactionReceipt({
+      const proveReceipt = await parentClient.waitForTransactionReceipt({
         hash,
       })
 
@@ -153,7 +163,6 @@ export async function bridgeTokens({
   gasLimit = 200_000,
 }: BridgeTokensParams): Promise<`0x${string}`> {
   const account = privateKeyToAccount(`0x${process.env.DEPLOYER_PRIVATE_KEY}`)
-
   const l1WalletClient = createWalletClient({
     chain: sepolia,
     transport: http(),

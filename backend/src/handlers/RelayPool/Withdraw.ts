@@ -51,20 +51,23 @@ export default async function ({
       }),
 
     // Record pool action
-    context.db.insert(poolAction).values({
-      assets,
-      blockNumber,
-      chainId: context.network.chainId,
-      id: `${transactionHash}-${event.log.logIndex}`,
-      owner,
-      receiver,
-      relayPool: event.log.address,
-      shares,
-      timestamp,
-      transactionHash,
-      type: 'WITHDRAW',
-      user: owner,
-    }),
+    context.db
+      .insert(poolAction)
+      .values({
+        assets,
+        blockNumber,
+        chainId: context.network.chainId,
+        id: `${transactionHash}-${event.log.logIndex}`,
+        owner,
+        receiver,
+        relayPool: event.log.address,
+        shares,
+        timestamp,
+        transactionHash,
+        type: 'WITHDRAW',
+        user: owner,
+      })
+      .onConflictDoNothing(),
   ])
 
   // Get user balance

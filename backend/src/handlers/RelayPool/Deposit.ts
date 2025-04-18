@@ -51,19 +51,22 @@ export default async function ({
       }),
 
     // Record pool action
-    context.db.insert(poolAction).values({
-      assets,
-      blockNumber,
-      chainId: context.network.chainId,
-      owner: event.log.address,
-      receiver: event.log.address,
-      relayPool: event.log.address,
-      shares,
-      timestamp,
-      transactionHash,
-      type: 'DEPOSIT',
-      user: owner,
-    }),
+    context.db
+      .insert(poolAction)
+      .values({
+        assets,
+        blockNumber,
+        chainId: context.network.chainId,
+        owner: event.log.address,
+        receiver: event.log.address,
+        relayPool: event.log.address,
+        shares,
+        timestamp,
+        transactionHash,
+        type: 'DEPOSIT',
+        user: owner,
+      })
+      .onConflictDoNothing(),
   ])
 
   await context.db

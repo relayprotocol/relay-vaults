@@ -36,27 +36,6 @@ export const executeThruTimelock = async (
     currentTimestamp + Number(delaySeconds) * 1000
   ).toLocaleString()
 
-  // Can we simulate first?
-  try {
-    await ethers.provider.estimateGas({
-      data: payload,
-      from: timelockAddress,
-      to: target,
-    })
-  } catch (e) {
-    const confirm = await new Confirm({
-      message: `Transaction reverts: ${JSON.stringify({
-        data: payload,
-        from: timelockAddress,
-        to: target,
-      })}. Are you sure you want to proceed?`,
-      name: 'confirm',
-    }).run()
-    if (!confirm) {
-      return
-    }
-  }
-
   console.log(
     `Scheduling transaction through timelock with delay: ${delaySeconds} seconds`
   )
@@ -67,7 +46,6 @@ export const executeThruTimelock = async (
   const salt = ethers.id(`OP_${payload}_${Date.now()}`) //salt
   const delay = delaySeconds // delay
 
-  // And now, schedule it!
   const tx = await timelock.schedule(
     target,
     value,

@@ -75,7 +75,8 @@ task(
       const tokenSwapContract = await pool.tokenSwapAddress()
       if (tokenSwapContract == ZeroAddress) {
         const confirmDeploy = await new Confirm({
-          message: `The pool currently does not have a token swap contract. Do you want to deploy one?`,
+          message:
+            'The pool currently does not have a token swap contract. Do you want to deploy one?',
           name: 'confirmDeploy',
         }).run()
         if (!confirmDeploy) {
@@ -106,7 +107,7 @@ task(
         const encodedCall = pool.interface.encodeFunctionData('setTokenSwap', [
           tokenSwapAddress,
         ])
-        console.log(`Setting the token swap address on the pool.`)
+        console.log('Setting the token swap address on the pool.')
 
         await executeThruTimelock(
           ethers,
@@ -122,7 +123,7 @@ task(
       const deadline = Math.floor(Date.now() / 1000) + 300
       const uniswapPoolFeeWethToAsset = asset === network.assets.weth ? 0 : 3000 // We assume 3000 for most assets... this may not be correct.
       console.log(
-        `Swapping ${ethers.formatUnits(balance, decimals)} ${symbol} for the pool\'s asset and depositing it.`
+        `Swapping ${ethers.formatUnits(balance, decimals)} ${symbol} for the pool's asset and depositing it.`
       )
 
       const encodedCall = pool.interface.encodeFunctionData('swapAndDeposit', [

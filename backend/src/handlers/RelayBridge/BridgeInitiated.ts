@@ -24,19 +24,20 @@ export default async function ({
   const receipt = await context.client.getTransactionReceipt({
     hash: event.transaction.hash,
   })
+
   for (const log of receipt.logs) {
     if (
       // Hyperlane event
       log.address.toLowerCase() === networkConfig.hyperlaneMailbox.toLowerCase()
     ) {
-      const event = decodeEventLog({
+      const decodedEvent = decodeEventLog({
         abi: ABIs.Mailbox,
         data: log.data,
         topics: log.topics,
       })
 
-      if (event.eventName === 'DispatchId') {
-        hyperlaneMessageId = event.args.messageId
+      if (decodedEvent.eventName === 'DispatchId') {
+        hyperlaneMessageId = decodedEvent.args.messageId
       }
     } else if (
       // OP event
@@ -44,14 +45,14 @@ export default async function ({
       log.address.toLowerCase() ===
         networkConfig.bridges.optimism?.child.messagePasser.toLowerCase()
     ) {
-      const event = decodeEventLog({
+      const decodedEvent = decodeEventLog({
         abi: ABIs.L2ToL1MessagePasser,
         data: log.data,
         topics: log.topics,
       })
 
-      if (event.eventName === 'MessagePassed') {
-        opWithdrawalHash = event.args.withdrawalHash
+      if (decodedEvent.eventName === 'MessagePassed') {
+        opWithdrawalHash = decodedEvent.args.withdrawalHash
       }
     } else if (
       // ARB event
@@ -59,23 +60,22 @@ export default async function ({
       log.address.toLowerCase() ===
         networkConfig.bridges.arbitrum?.child.arbSys.toLowerCase()
     ) {
-      const event = decodeEventLog({
+      const decodedEvent = decodeEventLog({
         abi: ABIs.IArbSys,
         data: log.data,
         topics: log.topics,
       })
-
-      if (event.eventName === 'L2ToL1Tx') {
-        arbTransactionIndex = event.args.position
+      if (decodedEvent.eventName === 'L2ToL1Tx') {
+        arbTransactionIndex = decodedEvent.args.position
       }
     } else if (
       // Zksync event
-      networkConfig.bridges.zksync?.child.sharedDefaultBridge &&
+      networkConfig.bridges.zksync?.child.l1Messenger &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.zksync?.child.sharedDefaultBridge.toLowerCase()
+        networkConfig.bridges.zksync?.child.l1Messenger.toLowerCase()
     ) {
       const eventLog = decodeEventLog({
-        abi: ABIs.IL1SharedBridge,
+        abi: ABIs.L1Messenger,
         data: log.data,
         topics: log.topics,
       })
@@ -100,48 +100,30 @@ export default async function ({
   ])
 
   // Record bridge initiation
-  await context.db.insert(bridgeTransaction).values({
+  // We use upsert (insert with onConflictDoUpdate) here because the record may already exist if the L1 indexing was faster than L2.
+  const values = {
     amount,
-    // ARB Specifics
     arbTransactionIndex,
-
-    // Asset details
     asset: ASSET,
     destinationPoolAddress: pool,
     destinationPoolChainId: poolChainId,
-
     destinationRecipient: recipient,
-
-    // Hyperlane
     hyperlaneMessageId,
-    // Instant loan tracking
-    loanEmittedTxHash: null as any,
-
-    nativeBridgeFinalizedTxHash: null as any,
-    // Bridge status
     nativeBridgeStatus: 'INITIATED',
-
-    nonce,
-
-    opProofTxHash: null as any,
-
-    // OP Specifics
     opWithdrawalHash,
-
-    // Bridge identification
-    originBridgeAddress: event.log.address,
-
-    // Chain information
-    originChainId: context.network.chainId,
-    // Transaction participants
     originSender: sender,
-
-    // Origin transaction details
     originTimestamp: event.block.timestamp,
-
     originTxHash: event.transaction.hash,
-
-    // ZKsync specifics
     zksyncWithdrawalHash,
-  })
+  }
+
+  await context.db
+    .insert(bridgeTransaction)
+    .values({
+      nonce,
+      originBridgeAddress: event.log.address,
+      originChainId: context.network.chainId,
+      ...values,
+    })
+    .onConflictDoUpdate(values)
 }

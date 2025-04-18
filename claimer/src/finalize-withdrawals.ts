@@ -15,6 +15,7 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
       where: {
         originTimestamp_lt: $originTimestamp
         originChainId: $originChainId
+        nativeBridgeStatus_not: "FINALIZED"
       }
     ) {
       items {
@@ -23,6 +24,7 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
         asset
         amount
         originTxHash
+        originTimestamp
       }
     }
   }

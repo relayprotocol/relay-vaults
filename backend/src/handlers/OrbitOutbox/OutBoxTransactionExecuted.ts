@@ -6,8 +6,8 @@ export default async function ({
   event,
   context,
 }: {
-  event: Event<'RelayBridge:OutBoxTransactionExecuted'>
-  context: Context<'RelayBridge:OutBoxTransactionExecuted'>
+  event: Event<'OrbitOutbox:OutBoxTransactionExecuted'>
+  context: Context<'OrbitOutbox:OutBoxTransactionExecuted'>
 }) {
   await context.db.sql
     .update(bridgeTransaction)

@@ -11,7 +11,7 @@ export const cyber: ChildNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0xACfD93B4887cef4F05cF3440d150D2cE97339142',
+        portalProxy: '0x1d59bc9fcE6B8E2B1bf86D4777289FFd83D24C99',
       },
     },
   },

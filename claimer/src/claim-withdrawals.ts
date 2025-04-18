@@ -16,6 +16,7 @@ const GET_POOLS_AND_PROXY_BRIDGES = gql`
             originChainId
             originBridge
             proxyBridge
+            currentOutstandingDebt
           }
         }
       }
@@ -48,12 +49,20 @@ export const claimTransactions = async ({
   const { relayPools } = await vaultService.query(GET_POOLS_AND_PROXY_BRIDGES)
   for (const relayPool of relayPools.items) {
     for (const origin of relayPool.origins.items) {
+      // Check if there is an oustanding balance for the origin!
       const balance = await getBalance(
         relayPool.chainId,
         origin.proxyBridge,
         relayPool.asset
       )
-      if (balance > 0) {
+
+      if (
+        balance >= BigInt(origin.currentOutstandingDebt) &&
+        BigInt(origin.currentOutstandingDebt) > 0
+      ) {
+        console.log(
+          `Claim funds (${BigInt(origin.currentOutstandingDebt)}) for ${relayPool.contractAddress} on ${origin.proxyBridge} from ${origin.originChainId} ${origin.originBridge}`
+        )
         await claimFunds(
           relayPool.chainId,
           relayPool.contractAddress,

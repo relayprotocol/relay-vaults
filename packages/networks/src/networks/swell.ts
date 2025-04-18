@@ -25,5 +25,5 @@ export const swell: ChildNetworkConfig = {
     ? [process.env.RPC_1923]
     : ['https://swell-mainnet.alt.technology'],
   slug: 'swell',
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }

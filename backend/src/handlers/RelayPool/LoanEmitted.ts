@@ -23,13 +23,16 @@ export default async function ({
   const { bridge, chainId: bridgeChainId } = origin
 
   // Update the corresponding bridgeTransaction record with loanEmittedTxHash
+  // We use upsert (insert with onConflictDoUpdate) here because the record may not exist yet if the L2 indexing is slower.
   await context.db
-    .update(bridgeTransaction, {
+    .insert(bridgeTransaction)
+    .values({
+      loanEmittedTxHash: event.transaction.hash,
       nonce,
       originBridgeAddress: bridge,
       originChainId: bridgeChainId,
     })
-    .set({ loanEmittedTxHash: event.transaction.hash })
+    .onConflictDoUpdate({ loanEmittedTxHash: event.transaction.hash })
 
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
   // Retrieve the RelayPool record based on the contract address that emitted the event

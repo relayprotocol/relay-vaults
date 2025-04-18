@@ -28,6 +28,7 @@ import OutstandingDebtChanged from './handlers/RelayPool/OutstandingDebtChanged'
 import WithdrawalProven from './handlers/OPPortal/WithdrawalProven'
 import WithdrawalFinalized from './handlers/OPPortal/WithdrawalFinalized'
 import OutBoxTransactionExecuted from './handlers/OrbitOutbox/OutBoxTransactionExecuted'
+import BridgeMint from './handlers/Zksync/BridgeMint'
 
 // ============= RelayPool Events =============
 
@@ -115,3 +116,8 @@ ponder.on('OPPortal:WithdrawalFinalized', WithdrawalFinalized)
  * Handles completed withdrawals from the Orbit Outbox
  */
 ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
+
+/**
+ * Handles finalzied withdrawals for the ZkSync stack
+ */
+ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)

@@ -147,24 +147,24 @@ type bridgeTransactionPage {
 }
 
 type bridgeTransaction {
-  amount: BigInt!
+  amount: BigInt
   arbTransactionIndex: BigInt
-  asset: String!
-  destinationPoolAddress: String!
-  destinationPoolChainId: Int!
-  destinationRecipient: String!
-  hyperlaneMessageId: String!
+  asset: String
+  destinationPoolAddress: String
+  destinationPoolChainId: Int
+  destinationRecipient: String
+  hyperlaneMessageId: String
   loanEmittedTxHash: String
   nativeBridgeFinalizedTxHash: String
-  nativeBridgeStatus: String!
+  nativeBridgeStatus: String
   nonce: BigInt!
   opProofTxHash: String
   opWithdrawalHash: String
   originBridgeAddress: String!
   originChainId: Int!
-  originSender: String!
-  originTimestamp: BigInt!
-  originTxHash: String!
+  originSender: String
+  originTimestamp: BigInt
+  originTxHash: String
   zksyncWithdrawalHash: String
   origin: poolOrigin
 }

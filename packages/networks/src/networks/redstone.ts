@@ -11,7 +11,7 @@ export const redstone: ChildNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '',
+        portalProxy: '0xC7bCb0e8839a28A1cFadd1CF716de9016CdA51ae',
       },
     },
   },

@@ -9,6 +9,7 @@ export const zkSyncSepolia: ChildNetworkConfig = {
     zksync: {
       child: {
         l1Messenger: '0x681A1AFdC2e06776816386500D2D461a6C96cB45',
+        sharedDefaultBridge: '0x681A1AFdC2e06776816386500D2D461a6C96cB45',
       },
       parent: {
         nativeTokenVault: '0x746DBBa1edfBe1b547c87189eFE91B77d53d9E39',

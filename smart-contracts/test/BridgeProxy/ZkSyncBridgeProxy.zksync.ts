@@ -36,8 +36,6 @@ describe('ZkSyncBridgeProxy', function () {
       l1BridgeProxy,
     ]
 
-    console.log(deployArgs)
-
     bridge = await zksyncEthers.deployContract('ZkSyncBridgeProxy', deployArgs)
   })
 

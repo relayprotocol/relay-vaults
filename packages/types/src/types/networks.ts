@@ -48,6 +48,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
       }
       child: {
         l1Messenger: string
+        sharedDefaultBridge: string
       }
     }
   }

@@ -28,7 +28,6 @@ describe('ZkSyncBridgeProxy', function () {
   before(async () => {
     ;[, recipient] = await ethers.getSigners()
 
-    console.log(networks[chainId].bridges.zksync)
     // deploy using ignition
     const deployArgs = [
       sharedDefaultBridge,

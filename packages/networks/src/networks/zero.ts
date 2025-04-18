@@ -27,4 +27,5 @@ export const zero: ChildNetworkConfig = {
   rpc: ['https://rpc.zerion.io/v1/zero'],
   slug: 'zero',
   stack: 'zksync',
+  withdrawalDelay: 10800, // 3 hrs
 }

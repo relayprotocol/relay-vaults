@@ -57,15 +57,20 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
     const id = `${vault.chainId}-${vault.contractAddress.toLowerCase()}-${event.block.number}`
 
     const snapshot = {
-      blockNumber: event.block.number,
-      chainId: vault.chainId,
-      id,
       sharePrice: vaultSharePrice.toString(),
       timestamp: event.block.timestamp,
-      vault: vault.contractAddress,
       yieldPoolSharePrice: yieldPoolSharePrice.toString(),
     }
 
-    await context.db.insert(vaultSnapshot).values(snapshot)
+    await context.db
+      .insert(vaultSnapshot)
+      .values({
+        ...snapshot,
+        blockNumber: event.block.number,
+        chainId: vault.chainId,
+        id,
+        vault: vault.contractAddress,
+      })
+      .onConflictDoUpdate(snapshot)
   }
 })

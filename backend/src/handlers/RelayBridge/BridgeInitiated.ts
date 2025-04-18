@@ -5,6 +5,7 @@ import { BridgeProxy } from '@relay-protocol/abis'
 import networks from '@relay-protocol/networks'
 import { decodeEventLog } from 'viem'
 import { ChildNetworkConfig } from '@relay-protocol/types'
+import { SEVEN_DAYS } from '../../constants'
 
 export default async function ({
   event,
@@ -99,6 +100,9 @@ export default async function ({
     }),
   ])
 
+  // Use the delay from the network config or default to 7 days
+  const delay = BigInt(networkConfig.withdrawalDelay || SEVEN_DAYS)
+
   // Record bridge initiation
   // We use upsert (insert with onConflictDoUpdate) here because the record may already exist if the L1 indexing was faster than L2.
   const values = {
@@ -108,6 +112,7 @@ export default async function ({
     destinationPoolAddress: pool,
     destinationPoolChainId: poolChainId,
     destinationRecipient: recipient,
+    expectedFinalizationTimestamp: event.block.timestamp + delay,
     hyperlaneMessageId,
     nativeBridgeStatus: 'INITIATED',
     opWithdrawalHash,

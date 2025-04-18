@@ -28,6 +28,7 @@ describe('ZkSyncBridgeProxy', function () {
   before(async () => {
     ;[, recipient] = await ethers.getSigners()
 
+    console.log(networks[chainId].bridges.zksync)
     // deploy using ignition
     const deployArgs = [
       sharedDefaultBridge,
@@ -35,6 +36,8 @@ describe('ZkSyncBridgeProxy', function () {
       relayPool,
       l1BridgeProxy,
     ]
+
+    console.log(deployArgs)
 
     bridge = await zksyncEthers.deployContract('ZkSyncBridgeProxy', deployArgs)
   })

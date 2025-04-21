@@ -251,6 +251,7 @@ export const bridgeTransaction = onchainTable(
     destinationPoolAddress: t.hex(),
     destinationPoolChainId: t.integer(),
     destinationRecipient: t.hex(),
+    expectedFinalizationTimestamp: t.bigint(),
     hyperlaneMessageId: t.hex(),
     loanEmittedTxHash: t.hex(),
     nativeBridgeFinalizedTxHash: t.hex(),
@@ -268,6 +269,9 @@ export const bridgeTransaction = onchainTable(
   (table) => ({
     arbTransactionIndex: index().on(table.arbTransactionIndex),
     assetIdx: index().on(table.asset),
+    expectedFinalizationTimestampIdx: index().on(
+      table.expectedFinalizationTimestamp
+    ),
     opWithdrawalHashIdx: index().on(table.opWithdrawalHash),
     originTxHashIdx: index().on(table.originTxHash),
     pk: primaryKey({

@@ -31,6 +31,7 @@ import OutBoxTransactionExecuted from './handlers/OrbitOutbox/OutBoxTransactionE
 import BridgeMint from './handlers/Zksync/BridgeMint'
 import RoleGranted from './handlers/RelayPoolTimelock/RoleGranted'
 import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
+import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
 
 // ============= RelayPool Events =============
 
@@ -125,5 +126,6 @@ ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
 ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)
 
 // ============= RelayPoolTimelock Events =============
+ponder.on('RelayPool:OwnershipTransferred', OwnershipTransferred)
 ponder.on('RelayPoolTimelock:RoleGranted', RoleGranted)
 ponder.on('RelayPoolTimelock:RoleRevoked', RoleRevoked)

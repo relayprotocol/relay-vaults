@@ -71,13 +71,4 @@ export default async function ({
       yieldPool: thirdPartyPool as `0x${string}`,
     })
     .onConflictDoNothing()
-
-  // Let's add the timelock.
-  await context.db
-    .insert(timelock)
-    .values({
-      chainId: context.network.chainId,
-      contractAddress: owner as `0x${string}`,
-    })
-    .onConflictDoNothing()
 }

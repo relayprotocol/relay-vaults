@@ -1,9 +1,9 @@
 import { task } from 'hardhat/config'
 import { checkAllowance } from '@relay-protocol/helpers'
 import { Input, Select } from 'enquirer'
-import { executeThruTimelock } from './origins/add'
 import { getPoolsForNetwork } from './deploy/bridge-proxy'
 import networks from '@relay-protocol/networks'
+import { executeThruTimelock } from './utils'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   // .addParam('asset', 'The ERC20 asset to deposit')
@@ -165,7 +165,6 @@ task('pool:withdraw', 'Withdraw ERC20 tokens from a relay vault')
         await executeThruTimelock(
           ethers,
           timelockAddress,
-          user,
           payload,
           target,
           value
@@ -183,3 +182,147 @@ task('pool:withdraw', 'Withdraw ERC20 tokens from a relay vault')
       }
     }
   )
+
+const roles = [
+  'CANCELLER_ROLE',
+  'PROPOSER_ROLE',
+  'EXECUTOR_ROLE',
+  // 'DEFAULT_ADMIN_ROLE', // We should avoid granting this role... as it can let folks with it the ability to change the timelock duration
+]
+
+task(
+  'pool:grant-role',
+  'Grant a role to the pool contract (thru the timelock!)'
+)
+  .addOptionalParam('pool', 'The relay vault address')
+  .addOptionalParam('role', 'The role')
+  .addParam('recipient', 'The address of the new owner')
+  .setAction(async ({ pool: poolAddress, recipient, role }, { ethers }) => {
+    const [user] = await ethers.getSigners()
+    const { chainId } = await ethers.provider.getNetwork()
+
+    if (!poolAddress) {
+      const pools = await getPoolsForNetwork(Number(chainId))
+      poolAddress = await new Select({
+        choices: pools.map((pool) => {
+          return {
+            message: pool.params.name,
+            value: pool.address,
+          }
+        }),
+        message: 'Please choose the relay vault address:',
+        name: 'poolAddress',
+      }).run()
+    }
+
+    if (!role || !roles.includes(role)) {
+      role = await new Select({
+        choices: roles.map((role) => {
+          return {
+            message: role,
+            value: role,
+          }
+        }),
+        message: 'Please choose the role to grant:',
+        name: 'role',
+      }).run()
+    }
+
+    const pool = await ethers.getContractAt('RelayPool', poolAddress)
+    const timelockAddress = await pool.owner()
+
+    const timelock = await ethers.getContractAt(
+      'TimelockControllerUpgradeable',
+      timelockAddress
+    )
+    const roleHash = await timelock[role]()
+
+    if (!(await timelock.hasRole(roleHash, recipient))) {
+      console.log(`Granting ${role} to recipient`)
+      const tx = await timelock.grantRole.populateTransaction(
+        roleHash,
+        recipient
+      )
+      await executeThruTimelock(ethers, timelockAddress, tx.data, tx.to, 0n)
+    }
+  })
+
+task(
+  'pool:revoke-role',
+  'Revoke a role from the pool contract (thru the timelock!)'
+)
+  .addOptionalParam('pool', 'The relay vault address')
+  .addOptionalParam('role', 'The role')
+  .addOptionalParam('recipient', 'The address of the new owner')
+  .setAction(async ({ pool: poolAddress, recipient, role }, { ethers }) => {
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const { chainId } = await ethers.provider.getNetwork()
+
+    if (!poolAddress) {
+      const pools = await getPoolsForNetwork(Number(chainId))
+      poolAddress = await new Select({
+        choices: pools.map((pool) => {
+          return {
+            message: pool.params.name,
+            value: pool.address,
+          }
+        }),
+        message: 'Please choose the relay vault address:',
+        name: 'poolAddress',
+      }).run()
+    }
+
+    if (!recipient) {
+      recipient = await new Input({
+        default: userAddress,
+        message: 'Please enter the recipient address (default is yours):',
+        name: 'recipient',
+      }).run()
+    }
+
+    const pool = await ethers.getContractAt('RelayPool', poolAddress)
+    const timelockAddress = await pool.owner()
+
+    const timelock = await ethers.getContractAt(
+      'TimelockControllerUpgradeable',
+      timelockAddress
+    )
+    const roleHashes: { [role: string]: string } = {}
+    for (const role of roles) {
+      roleHashes[role] = await timelock[role]()
+    }
+
+    const hasRoles: { [role: string]: boolean } = {}
+    for (const role of roles) {
+      hasRoles[role] = await timelock.hasRole(roleHashes[role], recipient)
+    }
+    const choices = Object.entries(hasRoles).reduce((choices, role) => {
+      if (role[1]) {
+        return [
+          ...choices,
+          {
+            message: role[0],
+            value: role[0],
+          },
+        ]
+      }
+      return choices
+    }, [])
+    if (!role || !roles.includes(role)) {
+      role = await new Select({
+        choices,
+        message: 'Please choose the role to revoke:',
+        name: 'role',
+      }).run()
+    }
+
+    const roleHash = await timelock[role]()
+
+    console.log(`Revoking ${role} from recipient`)
+    const tx = await timelock.revokeRole.populateTransaction(
+      roleHash,
+      recipient
+    )
+    await executeThruTimelock(ethers, timelockAddress, tx.data, tx.to, 0n)
+  })

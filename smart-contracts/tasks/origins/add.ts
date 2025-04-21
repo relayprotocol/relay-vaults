@@ -6,6 +6,7 @@ import {
   getPoolsForNetwork,
   getBridgesForNetwork,
 } from '../deploy/bridge-proxy'
+import { executeThruTimelock } from '../utils'
 
 task('pool:add-origin', 'Add origin for a pool')
   .addOptionalParam('pool', 'the pool address')
@@ -186,14 +187,7 @@ task('pool:add-origin', 'Add origin for a pool')
       const target = poolAddress // target
       const value = 0n // value
       const payload = encodedCall // data
-      await executeThruTimelock(
-        ethers,
-        timelockAddress,
-        user,
-        payload,
-        target,
-        value
-      )
+      await executeThruTimelock(ethers, timelockAddress, payload, target, value)
     }
   )
 

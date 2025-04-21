@@ -43,7 +43,6 @@ query GetAllPools(
 query GetRelayPool($contractAddress: String!, $chainId: Float!) {
   relayPool(contractAddress: $contractAddress, chainId: $chainId) {
     contractAddress
-    curator
     asset
     yieldPool
     outstandingDebt

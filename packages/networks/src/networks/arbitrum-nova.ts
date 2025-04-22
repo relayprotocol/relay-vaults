@@ -12,9 +12,9 @@ export const arbitrumNova: ChildNetworkConfig = {
         routerGateway: '0x21903d3F8176b1a0c17E953Cd896610Be9fFDFa8',
       },
       parent: {
-        outbox: '0x0B9857ae2D4A3DBe74ffE1d7DF045bb7F96E4840',
-        rollup: '0x5eF0D09d1E6204141B4d37530808eD19f60FBa35',
-        routerGateway: '0x72Ce9c846789fdB6fC1f34aC4AD25Dd9ef7031ef',
+        outbox: '0xD4B80C3D7240325D18E645B49e6535A3Bf95cc58',
+        rollup: '0xE7E8cCC7c381809BDC4b213CE44016300707B7Bd',
+        routerGateway: '0xC840838Bc438d73C16c2f8b22D2Ce3669963cD48',
       },
     },
   },

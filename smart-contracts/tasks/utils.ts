@@ -43,7 +43,7 @@ export const executeThruTimelock = async (
   const isProposer = await timelock.hasRole(PROPOSER_ROLE, userAddress)
 
   const useMultisig = await new Confirm({
-    message: `Do you want to use a multisig?`,
+    message: 'Do you want to use a multisig?',
     name: 'confirm',
   }).run()
 

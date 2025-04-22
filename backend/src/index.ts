@@ -29,6 +29,9 @@ import WithdrawalProven from './handlers/OPPortal/WithdrawalProven'
 import WithdrawalFinalized from './handlers/OPPortal/WithdrawalFinalized'
 import OutBoxTransactionExecuted from './handlers/OrbitOutbox/OutBoxTransactionExecuted'
 import BridgeMint from './handlers/Zksync/BridgeMint'
+import RoleGranted from './handlers/RelayPoolTimelock/RoleGranted'
+import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
+import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
 
 // ============= RelayPool Events =============
 
@@ -121,3 +124,8 @@ ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
  * Handles finalzied withdrawals for the ZkSync stack
  */
 ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)
+
+// ============= RelayPoolTimelock Events =============
+ponder.on('RelayPool:OwnershipTransferred', OwnershipTransferred)
+ponder.on('RelayPoolTimelock:RoleGranted', RoleGranted)
+ponder.on('RelayPoolTimelock:RoleRevoked', RoleRevoked)

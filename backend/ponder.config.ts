@@ -7,6 +7,7 @@ import {
   RelayBridge,
   RelayPoolFactory,
   RelayBridgeFactory,
+  TimelockControllerUpgradeable,
 } from '@relay-protocol/abis'
 import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-protocol/addresses'
@@ -129,6 +130,31 @@ const relayPoolNetworks = Object.keys(networks)
             (e) => e.name === 'PoolDeployed'
           ) as AbiEvent,
           parameter: 'pool',
+        }),
+        startBlock: network.earliestBlock,
+      },
+    }
+  }, {})
+
+const relayPoolTimelockNetworks = Object.keys(networks)
+  .filter((chainId) => {
+    return !(networks[chainId] as ChildNetworkConfig).parentChainId
+  })
+  .reduce((relayPoolTimelockNetworks, chainId) => {
+    const network = networks[chainId]
+    const addresses = deployedAddresses[chainId]
+    if (!addresses?.RelayPoolFactory) {
+      return relayPoolTimelockNetworks
+    }
+    return {
+      ...relayPoolTimelockNetworks,
+      [network.slug]: {
+        address: factory({
+          address: addresses.RelayPoolFactory,
+          event: RelayPoolFactory.find(
+            (e) => e.name === 'PoolDeployed'
+          ) as AbiEvent,
+          parameter: 'timelock',
         }),
         startBlock: network.earliestBlock,
       },
@@ -282,6 +308,11 @@ export default createConfig({
     RelayPoolFactory: {
       abi: RelayPoolFactory as Abi,
       network: relayPoolFactoryNetworks,
+    },
+
+    RelayPoolTimelock: {
+      abi: TimelockControllerUpgradeable as Abi,
+      network: relayPoolTimelockNetworks,
     },
   },
   database: {

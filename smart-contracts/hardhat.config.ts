@@ -25,6 +25,7 @@ import './tasks/deploy/native-gateway'
 import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
 import './tasks/utils/zksync-contracts.ts'
+import './tasks/utils/collect-morpho.ts'
 
 // get pk from shell
 const { DEPLOYER_PRIVATE_KEY } = process.env
@@ -41,7 +42,7 @@ if (!DEPLOYER_PRIVATE_KEY) {
 // parse networks from file
 const networks = { hardhat: {} }
 Object.keys(nets).forEach((id) => {
-  const { slug, rpc, isTestnet, isZKsync } = nets[id]
+  const { slug, rpc, isTestnet, stack } = nets[id]
   let accounts
   let zksync = {}
   const network = {
@@ -51,7 +52,7 @@ Object.keys(nets).forEach((id) => {
   if (DEPLOYER_PRIVATE_KEY) {
     accounts = [DEPLOYER_PRIVATE_KEY]
   }
-  if (isZKsync) {
+  if (stack === 'zksync') {
     zksync = {
       ethNetwork: isTestnet ? 'sepolia' : 'mainnet',
       zksync: true,
@@ -91,6 +92,7 @@ const etherscan = {
     gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
     optimismsepolia: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
     optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
+    mainnet: 'C1KDFD2PHN7FXXXT1AW5PG27I5JB23J41D',
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
     sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',

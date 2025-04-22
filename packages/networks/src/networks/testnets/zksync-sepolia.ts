@@ -21,7 +21,6 @@ export const zkSyncSepolia: ChildNetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x1E45f767d51FA1Ec326d35e3BD4904fF0f30fCDa',
   isTestnet: true,
-  isZKsync: true,
   name: 'ZKsync Sepolia Testnet',
   parentChainId: 11155111,
   rpc: process.env.RPC_300

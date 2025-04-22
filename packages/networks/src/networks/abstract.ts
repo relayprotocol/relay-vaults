@@ -21,7 +21,6 @@ export const abstract: ChildNetworkConfig = {
   earliestBlock: 0,
   hyperlaneMailbox: '0x9BbDf86b272d224323136E15594fdCe487F40ce7',
   isTestnet: false,
-  isZKsync: true,
   name: 'Abstract',
   parentChainId: 1,
   rpc: process.env.RPC_2741

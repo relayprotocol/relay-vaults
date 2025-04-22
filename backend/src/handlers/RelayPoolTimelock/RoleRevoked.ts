@@ -42,7 +42,6 @@ export default async function ({
     contractAddress: event.log.address,
   })
 
-  console.log(rolesByHash[event.args.role])
 
   if (rolesByHash[event.args.role] === 'CANCELLER_ROLE') {
     // Get all the cancellers, concat that one and update!

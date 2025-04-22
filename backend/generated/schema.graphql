@@ -33,6 +33,8 @@ type Query {
   bridgeTransactions(where: bridgeTransactionFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): bridgeTransactionPage!
   vaultSnapshot(chainId: Float!, blockNumber: BigInt!, vault: String!): vaultSnapshot
   vaultSnapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage!
+  timelock(chainId: Float!, contractAddress: String!): timelock
+  timelocks(where: timelockFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): timelockPage!
   _meta: Meta
 }
 
@@ -107,7 +109,7 @@ type relayPool {
   contractAddress: String!
   createdAt: BigInt!
   createdAtBlock: BigInt!
-  curator: String!
+  curator: timelock
   name: String!
   outstandingDebt: BigInt!
   symbol: String!
@@ -118,6 +120,14 @@ type relayPool {
   origins(where: poolOriginFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolOriginPage
   snapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage
   userBalances(where: userBalanceFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): userBalancePage
+}
+
+type timelock {
+  cancellers: [String!]!
+  chainId: Int!
+  contractAddress: String!
+  executors: [String!]!
+  proposers: [String!]!
 }
 
 type poolOriginPage {
@@ -911,4 +921,45 @@ input relayBridgeFilter {
   transferNonce_lt: BigInt
   transferNonce_gte: BigInt
   transferNonce_lte: BigInt
+}
+
+type timelockPage {
+  items: [timelock!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+input timelockFilter {
+  AND: [timelockFilter]
+  OR: [timelockFilter]
+  cancellers: [String]
+  cancellers_not: [String]
+  cancellers_has: String
+  cancellers_not_has: String
+  chainId: Int
+  chainId_not: Int
+  chainId_in: [Int]
+  chainId_not_in: [Int]
+  chainId_gt: Int
+  chainId_lt: Int
+  chainId_gte: Int
+  chainId_lte: Int
+  contractAddress: String
+  contractAddress_not: String
+  contractAddress_in: [String]
+  contractAddress_not_in: [String]
+  contractAddress_contains: String
+  contractAddress_not_contains: String
+  contractAddress_starts_with: String
+  contractAddress_ends_with: String
+  contractAddress_not_starts_with: String
+  contractAddress_not_ends_with: String
+  executors: [String]
+  executors_not: [String]
+  executors_has: String
+  executors_not_has: String
+  proposers: [String]
+  proposers_not: [String]
+  proposers_has: String
+  proposers_not_has: String
 }

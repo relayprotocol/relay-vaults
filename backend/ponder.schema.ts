@@ -348,3 +348,26 @@ export const vaultSnapshotRelations = relations(vaultSnapshot, ({ one }) => ({
     references: [relayPool.contractAddress, relayPool.chainId],
   }),
 }))
+
+export const timelock = onchainTable(
+  'timelock',
+  (t) => ({
+    cancellers: t.text().array().notNull().default([]),
+    chainId: t.integer().notNull(),
+    contractAddress: t.hex().notNull(),
+    executors: t.text().array().notNull().default([]),
+    proposers: t.text().array().notNull().default([]),
+  }),
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.chainId, table.contractAddress],
+    }),
+  })
+)
+
+export const curator = relations(relayPool, ({ one }) => ({
+  curator: one(timelock, {
+    fields: [relayPool.chainId, relayPool.curator],
+    references: [timelock.chainId, timelock.contractAddress],
+  }),
+}))

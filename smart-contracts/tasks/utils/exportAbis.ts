@@ -12,6 +12,10 @@ const ignored = [
   'contracts/utils',
 ]
 
+const forced = [
+  '@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol:TimelockControllerUpgradeable',
+]
+
 task('export:abis', 'Export ABIs to a node package').setAction(
   async (_, { artifacts }) => {
     // get only relevant files
@@ -21,6 +25,8 @@ task('export:abis', 'Export ABIs to a node package').setAction(
     const contractNames = allContracts.filter(
       (qualifiedName) => !startsWith(qualifiedName)
     )
+    // Adding the forced contracts
+    contractNames.push(...forced)
 
     // get artifacts
     await Promise.all(

@@ -1,6 +1,5 @@
 // hardhat ignition is not supported rn
 // https://github.com/NomicFoundation/hardhat-ignition/issues/825
-import { Deployer } from '@matterlabs/hardhat-zksync'
 import { type JsonRpcResult } from 'ethers'
 import networks from '@relay-protocol/networks'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
@@ -93,14 +92,18 @@ export async function deployContract(
   // recompile contracts for zksync beforehand
   await hre.run('compile', { zksync: true })
 
-  const { deployer } = await zkSyncSetupDeployer(hre)
-  const artifact = await deployer.loadArtifact(contractNameOrFullyQualifiedName)
+  const artifact = await hre.deployer.loadArtifact(
+    contractNameOrFullyQualifiedName
+  )
 
-  const deploymentFee = await deployer.estimateDeployFee(artifact, deployArgs)
+  const deploymentFee = await hre.deployer.estimateDeployFee(
+    artifact,
+    deployArgs
+  )
   const parsedFee = hre.ethers.formatEther(deploymentFee.toString())
   console.log(`Deployment is estimated to cost ${parsedFee} ETH`)
 
-  const contract = await deployer.deploy(artifact, deployArgs)
+  const contract = await hre.deployer.deploy(artifact, deployArgs)
   await contract.waitForDeployment()
   const address = await contract.getAddress()
 
@@ -126,11 +129,4 @@ export async function deployContract(
     contract,
     hash,
   }
-}
-
-async function zkSyncSetupDeployer(hre: HardhatRuntimeEnvironment) {
-  // set deployer
-  const wallet = await hre.zksyncEthers.getWallet(0)
-  const deployer = new Deployer(hre, wallet)
-  return { deployer, wallet }
 }

@@ -71,6 +71,9 @@
     "@matterlabs/hardhat-zksync-deploy": "1.6.0",
     "@openzeppelin/contracts": "5.2.0",
     "@openzeppelin/contracts-upgradeable": "5.2.0",
+    "@safe-global/api-kit": "3.0.1",
+    "@safe-global/protocol-kit": "6.0.3",
+    "@safe-global/types-kit": "2.0.1",
     "@uniswap/v3-periphery": "1.4.4",
     "solmate": "6.8.0"
   }

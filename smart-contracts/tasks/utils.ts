@@ -41,7 +41,7 @@ export const executeThruTimelock = async (
   // Check if the user is a submitter on the timelock!
   const PROPOSER_ROLE = await timelock.PROPOSER_ROLE()
   const isProposer = await timelock.hasRole(PROPOSER_ROLE, userAddress)
-  if (!isProposer || true) {
+  if (!isProposer) {
     const { chainId } = await ethers.provider.getNetwork()
 
     const apiKit = new SafeApiKit({

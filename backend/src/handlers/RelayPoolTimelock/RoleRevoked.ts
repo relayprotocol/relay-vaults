@@ -42,7 +42,6 @@ export default async function ({
     contractAddress: event.log.address,
   })
 
-
   if (rolesByHash[event.args.role] === 'CANCELLER_ROLE') {
     // Get all the cancellers, concat that one and update!
     const cancellersSet = new Set(t.cancellers)

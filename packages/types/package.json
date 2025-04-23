@@ -26,7 +26,7 @@
     "lint": "eslint"
   },
   "devDependencies": {
-    "@unlock-protocol/tsconfig": "workspace:./packages/tsconfig",
+    "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "eslint": "9.25.1",
     "typescript": "5.8.3"
   }

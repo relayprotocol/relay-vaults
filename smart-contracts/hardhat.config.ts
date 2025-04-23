@@ -1,8 +1,8 @@
 import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
-import { networks as nets } from '@relay-protocol/networks'
 import '@matterlabs/hardhat-zksync'
+import { networks as nets } from '@relay-protocol/networks'
 import registry from '@hyperlane-xyz/registry'
 
 // Interracting

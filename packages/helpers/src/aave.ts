@@ -10,11 +10,11 @@ export const getAaveStataFactoryAddress = async (chainId: bigint) => {
   // const { chainId } = await ethers.provider.getNetwork()
   switch (chainId.toString()) {
     case '1':
-      return AaveV3Ethereum.STATIC_A_TOKEN_FACTORY
+      return AaveV3Ethereum.LEGACY_STATIC_A_TOKEN_FACTORY
     case '10':
-      return AaveV3Optimism.STATIC_A_TOKEN_FACTORY
+      return AaveV3Optimism.LEGACY_STATIC_A_TOKEN_FACTORY
     case '11155111':
-      return AaveV3Sepolia.STATIC_A_TOKEN_FACTORY
+      return AaveV3Sepolia.LEGACY_STATIC_A_TOKEN_FACTORY
     default:
       // TODO: implement addresses switch for all networks
       throw Error('Missing Stata AAve Pool Factory')

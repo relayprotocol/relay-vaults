@@ -130,20 +130,3 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "npm"
-    directory: "/packages/tsconfig"
-    schedule:
-      interval: "weekly"
-    groups:
-      core-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/types"
-    schedule:
-      interval: "weekly"
-    groups:
-      core-dependencies:
-        patterns:
-          - "*"

@@ -54,6 +54,15 @@ updates:
     schedule:
       interval: "weekly"
     groups:
+      hardhat-deps:
+        patterns:
+          - "hardhat"
+          - "hardhat*"
+          - "@nomicfoundation*"
+      contracts:
+        patterns:
+          - "@openzeppelin/"
+          - "solmate"
       all-yarn-dependencies:
         patterns:
           - "*"

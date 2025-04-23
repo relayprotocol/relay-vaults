@@ -17,6 +17,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      typescript-dependencies:
+        patterns:
+          - "typescript"
+          - "ts-*"
+          - "tsconfig*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     directory: "/backend" 

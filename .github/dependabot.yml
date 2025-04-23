@@ -25,6 +25,20 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      node-types:
+        patterns:
+          - "@types/node"
+        update-types:
+          - "minor"
+          - "patch"
+      prettier-dependencies:
+        patterns:
+          - "prettier*"
+          - "eslint-config-prettier"
+          - "eslint-plugin-prettier"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     directory: "/backend" 

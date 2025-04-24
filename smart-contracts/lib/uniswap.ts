@@ -1,7 +1,7 @@
 const ETHEREUM_UNISWAP_QUOTER = '0x52F0E24D1c21C8A0cB1e5a5dD6198556BD9E1203'
 const SLIPPAGE = 3n // in percent
 
-const quote = async ({
+export const quote = async ({
   ethers,
   poolFee,
   tokenIn,
@@ -11,35 +11,35 @@ const quote = async ({
 }: {
   ethers: any
   poolFee: number
-  tokenIn: `0x${string}`
-  tokenOut: `0x${string}`
-  weth: `0x${string}`
+  tokenIn: string
+  tokenOut: string
+  weth: string
   amount: bigint
 }) => {
-  // compute uniswap path to fetch the quote
   let path =
     poolFee == 0
       ? ethers.solidityPacked(
-          [tokenIn, poolFee, tokenOut],
-          ['address', 'uint24', 'address']
+          ['address', 'uint', 'address'],
+          [tokenIn, poolFee, tokenOut]
         ) // if no pool fee for asset, then do direct swap
       : ethers.solidityPacked(
-          [tokenIn, poolFee, weth],
-          ['address', 'uint24', 'address']
+          ['address', 'uint', 'address'],
+          [tokenIn, poolFee, weth]
         ) // else default to token > WETH
 
   // add WETH > asset to path if needed
   if (poolFee != 0 && tokenIn != weth) {
     path = ethers.solidityPacked(
-      [path, poolFee, tokenOut],
-      ['bytes', 'uint24', 'address']
+      ['bytes', 'uint24', 'address'],
+      [path, poolFee, tokenOut]
     )
   }
 
-  const quoter = ethers.getContractAt(
+  const quoter = await ethers.getContractAt(
     ['function quoteExactInput(bytes,uint256) external returns (uint256)'],
     ETHEREUM_UNISWAP_QUOTER
   )
+  console.log({ amount, path })
   const quotedAmount = await quoter.quoteExactInput(path, amount)
   const minimumAmount = (quotedAmount * SLIPPAGE) / 100n
   return minimumAmount

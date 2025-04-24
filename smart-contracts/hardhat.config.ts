@@ -98,6 +98,7 @@ const etherscan = {
     swellchain: 'default-api-key',
     xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
     zero: 'default-api-key',
+    zora: 'default-api-key',
   },
   customChains: [
     {

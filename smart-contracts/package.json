@@ -75,6 +75,7 @@
     "@safe-global/protocol-kit": "6.0.3",
     "@safe-global/types-kit": "2.0.1",
     "@uniswap/v3-periphery": "1.4.4",
+    "enquirer": "2.4.1",
     "solmate": "6.8.0"
   }
 }

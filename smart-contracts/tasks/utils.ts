@@ -3,6 +3,8 @@ import SafeApiKit from '@safe-global/api-kit'
 import Safe from '@safe-global/protocol-kit'
 import { Confirm, Select } from 'enquirer'
 
+const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
+
 export const executeThruTimelock = async (
   ethers: any,
   timelockAddress: string,
@@ -67,9 +69,12 @@ export const executeThruTimelock = async (
     let safe = safes[0]
     if (safes.length > 1) {
       const safeAddress = await new Select({
-        choices: safes.map((safe) => {
+        choices: [...safes, MAINNET_SAFE_ADDRESS].map((safe) => {
           return {
-            message: safe,
+            message:
+              safe === MAINNET_SAFE_ADDRESS
+                ? `Relay Vault Team Safe ${MAINNET_SAFE_ADDRESS}`
+                : safe,
             value: safe,
           }
         }),

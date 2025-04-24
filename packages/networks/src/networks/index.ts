@@ -20,6 +20,7 @@ export * from './bob'
 export * from './swell'
 export * from './hemi'
 export * from './rari'
+export * from './zora'
 
 // testnets
 export * from './testnets/arbitrum-sepolia'

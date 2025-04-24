@@ -6,6 +6,9 @@ import { executeThruTimelock } from '../origins/add'
 import { ZeroAddress } from 'ethers'
 import TokenSwapModule from '../../ignition/modules/TokenSwapModule'
 
+const ETHEREUM_UNISWAP_QUOTER = '0x52F0E24D1c21C8A0cB1e5a5dD6198556BD9E1203'
+const SLIPPAGE = 3n // in percent
+
 task(
   'pool:collect-morpho',
   "Collects MORPHO rewards for a pool contract and instantly swaps them in the pool's assets."
@@ -126,13 +129,51 @@ task(
         `Swapping ${ethers.formatUnits(balance, decimals)} ${symbol} for the pool's asset and depositing it.`
       )
 
+      // compute uniswap path to fetch the quote
+      let path =
+        uniswapPoolFeeWethToAsset == 0
+          ? ethers.solidityPacked(
+              [
+                reward.asset.address,
+                uniswapPoolFeeWethToAsset,
+                reward.asset.address,
+              ],
+              ['address', 'uint24', 'address']
+            ) // if no pool fee for asset, then do direct swap
+          : ethers.solidityPacked(
+              [
+                reward.asset.address,
+                uniswapPoolFeeWethToAsset,
+                network.assets.weth,
+              ],
+              ['address', 'uint24', 'address']
+            ) // else default to token > WETH
+
+      // add WETH > asset to path if needed
+      if (
+        uniswapPoolFeeWethToAsset != 0 &&
+        reward.asset.address != network.assets.weth
+      ) {
+        path = ethers.solidityPacked(
+          [path, uniswapPoolFeeWethToAsset, reward.asset.address],
+          ['bytes', 'uint24', 'address']
+        )
+      }
+
+      const quoter = ethers.getContractAt(
+        ['function quoteExactInput(bytes,uint256) external returns (uint256)'],
+        ETHEREUM_UNISWAP_QUOTER
+      )
+      const quotedAmount = await quoter.quoteExactInput(path, balance)
+      const minimumAmount = (quotedAmount * SLIPPAGE) / 100n
+
       const encodedCall = pool.interface.encodeFunctionData('swapAndDeposit', [
         reward.asset.address,
         balance,
         3000, // uniswapPoolFee morpho > WETH
         uniswapPoolFeeWethToAsset,
         deadline,
-        0, // TODO: consider computing this minimum amount to receive.
+        minimumAmount,
       ])
 
       await executeThruTimelock(
@@ -141,7 +182,7 @@ task(
         user,
         encodedCall,
         poolAddress,
-        0n
+        minimumAmount
       )
     }
   })

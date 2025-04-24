@@ -118,7 +118,6 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
             name: 'l1BridgeProxy',
           }).run()
         }
-
         // check that pool settings on L1 are correct
         const l1Provider = await getProvider(parentChainId)
         const l1BridgeProxyContract = await new ethers.Contract(
@@ -131,6 +130,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         const l1BridgeProxyPool = await l1BridgeProxyContract.RELAY_POOL()
         const l1BridgeProxyChainId =
           await l1BridgeProxyContract.RELAY_POOL_CHAIN_ID()
+
         // l1BridgeProxy
         if (
           !(
@@ -139,9 +139,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
           )
         ) {
           throw Error(
-            `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${poolChainId})`
+            `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${parentChainId})`
           )
         }
+
+        // TODO: can we check that this is the same type of bridge?
       }
     } else {
       // We are deploying the BridgeProxy on an L1 chain

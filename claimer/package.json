@@ -13,7 +13,7 @@
     "@relay-protocol/networks": "workspace:*",
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
-    "@types/node": "22.14.1",
+    "@types/node": "22.15.2",
     "eslint": "9.25.1",
     "typescript": "5.8.3"
   },

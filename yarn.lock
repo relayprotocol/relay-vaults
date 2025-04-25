@@ -4893,6 +4893,7 @@ __metadata:
     "@types/semver": "npm:7"
     "@uniswap/v3-periphery": "npm:1.4.4"
     chai: "npm:4.5.0"
+    enquirer: "npm:2.4.1"
     eslint: "npm:9.19.0"
     eslint-config-prettier: "npm:10.0.1"
     eslint-plugin-evm-address-to-checksummed: "npm:0.0.6"
@@ -8997,7 +8998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enquirer@npm:^2.3.0":
+"enquirer@npm:2.4.1, enquirer@npm:^2.3.0":
   version: 2.4.1
   resolution: "enquirer@npm:2.4.1"
   dependencies:

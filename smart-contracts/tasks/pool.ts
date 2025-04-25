@@ -3,7 +3,7 @@ import { checkAllowance } from '@relay-protocol/helpers'
 import { Input, Select } from 'enquirer'
 import { getPoolsForNetwork } from './deploy/bridge-proxy'
 import networks from '@relay-protocol/networks'
-import { executeThruTimelock } from './utils'
+import { executeThruTimelock } from '../lib/multisig'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   // .addParam('asset', 'The ERC20 asset to deposit')

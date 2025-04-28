@@ -12,7 +12,7 @@ export default async function ({
   await context.db.sql
     .update(bridgeTransaction)
     .set({
-      finalizationTimestamp: event.transaction.timestamp,
+      finalizationTimestamp: event.block.timestamp,
       nativeBridgeFinalizedTxHash: event.transaction.hash,
       nativeBridgeStatus: 'FINALIZED',
     })

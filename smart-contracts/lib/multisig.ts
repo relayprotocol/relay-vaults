@@ -61,7 +61,9 @@ export const executeThruTimelock = async (
       `User ${userAddress} is not a proposer on the timelock ${timelockAddress}. Can we go thru a multisig?`
     )
     const { safes: userSafes } = await apiKit.getSafesByOwner(userAddress)
-    const safes = [...userSafes, MAINNET_SAFE_ADDRESS]
+    const safes = userSafes.includes(MAINNET_SAFE_ADDRESS)
+      ? [...userSafes]
+      : [...userSafes, MAINNET_SAFE_ADDRESS]
     let safe = safes[0]
     if (safes.length > 1) {
       const safeAddress = await new Select({

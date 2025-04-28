@@ -60,16 +60,12 @@ export const executeThruTimelock = async (
     console.info(
       `User ${userAddress} is not a proposer on the timelock ${timelockAddress}. Can we go thru a multisig?`
     )
-    const { safes } = await apiKit.getSafesByOwner(userAddress)
-    if (safes.length == 0) {
-      throw Error(
-        `User ${userAddress} does not seem to be a signer on any SAFE on this network`
-      )
-    }
+    const { safes: userSafes } = await apiKit.getSafesByOwner(userAddress)
+    const safes = [...userSafes, MAINNET_SAFE_ADDRESS]
     let safe = safes[0]
     if (safes.length > 1) {
       const safeAddress = await new Select({
-        choices: [...safes, MAINNET_SAFE_ADDRESS].map((safe) => {
+        choices: safes.map((safe) => {
           return {
             message:
               safe === MAINNET_SAFE_ADDRESS

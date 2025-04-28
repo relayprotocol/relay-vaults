@@ -39,6 +39,9 @@
   "543210": {
     "RelayBridgeFactory": "0x020d8F48E56F12C9213007186E2bbdD81Be45034"
   },
+  "7777777": {
+    "RelayBridgeFactory": "0x259813B665C8f6074391028ef782e27B65840d89"
+  },
   "11155111": {
     "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
     "RelayPoolNativeGateway": "0xb3DF7D7fEDc3Be5b7746031e72b408b077ABa593"

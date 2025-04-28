@@ -10,16 +10,16 @@ yarn install
 
 # run pg instance
 docker run -d \
-  --name relay-postgres \
+  --name relay-vaults \
   -e POSTGRES_USER=relay \
   -e POSTGRES_PASSWORD=relay \
-  -e POSTGRES_DB=relay \
+  -e POSTGRES_DB=relay-vaults \
   -p 5432:5432 \
-  -v relay-postgres-data:/var/lib/postgresql/data \
+  -v relay-vaults-data:/var/lib/postgresql/data \
   postgres:17
 
 # Export connection string as environment variable
-export DATABASE_URL="postgresql://relay:relay@localhost:5432/relay"
+export DATABASE_URL="postgresql://relay:relay@localhost:5432/relay-vaults"
 
 # create env file
 touch env.local
@@ -28,10 +28,10 @@ touch env.local
 yarn dev
 
 # To stop and remove the container:
-docker stop relay-postgres && docker rm relay-postgres
+docker stop relay-vaults && docker rm relay-vaults
 
 # To delete the volume containig pg data:
-docker volume rm relay-postgres-data
+docker volume rm relay-vaults-data
 
 ```
 

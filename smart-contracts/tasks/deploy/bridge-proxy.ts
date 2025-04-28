@@ -10,6 +10,7 @@ import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/Arbitru
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { L1NetworkConfig, ChildNetworkConfig } from '@relay-protocol/types'
+import { getProvider } from '@relay-protocol/helpers'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 
@@ -50,11 +51,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
-    const {
-      bridges,
-      isZKsync,
-      name: networkName,
-    } = networkConfig as L1NetworkConfig
+    const { bridges, name: networkName } = networkConfig as L1NetworkConfig
 
     // eslint-disable-next-line prefer-const
     let { parentChainId, stack } = networkConfig as ChildNetworkConfig
@@ -120,6 +117,30 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
               'Please enter the address of the corresponding BridgeProxy on the l1 :',
             name: 'l1BridgeProxy',
           }).run()
+        }
+        // check that pool settings on L1 are correct
+        const l1Provider = await getProvider(parentChainId)
+        const l1BridgeProxyContract = await new ethers.Contract(
+          l1BridgeProxy,
+          (
+            await ethers.getContractAt('BridgeProxy', ethers.ZeroAddress)
+          ).interface,
+          l1Provider
+        )
+        const l1BridgeProxyPool = await l1BridgeProxyContract.RELAY_POOL()
+        const l1BridgeProxyChainId =
+          await l1BridgeProxyContract.RELAY_POOL_CHAIN_ID()
+
+        // l1BridgeProxy
+        if (
+          !(
+            l1BridgeProxyPool === poolAddress &&
+            l1BridgeProxyChainId === parentChainId
+          )
+        ) {
+          throw Error(
+            `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${parentChainId})`
+          )
         }
 
         // TODO: can we check that this is the same type of bridge?

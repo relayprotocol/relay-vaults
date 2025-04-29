@@ -21,7 +21,7 @@ struct OriginSettings {
   uint256 maxDebt;
   uint256 outstandingDebt;
   address proxyBridge;
-  uint16 bridgeFee; // basis points
+  uint32 bridgeFee; // fractional basis points (1 = 0.0001 bps)
   uint32 coolDown; // in seconds
 }
 
@@ -31,7 +31,7 @@ struct OriginParam {
   address bridge;
   address proxyBridge;
   uint256 maxDebt;
-  uint16 bridgeFee; // basis points
+  uint32 bridgeFee; // fractional basis points (1 = 0.0001 bps)
   uint32 coolDown; // in seconds
 }
 
@@ -418,7 +418,8 @@ contract RelayPool is ERC4626, Ownable {
     // Mark as processed if not
     messages[chainId][bridge][message.nonce] = data;
 
-    uint256 feeAmount = (message.amount * origin.bridgeFee) / 10000;
+    // Calculate fee using fractional basis points (1 = 0.0001 bps)
+    uint256 feeAmount = (message.amount * origin.bridgeFee) / 100000000;
     pendingBridgeFees += feeAmount;
 
     // Check if origin settings are respected
@@ -509,8 +510,8 @@ contract RelayPool is ERC4626, Ownable {
     // and we should deposit these funds into the yield pool
     _depositAssetsInYieldPool(amount);
 
-    // The amount is the amount that was loaned + the fees
-    uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
+    // Calculate fee using fractional basis points (1 = 0.0001 bps)
+    uint256 feeAmount = (amount * origin.bridgeFee) / 100000000;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion
     _addToStreamingAssets(feeAmount);

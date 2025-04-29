@@ -68,6 +68,8 @@ contract RelayPool is ERC4626, Ownable {
 
   // The address of the weth contract (used for native pools)
   address public immutable WETH;
+  // Constant for fractional basis points (1 = 0.0001 bps)
+  uint256 public constant FRACTIONAL_BPS_DENOMINATOR = 100000000;
 
   // Keeping track of the outstanding debt for ERC4626 computations
   uint256 public outstandingDebt = 0;
@@ -419,7 +421,7 @@ contract RelayPool is ERC4626, Ownable {
     messages[chainId][bridge][message.nonce] = data;
 
     // Calculate fee using fractional basis points (1 = 0.0001 bps)
-    uint256 feeAmount = (message.amount * origin.bridgeFee) / 100000000;
+    uint256 feeAmount = (message.amount * origin.bridgeFee) / FRACTIONAL_BPS_DENOMINATOR;
     pendingBridgeFees += feeAmount;
 
     // Check if origin settings are respected
@@ -511,7 +513,7 @@ contract RelayPool is ERC4626, Ownable {
     _depositAssetsInYieldPool(amount);
 
     // The amount is the amount that was loaned + the fees
-    uint256 feeAmount = (amount * origin.bridgeFee) / 100000000;
+    uint256 feeAmount = (amount * origin.bridgeFee) / FRACTIONAL_BPS_DENOMINATOR;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion
     _addToStreamingAssets(feeAmount);

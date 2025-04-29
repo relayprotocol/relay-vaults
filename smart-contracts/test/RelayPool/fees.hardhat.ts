@@ -68,7 +68,8 @@ describe('Fees', () => {
       10,
       relayBridgeOptimism
     )
-    const fees = (amount * bridgeFee) / 100000000n // Using fractional basis points
+    const fees =
+      (amount * bridgeFee) / (await relayPool.FRACTIONAL_BPS_DENOMINATOR())
     const recipientBalanceBefore = await myToken.balanceOf(recipientAddress) // Probably 0
     const outstandingDebtBefore = await relayPool.outstandingDebt() // Probably 0
     const totalAssetsBefore = await relayPool.totalAssets()

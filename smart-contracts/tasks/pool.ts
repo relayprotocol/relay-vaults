@@ -4,6 +4,7 @@ import { Input, Select, AutoComplete } from 'enquirer'
 import { getPoolsForNetwork } from './deploy/bridge-proxy'
 import networks from '@relay-protocol/networks'
 import { executeThruTimelock } from '../lib/multisig'
+import { MaxUint256 } from 'ethers'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   // .addParam('asset', 'The ERC20 asset to deposit')
@@ -358,13 +359,11 @@ task(
 
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
-      const [asset, oldYieldPoolAddress, decimals, timelockAddress] =
-        await Promise.all([
-          pool.asset(),
-          pool.yieldPool(),
-          pool.decimals(),
-          pool.owner(),
-        ])
+      const [asset, oldYieldPoolAddress, timelockAddress] = await Promise.all([
+        pool.asset(),
+        pool.yieldPool(),
+        pool.owner(),
+      ])
 
       if (!newYieldPoolAddress) {
         const yieldPoolName = await new AutoComplete({
@@ -389,24 +388,28 @@ task(
         'ERC4626',
         oldYieldPoolAddress
       )
-      const [totalAssetsOldPool, totalSupplyOldPool] = await Promise.all([
-        oldYieldPool.totalAssets(),
-        oldYieldPool.totalSupply(),
-      ])
+      const [totalAssetsOldPool, totalSupplyOldPool, oldPoolDecimals] =
+        await Promise.all([
+          oldYieldPool.totalAssets(),
+          oldYieldPool.totalSupply(),
+          oldYieldPool.decimals(),
+        ])
       const currentSharePriceFromOldPool =
-        (totalAssetsOldPool * 10n ** decimals) / totalSupplyOldPool
+        (totalAssetsOldPool * 10n ** oldPoolDecimals) / totalSupplyOldPool
 
       // New yield pool
       const newYieldPool = await ethers.getContractAt(
         'ERC4626',
         newYieldPoolAddress
       )
-      const [totalAssetsNewPool, totalSupplyNewPool] = await Promise.all([
-        newYieldPool.totalAssets(),
-        newYieldPool.totalSupply(),
-      ])
+      const [totalAssetsNewPool, totalSupplyNewPool, newPoolDecimals] =
+        await Promise.all([
+          newYieldPool.totalAssets(),
+          newYieldPool.totalSupply(),
+          newYieldPool.decimals(),
+        ])
       const currentSharePricePriceFromNewPool =
-        (totalAssetsNewPool * 10n ** decimals) / totalSupplyNewPool
+        (totalAssetsNewPool * 10n ** newPoolDecimals) / totalSupplyNewPool
 
       console.log(
         currentSharePriceFromOldPool,

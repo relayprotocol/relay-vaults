@@ -389,36 +389,30 @@ task(
         'ERC4626',
         oldYieldPoolAddress
       )
-      const [totalAssetsOldPool, totalSupplyOldPool] = await Promise.all([
-        oldYieldPool.totalAssets(),
-        oldYieldPool.totalSupply(),
-      ])
-      const currentSharePriceFromOldPool =
-        (totalAssetsOldPool * 10n ** decimals) / totalSupplyOldPool
+      const currentSharePriceFromOldPool = await oldYieldPool.convertToShares(
+        ethers.parseUnits('1', decimals)
+      )
 
       // New yield pool
       const newYieldPool = await ethers.getContractAt(
         'ERC4626',
         newYieldPoolAddress
       )
-      const [totalAssetsNewPool, totalSupplyNewPool] = await Promise.all([
-        newYieldPool.totalAssets(),
-        newYieldPool.totalSupply(),
-      ])
-      const currentSharePricePriceFromNewPool =
-        (totalAssetsNewPool * 10n ** decimals) / totalSupplyNewPool
 
-      console.log(
+      const currentSharePricePriceFromNewPool =
+        await newYieldPool.convertToShares(ethers.parseUnits('1', decimals))
+
+      console.log({
         currentSharePriceFromOldPool,
-        currentSharePricePriceFromNewPool
-      )
+        currentSharePricePriceFromNewPool,
+      })
 
       // We allow a 0.01% slippage
       // Encode the function call to updateYieldPool
       const encodedCall = pool.interface.encodeFunctionData('updateYieldPool', [
         newYieldPoolAddress,
-        (currentSharePriceFromOldPool * 9999n) / 10000n,
-        (currentSharePricePriceFromNewPool * 10001n) / 10000n,
+        (currentSharePriceFromOldPool * 99n) / 100n,
+        (currentSharePricePriceFromNewPool * 101n) / 100n,
       ])
 
       await executeThruTimelock(

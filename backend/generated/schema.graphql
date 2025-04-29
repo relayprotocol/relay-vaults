@@ -164,6 +164,7 @@ type bridgeTransaction {
   destinationPoolChainId: Int
   destinationRecipient: String
   expectedFinalizationTimestamp: BigInt
+  finalizationTimestamp: BigInt
   hyperlaneMessageId: String
   loanEmittedTxHash: String
   nativeBridgeFinalizedTxHash: String
@@ -245,6 +246,14 @@ input bridgeTransactionFilter {
   expectedFinalizationTimestamp_lt: BigInt
   expectedFinalizationTimestamp_gte: BigInt
   expectedFinalizationTimestamp_lte: BigInt
+  finalizationTimestamp: BigInt
+  finalizationTimestamp_not: BigInt
+  finalizationTimestamp_in: [BigInt]
+  finalizationTimestamp_not_in: [BigInt]
+  finalizationTimestamp_gt: BigInt
+  finalizationTimestamp_lt: BigInt
+  finalizationTimestamp_gte: BigInt
+  finalizationTimestamp_lte: BigInt
   hyperlaneMessageId: String
   hyperlaneMessageId_not: String
   hyperlaneMessageId_in: [String]

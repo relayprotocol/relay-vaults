@@ -46,14 +46,11 @@ describe('Fees', () => {
 
     await relayPool.addOrigin({
       bridge: relayBridgeOptimism,
-      bridgeFee: 5,
+      bridgeFee: 50, // 0.05 bps
       chainId: 10,
       coolDown: 0,
-      // (0.05%)
       curator: userAddress,
-
       maxDebt: ethers.parseEther('10'),
-
       proxyBridge: oPStackNativeBridgeProxy,
     })
 
@@ -71,7 +68,7 @@ describe('Fees', () => {
       10,
       relayBridgeOptimism
     )
-    const fees = (amount * bridgeFee) / 10000n
+    const fees = (amount * bridgeFee) / 100000000n // Using fractional basis points
     const recipientBalanceBefore = await myToken.balanceOf(recipientAddress) // Probably 0
     const outstandingDebtBefore = await relayPool.outstandingDebt() // Probably 0
     const totalAssetsBefore = await relayPool.totalAssets()

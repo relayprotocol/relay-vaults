@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config'
-import { checkAllowance } from '@relay-protocol/helpers'
-import { Input, Select } from 'enquirer'
+import { checkAllowance, getStataToken } from '@relay-protocol/helpers'
+import { Input, Select, AutoComplete } from 'enquirer'
 import { getPoolsForNetwork } from './deploy/bridge-proxy'
 import networks from '@relay-protocol/networks'
 import { executeThruTimelock } from '../lib/multisig'
@@ -326,3 +326,107 @@ task(
     )
     await executeThruTimelock(ethers, timelockAddress, tx.data, tx.to, 0n)
   })
+
+task(
+  'pool:update-yield-pool',
+  'Update the yield pool contract (thru the timelock!)'
+)
+  .addOptionalParam('pool', 'The relay vault address')
+  .addOptionalParam('newYieldPool', 'The new yield pool address')
+  .setAction(
+    async (
+      { pool: poolAddress, newYieldPool: newYieldPoolAddress },
+      { ethers }
+    ) => {
+      const [user] = await ethers.getSigners()
+      const userAddress = await user.getAddress()
+      const { chainId } = await ethers.provider.getNetwork()
+
+      if (!poolAddress) {
+        const pools = await getPoolsForNetwork(Number(chainId))
+        poolAddress = await new Select({
+          choices: pools.map((pool) => {
+            return {
+              message: pool.params.name,
+              value: pool.address,
+            }
+          }),
+          message: 'Please choose the relay vault address:',
+          name: 'poolAddress',
+        }).run()
+      }
+
+      const pool = await ethers.getContractAt('RelayPool', poolAddress)
+
+      const [asset, oldYieldPoolAddress, decimals, timelockAddress] =
+        await Promise.all([
+          pool.asset(),
+          pool.yieldPool(),
+          pool.decimals(),
+          pool.owner(),
+        ])
+
+      if (!newYieldPoolAddress) {
+        const yieldPoolName = await new AutoComplete({
+          choices: ['aave', 'other'],
+          message: 'Please choose the new yield pool type:',
+          name: 'yieldPoolName',
+        }).run()
+        if (yieldPoolName === 'aave') {
+          newYieldPoolAddress = await getStataToken(asset, chainId)
+        } else {
+          // We need to deploy a dummy yield pool
+          newYieldPoolAddress = await new Input({
+            default: userAddress,
+            message: 'Please enter the address of the new yield pool:',
+            name: 'newYieldPoolAddress',
+          }).run()
+        }
+      }
+
+      // Old yield pool
+      const oldYieldPool = await ethers.getContractAt(
+        'ERC4626',
+        oldYieldPoolAddress
+      )
+      const [totalAssetsOldPool, totalSupplyOldPool] = await Promise.all([
+        oldYieldPool.totalAssets(),
+        oldYieldPool.totalSupply(),
+      ])
+      const currentSharePriceFromOldPool =
+        (totalAssetsOldPool * 10n ** decimals) / totalSupplyOldPool
+
+      // New yield pool
+      const newYieldPool = await ethers.getContractAt(
+        'ERC4626',
+        newYieldPoolAddress
+      )
+      const [totalAssetsNewPool, totalSupplyNewPool] = await Promise.all([
+        newYieldPool.totalAssets(),
+        newYieldPool.totalSupply(),
+      ])
+      const currentSharePricePriceFromNewPool =
+        (totalAssetsNewPool * 10n ** decimals) / totalSupplyNewPool
+
+      console.log(
+        currentSharePriceFromOldPool,
+        currentSharePricePriceFromNewPool
+      )
+
+      // We allow a 0.01% slippage
+      // Encode the function call to updateYieldPool
+      const encodedCall = pool.interface.encodeFunctionData('updateYieldPool', [
+        newYieldPoolAddress,
+        (currentSharePriceFromOldPool * 9999n) / 10000n,
+        (currentSharePricePriceFromNewPool * 10001n) / 10000n,
+      ])
+
+      await executeThruTimelock(
+        ethers,
+        timelockAddress,
+        encodedCall,
+        poolAddress,
+        0n
+      )
+    }
+  )

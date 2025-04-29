@@ -510,7 +510,7 @@ contract RelayPool is ERC4626, Ownable {
     // and we should deposit these funds into the yield pool
     _depositAssetsInYieldPool(amount);
 
-    // Calculate fee using fractional basis points (1 = 0.0001 bps)
+    // The amount is the amount that was loaned + the fees
     uint256 feeAmount = (amount * origin.bridgeFee) / 100000000;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion

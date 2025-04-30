@@ -71,7 +71,6 @@ describe('Fees', () => {
       await relayPool.FRACTIONAL_BPS_DENOMINATOR()
     )
     expect(FRACTIONAL_BPS_DENOMINATOR / bridgeFee).to.equal(100) // make sure its 1%/100bps
-    const expectedFees = (amount * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR
 
     const recipientBalanceBefore = await myToken.balanceOf(recipientAddress) // Probably 0
     const outstandingDebtBefore = await relayPool.outstandingDebt() // Probably 0
@@ -84,7 +83,7 @@ describe('Fees', () => {
 
     const userBalanceAfter = await myToken.balanceOf(recipientAddress)
     expect(userBalanceAfter).to.equal(
-      recipientBalanceBefore + amount - expectedFees
+      recipientBalanceBefore + amount - ethers.parseUnits('0.99')
     )
     const outstandingDebtAfter = await relayPool.outstandingDebt()
     expect(outstandingDebtAfter).to.equal(outstandingDebtBefore + amount) // fees are considered debt because they are owed to the pool!

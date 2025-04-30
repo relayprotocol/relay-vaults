@@ -83,7 +83,7 @@ describe('Fees', () => {
 
     const userBalanceAfter = await myToken.balanceOf(recipientAddress)
     expect(userBalanceAfter).to.equal(
-      recipientBalanceBefore + amount - ethers.parseUnits('0.99')
+      recipientBalanceBefore + amount - ethers.parseUnits('0.01')
     )
     const outstandingDebtAfter = await relayPool.outstandingDebt()
     expect(outstandingDebtAfter).to.equal(outstandingDebtBefore + amount) // fees are considered debt because they are owed to the pool!

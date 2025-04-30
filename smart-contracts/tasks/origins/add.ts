@@ -14,7 +14,10 @@ task('pool:add-origin', 'Add origin for a pool')
   .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
   .addOptionalParam('proxyBridge', 'the origin proxyBridge (on this L1)')
   .addOptionalParam('maxDebt', 'the maximum debt coming from the origin')
-  .addOptionalParam('bridgeFee', 'the fee (basis point) applied to this bridge')
+  .addOptionalParam(
+    'bridgeFee',
+    'the fee applied to this bridge (in fractional basis point)'
+  )
   .addOptionalParam('curator', "the curator's address for this origin")
   .addOptionalParam('coolDown', 'the cool down period for this origin')
   .setAction(
@@ -141,9 +144,11 @@ task('pool:add-origin', 'Add origin for a pool')
       }
 
       if (!bridgeFee) {
+        const fractionalBpsDenominator = await pool.FRACTIONAL_BPS_DENOMINATOR()
+        const bpsValue = (1 / Number(fractionalBpsDenominator)) * 10000 // Convert to basis points
         bridgeFee = await new Input({
           default: 10,
-          message: 'What is the bridge fee, in basis points?',
+          message: `What is the bridge fee, in fractional basis points (1 = ${bpsValue.toFixed(8)} bps, denominator = ${fractionalBpsDenominator})?`,
         }).run()
       }
 

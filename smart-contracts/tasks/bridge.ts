@@ -111,6 +111,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         provider
       )
       const origin = await pool.authorizedOrigins(chainId, bridgeAddress)
+      const fractionalBpsDenominator = await pool.FRACTIONAL_BPS_DENOMINATOR()
 
       const totalAssets = await pool.totalAssets()
       const outstandingDebt = await pool.outstandingDebt()
@@ -155,7 +156,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       }
 
       const confirm = await new Confirm({
-        message: `Are you sure you want to bridge ${rawEthers.formatUnits(amount, decimals)} of ${asset === rawEthers.ZeroAddress ? 'native asset' : asset} to the pool ${poolAddress} on ${poolChainId}? There is a ${Number(origin.bridgeFee) / 100.0}% fee and you will get it in at least ${origin.coolDown} seconds.`,
+        message: `Are you sure you want to bridge ${rawEthers.formatUnits(amount, decimals)} of ${asset === rawEthers.ZeroAddress ? 'native asset' : asset} to the pool ${poolAddress} on ${poolChainId}? There is a ${Number(origin.bridgeFee / fractionalBpsDenominator)}% fee and you will get it in at least ${origin.coolDown} seconds.`,
         name: 'confirm',
       }).run()
 

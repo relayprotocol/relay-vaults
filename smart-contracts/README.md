@@ -102,7 +102,7 @@ yarn run hardhat pool:add-origin --network <l1-network> --l2-chain-id <l2-chain-
 You'll be prompted to configure:
 
 - Maximum debt for this origin
-- Bridge fee (in basis points)
+- Bridge fee (in fractional basis points, where 1 = 0.0000001 bps, denominator = 100000000000)
 - Curator address for this origin (should be a multisig or timelock)
 - Cool-down period (minimum delay between bridge initiation and transfer)
 

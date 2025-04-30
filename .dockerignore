@@ -29,7 +29,6 @@ node_modules
 **/typechain
 **/typechain-types
 **/cache
-**/ignition
 **/ignition/deployments
 **/ignition/params
 

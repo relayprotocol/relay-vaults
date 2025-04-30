@@ -32,6 +32,7 @@ import BridgeMint from './handlers/Zksync/BridgeMint'
 import RoleGranted from './handlers/RelayPoolTimelock/RoleGranted'
 import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
 import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
+import YieldPoolChanged from './handlers/RelayPool/YieldPoolChanged'
 
 // ============= RelayPool Events =============
 
@@ -129,3 +130,8 @@ ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)
 ponder.on('RelayPool:OwnershipTransferred', OwnershipTransferred)
 ponder.on('RelayPoolTimelock:RoleGranted', RoleGranted)
 ponder.on('RelayPoolTimelock:RoleRevoked', RoleRevoked)
+
+/**
+ * Handles the change of the yield pool
+ */
+ponder.on('RelayPool:YieldPoolChanged', YieldPoolChanged)

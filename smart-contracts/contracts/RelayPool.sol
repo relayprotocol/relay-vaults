@@ -184,11 +184,8 @@ contract RelayPool is ERC4626, Ownable {
     address oldPool = yieldPool;
     uint256 sharesOfOldPool = ERC20(yieldPool).balanceOf(address(this));
 
-    // Calculate share price of old pool
-    uint256 oldPoolSharePrice = FixedPointMathLib.divWadDown(
-      ERC4626(oldPool).totalAssets(),
-      ERC4626(oldPool).totalSupply()
-    );
+    // Calculate share price of old pool using convertToAssets
+    uint256 oldPoolSharePrice = ERC4626(oldPool).convertToAssets(10 ** ERC20(oldPool).decimals());
 
     // Check if share price is too low
     if (oldPoolSharePrice < minSharePriceFromOldPool) {
@@ -203,11 +200,8 @@ contract RelayPool is ERC4626, Ownable {
     );
     yieldPool = newPool;
 
-    // Calculate share price of new pool
-    uint256 newPoolSharePrice = FixedPointMathLib.divWadDown(
-      ERC4626(newPool).totalAssets(),
-      ERC4626(newPool).totalSupply()
-    );
+    // Calculate share price of new pool using convertToAssets
+    uint256 newPoolSharePrice = ERC4626(newPool).convertToAssets(10 ** ERC20(newPool).decimals());
 
     // Check if share price is too high
     if (newPoolSharePrice > maxSharePricePriceFromNewPool) {

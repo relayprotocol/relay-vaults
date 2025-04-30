@@ -55,7 +55,7 @@ yarn run hardhat deploy:pool --network <l1-network> --factory <factory-address>
 
 The CLI will prompt you for:
 
-- Asset selection (e.g., WETH)
+- Asset selection (e.g. WETH)
 - Yield pool selection (Aave or dummy yield pool)
 - Pool name and symbol
 - Timelock delay

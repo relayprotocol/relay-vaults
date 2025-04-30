@@ -2,7 +2,7 @@
 
 ## Build docker image
 
-From root folder
+From monorepo root folder
 
 ```
 # Build the image

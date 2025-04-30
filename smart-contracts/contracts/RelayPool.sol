@@ -21,7 +21,7 @@ struct OriginSettings {
   uint256 maxDebt;
   uint256 outstandingDebt;
   address proxyBridge;
-  uint32 bridgeFee; // fractional basis points (1 = 0.0001 bps)
+  uint32 bridgeFee; // fractional basis points
   uint32 coolDown; // in seconds
 }
 
@@ -31,7 +31,7 @@ struct OriginParam {
   address bridge;
   address proxyBridge;
   uint256 maxDebt;
-  uint32 bridgeFee; // fractional basis points (1 = 0.0001 bps)
+  uint32 bridgeFee; // fractional basis points
   uint32 coolDown; // in seconds
 }
 
@@ -68,7 +68,7 @@ contract RelayPool is ERC4626, Ownable {
 
   // The address of the weth contract (used for native pools)
   address public immutable WETH;
-  // Constant for fractional basis points (1 = 0.0001 bps)
+  // Constant for fractional basis points (1 = 0.0000001 bps)
   uint256 public constant FRACTIONAL_BPS_DENOMINATOR = 100000000000;
 
   // Keeping track of the outstanding debt for ERC4626 computations
@@ -420,7 +420,7 @@ contract RelayPool is ERC4626, Ownable {
     // Mark as processed if not
     messages[chainId][bridge][message.nonce] = data;
 
-    // Calculate fee using fractional basis points (1 = 0.0001 bps)
+    // Calculate fee using fractional basis points (1 = 0.0000001 bps)
     uint256 feeAmount = (message.amount * origin.bridgeFee) / FRACTIONAL_BPS_DENOMINATOR;
     pendingBridgeFees += feeAmount;
 

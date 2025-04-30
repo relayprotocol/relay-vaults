@@ -46,7 +46,7 @@ describe('Fees', () => {
 
     await relayPool.addOrigin({
       bridge: relayBridgeOptimism,
-      bridgeFee: 50, // 0.05 bps
+      bridgeFee: 50, // 0.00005 bps
       chainId: 10,
       coolDown: 0,
       curator: userAddress,

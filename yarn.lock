@@ -4609,16 +4609,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ponder/utils@npm:0.2.3":
-  version: 0.2.3
-  resolution: "@ponder/utils@npm:0.2.3"
+"@ponder/utils@npm:0.2.6":
+  version: 0.2.6
+  resolution: "@ponder/utils@npm:0.2.6"
   peerDependencies:
     typescript: ">=5.0.4"
     viem: ">=2"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/aa4e1e8569b1d3e0cd8c8513c980abf5b1118f03251a701fd693e3c65fe7074ea90371d4cab68b33865be96c39c334213b03b439bc0e00a5e0eb169bcceaf4c5
+  checksum: 10/8678cc685d6e01e71c4945410f4893e2efaba45aa222bba4e5bb1c511f2f9ef281d1f697b1739486109045e4907d3a1f816d2b9a0e41138df36c814f8983b17a
   languageName: node
   linkType: hard
 
@@ -4751,7 +4751,7 @@ __metadata:
     husky: "npm:9.1.7"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:15.4.3"
-    ponder: "npm:0.10.14"
+    ponder: "npm:0.10.23"
     prettier: "npm:3.4.2"
     typescript: "npm:5.7.3"
     viem: "npm:2.22.19"
@@ -13496,9 +13496,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ponder@npm:0.10.14":
-  version: 0.10.14
-  resolution: "ponder@npm:0.10.14"
+"ponder@npm:0.10.23":
+  version: 0.10.23
+  resolution: "ponder@npm:0.10.23"
   dependencies:
     "@babel/code-frame": "npm:^7.23.4"
     "@commander-js/extra-typings": "npm:^12.0.1"
@@ -13507,7 +13507,7 @@ __metadata:
     "@escape.tech/graphql-armor-max-depth": "npm:^2.2.0"
     "@escape.tech/graphql-armor-max-tokens": "npm:^2.3.0"
     "@hono/node-server": "npm:1.13.3"
-    "@ponder/utils": "npm:0.2.3"
+    "@ponder/utils": "npm:0.2.6"
     abitype: "npm:^0.10.2"
     ansi-escapes: "npm:^7.0.0"
     commander: "npm:^12.0.0"
@@ -13544,7 +13544,7 @@ __metadata:
       optional: true
   bin:
     ponder: dist/esm/bin/ponder.js
-  checksum: 10/77a13b509d41065b242f26e0eb1c6a7a1113739c897667775ce0f8f9e28d5a3c267eeb47c739cff71cc5c56771f8dc93881b83d1e879a92f68c73a78d566a05e
+  checksum: 10/847492eb3987ce5d7d310398b0aad88a5c3af3625d8799df6bff44da1d7afff1c0a3df1d3f64fd2058ec7b73a05979c7398d4267b4fe298453b92b3f8cc7c985
   languageName: node
   linkType: hard
 

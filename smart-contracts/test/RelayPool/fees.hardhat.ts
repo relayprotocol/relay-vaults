@@ -49,7 +49,7 @@ describe('Fees', () => {
 
     await relayPool.addOrigin({
       bridge: relayBridgeOptimism,
-      bridgeFee, 
+      bridgeFee,
       chainId: 10,
       coolDown: 0,
       curator: userAddress,

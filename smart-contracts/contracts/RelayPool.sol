@@ -69,7 +69,7 @@ contract RelayPool is ERC4626, Ownable {
   // The address of the weth contract (used for native pools)
   address public immutable WETH;
   // Constant for fractional basis points (1 = 0.0000001 bps)
-  uint256 public constant FRACTIONAL_BPS_DENOMINATOR = 100000000000;
+  uint256 public constant FRACTIONAL_BPS_DENOMINATOR = 100_000_000_000;
 
   // Keeping track of the outstanding debt for ERC4626 computations
   uint256 public outstandingDebt = 0;

@@ -19,11 +19,11 @@ export const quote = async ({
   let path =
     poolFee == 0
       ? ethers.solidityPacked(
-          ['address', 'uint', 'address'],
+          ['address', 'uint24', 'address'],
           [tokenIn, poolFee, tokenOut]
         ) // if no pool fee for asset, then do direct swap
       : ethers.solidityPacked(
-          ['address', 'uint', 'address'],
+          ['address', 'uint24', 'address'],
           [tokenIn, poolFee, weth]
         ) // else default to token > WETH
 

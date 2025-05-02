@@ -11,7 +11,7 @@ describe('Uniswap Quote', function () {
 
   const WETH = mainnet.assets.weth
   const USDC = mainnet.assets.usdc
-  const USDC_POOL_FEE = 3000 // 0.3%
+  const USDC_POOL_FEE = 500
 
   it('should quote USDC to WETH swap', async function () {
     const amount = ethers.parseUnits('1000', 6) // 1000 USDC
@@ -21,7 +21,6 @@ describe('Uniswap Quote', function () {
       poolFee: USDC_POOL_FEE,
       tokenIn: USDC,
       tokenOut: WETH,
-      weth: WETH,
     })
 
     expect(minimumAmount).to.be.gt(0)
@@ -36,7 +35,6 @@ describe('Uniswap Quote', function () {
       poolFee: USDC_POOL_FEE,
       tokenIn: WETH,
       tokenOut: USDC,
-      weth: WETH,
     })
 
     expect(minimumAmount).to.be.gt(0)

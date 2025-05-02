@@ -252,6 +252,7 @@ export const bridgeTransaction = onchainTable(
     destinationPoolChainId: t.integer(),
     destinationRecipient: t.hex(),
     expectedFinalizationTimestamp: t.bigint(),
+    finalizationTimestamp: t.bigint(),
     hyperlaneMessageId: t.hex(),
     loanEmittedTxHash: t.hex(),
     nativeBridgeFinalizedTxHash: t.hex(),

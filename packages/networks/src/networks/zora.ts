@@ -1,0 +1,29 @@
+import { ChildNetworkConfig } from '@relay-protocol/types'
+
+// https://docs.zora.co/zora-network/network#zora-network-mainnet
+export const zora: ChildNetworkConfig = {
+  assets: {
+    weth: '0x4200000000000000000000000000000000000006',
+  },
+  bridges: {
+    optimism: {
+      child: {
+        messagePasser: '0x4200000000000000000000000000000000000016',
+      },
+      parent: {
+        portalProxy: '0x1a0ad011913A150f69f6A19DF447A0CfD9551054',
+      },
+    },
+  },
+  chainId: 7777777,
+  earliestBlock: 29402000,
+  hyperlaneMailbox: '0xF5da68b2577EF5C0A0D98aA2a58483a68C2f232a',
+  isTestnet: false,
+  name: 'Zora',
+  parentChainId: 1,
+  rpc: process.env.RPC_7777777
+    ? [process.env.RPC_7777777]
+    : ['https://rpc.zora.energy'],
+  slug: 'zora',
+  stack: 'optimism',
+}

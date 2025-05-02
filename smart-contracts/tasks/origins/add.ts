@@ -6,7 +6,7 @@ import {
   getPoolsForNetwork,
   getBridgesForNetwork,
 } from '../deploy/bridge-proxy'
-import { executeThruTimelock } from '../utils'
+import { executeThruTimelock } from '../../lib/multisig'
 
 task('pool:add-origin', 'Add origin for a pool')
   .addOptionalParam('pool', 'the pool address')

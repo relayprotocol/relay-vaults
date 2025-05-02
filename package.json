@@ -4,12 +4,12 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unlock-protocol/relay-protocol.git"
+    "url": "git+https://github.com/relayprotocol/relay-vaults.git"
   },
   "bugs": {
-    "url": "https://github.com/relay-protocol/unlock/issues"
+    "url": "https://github.com/relayprotocol/vaults/issues"
   },
-  "author": "contact@unlock-protocol.com",
+  "author": "contact@unevenlabs.com",
   "license": "MIT",
   "private": true,
   "workspaces": [

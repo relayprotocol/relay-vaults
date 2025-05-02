@@ -8,6 +8,37 @@ updates:
       all-yarn-dependencies:
         patterns:
           - "*"
+      eslint-dependencies:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint*"
+          - "eslint-plugin*"
+          - "eslint-config*"
+        update-types:
+          - "minor"
+          - "patch"
+      typescript-dependencies:
+        patterns:
+          - "typescript"
+          - "ts-*"
+          - "tsconfig*"
+        update-types:
+          - "minor"
+          - "patch"
+      node-types:
+        patterns:
+          - "@types/node"
+        update-types:
+          - "minor"
+          - "patch"
+      prettier-dependencies:
+        patterns:
+          - "prettier*"
+          - "eslint-config-prettier"
+          - "eslint-plugin-prettier"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     directory: "/backend" 
@@ -23,6 +54,15 @@ updates:
     schedule:
       interval: "weekly"
     groups:
+      hardhat-deps:
+        patterns:
+          - "hardhat"
+          - "hardhat*"
+          - "@nomicfoundation*"
+      contracts:
+        patterns:
+          - "@openzeppelin/"
+          - "solmate"
       all-yarn-dependencies:
         patterns:
           - "*"
@@ -90,20 +130,3 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "npm"
-    directory: "/packages/tsconfig"
-    schedule:
-      interval: "weekly"
-    groups:
-      core-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/types"
-    schedule:
-      interval: "weekly"
-    groups:
-      core-dependencies:
-        patterns:
-          - "*"

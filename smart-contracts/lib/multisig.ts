@@ -3,6 +3,8 @@ import SafeApiKit from '@safe-global/api-kit'
 import Safe from '@safe-global/protocol-kit'
 import { Confirm, Select } from 'enquirer'
 
+const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
+
 export const executeThruTimelock = async (
   ethers: any,
   timelockAddress: string,
@@ -58,18 +60,19 @@ export const executeThruTimelock = async (
     console.info(
       `User ${userAddress} is not a proposer on the timelock ${timelockAddress}. Can we go thru a multisig?`
     )
-    const { safes } = await apiKit.getSafesByOwner(userAddress)
-    if (safes.length == 0) {
-      throw Error(
-        `User ${userAddress} does not seem to be a signer on any SAFE on this network`
-      )
-    }
+    const { safes: userSafes } = await apiKit.getSafesByOwner(userAddress)
+    const safes = userSafes.includes(MAINNET_SAFE_ADDRESS)
+      ? [...userSafes]
+      : [...userSafes, MAINNET_SAFE_ADDRESS]
     let safe = safes[0]
     if (safes.length > 1) {
       const safeAddress = await new Select({
         choices: safes.map((safe) => {
           return {
-            message: safe,
+            message:
+              safe === MAINNET_SAFE_ADDRESS
+                ? `Relay Vault Team Safe ${MAINNET_SAFE_ADDRESS}`
+                : safe,
             value: safe,
           }
         }),

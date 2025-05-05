@@ -411,10 +411,6 @@ task(
       const currentSharePricePriceFromNewPool =
         (totalAssetsNewPool * 10n ** newPoolDecimals) / totalSupplyNewPool
 
-      console.log(
-        currentSharePriceFromOldPool,
-        currentSharePricePriceFromNewPool
-      )
 
       // We allow a 0.01% slippage
       // Encode the function call to updateYieldPool

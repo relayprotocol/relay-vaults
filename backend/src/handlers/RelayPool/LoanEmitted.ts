@@ -28,6 +28,7 @@ export default async function ({
     .insert(bridgeTransaction)
     .values({
       loanEmittedTxHash: event.transaction.hash,
+      nativeBridgeStatus: 'INITIATED',
       nonce,
       originBridgeAddress: bridge,
       originChainId: bridgeChainId,

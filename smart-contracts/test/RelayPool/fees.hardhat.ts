@@ -7,6 +7,9 @@ import { encodeData } from './hyperlane.hardhat'
 const relayBridgeOptimism = '0x0000000000000000000000000000000000000010'
 const oPStackNativeBridgeProxy = '0x0000000000000000000000000000000000000010'
 
+const bridgeFee = BigInt(1_000_000_000) // 1% in fractional bps (100bps)
+const FRACTIONAL_BPS_DENOMINATOR = BigInt(100_000_000_000)
+
 describe('Fees', () => {
   let relayPool: RelayPool
   let myToken: MyToken
@@ -46,14 +49,11 @@ describe('Fees', () => {
 
     await relayPool.addOrigin({
       bridge: relayBridgeOptimism,
-      bridgeFee: 5,
+      bridgeFee,
       chainId: 10,
       coolDown: 0,
-      // (0.05%)
       curator: userAddress,
-
       maxDebt: ethers.parseEther('10'),
-
       proxyBridge: oPStackNativeBridgeProxy,
     })
 
@@ -67,11 +67,11 @@ describe('Fees', () => {
     const recipientAddress = ethers.Wallet.createRandom().address
 
     const amount = ethers.parseUnits('1')
-    const [, , , , , , bridgeFee] = await relayPool.authorizedOrigins(
-      10,
-      relayBridgeOptimism
+    expect(FRACTIONAL_BPS_DENOMINATOR).to.equal(
+      await relayPool.FRACTIONAL_BPS_DENOMINATOR()
     )
-    const fees = (amount * bridgeFee) / 10000n
+    expect(FRACTIONAL_BPS_DENOMINATOR / bridgeFee).to.equal(100) // make sure its 1%/100bps
+
     const recipientBalanceBefore = await myToken.balanceOf(recipientAddress) // Probably 0
     const outstandingDebtBefore = await relayPool.outstandingDebt() // Probably 0
     const totalAssetsBefore = await relayPool.totalAssets()
@@ -82,7 +82,9 @@ describe('Fees', () => {
     )
 
     const userBalanceAfter = await myToken.balanceOf(recipientAddress)
-    expect(userBalanceAfter).to.equal(recipientBalanceBefore + amount - fees)
+    expect(userBalanceAfter).to.equal(
+      recipientBalanceBefore + amount - ethers.parseUnits('0.01')
+    )
     const outstandingDebtAfter = await relayPool.outstandingDebt()
     expect(outstandingDebtAfter).to.equal(outstandingDebtBefore + amount) // fees are considered debt because they are owed to the pool!
 

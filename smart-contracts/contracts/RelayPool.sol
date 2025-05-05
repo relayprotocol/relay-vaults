@@ -21,7 +21,7 @@ struct OriginSettings {
   uint256 maxDebt;
   uint256 outstandingDebt;
   address proxyBridge;
-  uint16 bridgeFee; // basis points
+  uint32 bridgeFee; // fractional basis points
   uint32 coolDown; // in seconds
 }
 
@@ -31,7 +31,7 @@ struct OriginParam {
   address bridge;
   address proxyBridge;
   uint256 maxDebt;
-  uint16 bridgeFee; // basis points
+  uint32 bridgeFee; // fractional basis points
   uint32 coolDown; // in seconds
 }
 
@@ -68,6 +68,9 @@ contract RelayPool is ERC4626, Ownable {
 
   // The address of the weth contract (used for native pools)
   address public immutable WETH;
+  
+  // Denominator for fractional basis points calculations (1 = 0.0000001 bps)
+  uint256 public constant FRACTIONAL_BPS_DENOMINATOR = 100_000_000_000;
 
   // Keeping track of the outstanding debt for ERC4626 computations
   uint256 public outstandingDebt = 0;
@@ -184,11 +187,8 @@ contract RelayPool is ERC4626, Ownable {
     address oldPool = yieldPool;
     uint256 sharesOfOldPool = ERC20(yieldPool).balanceOf(address(this));
 
-    // Calculate share price of old pool
-    uint256 oldPoolSharePrice = FixedPointMathLib.divWadDown(
-      ERC4626(oldPool).totalAssets(),
-      ERC4626(oldPool).totalSupply()
-    );
+    // Calculate share price of old pool using convertToAssets
+    uint256 oldPoolSharePrice = ERC4626(oldPool).convertToAssets(10 ** ERC20(oldPool).decimals());
 
     // Check if share price is too low
     if (oldPoolSharePrice < minSharePriceFromOldPool) {
@@ -203,11 +203,8 @@ contract RelayPool is ERC4626, Ownable {
     );
     yieldPool = newPool;
 
-    // Calculate share price of new pool
-    uint256 newPoolSharePrice = FixedPointMathLib.divWadDown(
-      ERC4626(newPool).totalAssets(),
-      ERC4626(newPool).totalSupply()
-    );
+    // Calculate share price of new pool using convertToAssets
+    uint256 newPoolSharePrice = ERC4626(newPool).convertToAssets(10 ** ERC20(newPool).decimals());
 
     // Check if share price is too high
     if (newPoolSharePrice > maxSharePricePriceFromNewPool) {
@@ -418,7 +415,8 @@ contract RelayPool is ERC4626, Ownable {
     // Mark as processed if not
     messages[chainId][bridge][message.nonce] = data;
 
-    uint256 feeAmount = (message.amount * origin.bridgeFee) / 10000;
+    // Calculate fee using fractional basis points
+    uint256 feeAmount = (message.amount * origin.bridgeFee) / FRACTIONAL_BPS_DENOMINATOR;
     pendingBridgeFees += feeAmount;
 
     // Check if origin settings are respected
@@ -510,7 +508,7 @@ contract RelayPool is ERC4626, Ownable {
     _depositAssetsInYieldPool(amount);
 
     // The amount is the amount that was loaned + the fees
-    uint256 feeAmount = (amount * origin.bridgeFee) / 10000;
+    uint256 feeAmount = (amount * origin.bridgeFee) / FRACTIONAL_BPS_DENOMINATOR;
     pendingBridgeFees -= feeAmount;
     // We need to account for it in a streaming fashion
     _addToStreamingAssets(feeAmount);

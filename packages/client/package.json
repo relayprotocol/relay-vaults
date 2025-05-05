@@ -26,7 +26,7 @@
     "generate-types": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
-    "graphql": "16.10.0",
+    "graphql": "16.11.0",
     "graphql-request": "7.1.2",
     "graphql-tag": "2.12.6"
   },
@@ -39,8 +39,8 @@
     "@relay-protocol/eslint-config": "workspace:^",
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
-    "@types/node": "22.14.1",
-    "eslint": "9.25.1",
+    "@types/node": "22.15.3",
+    "eslint": "9.26.0",
     "tsup": "8.4.0",
     "typescript": "5.8.3"
   }

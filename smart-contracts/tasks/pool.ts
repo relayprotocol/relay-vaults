@@ -373,6 +373,11 @@ task(
         }).run()
         if (yieldPoolName === 'aave') {
           newYieldPoolAddress = await getStataToken(asset, chainId)
+          if (!newYieldPoolAddress) {
+            throw Error(
+              'We could not find an Aave pool address for this asset on this network'
+            )
+          }
         } else {
           // We need to deploy a dummy yield pool
           newYieldPoolAddress = await new Input({

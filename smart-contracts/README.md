@@ -162,7 +162,7 @@ You can add liquidity through the [UI directly](https://relay-protocol-productio
 
 ### Curator actions
 
-Each pool contract has an owner who has special rights on the pool contracts. This owner is meant to be a Timelock contract in order to leave time (7 days at least) for each liquidity provider to pool their funds if they disagree with an upcoming change on a pool. Some of these actions include the `pool:update-yield-pool`, `pool:remove-origin`, `pool:collect-morpho` to collect the morpho rewards if applicable... etc.
+Each pool contract has an owner who has special rights on the pool contracts. This owner is meant to be a Timelock contract in order to leave time (7 days at least) for each liquidity provider to pull their funds if they disagree with an upcoming change on a pool. Some of these actions include the `pool:update-yield-pool`, `pool:remove-origin`, `pool:collect-morpho` to collect the morpho rewards if applicable... etc.
 
 ### Bridging
 

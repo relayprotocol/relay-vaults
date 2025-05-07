@@ -158,7 +158,7 @@ We provide several hardhat tasks to faciliate deployment (see above), but also u
 
 ### Adding liquidity
 
-You can add liqquidity thru the [UI directly](https://relay-protocol-production.up.railway.app/) or by using the cli `yarn run hardhat pool:deposit --network <name>`. Similarly it is possible to withdraw with `yarn run hardhat pool:withdraw --network <name>`.
+You can add liquidity through the [UI directly](https://relay-protocol-production.up.railway.app/) or by using the cli `yarn run hardhat pool:deposit --network <name>`. Similarly it is possible to withdraw with `yarn run hardhat pool:withdraw --network <name>`.
 
 ### Curator actions
 

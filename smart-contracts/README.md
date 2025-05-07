@@ -20,7 +20,7 @@ The actual bridging logic is abstracted away and implemented in various ProxyBri
 
 ## Deployment Guide
 
-This guide outlines the step-by-step process to deploy the entire Relay Protocol across both L1 (Ethereum mainnet) and L2 networks (Arbitrum, ZKSync, or Optimism compatible chains).
+This guide outlines the step-by-step process to deploy the entire Relay Protocol across both L1 (Ethereum mainnet) and L2 networks (Arbitrum, ZKSync, or Optimism compatible chains). You can list all supported networks with `yarn run hardhat networks:list`.
 
 ### Prerequisites
 
@@ -151,3 +151,22 @@ yarn hardhat compile --network zksync
 ```
 
 The deployment process will automatically use the appropriate deployment method for ZKSync.
+
+## Usage guide
+
+We provide several hardhat tasks to faciliate deployment (see above), but also usage of the pool and bridges. You can list all available tasks with `yarn run hardhat` and list all supported networks with `yarn run hardhat networks:list`.
+
+### Adding liquidity
+
+You can add liqquidity thru the [UI directly](https://relay-protocol-production.up.railway.app/) or by using the cli `yarn run hardhat pool:deposit --network <name>`. Similarly it is possible to withdraw with `yarn run hardhat pool:withdraw --network <name>`.
+
+### Curator actions
+
+Each pool contract has an owner who has special rights on the pool contracts. This owner is meant to be a Timelock contract in order to leave time (7 days at least) for each liquidity provider to pool their funds if they disagree with an upcoming change on a pool. Some of these actions include the `pool:update-yield-pool`, `pool:remove-origin`, `pool:collect-morpho` to collect the morpho rewards if applicable... etc.
+
+### Bridging
+
+The cli offers the ability to easily bridge tokens using `yarn run hardhat bridge:send --network <name>`. If you are planning to trigger bridges on your end, you should look at what [the script does](https://github.com/relayprotocol/relay-vaults/blob/main/smart-contracts/tasks/bridge.ts#L9): importantly, before bridging you should check that the pool contract has enough liquidity, and you should query the bridge contract to get the Hyperlane fee (this is all handled by the script).
+
+If for any reason the Hyperlane message takes too much time to be processed or it needs to be triggered manually after failures, you can use [their cli](https://docs.hyperlane.xyz/docs/reference/cli): `hyperlane status --id <hyperlane message id> --relay`. You can get the `hyperlane message id` by looking at the event triggered on the bridging transaction.
+NB: [Hyperlane performs retries](https://docs.hyperlane.xyz/docs/protocol/agents/relayer#retry-strategy) but they may take a while.

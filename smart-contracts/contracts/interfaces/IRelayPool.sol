@@ -85,7 +85,7 @@ interface IRelayPool is IERC4626 {
     function WETH() external view returns (address);
     function FRACTIONAL_BPS_DENOMINATOR() external view returns (uint256);
     function outstandingDebt() external view returns (uint256);
-    function authorizedOrigins(uint32 chainId, address bridge) external view returns (OriginSettings memory);
+    function authorizedOrigins(uint32 chainId, address bridge) external view returns (uint32, address, address, uint256, uint256, address, uint32, uint32); // use explicit tuple for struct OriginSettings
     function messages(uint32 chainId, address bridge, uint256 nonce) external view returns (bytes memory);
     function yieldPool() external view returns (address);
     function tokenSwapAddress() external view returns (address);

@@ -1,6 +1,7 @@
-// The role of this interface is to preserve signature that has been used in the past
-// and is still used in the wild.
-// We keep it in the codebase to avoid breaking changes.
+// The role of this interface is to preserve signatures that have been used in the past
+// and may be in use in the wild.
+// We keep it in the codebase to allow tracking and indexing of deprecated events.
+
 import {IRelayPool} from "./IRelayPool.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 interface IRelayPoolHistorical is IRelayPool {

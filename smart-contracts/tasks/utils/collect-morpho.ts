@@ -5,6 +5,7 @@ import { Select, Confirm } from 'enquirer'
 import { executeThruTimelock } from '../../lib/multisig'
 import { ZeroAddress } from 'ethers'
 import TokenSwapModule from '../../ignition/modules/TokenSwapModule'
+import { quote } from '../../lib/uniswap'
 
 task(
   'pool:collect-morpho',
@@ -126,13 +127,22 @@ task(
         `Swapping ${ethers.formatUnits(balance, decimals)} ${symbol} for the pool's asset and depositing it.`
       )
 
+      const minimumAmount = await quote({
+        amount: balance,
+        ethers,
+        poolFee: uniswapPoolFeeWethToAsset,
+        tokenIn: reward.asset.address,
+        tokenOut: asset,
+        weth: network.assets.weth,
+      })
+
       const encodedCall = pool.interface.encodeFunctionData('swapAndDeposit', [
         reward.asset.address,
         balance,
         3000, // uniswapPoolFee morpho > WETH
         uniswapPoolFeeWethToAsset,
         deadline,
-        0, // TODO: consider computing this minimum amount to receive.
+        minimumAmount,
       ])
 
       await executeThruTimelock(
@@ -141,7 +151,7 @@ task(
         user,
         encodedCall,
         poolAddress,
-        0n
+        minimumAmount
       )
     }
   })

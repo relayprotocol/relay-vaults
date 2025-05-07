@@ -20,14 +20,9 @@ const compareInterfaces = (
   const missing = i1.filter((entry) => !i2.includes(entry))
   const remaining = i2.filter((entry) => !i1.includes(entry))
 
-  // same numbers of elements
-  console.log({
-    filter,
-    i1: i1.length,
-    i2: i2.length,
-    missing,
-    remaining,
-  })
+  // same numbers of  (non-null) elements
+  expect(i1.length).to.not.equal(0)
+  expect(i2.length).to.not.equal(0)
   expect(i1.length).to.equal(i2.length)
 
   // elements are identical
@@ -60,9 +55,6 @@ describe('RelayPool / interface', () => {
   })
   it('includes all events', async () => {
     compareInterfaces(relayPoolContract, relayPoolInterface, 'event')
-  })
-  it('includes all structs', async () => {
-    compareInterfaces(relayPoolContract, relayPoolInterface, 'struct')
   })
   it('includes all errors', async () => {
     compareInterfaces(relayPoolContract, relayPoolInterface, 'error')

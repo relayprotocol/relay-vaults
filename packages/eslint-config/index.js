@@ -46,7 +46,6 @@ module.exports = [
     rules: {
       'prettier/prettier': 'error',
       'linebreak-style': ['error', 'unix'],
-      'mocha/no-exclusive-tests': 'error',
       quotes: [
         'error',
         'single',

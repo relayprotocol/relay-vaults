@@ -154,7 +154,7 @@ The deployment process will automatically use the appropriate deployment method 
 
 ## Usage guide
 
-We provide several hardhat tasks to faciliate deployment (see above), but also usage of the pool and bridges. You can list all available tasks with `yarn run hardhat` and list all supported networks with `yarn run hardhat networks:list`.
+We provide several hardhat tasks to facilitate deployment (see above), but also usage of the pool and bridges. You can list all available tasks with `yarn run hardhat` and list all supported networks with `yarn run hardhat networks:list`.
 
 ### Adding liquidity
 

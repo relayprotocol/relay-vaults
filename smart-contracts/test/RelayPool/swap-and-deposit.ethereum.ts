@@ -4,6 +4,7 @@ import networks from '@relay-protocol/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { mintUSDC, stealERC20 } from '../utils/hardhat'
 import { reverts } from '../utils/errors'
+import { quote } from '../../lib/uniswap'
 
 import {
   MyToken,
@@ -32,7 +33,8 @@ const tokenSwapBehavior = async (
   token: string,
   amount: bigint,
   tokenPoolFee: number,
-  assetPoolFee: number
+  assetPoolFee: number,
+  amountOutMinimum: bigint = 0n
 ) => {
   const balanceBefore = await getBalance(
     await relayPool.getAddress(),
@@ -51,7 +53,7 @@ const tokenSwapBehavior = async (
     tokenPoolFee,
     assetPoolFee,
     deadline,
-    0 // amountOutMinimum - setting to 0 for tests since we're not concerned with slippage
+    amountOutMinimum // setting to 0 for tests since we're not concerned with slippage
   )
 
   const receipt = await tx.wait()
@@ -253,6 +255,50 @@ describe('RelayPool / Swap and Deposit', () => {
             deadline,
             ethers.parseUnits('100000', 6) //
           )
+        )
+      })
+    })
+  })
+
+  describe('setting minimum out amount on swap ', () => {
+    describe('swapping MORPHO > WETH)', () => {
+      const amount = ethers.parseUnits('1', 18)
+      let relayPoolAddress: string
+      let morphoAmount: bigint
+
+      before(async () => {
+        relayPoolAddress = await relayPool.getAddress()
+
+        // get some USDC
+        const morpho = await ethers.getContractAt('IERC20', MORPHO)
+        await stealERC20(
+          MORPHO,
+          '0x9D03bb2092270648d7480049d0E58d2FcF0E5123', // morpho whale
+          userAddress,
+          amount
+        )
+        // send MORPHO balance to the pool
+        morphoAmount = await morpho.balanceOf(userAddress)
+        await morpho.connect(user).transfer(relayPoolAddress, morphoAmount)
+      })
+
+      it('should swap to pool asset and transfer it directly into the pool balance', async () => {
+        const quotedAmount = await quote({
+          amount: morphoAmount,
+          ethers,
+          poolFee: 3000,
+          tokenIn: MORPHO,
+          tokenOut: WETH,
+        })
+
+        await tokenSwapBehavior(
+          relayPool,
+          tokenSwap,
+          MORPHO,
+          amount,
+          3000, // uniswapPoolFee morpho > WETH
+          3000, // uniswapPoolFee WETH > DAI
+          quotedAmount
         )
       })
     })

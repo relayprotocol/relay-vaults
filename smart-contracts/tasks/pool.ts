@@ -4,7 +4,6 @@ import { Input, Select, AutoComplete } from 'enquirer'
 import { getPoolsForNetwork } from './deploy/bridge-proxy'
 import networks from '@relay-protocol/networks'
 import { executeThruTimelock } from '../lib/multisig'
-import { MaxUint256 } from 'ethers'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')
   // .addParam('asset', 'The ERC20 asset to deposit')
@@ -415,7 +414,6 @@ task(
         ])
       const currentSharePricePriceFromNewPool =
         (totalAssetsNewPool * 10n ** newPoolDecimals) / totalSupplyNewPool
-
 
       // We allow a 0.01% slippage
       // Encode the function call to updateYieldPool

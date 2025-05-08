@@ -62,7 +62,7 @@ const main = async () => {
 
     // write merged ABI to src folder
     await fs.outputJSON(
-      path.join(srcFolder, `${abiName}-merged.sol`, `${abiName}-merged.json`),
+      path.join(srcFolder, `${abiName}Merged.sol`, `${abiName}Merged.json`),
       mergeAbis(currentAbi, pastAbi),
       {
         spaces: 2,

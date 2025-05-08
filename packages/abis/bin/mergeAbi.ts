@@ -42,25 +42,30 @@ export const mergeAbis = (
 const main = async () => {
   for (const abiName of abisToMerge) {
     // Get latest version from past folder
-    const pastVersions = fs.readdirSync(pastFolder)
-    const pastVersion = pastVersions.sort().pop()
-    if (!pastVersion) {
-      throw new Error('No past versions found')
+    const pastVersionsFolder = path.resolve(pastFolder, abiName)
+    const pastVersions = fs.readdirSync(pastVersionsFolder)
+    if (!pastVersions.length) {
+      throw new Error(`No past versions found in ${pastVersionsFolder}`)
     }
 
+    // read latest ABI
     const currentAbiPath = path.join(
       srcFolder,
       `${abiName}.sol`,
       `${abiName}.json`
     )
-    const pastAbiPath = path.join(pastFolder, pastVersion, `${abiName}.json`)
-
-    // read both ABIs
     const currentAbi = await fs.readJSON(currentAbiPath)
-    const pastAbi = await fs.readJSON(pastAbiPath)
+
+    // merge all past versions
+    let merged: InterfaceAbi = currentAbi
+    for (const pastVersion of pastVersions) {
+      const pastAbiPath = path.join(pastFolder, abiName, pastVersion)
+      const pastAbi = await fs.readJSON(pastAbiPath)
+      merged = mergeAbis(merged, pastAbi)
+    }
 
     // overwrite existing ABI with merged ABI in the src folder
-    await fs.outputJSON(currentAbiPath, mergeAbis(currentAbi, pastAbi), {
+    await fs.outputJSON(currentAbiPath, merged, {
       spaces: 2,
     })
   }

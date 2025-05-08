@@ -4,7 +4,7 @@ import * as path from 'path'
 import { Fragment, InterfaceAbi } from 'ethers'
 const abisToMerge = ['RelayPool']
 
-const pastFolder = path.join(__dirname, '..', 'past')
+const pastFolder = path.join(__dirname, '..', 'versions')
 const srcFolder = path.join(__dirname, '..', 'src', 'abis')
 
 export const mergeAbis = (

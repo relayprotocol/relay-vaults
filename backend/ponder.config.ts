@@ -3,7 +3,7 @@ import { ABIs } from '@relay-protocol/helpers'
 import { http } from 'viem'
 
 import {
-  RelayPool,
+  IRelayPoolHistorical,
   RelayBridge,
   RelayPoolFactory,
   RelayBridgeFactory,
@@ -301,7 +301,7 @@ export default createConfig({
     },
 
     RelayPool: {
-      abi: RelayPool as Abi,
+      abi: IRelayPoolHistorical as Abi,
       network: relayPoolNetworks,
     },
 

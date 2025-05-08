@@ -2,7 +2,6 @@ import fs from 'fs-extra'
 import path from 'path'
 
 import { task } from 'hardhat/config'
-import { createIndexFile } from '@relay-protocol/helpers'
 
 const packageFolder = path.resolve('../packages/abis')
 

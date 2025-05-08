@@ -24,6 +24,7 @@ import './tasks/networks'
 import './tasks/deploy/native-gateway'
 import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
+import './tasks/utils/snapshotAbi'
 import './tasks/utils/zksync-contracts.ts'
 import './tasks/utils/collect-morpho.ts'
 

@@ -150,7 +150,7 @@ const config: HardhatUserConfig = {
   sourcify: {
     enabled: false,
   },
-  // zkSyncEtherscan: etherscan,
+
   zksolc: {
     settings: {
       contractsToCompile: [
@@ -164,6 +164,9 @@ const config: HardhatUserConfig = {
       // contracts/RelayBridge.sol:189:5
       suppressedErrors: ['sendtransfer'],
     },
+  },
+  zksyncAnvil: {
+    version: '0.6.1',
   },
 }
 

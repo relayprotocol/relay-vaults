@@ -4,6 +4,7 @@ import * as path from 'path'
 import { Fragment, InterfaceAbi } from 'ethers'
 
 const abisToMerge = ['RelayPool']
+
 const pastFolder = path.join(__dirname, '..', 'past')
 const srcFolder = path.join(__dirname, '..', 'src', 'abis')
 
@@ -24,7 +25,7 @@ export const mergeAbis = (
     }
 
     if (
-      current.some(
+      !current.some(
         (currFragment: Fragment) =>
           currFragment.type !== 'constructor' && // Skip constructor fragments
           currFragment.format() === prevFragment.format()
@@ -79,4 +80,4 @@ main()
   .catch((err) => {
     throw err
   })
-  .then(() => console.log('Abi merged'))
+  .then(() => console.log(`Abis merged successfully for ${abisToMerge.join()}`))

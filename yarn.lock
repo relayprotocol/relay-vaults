@@ -4723,6 +4723,8 @@ __metadata:
   dependencies:
     "@relay-protocol/helpers": "^workspace:*"
     "@relay-protocol/networks": "npm:1.1.1"
+    "@types/node": "npm:^20.11.30"
+    ts-node: "npm:^10.9.2"
     tsup: "npm:8.4.0"
     typescript: "npm:5.8.3"
   languageName: unknown
@@ -6402,6 +6404,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10/e8ba102f8c1aa7623787d625389be68d64e54fcbb76d41f6c2c64e8cf4c9f4a2370e7ef5e5f1732f3c57529d3d26afdcb2edc0101c5e413a79081449825c57ac
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.11.30":
+  version: 20.17.46
+  resolution: "@types/node@npm:20.17.46"
+  dependencies:
+    undici-types: "npm:~6.19.2"
+  checksum: 10/fdc500f78c8d7f1f6ec360acbe2b2d26aafeaf16dd3efaee28cbdbe2515b4e999eab6def82b3a2438a86775584ea89c9580eac25ddaddd0e0cfc81c45e78253a
   languageName: node
   linkType: hard
 
@@ -15745,7 +15756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:10.9.2":
+"ts-node@npm:10.9.2, ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

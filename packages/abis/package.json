@@ -16,14 +16,17 @@
     "clean": "rm -rf src dist",
     "build:contracts": "yarn workspace @relay-protocol/smart-contracts build",
     "build:export-abis": "yarn workspace @relay-protocol/smart-contracts build:abis",
+    "build:merge-abis": "NODE_OPTIONS='--loader ts-node/esm' ts-node bin/mergeAbi.ts",
     "build:ts": "tsup src/index.ts --dts --format esm,cjs",
-    "build": "yarn build:contracts && yarn build:export-abis && yarn build:ts",
+    "build": "yarn build:contracts && yarn build:export-abis && yarn build:merge-abis && yarn build:ts",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint"
   },
   "devDependencies": {
     "@relay-protocol/helpers": "^workspace:*",
     "@relay-protocol/networks": "1.1.1",
+    "@types/node": "20.11.30",
+    "ts-node": "10.9.2",
     "tsup": "8.4.0",
     "typescript": "5.8.3"
   },

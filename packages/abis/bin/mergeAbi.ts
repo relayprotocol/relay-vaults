@@ -59,14 +59,10 @@ const main = async () => {
     const currentAbi = await fs.readJSON(currentAbiPath)
     const pastAbi = await fs.readJSON(pastAbiPath)
 
-    // write merged ABI to src folder
-    await fs.outputJSON(
-      path.join(srcFolder, `${abiName}Merged.sol`, `${abiName}Merged.json`),
-      mergeAbis(currentAbi, pastAbi),
-      {
-        spaces: 2,
-      }
-    )
+    // overwrite existing ABI with merged ABI in the src folder
+    await fs.outputJSON(currentAbiPath, mergeAbis(currentAbi, pastAbi), {
+      spaces: 2,
+    })
   }
 }
 

@@ -2,7 +2,6 @@ import { ethers } from 'ethers'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import { Fragment, InterfaceAbi } from 'ethers'
-
 const abisToMerge = ['RelayPool']
 
 const pastFolder = path.join(__dirname, '..', 'past')

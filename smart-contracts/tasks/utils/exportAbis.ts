@@ -51,11 +51,5 @@ task('export:abis', 'Export ABIs to a node package').setAction(
         await fs.outputJSON(abiFileName, toExport.abi, { spaces: 2 })
       })
     )
-
-    // create repo files
-    await createIndexFile(
-      path.resolve(packageFolder, 'src', 'abis'),
-      path.resolve(packageFolder, 'src')
-    )
   }
 )

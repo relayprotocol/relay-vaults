@@ -17,8 +17,9 @@
     "build:contracts": "yarn workspace @relay-protocol/smart-contracts build",
     "build:export-abis": "yarn workspace @relay-protocol/smart-contracts build:abis",
     "build:merge-abis": "NODE_NO_WARNINGS=1 ts-node --transpile-only bin/mergeAbi.ts",
+    "build:create-index": "NODE_NO_WARNINGS=1 ts-node --transpile-only bin/createIndex.ts",
     "build:ts": "tsup src/index.ts --dts --format esm,cjs",
-    "build": "yarn build:contracts && yarn build:export-abis && yarn build:merge-abis && yarn build:ts",
+    "build": "yarn build:contracts && yarn build:export-abis && yarn build:merge-abis && yarn build:create-index && yarn build:ts",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint"
   },

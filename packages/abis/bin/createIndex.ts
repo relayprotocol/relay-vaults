@@ -2,7 +2,7 @@ import { createIndexFile } from '@relay-protocol/helpers'
 import * as path from 'path'
 const srcFolder = path.join(__dirname, '..')
 
-// create repo files
+// create ABIs index files
 createIndexFile(
   path.resolve(srcFolder, 'src', 'abis'),
   path.resolve(srcFolder, 'src')

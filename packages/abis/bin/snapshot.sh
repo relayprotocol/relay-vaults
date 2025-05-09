@@ -21,7 +21,7 @@ for f in src/versions/$base.*.json; do
     fi
   fi
 done
-echo "Latest version number: $latest"
+
 # new filename with version number
 new_filename="$base.$latest.json"
 

@@ -13,7 +13,7 @@
   },
   "scripts": {
     "release": "npm publish",
-    "clean": "rm -rf src/abis dist",
+    "clean": "rm -rf dist",
     "build:contracts": "yarn workspace @relay-protocol/smart-contracts build",
     "build:export-abis": "yarn workspace @relay-protocol/smart-contracts build:abis",
     "update": "yarn build:contracts && yarn build:export-abis",

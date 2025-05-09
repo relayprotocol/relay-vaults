@@ -1,3112 +1,1867 @@
 [
   {
-    "type": "constructor",
     "inputs": [
       {
+        "internalType": "address",
         "name": "hyperlaneMailbox",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "contract ERC20",
         "name": "asset",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "string",
         "name": "name",
-        "type": "string",
-        "baseType": "string",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "string"
       },
       {
+        "internalType": "string",
         "name": "symbol",
-        "type": "string",
-        "baseType": "string",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "string"
       },
       {
+        "internalType": "address",
         "name": "_yieldPool",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "_weth",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "_curator",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "payable": false,
-    "gas": null
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "address",
         "name": "recipient",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
-    "name": "FailedTransfer"
+    "name": "FailedTransfer",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "balance",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
-    "name": "InsufficientFunds"
+    "name": "InsufficientFunds",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "nonce",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
-    "name": "MessageAlreadyProcessed"
+    "name": "MessageAlreadyProcessed",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "nonce",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "timestamp",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint32",
         "name": "coolDown",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       }
     ],
-    "name": "MessageTooRecent"
+    "name": "MessageTooRecent",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [],
-    "name": "NotAWethPool"
+    "name": "NotAWethPool",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "name": "OwnableInvalidOwner"
+    "name": "OwnableInvalidOwner",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "address",
         "name": "account",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "name": "OwnableUnauthorizedAccount"
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "address",
         "name": "token",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "name": "SafeERC20FailedOperation"
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "actualPrice",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "maxPrice",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
-    "name": "SharePriceTooHigh"
+    "name": "SharePriceTooHigh",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "actualPrice",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "minPrice",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
-    "name": "SharePriceTooLow"
+    "name": "SharePriceTooLow",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "maxDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "nonce",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "address",
         "name": "recipient",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
-    "name": "TooMuchDebtFromOrigin"
+    "name": "TooMuchDebtFromOrigin",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "address",
         "name": "sender",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "name": "UnauthorizedCaller"
+    "name": "UnauthorizedCaller",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "name": "UnauthorizedOrigin"
+    "name": "UnauthorizedOrigin",
+    "type": "error"
   },
   {
-    "type": "error",
     "inputs": [
       {
+        "internalType": "address",
         "name": "token",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
-    "name": "UnauthorizedSwap"
+    "name": "UnauthorizedSwap",
+    "type": "error"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "spender",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
     "name": "Approval",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       },
       {
-        "name": "yieldPool",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "yieldPool",
+        "type": "address"
       }
     ],
     "name": "AssetsDepositedIntoYieldPool",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       },
       {
-        "name": "yieldPool",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "yieldPool",
+        "type": "address"
       }
     ],
     "name": "AssetsWithdrawnFromYieldPool",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
-        "name": "bridge",
-        "type": "address",
-        "baseType": "address",
         "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "bridge",
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "fees",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "fees",
+        "type": "uint256"
       }
     ],
     "name": "BridgeCompleted",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "caller",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
       }
     ],
     "name": "Deposit",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "uint256",
         "name": "nonce",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "recipient",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "contract ERC20",
         "name": "asset",
-        "type": "address",
-        "baseType": "address",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "indexed": false,
         "components": [
           {
+            "internalType": "uint32",
             "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "address",
             "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "address",
             "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "outstandingDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint256"
           },
           {
+            "internalType": "address",
             "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint32",
             "name": "bridgeFee",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "uint32",
             "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           }
         ],
-        "arrayLength": null,
-        "arrayChildren": null
+        "indexed": false,
+        "internalType": "struct OriginSettings",
+        "name": "origin",
+        "type": "tuple"
       },
       {
-        "name": "fees",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "fees",
+        "type": "uint256"
       }
     ],
     "name": "LoanEmitted",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "indexed": false,
         "components": [
           {
+            "internalType": "address",
             "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint32",
             "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "address",
             "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "address",
             "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint256"
           },
           {
+            "internalType": "uint32",
             "name": "bridgeFee",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "uint32",
             "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           }
         ],
-        "arrayLength": null,
-        "arrayChildren": null
+        "indexed": false,
+        "internalType": "struct OriginParam",
+        "name": "origin",
+        "type": "tuple"
       }
     ],
     "name": "OriginAdded",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "indexed": false,
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "maxDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "outstandingDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "proxyBridge",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "proxyBridge",
+        "type": "address"
       }
     ],
     "name": "OriginDisabled",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "oldDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "newDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "indexed": false,
         "components": [
           {
+            "internalType": "uint32",
             "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "address",
             "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "address",
             "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint256"
           },
           {
+            "internalType": "uint256",
             "name": "outstandingDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint256"
           },
           {
+            "internalType": "address",
             "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint32",
             "name": "bridgeFee",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "uint32",
             "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           }
         ],
-        "arrayLength": null,
-        "arrayChildren": null
+        "indexed": false,
+        "internalType": "struct OriginSettings",
+        "name": "origin",
+        "type": "tuple"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "oldOriginDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "newOriginDebt",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "newOriginDebt",
+        "type": "uint256"
       }
     ],
     "name": "OutstandingDebtChanged",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "previousOwner",
-        "type": "address",
-        "baseType": "address",
         "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
       },
       {
-        "name": "newOwner",
-        "type": "address",
-        "baseType": "address",
         "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
       }
     ],
     "name": "OwnershipTransferred",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "oldPeriod",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "oldPeriod",
+        "type": "uint256"
       },
       {
-        "name": "newPeriod",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "newPeriod",
+        "type": "uint256"
       }
     ],
     "name": "StreamingPeriodChanged",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "prevAddress",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "prevAddress",
+        "type": "address"
       },
       {
-        "name": "newAddress",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "newAddress",
+        "type": "address"
       }
     ],
     "name": "TokenSwapChanged",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "from",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "to",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
     "name": "Transfer",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "caller",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "receiver",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
-        "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
       }
     ],
     "name": "Withdraw",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "event",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "oldPool",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "oldPool",
+        "type": "address"
       },
       {
-        "name": "newPool",
-        "type": "address",
-        "baseType": "address",
         "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "address",
+        "name": "newPool",
+        "type": "address"
       }
     ],
     "name": "YieldPoolChanged",
-    "anonymous": false
+    "type": "event"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "DOMAIN_SEPARATOR",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "bytes32",
         "name": "",
-        "type": "bytes32",
-        "baseType": "bytes32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "FRACTIONAL_BPS_DENOMINATOR",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "HYPERLANE_MAILBOX",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "WETH",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
         "components": [
           {
+            "internalType": "address",
             "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint32",
             "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "address",
             "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "address",
             "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint256"
           },
           {
+            "internalType": "uint32",
             "name": "bridgeFee",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           },
           {
+            "internalType": "uint32",
             "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
+            "type": "uint32"
           }
         ],
-        "arrayLength": null,
-        "arrayChildren": null
+        "internalType": "struct OriginParam",
+        "name": "origin",
+        "type": "tuple"
       }
     ],
     "name": "addOrigin",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "allowance",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "spender",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "approve",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
-        "type": "bool",
-        "baseType": "bool",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "asset",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "contract ERC20",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "authorizedOrigins",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "curator",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "maxDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "outstandingDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "address",
         "name": "proxyBridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint32",
         "name": "bridgeFee",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "uint32",
         "name": "coolDown",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "balanceOf",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "claim",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "collectNonDepositedAssets",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "convertToAssets",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "convertToShares",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "decimals",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint8",
         "name": "",
-        "type": "uint8",
-        "baseType": "uint8",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint8"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "address",
         "name": "receiver",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "deposit",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "disableOrigin",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "endOfStream",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "bytes32",
         "name": "bridgeAddress",
-        "type": "bytes32",
-        "baseType": "bytes32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes32"
       },
       {
+        "internalType": "bytes",
         "name": "data",
-        "type": "bytes",
-        "baseType": "bytes",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes"
       }
     ],
     "name": "handle",
-    "constant": false,
     "outputs": [],
     "stateMutability": "payable",
-    "payable": true,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "lastAssetsCollectedAt",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "maxDeposit",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "maxAssets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "receiver",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "maxMint",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "maxShares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "maxRedeem",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "maxShares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "maxWithdraw",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "maxAssets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "messages",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "bytes",
         "name": "",
-        "type": "bytes",
-        "baseType": "bytes",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "address",
         "name": "receiver",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "mint",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "name",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "string",
         "name": "",
-        "type": "string",
-        "baseType": "string",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "string"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "nonces",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "outstandingDebt",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "owner",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "pendingBridgeFees",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "spender",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "value",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint8",
         "name": "v",
-        "type": "uint8",
-        "baseType": "uint8",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint8"
       },
       {
+        "internalType": "bytes32",
         "name": "r",
-        "type": "bytes32",
-        "baseType": "bytes32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
         "name": "s",
-        "type": "bytes32",
-        "baseType": "bytes32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes32"
       }
     ],
     "name": "permit",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "previewDeposit",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "previewMint",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "previewRedeem",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "previewWithdraw",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint32",
         "name": "chainId",
-        "type": "uint32",
-        "baseType": "uint32",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint32"
       },
       {
+        "internalType": "address",
         "name": "bridge",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "bytes",
         "name": "data",
-        "type": "bytes",
-        "baseType": "bytes",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bytes"
       }
     ],
     "name": "processFailedHandler",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "address",
         "name": "receiver",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "redeem",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "renounceOwnership",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "_tokenSwapAddress",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "setTokenSwap",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "streamingPeriod",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "token",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint24",
         "name": "uniswapWethPoolFeeToken",
-        "type": "uint24",
-        "baseType": "uint24",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint24"
       },
       {
+        "internalType": "uint24",
         "name": "uniswapWethPoolFeeAsset",
-        "type": "uint24",
-        "baseType": "uint24",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint24"
       },
       {
+        "internalType": "uint48",
         "name": "deadline",
-        "type": "uint48",
-        "baseType": "uint48",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint48"
       },
       {
+        "internalType": "uint256",
         "name": "amountOutMinimum",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "swapAndDeposit",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "symbol",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "string",
         "name": "",
-        "type": "string",
-        "baseType": "string",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "string"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "tokenSwapAddress",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "totalAssets",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "totalAssetsToStream",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "totalSupply",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "to",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "transfer",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
-        "type": "bool",
-        "baseType": "bool",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "from",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "to",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "transferFrom",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
-        "type": "bool",
-        "baseType": "bool",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "newOwner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "transferOwnership",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "updateStreamedAssets",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "newPeriod",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "updateStreamingPeriod",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "address",
         "name": "newPool",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "minSharePriceFromOldPool",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "maxSharePricePriceFromNewPool",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "name": "updateYieldPool",
-    "constant": false,
     "outputs": [],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "assets",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       },
       {
+        "internalType": "address",
         "name": "receiver",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       },
       {
+        "internalType": "address",
         "name": "owner",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "name": "withdraw",
-    "constant": false,
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "shares",
-        "type": "uint256",
-        "baseType": "uint256",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "function",
     "inputs": [],
     "name": "yieldPool",
-    "constant": true,
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
-        "type": "address",
-        "baseType": "address",
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "payable": false,
-    "gas": null
+    "type": "function"
   },
   {
-    "type": "fallback",
-    "inputs": [],
-    "payable": true
-  },
-  {
-    "type": "event",
-    "inputs": [
-      {
-        "name": "nonce",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "recipient",
-        "type": "address",
-        "baseType": "address",
-        "indexed": true,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "asset",
-        "type": "address",
-        "baseType": "address",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "indexed": false,
-        "components": [
-          {
-            "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "outstandingDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridgeFee",
-            "type": "uint16",
-            "baseType": "uint16",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          }
-        ],
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "fees",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      }
-    ],
-    "name": "LoanEmitted",
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "inputs": [
-      {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "indexed": false,
-        "components": [
-          {
-            "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridgeFee",
-            "type": "uint16",
-            "baseType": "uint16",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          }
-        ],
-        "arrayLength": null,
-        "arrayChildren": null
-      }
-    ],
-    "name": "OriginAdded",
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "inputs": [
-      {
-        "name": "oldDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "newDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "indexed": false,
-        "components": [
-          {
-            "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "outstandingDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridgeFee",
-            "type": "uint16",
-            "baseType": "uint16",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          }
-        ],
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "oldOriginDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      },
-      {
-        "name": "newOriginDebt",
-        "type": "uint256",
-        "baseType": "uint256",
-        "indexed": false,
-        "components": null,
-        "arrayLength": null,
-        "arrayChildren": null
-      }
-    ],
-    "name": "OutstandingDebtChanged",
-    "anonymous": false
-  },
-  {
-    "type": "function",
-    "inputs": [
-      {
-        "name": "origin",
-        "type": "tuple",
-        "baseType": "tuple",
-        "components": [
-          {
-            "name": "curator",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "chainId",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "proxyBridge",
-            "type": "address",
-            "baseType": "address",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "maxDebt",
-            "type": "uint256",
-            "baseType": "uint256",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "bridgeFee",
-            "type": "uint16",
-            "baseType": "uint16",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          },
-          {
-            "name": "coolDown",
-            "type": "uint32",
-            "baseType": "uint32",
-            "components": null,
-            "arrayLength": null,
-            "arrayChildren": null
-          }
-        ],
-        "arrayLength": null,
-        "arrayChildren": null
-      }
-    ],
-    "name": "addOrigin",
-    "constant": false,
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "payable": false,
-    "gas": null
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

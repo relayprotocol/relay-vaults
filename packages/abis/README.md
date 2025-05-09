@@ -1,6 +1,6 @@
 # Relay Pool ABIs
 
-Contains all ABIs for Realy Pool contracts.
+Contains all ABIs for Relay Pool contracts.
 
 ## Usage
 
@@ -24,6 +24,16 @@ yarn workspace @relay-protocol/smart-contracts build
 # build the abis package
 yarn build:ts
 ```
+
+## Track contract updates
+
+To archive a version of the abis, use the following:
+
+```
+yarn snapshot src/abis/RelayPool.sol/RelayPool.json
+```
+
+## Publish
 
 Make sure you update the version in `package.json` and then publish:
 

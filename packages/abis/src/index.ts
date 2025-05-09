@@ -9,7 +9,6 @@ import ZkSyncBridgeProxy from './abis/BridgeProxy/ZkSyncBridgeProxy.sol/ZkSyncBr
 import IRelayBridge from './abis/RelayBridge.sol/IRelayBridge.json'
 import RelayBridge from './abis/RelayBridge.sol/RelayBridge.json'
 import RelayBridgeFactory from './abis/RelayBridgeFactory.sol/RelayBridgeFactory.json'
-import RelayPool from './abis/RelayPool.sol/RelayPool.json'
 import RelayPoolFactory from './abis/RelayPoolFactory.sol/RelayPoolFactory.json'
 import RelayPoolTimelock from './abis/RelayPoolFactory.sol/RelayPoolTimelock.json'
 import RelayPoolNativeGateway from './abis/RelayPoolNativeGateway.sol/RelayPoolNativeGateway.json'
@@ -41,6 +40,8 @@ import ERC20 from './abis/solmate/src/tokens/ERC20.sol/ERC20.json'
 import ERC4626 from './abis/solmate/src/tokens/ERC4626.sol/ERC4626.json'
 import FixedPointMathLib from './abis/solmate/src/utils/FixedPointMathLib.sol/FixedPointMathLib.json'
 import SafeTransferLib from './abis/solmate/src/utils/SafeTransferLib.sol/SafeTransferLib.json'
+
+import { RelayPool } from './versions'
 
 // exports
 export { TimelockControllerUpgradeable }

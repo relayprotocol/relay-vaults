@@ -34,14 +34,10 @@ RUN yarn install --mode=skip-build
 # Set environment variables
 ENV NODE_ENV=production
 
-# Add Railway specific ARGs and persist them into ENV
-ARG RAILWAY_DEPLOYMENT_ID
-ARG DATABASE_URL
-ENV RAILWAY_DEPLOYMENT_ID=$RAILWAY_DEPLOYMENT_ID
-ENV DATABASE_URL=$DATABASE_URL
-
 # Expose port
 EXPOSE 3000
 
-# Start the backend service using workspace command with Railway deployment ID
-CMD ["sh", "-c", "yarn backend:start --schema $RAILWAY_DEPLOYMENT_ID"]
+# pass command as argument
+COPY ./bin/entrypoint.sh entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]

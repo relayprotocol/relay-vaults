@@ -1,6 +1,6 @@
 # Relay Pool ABIs
 
-Contains all ABIs for Realy Pool contracts.
+Contains all ABIs for Relay Pool contracts.
 
 ## Usage
 
@@ -14,6 +14,16 @@ import * as RelayProtocolAbis from '@relay-protocol/abis'
 ## How to upgrade
 
 To upgrade with the latest version from smart-contracts folder, use `yarn upgrade`
+
+## Publish
+
+## Track contract updates
+
+To archive a version of the abis, use the following:
+
+```
+yarn snapshot src/abis/RelayPool.sol/RelayPool.json
+```
 
 ## Publish
 

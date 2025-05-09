@@ -11,19 +11,11 @@ import { RelayPool } from '@relay-protocol/abis'
 import * as RelayProtocolAbis from '@relay-protocol/abis'
 ```
 
-## How it works
+## How to upgrade
 
-This package is generated directly from the `smart-contracts` folder at build time.
+To upgrade with the latest version from smart-contracts folder, use `yarn upgrade`
 
-The `yarn build` command contains two parts:
-
-```
-# export the ABIs to the `src` folder - with generated `index.ts` file
-yarn workspace @relay-protocol/smart-contracts build
-
-# build the abis package
-yarn build:ts
-```
+## Publish
 
 Make sure you update the version in `package.json` and then publish:
 

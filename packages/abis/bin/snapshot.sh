@@ -12,7 +12,7 @@ base=$(basename "$filename" .json)
 
 # find latest version number
 latest=0
-for f in src/versions/$base.*.json; do
+for f in src/versions/$base/$base.*.json; do
   if [ -f "$f" ]; then
     ver=$(echo "$f" | grep -o '[0-9]*\.json' | grep -o '[0-9]*')
     
@@ -24,6 +24,7 @@ done
 
 # new filename with version number
 new_filename="$base.$latest.json"
-
-cp $filename "src/versions/$new_filename"
-echo "File $filename archived under $new_filename"
+new_folder="src/versions/$base"
+mkdir -p $new_folder
+cp -r $filename $new_folder/$new_filename
+echo "File $filename archived under $new_folder$new_filename"

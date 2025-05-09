@@ -16,7 +16,7 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
-    "@relay-protocol/abis": "1.0.2",
+    "@relay-protocol/abis": "workspace:*",
     "@relay-protocol/addresses": "1.0.5",
     "hono": "4.6.20",
     "ponder": "0.10.23",

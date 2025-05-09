@@ -1,4 +1,6 @@
 /* eslint-disable */
+// This file is generated, please don't edit directly
+// Refer to 'yarn build:index' for more
 
 import TimelockControllerUpgradeable from './abis/@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol/TimelockControllerUpgradeable.json'
 import ArbitrumOrbitNativeBridgeProxy from './abis/BridgeProxy/ArbitrumOrbitNativeBridgeProxy.sol/ArbitrumOrbitNativeBridgeProxy.json'

@@ -18,6 +18,6 @@ From monorepo root folder
 # Build the image
 docker build -t relay-vaults .
 
-# Run the claimer
+# Run a specific service
 docker run relay-vaults -t relay-<service> <service> start
 ```

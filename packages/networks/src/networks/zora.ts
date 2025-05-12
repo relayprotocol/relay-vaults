@@ -17,6 +17,7 @@ export const zora: ChildNetworkConfig = {
   },
   chainId: 7777777,
   earliestBlock: 29402000,
+  hyperlaneHook: '0x18B0688990720103dB63559a3563f7E8d0f63EDb',
   hyperlaneMailbox: '0xF5da68b2577EF5C0A0D98aA2a58483a68C2f232a',
   isTestnet: false,
   name: 'Zora',

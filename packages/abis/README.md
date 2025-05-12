@@ -1,6 +1,6 @@
 # Relay Pool ABIs
 
-Contains all ABIs for Realy Pool contracts.
+Contains all ABIs for Relay Pool contracts.
 
 ## Usage
 
@@ -11,19 +11,33 @@ import { RelayPool } from '@relay-protocol/abis'
 import * as RelayProtocolAbis from '@relay-protocol/abis'
 ```
 
-## How it works
+## How to upgrade
 
-This package is generated directly from the `smart-contracts` folder at build time.
+To upgrade with the latest version from smart-contracts folder, use `yarn upgrade`
 
-The `yarn build` command contains two parts:
+## Archive a specific contract
+
+To archive a version of the abis, use the following:
 
 ```
-# export the ABIs to the `src` folder - with generated `index.ts` file
-yarn workspace @relay-protocol/smart-contracts build
+# upgrade all abis with latest code
+yarn upgrade
 
-# build the abis package
-yarn build:ts
+# archive the one you want
+yarn snapshot src/abis/RelayPool.sol/RelayPool.json
 ```
+
+## Publish
+
+## Track contract updates
+
+To archive a version of the abis, use the following:
+
+```
+yarn snapshot src/abis/RelayPool.sol/RelayPool.json
+```
+
+## Publish
 
 Make sure you update the version in `package.json` and then publish:
 

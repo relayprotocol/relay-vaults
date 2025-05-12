@@ -10,14 +10,3 @@ We got 2 audits from them and you can consult the findings from there:
 
 All Critical, High, Medium and Low have been patched.
 
-## Build docker images
-
-From monorepo root folder
-
-```
-# Build the image
-docker build -t relay-vaults .
-
-# Run a specific service
-docker run relay-vaults -t relay-<service> <service> start
-```

@@ -1,0 +1,66 @@
+# docker itself (prevent rebuilds when editing)
+Dockerfile
+
+# root level 
+node_modules
+
+# git
+.git
+.gitignore
+
+# for all workspaces 
+**/node_modules
+**/build
+**/dist
+**/coverage
+**/cache
+**/.next
+**/out
+**/deprec
+
+#smart-contracts
+**/artifacts
+**/build-info
+**/journal.jsonl
+**/artifacts-zk
+**/cache-zk
+**/deployments-zk
+**/anvil-zksync.log
+**/typechain
+**/typechain-types
+**/cache
+**/ignition/deployments
+**/ignition/params
+
+# Log files
+logs
+*.log
+
+# Temp files
+tmp
+*.tmp
+.DS_Store
+**/.DS_Store
+
+
+# IDE related
+.idea
+.vscode
+
+# yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# node
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# env
+.env
+.env.local
+.env.development.local
+.env.test.local

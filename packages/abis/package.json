@@ -13,12 +13,12 @@
   },
   "scripts": {
     "release": "npm publish",
-    "clean": "rm -rf src/abis dist",
+    "clean": "rm -rf dist",
     "build:contracts": "yarn workspace @relay-protocol/smart-contracts build",
     "build:export-abis": "yarn workspace @relay-protocol/smart-contracts build:abis",
-    "build:index-from-versions": "sh ./bin/ref-versions.sh",
     "build:ts": "tsup src/index.ts --dts --format esm,cjs",
-    "build": "yarn build:contracts && yarn build:export-abis && yarn build:index-from-versions && yarn build:ts",
+    "build": "yarn build:contracts && yarn build:export-abis && yarn build:ts",
+    "update": "yarn build:contracts && yarn build:export-abis",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
     "snapshot": "./bin/snapshot.sh"
@@ -31,6 +31,7 @@
   },
   "files": [
     "abis",
+    "versions",
     "index.js",
     "dist"
   ]

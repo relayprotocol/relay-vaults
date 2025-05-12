@@ -56,6 +56,13 @@ yarn start
 The project includes a Dockerfile for containerized deployment. To build and run:
 
 ```bash
-docker build -t relay-backend .
-docker run -p 3000:3000 relay-backend
+# From the root of the monorepo
+docker build -t relay-vaults .
+
+# Run the backend
+docker run relay-vaults \
+  -e DATABASE_URL=$DATABASE_URL \
+  -p 3000:3000 \
+  -t relay-backend
+  backend "start backend:start --schema $RAILWAY_DEPLOYMENT_ID"
 ```

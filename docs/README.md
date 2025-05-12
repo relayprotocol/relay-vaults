@@ -18,13 +18,6 @@ From monorepo root folder
 # Build the image
 docker build -t relay-vaults .
 
-# Run the backend
-docker run relay-vaults \
-  -e DATABASE_URL=$DATABASE_URL \
-  -p 3000:3000 \
-  -t relay-backend
-  backend "start backend:start --schema $RAILWAY_DEPLOYMENT_ID"
-
 # Run the claimer
-docker run relay-vaults -t relay-claimer claimer start
+docker run relay-vaults -t relay-<service> <service> start
 ```

@@ -15,6 +15,18 @@ import * as RelayProtocolAbis from '@relay-protocol/abis'
 
 To upgrade with the latest version from smart-contracts folder, use `yarn upgrade`
 
+## Archive a specific contract
+
+To archive a version of the abis, use the following:
+
+```
+# upgrade all abis with latest code
+yarn upgrade
+
+# archive the one you want
+yarn snapshot src/abis/RelayPool.sol/RelayPool.json
+```
+
 ## Publish
 
 ## Track contract updates

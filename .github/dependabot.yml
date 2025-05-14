@@ -1,132 +1,131 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/" # root workspace
+  - package-ecosystem: 'yarn'
+    directory: '/' # root workspace
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       all-yarn-dependencies:
         patterns:
-          - "*"
+          - '*'
       eslint-dependencies:
         patterns:
-          - "eslint*"
-          - "@typescript-eslint*"
-          - "eslint-plugin*"
-          - "eslint-config*"
+          - 'eslint*'
+          - '@typescript-eslint*'
+          - 'eslint-plugin*'
+          - 'eslint-config*'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       typescript-dependencies:
         patterns:
-          - "typescript"
-          - "ts-*"
-          - "tsconfig*"
+          - 'typescript'
+          - 'ts-*'
+          - 'tsconfig*'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       node-types:
         patterns:
-          - "@types/node"
+          - '@types/node'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       prettier-dependencies:
         patterns:
-          - "prettier*"
-          - "eslint-config-prettier"
-          - "eslint-plugin-prettier"
+          - 'prettier*'
+          - 'eslint-config-prettier'
+          - 'eslint-plugin-prettier'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
 
-  - package-ecosystem: "npm"
-    directory: "/backend" 
+  - package-ecosystem: 'yarn'
+    directory: '/backend'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       all-yarn-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/smart-contracts" 
+  - package-ecosystem: 'yarn'
+    directory: '/smart-contracts'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       hardhat-deps:
         patterns:
-          - "hardhat"
-          - "hardhat*"
-          - "@nomicfoundation*"
+          - 'hardhat'
+          - 'hardhat*'
+          - '@nomicfoundation*'
       contracts:
         patterns:
-          - "@openzeppelin/"
-          - "solmate"
+          - '@openzeppelin/'
+          - 'solmate'
       all-yarn-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/claimer" 
+  - package-ecosystem: 'yarn'
+    directory: '/claimer'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       all-yarn-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/packages/abis"
+  - package-ecosystem: 'yarn'
+    directory: '/packages/abis'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       core-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/packages/addresses"
+  - package-ecosystem: 'yarn'
+    directory: '/packages/addresses'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       core-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/packages/client"
+  - package-ecosystem: 'yarn'
+    directory: '/packages/client'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       core-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/packages/eslint-config"
+  - package-ecosystem: 'yarn'
+    directory: '/packages/eslint-config'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       core-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/packages/helpers"
+  - package-ecosystem: 'yarn'
+    directory: '/packages/helpers'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       core-dependencies:
         patterns:
-          - "*"
+          - '*'
 
-  - package-ecosystem: "npm"
-    directory: "/packages/networks"
+  - package-ecosystem: 'yarn'
+    directory: '/packages/networks'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       core-dependencies:
         patterns:
-          - "*"
-
+          - '*'

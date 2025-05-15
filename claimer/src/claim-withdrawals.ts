@@ -56,10 +56,7 @@ export const claimTransactions = async ({
         relayPool.asset
       )
 
-      if (
-        balance >= BigInt(origin.currentOutstandingDebt) &&
-        BigInt(origin.currentOutstandingDebt) > 0
-      ) {
+      if (balance >= 0 && BigInt(origin.currentOutstandingDebt) > 0) {
         console.log(
           `Claim funds (${BigInt(origin.currentOutstandingDebt)}) for ${relayPool.contractAddress} on ${origin.proxyBridge} from ${origin.originChainId} ${origin.originBridge}`
         )

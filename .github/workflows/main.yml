@@ -79,14 +79,15 @@ jobs:
     if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/main'
     needs: [build-docker-image]
     environment: dev
+    container:
+      image: ghcr.io/unevenlabs/infrastructure/deployer:latest
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: pull docker image
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-          docker pull ghcr.io/unevenlabs/infrastructure/deployer:latest
-        shell: bash
-
       - name: deploy to dev
         run: |
-          docker run -it ghcr.io/unevenlabs/infrastructure/deployer:latest -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} -e GITHUB_SHA=${{ github.sha }} -e ENVIRONMENT=dev vaults
+          sh -c "/app/deploy.sh vaults"
         shell: bash
+        env:
+          ENVIRONMENT: dev

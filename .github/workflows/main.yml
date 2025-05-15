@@ -72,28 +72,6 @@ jobs:
           build-args: |
             TAG=${{ github.ref_name }}
 
-      - name: Post to Slack
-        if: ${{ always() }}
-        id: slack-build
-        uses: unevenlabs/slack-github-action@v1.0.2
-        with:
-          channel-id: 'ci'
-          payload: |
-            {
-              "text": "GitHub build result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "GitHub build result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
   deploy-dev:
     name: Deploy to Development
     runs-on: ubuntu-24.04
@@ -112,26 +90,3 @@ jobs:
         run: |
           docker run -it ghcr.io/unevenlabs/infrastructure/deployer:latest -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} -e GITHUB_SHA=${{ github.sha }} -e ENVIRONMENT=dev vaults
         shell: bash
-
-      - name: Post to Slack
-        if: ${{ always() }}
-        id: slack-deploy-dev
-        uses: unevenlabs/slack-github-action@v1.0.2
-        with:
-          channel-id: 'ci'
-          update-ts: ${{ steps.slack-build.outputs.ts }}
-          payload: |
-            {
-              "text": "GitHub deploy dev result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "GitHub deploy dev result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

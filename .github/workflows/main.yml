@@ -36,9 +36,10 @@ jobs:
         shell: bash
 
   build-docker-image:
-    name: 'Build and publish Docker image'
+    name: 'Build/push Docker image'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    if: github.repository == 'reservoirprotocol/vaults'
     permissions:
       contents: read
       packages: write
@@ -48,6 +49,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -94,11 +96,11 @@ jobs:
 
   deploy-dev:
     name: Deploy to Development
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
+    if: github.repository == 'reservoirprotocol/vaults' && github.ref == 'refs/heads/main'
     needs: [build-docker-image]
     environment: dev
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: pull docker image
         run: |

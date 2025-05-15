@@ -39,7 +39,7 @@ jobs:
     name: 'Build/push Docker image'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    if: github.repository == 'reservoirprotocol/vaults'
+    if: github.repository == 'relayprotocol/relay-vaults'
     permissions:
       contents: read
       packages: write
@@ -66,9 +66,9 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/reservoirprotocol/vaults:latest
-            ghcr.io/reservoirprotocol/vaults:${{ github.sha }}
-            ghcr.io/reservoirprotocol/vaults:${{ github.ref_name }}-${{ github.sha }}
+            ghcr.io/relayprotocol/relay-vaults:latest
+            ghcr.io/relayprotocol/relay-vaults:${{ github.sha }}
+            ghcr.io/relayprotocol/relay-vaults:${{ github.ref_name }}-${{ github.sha }}
           build-args: |
             TAG=${{ github.ref_name }}
 
@@ -76,7 +76,7 @@ jobs:
     name: Deploy to Development
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    if: github.repository == 'reservoirprotocol/vaults' && github.ref == 'refs/heads/main'
+    if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/main'
     needs: [build-docker-image]
     environment: dev
     steps:

@@ -2,7 +2,8 @@ name: Main Branch
 
 on:
   push:
-    branches: main
+    branches:
+      - main
 
 jobs:
   run-tests:
@@ -33,3 +34,102 @@ jobs:
       - name: 'run tests'
         run: yarn workspace @relay-protocol/${{matrix.folders}} run test
         shell: bash
+
+  build-docker-image:
+    name: 'Build and publish Docker image'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - run-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ghcr.io/reservoirprotocol/vaults:latest
+            ghcr.io/reservoirprotocol/vaults:${{ github.sha }}
+            ghcr.io/reservoirprotocol/vaults:${{ github.ref_name }}-${{ github.sha }}
+          build-args: |
+            TAG=${{ github.ref_name }}
+
+      - name: Post to Slack
+        if: ${{ always() }}
+        id: slack-build
+        uses: unevenlabs/slack-github-action@v1.0.2
+        with:
+          channel-id: 'ci'
+          payload: |
+            {
+              "text": "GitHub build result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub build result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build-docker-image]
+    environment: dev
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: pull docker image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+          docker pull ghcr.io/unevenlabs/infrastructure/deployer:latest
+        shell: bash
+
+      - name: deploy to dev
+        run: |
+          docker run -it ghcr.io/unevenlabs/infrastructure/deployer:latest -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} -e GITHUB_SHA=${{ github.sha }} -e ENVIRONMENT=dev vaults
+        shell: bash
+
+      - name: Post to Slack
+        if: ${{ always() }}
+        id: slack-deploy-dev
+        uses: unevenlabs/slack-github-action@v1.0.2
+        with:
+          channel-id: 'ci'
+          update-ts: ${{ steps.slack-build.outputs.ts }}
+          payload: |
+            {
+              "text": "GitHub deploy dev result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub deploy dev result: <status-${{ job.status }}-status>\nAuthor: <author-${{ github.actor }}-author>\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

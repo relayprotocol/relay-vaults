@@ -15,7 +15,7 @@ export const sepolia: L1NetworkConfig = {
 
   rpc: process.env.RPC_11155111
     ? [process.env.RPC_11155111]
-    : ['https://sepolia.gateway.tenderly.co'],
+    : ['https://ethereum-sepolia-rpc.publicnode.com'],
   slug: 'sepolia',
   uniswapV3: {
     universalRouterAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',

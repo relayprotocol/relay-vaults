@@ -1,14 +1,9 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
 
-import { networks } from '@relay-protocol/networks'
 import { IWETH, RelayPool, RelayPoolNativeGateway } from '../../typechain-types'
 import { getBalance } from '@relay-protocol/helpers'
 import { reverts } from '../utils/errors'
-const {
-  assets: { weth: WETH },
-  hyperlaneMailbox,
-} = networks[1]
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { ZeroAddress } from 'ethers'
 
@@ -18,9 +13,10 @@ let nativeGateway: RelayPoolNativeGateway
 let relayPoolAddress: string
 let thirdPartyPoolAddress: string
 
+// Broken
 describe('RelayPoolNativeGateway', () => {
   before(async () => {
-    weth = await ethers.getContractAt('IWETH', WETH)
+    weth = await ethers.deployContract('MyWeth')
   })
 
   describe('when using the native token', () => {
@@ -29,7 +25,7 @@ describe('RelayPoolNativeGateway', () => {
       const userAddress = await user.getAddress()
       // deploy 3rd party pool
       const thirdPartyPool = await ethers.deployContract('MyYieldPool', [
-        WETH,
+        await weth.getAddress(),
         'My Yield Pool',
         'YIELD',
       ])
@@ -38,13 +34,13 @@ describe('RelayPoolNativeGateway', () => {
       // deploy the WETH pool
       const parameters = {
         RelayPool: {
-          asset: WETH,
+          asset: await weth.getAddress(),
           curator: userAddress,
-          hyperlaneMailbox,
+          hyperlaneMailbox: userAddress, // No used
           name: 'WETH RELAY POOL',
           symbol: 'WETH-REL',
           thirdPartyPool: thirdPartyPoolAddress,
-          weth: WETH,
+          weth: await weth.getAddress(),
         },
       }
       ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
@@ -54,7 +50,7 @@ describe('RelayPoolNativeGateway', () => {
 
       // deploy native wrapper
       nativeGateway = await ethers.deployContract('RelayPoolNativeGateway', [
-        WETH,
+        await weth.getAddress(),
       ])
     })
 
@@ -62,7 +58,7 @@ describe('RelayPoolNativeGateway', () => {
       expect(await relayPool.decimals()).to.equal(18)
       expect(await relayPool.name()).to.equal('WETH RELAY POOL')
       expect(await relayPool.symbol()).to.equal('WETH-REL')
-      expect(await relayPool.asset()).to.equal(WETH)
+      expect(await relayPool.asset()).to.equal(await weth.getAddress())
       expect(await relayPool.totalAssets()).to.equal(0)
       expect(await relayPool.totalSupply()).to.equal(0)
     })
@@ -77,7 +73,7 @@ describe('RelayPoolNativeGateway', () => {
       const sharesBalance = await relayPool.balanceOf(userAddress)
       const tokenBalance = await getBalance(
         await relayPool.getAddress(),
-        WETH!,
+        await weth.getAddress(),
         ethers.provider
       )
 
@@ -100,7 +96,11 @@ describe('RelayPoolNativeGateway', () => {
       )
       // Balance of assets for the pool should be correct!
       expect(
-        await getBalance(thirdPartyPoolAddress, WETH, ethers.provider)
+        await getBalance(
+          thirdPartyPoolAddress,
+          await weth.getAddress(),
+          ethers.provider
+        )
       ).to.equal(tokenBalance + amount)
     })
 

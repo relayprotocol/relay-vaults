@@ -13,7 +13,6 @@ let nativeGateway: RelayPoolNativeGateway
 let relayPoolAddress: string
 let thirdPartyPoolAddress: string
 
-// Broken
 describe('RelayPoolNativeGateway', () => {
   before(async () => {
     weth = await ethers.deployContract('MyWeth')

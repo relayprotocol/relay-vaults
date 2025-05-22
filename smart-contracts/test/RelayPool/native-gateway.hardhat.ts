@@ -35,7 +35,7 @@ describe('RelayPoolNativeGateway', () => {
         RelayPool: {
           asset: await weth.getAddress(),
           curator: userAddress,
-          hyperlaneMailbox: userAddress, // No used
+          hyperlaneMailbox: userAddress, // Not used
           name: 'WETH RELAY POOL',
           symbol: 'WETH-REL',
           thirdPartyPool: thirdPartyPoolAddress,

@@ -123,7 +123,8 @@ describe('RelayBridge', function () {
     })
 
     it('should refund the extra value sent', async () => {
-      const [user] = await ethers.getSigners()
+      // For some reason the first user is not able to "receive" ETH and behaves like a contract on Optimism.
+      const [, , , , user] = await ethers.getSigners()
 
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')
@@ -292,7 +293,7 @@ describe('RelayBridge', function () {
     })
 
     it('should refund the extra value sent', async () => {
-      const [user] = await ethers.getSigners()
+      const [, , , , user] = await ethers.getSigners()
       const bridgeAddress = await bridge.getAddress()
       const recipient = await user.getAddress()
       const amount = ethers.parseEther('1')

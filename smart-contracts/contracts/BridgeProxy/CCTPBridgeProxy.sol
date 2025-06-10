@@ -34,7 +34,7 @@ contract CCTPBridgeProxy is BridgeProxy {
     address currency,
     address /* l1Asset */,
     uint256 amount,
-    bytes calldata /*data*/,
+    bytes calldata /* data */,
     bytes calldata /* extraData */
   ) external payable override {
     if (currency != USDC) {

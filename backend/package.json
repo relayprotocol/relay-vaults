@@ -19,7 +19,7 @@
     "@relay-protocol/abis": "workspace:*",
     "@relay-protocol/addresses": "1.0.5",
     "hono": "4.6.20",
-    "ponder": "0.10.23",
+    "ponder": "0.11.12",
     "viem": "2.22.19"
   },
   "devDependencies": {
@@ -27,7 +27,7 @@
     "@typescript-eslint/eslint-plugin": "8.23.0",
     "@typescript-eslint/parser": "8.23.0",
     "eslint": "9.19.0",
-    "eslint-config-ponder": "0.10.14",
+    "eslint-config-ponder": "0.11.12",
     "eslint-config-prettier": "10.0.1",
     "eslint-plugin-prettier": "5.2.3",
     "husky": "9.1.7",

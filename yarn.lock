@@ -4757,7 +4757,7 @@ __metadata:
     hono: "npm:4.6.20"
     husky: "npm:9.1.7"
     jsonc-eslint-parser: "npm:2.4.0"
-    lint-staged: "npm:15.4.3"
+    lint-staged: "npm:15.5.2"
     ponder: "npm:0.11.12"
     prettier: "npm:3.4.2"
     typescript: "npm:5.7.3"
@@ -4848,7 +4848,7 @@ __metadata:
     eslint-plugin-prettier: "npm:5.2.3"
     eslint-plugin-sort-keys-fix: "npm:1.1.2"
     husky: "npm:9.1.7"
-    lint-staged: "npm:15.4.3"
+    lint-staged: "npm:15.5.2"
     prettier: "npm:3.4.2"
     typescript-eslint: "npm:8.23.0"
   languageName: unknown
@@ -12213,9 +12213,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:15.4.3":
-  version: 15.4.3
-  resolution: "lint-staged@npm:15.4.3"
+"lint-staged@npm:15.5.2":
+  version: 15.5.2
+  resolution: "lint-staged@npm:15.5.2"
   dependencies:
     chalk: "npm:^5.4.1"
     commander: "npm:^13.1.0"
@@ -12229,7 +12229,7 @@ __metadata:
     yaml: "npm:^2.7.0"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/14a6a9cb9b5e8027b1347cb24e114839d618d343d5c724c26def7d45ca9b9a9b813b585531c68f5a3d13332407c2dba198987a73f0350df483d99a876ba69c60
+  checksum: 10/523c332d6cb6e34972a6530a7a2487307555e784df9466c82f2b8d17c8090a3db561a6362065ae6b63048c25fcb85c9e32057cd0bfb756bf7ab185bea1dbb89c
   languageName: node
   linkType: hard
 

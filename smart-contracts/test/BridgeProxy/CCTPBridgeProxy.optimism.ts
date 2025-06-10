@@ -55,7 +55,8 @@ describe('CCTPBridgeProxy', function () {
           networks[10].assets.udt,
           networks[1].assets.udt,
           parseUnits('100', 6),
-          '0x' //empty data,
+          '0x', //empty data
+          '0x' //empty extraData
         ),
         'TokenNotBridged'
       )
@@ -85,7 +86,8 @@ describe('CCTPBridgeProxy', function () {
         networks[10].assets.usdc,
         networks[1].assets.usdc,
         amount,
-        '0x' //empty data
+        '0x', // empty data
+        '0x' // empty extraData
       )
 
       receipt = await tx.wait()

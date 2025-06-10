@@ -15,8 +15,21 @@ interface IRelayBridge {
     uint256 amount,
     address recipient,
     address l1Asset,
-    uint256 l1Gas
+    uint256 l1Gas,
+    bytes calldata extraData
   ) external payable returns (uint256 nonce);
+}
+
+struct BridgeTransaction {
+  uint256 amount;
+  address recipient;
+  address l1Asset;
+  uint256 l1Gas;
+  bytes extraData;
+  uint256 nonce;
+  bytes data;
+  uint32 poolChainId;
+  bytes32 poolId;
 }
 
 contract RelayBridge is IRelayBridge {
@@ -77,27 +90,36 @@ contract RelayBridge is IRelayBridge {
       );
   }
 
-  /// @notice Bridge tokens from the L2 to the L1
+  /// @notice Bridges tokens from the L2 to the L1
+  /// @param amount Amount of tokens to bridge
+  /// @param recipient Address that will receive the bridged tokens
+  /// @param l1Asset Address of the L1 asset to bridge
+  /// @param l1Gas Gas limit for the L1 transaction
+  /// @param extraData Extra data to pass to the bridge proxy
   function bridge(
     uint256 amount,
     address recipient,
     address l1Asset,
-    uint256 l1Gas
+    uint256 l1Gas,
+    bytes calldata extraData
   ) external payable returns (uint256 nonce) {
-    // Associate the withdrawal to a unique id
-    nonce = transferNonce++;
-
-    // Encode the data for the cross-chain message
-    // No need to pass the ASSET since the bridge and the pool are ASSET-specific
-    bytes memory data = abi.encode(nonce, recipient, amount, block.timestamp);
+    BridgeTransaction memory transaction = BridgeTransaction({
+      amount: amount,
+      recipient: recipient,
+      l1Asset: l1Asset,
+      l1Gas: l1Gas,
+      extraData: extraData,
+      nonce: transferNonce++, // Associate the withdrawal to a unique id
+      data: abi.encode(nonce, recipient, amount, block.timestamp),
+      poolChainId: uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID()),
+      poolId: bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())))
+    });
 
     // Get the fee for the cross-chain message
-    uint32 poolChainId = uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID());
-    bytes32 poolId = bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())));
     uint256 hyperlaneFee = IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
-      poolChainId,
-      poolId,
-      data,
+      transaction.poolChainId,
+      transaction.poolId,
+      transaction.data,
       StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 
@@ -121,20 +143,21 @@ contract RelayBridge is IRelayBridge {
     // Issue transfer on the bridge
     (bool success, ) = address(BRIDGE_PROXY).delegatecall(
       abi.encodeWithSignature(
-        "bridge(address,address,uint256,bytes)",
+        "bridge(address,address,uint256,bytes,bytes)",
         ASSET,
         l1Asset,
         amount,
-        data
+        transaction.data,
+        extraData
       )
     );
     if (!success) revert BridgingFailed(nonce);
 
     // Send the Hyperlane message, with the right fee
     IHyperlaneMailbox(HYPERLANE_MAILBOX).dispatch{value: hyperlaneFee}(
-      poolChainId,
-      poolId,
-      data,
+      transaction.poolChainId,
+      transaction.poolId,
+      transaction.data,
       StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 
@@ -158,7 +181,6 @@ contract RelayBridge is IRelayBridge {
         msg.sender.call{value: msg.value - hyperlaneFee - amount}(new bytes(0));
       }
     }
-
-    return nonce;
+    return transaction.nonce;
   }
 }

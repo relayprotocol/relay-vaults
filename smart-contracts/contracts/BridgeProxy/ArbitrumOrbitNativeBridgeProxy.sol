@@ -35,7 +35,8 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
     address asset, //l2 token
     address l1Currency, //l1 token
     uint256 amount,
-    bytes calldata /* data*/
+    bytes calldata /* data */,
+    bytes calldata /* extraData */
   ) external payable override {
     // send native tokens to L1
     if (l1Currency == address(0)) {

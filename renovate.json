@@ -1,7 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "yarnWorkspaces": true, // enable workspace-wide updates
-  "timezone": "America/New_York", // run in your local time
-  "schedule": ["before 5am on monday"] // avoid surprise PRs during office hours
+  "timezone": "America/New_York",
+  "schedule": ["before 5am on monday"]
 }

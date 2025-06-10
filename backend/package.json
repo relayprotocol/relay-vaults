@@ -18,7 +18,7 @@
   "dependencies": {
     "@relay-protocol/abis": "workspace:*",
     "@relay-protocol/addresses": "1.0.5",
-    "hono": "4.6.20",
+    "hono": "4.7.11",
     "ponder": "0.11.12",
     "viem": "2.31.0"
   },

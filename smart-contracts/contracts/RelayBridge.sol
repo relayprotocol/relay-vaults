@@ -6,7 +6,6 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IHyperlaneMailbox} from "./interfaces/IHyperlaneMailbox.sol";
 import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
-import "hardhat/console.sol";
 
 error BridgingFailed(uint256 nonce);
 error InsufficientValue(uint256 received, uint256 expected);

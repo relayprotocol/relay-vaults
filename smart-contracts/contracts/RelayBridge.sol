@@ -103,13 +103,14 @@ contract RelayBridge is IRelayBridge {
     uint256 l1Gas,
     bytes calldata extraData
   ) external payable returns (uint256 nonce) {
+    nonce = transferNonce;
     BridgeTransaction memory transaction = BridgeTransaction({
       amount: amount,
       recipient: recipient,
       l1Asset: l1Asset,
       l1Gas: l1Gas,
       extraData: extraData,
-      nonce: transferNonce++, // Associate the withdrawal to a unique id
+      nonce: nonce,
       txParams: abi.encode(nonce, recipient, amount, block.timestamp),
       poolChainId: uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID()),
       poolId: bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())))
@@ -181,6 +182,5 @@ contract RelayBridge is IRelayBridge {
         msg.sender.call{value: msg.value - hyperlaneFee - amount}(new bytes(0));
       }
     }
-    return transaction.nonce;
   }
 }

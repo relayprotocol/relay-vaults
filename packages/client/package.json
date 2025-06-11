@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "graphql": "16.11.0",
-    "graphql-request": "7.1.2",
+    "graphql-request": "7.2.0",
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
@@ -39,8 +39,8 @@
     "@relay-protocol/eslint-config": "workspace:^",
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
-    "@types/node": "22.15.17",
-    "eslint": "9.26.0",
+    "@types/node": "22.15.31",
+    "eslint": "9.28.0",
     "tsup": "8.5.0",
     "typescript": "5.8.3"
   }

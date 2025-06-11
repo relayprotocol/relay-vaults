@@ -23,7 +23,7 @@
     "viem": "2.31.0"
   },
   "devDependencies": {
-    "@types/node": "22.13.0",
+    "@types/node": "22.15.31",
     "@typescript-eslint/eslint-plugin": "8.23.0",
     "@typescript-eslint/parser": "8.23.0",
     "eslint": "9.19.0",

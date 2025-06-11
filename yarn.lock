@@ -1164,17 +1164,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bgd-labs/aave-address-book@npm:4.18.1":
-  version: 4.18.1
-  resolution: "@bgd-labs/aave-address-book@npm:4.18.1"
-  checksum: 10/22781c4a6523775adb45a5db3403e16790daa334bc474dad9622b4407dc30e9af2bd8ab1d1d80a2d9f9e033aee4048b7cd0340e0c51c11e74c7ba024bd939f56
-  languageName: node
-  linkType: hard
-
-"@bgd-labs/aave-address-book@npm:4.9.0":
-  version: 4.9.0
-  resolution: "@bgd-labs/aave-address-book@npm:4.9.0"
-  checksum: 10/3e4dd43e648c31148b99afe93cbc43a3cc048afb5122cb65865af1e96818c237b35d4e4229e16fb220a825925ac838e09e807d38fecec1667c76c9a29585c69c
+"@bgd-labs/aave-address-book@npm:4.22.2":
+  version: 4.22.2
+  resolution: "@bgd-labs/aave-address-book@npm:4.22.2"
+  checksum: 10/8336b229fc5bbf4f5db6ae81976d715366c3f92b297525466f5bb4f755c0b541ebeb1028d51f5bd515cbc79f02c2ec1d937391a7e2d3114775fc0b36bf1de548
   languageName: node
   linkType: hard
 
@@ -4842,7 +4835,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-protocol/helpers@workspace:packages/helpers"
   dependencies:
-    "@bgd-labs/aave-address-book": "npm:4.18.1"
+    "@bgd-labs/aave-address-book": "npm:4.22.2"
     "@relay-protocol/networks": "workspace:^"
     "@relay-protocol/tsconfig": "workspace:^"
     "@types/copyfiles": "npm:2"
@@ -4892,7 +4885,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-protocol/smart-contracts@workspace:smart-contracts"
   dependencies:
-    "@bgd-labs/aave-address-book": "npm:4.9.0"
+    "@bgd-labs/aave-address-book": "npm:4.22.2"
     "@eslint/js": "npm:9.19.0"
     "@eth-optimism/contracts-bedrock": "npm:0.17.3"
     "@hyperlane-xyz/registry": "npm:13.16.1"

@@ -14,7 +14,7 @@
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
     "@types/node": "22.15.31",
-    "eslint": "9.25.1",
+    "eslint": "9.28.0",
     "typescript": "5.8.3"
   },
   "dependencies": {

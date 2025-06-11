@@ -24,7 +24,7 @@
     "postpack": "pinst --enable"
   },
   "devDependencies": {
-    "@eslint/js": "9.19.0",
+    "@eslint/js": "9.28.0",
     "@nomicfoundation/hardhat-chai-matchers": "2.0.9",
     "@nomicfoundation/hardhat-ethers": "3.0.9",
     "@nomicfoundation/hardhat-ignition": "0.15.11",
@@ -41,7 +41,7 @@
     "@types/node": "22.15.31",
     "@types/semver": "7",
     "chai": "4.5.0",
-    "eslint": "9.19.0",
+    "eslint": "9.28.0",
     "eslint-config-prettier": "10.0.1",
     "eslint-plugin-evm-address-to-checksummed": "0.0.6",
     "eslint-plugin-json": "4.0.1",

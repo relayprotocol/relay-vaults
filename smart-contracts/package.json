@@ -42,7 +42,7 @@
     "@types/semver": "7",
     "chai": "4.5.0",
     "eslint": "9.28.0",
-    "eslint-config-prettier": "10.0.1",
+    "eslint-config-prettier": "10.1.5",
     "eslint-plugin-evm-address-to-checksummed": "0.0.6",
     "eslint-plugin-json": "4.0.1",
     "eslint-plugin-mocha": "10.5.0",

@@ -3154,13 +3154,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hyperlane-xyz/registry@npm:13.4.0":
-  version: 13.4.0
-  resolution: "@hyperlane-xyz/registry@npm:13.4.0"
+"@hyperlane-xyz/registry@npm:13.16.1":
+  version: 13.16.1
+  resolution: "@hyperlane-xyz/registry@npm:13.16.1"
   dependencies:
     yaml: "npm:2.4.5"
     zod: "npm:^3.21.2"
-  checksum: 10/35486d9f3ad1bd4b817b735260e764e5c68fecb9fab4df9d2ac9cecf45bbb38141f32945d89d95c2473ee9fde2a5b14e47fb02b26cd6b66d83eccd74c1c75326
+  checksum: 10/c3f2c1a7561efc168bbe80bfe5212eaac8cd6289bd91d9adb9b47f6e3da2131d1d1297423800c448a0b418cea9cb4484135cc1c5a6c29dac216772f83c18a320
   languageName: node
   linkType: hard
 
@@ -4896,7 +4896,7 @@ __metadata:
     "@bgd-labs/aave-address-book": "npm:4.9.0"
     "@eslint/js": "npm:9.19.0"
     "@eth-optimism/contracts-bedrock": "npm:0.17.3"
-    "@hyperlane-xyz/registry": "npm:13.4.0"
+    "@hyperlane-xyz/registry": "npm:13.16.1"
     "@matterlabs/hardhat-zksync": "npm:1.5.0"
     "@matterlabs/hardhat-zksync-deploy": "npm:1.7.0"
     "@nomicfoundation/hardhat-chai-matchers": "npm:2.0.9"

@@ -90,6 +90,8 @@ describe('RelayBridge', function () {
       expect(balanceAfter).to.be.equal(
         balanceBefore - amount - fee - receipt!.gasUsed * receipt!.gasPrice
       )
+      const nonceAfter = await bridge.transferNonce()
+      expect(nonceAfter).to.be.equal(nonce + 1n)
     })
 
     it('should fail if the msg.value does not match the amount for an ETH bridge', async () => {
@@ -232,6 +234,9 @@ describe('RelayBridge', function () {
       expect(await weth.balanceOf(recipient)).to.be.equal(
         balanceBefore - amount
       )
+
+      const nonceAfter = await bridge.transferNonce()
+      expect(nonceAfter).to.be.equal(nonce + 1n)
     })
 
     it('should fail if the user has not approved the ERC20 bridge with the right amount', async () => {

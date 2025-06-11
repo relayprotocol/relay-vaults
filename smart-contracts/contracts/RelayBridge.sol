@@ -103,7 +103,7 @@ contract RelayBridge is IRelayBridge {
     uint256 l1Gas,
     bytes calldata extraData
   ) external payable returns (uint256 nonce) {
-    nonce = transferNonce;
+    nonce = transferNonce++;
     BridgeTransaction memory transaction = BridgeTransaction({
       amount: amount,
       recipient: recipient,

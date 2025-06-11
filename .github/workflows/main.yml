@@ -85,9 +85,9 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: deploy to dev
+      - name: Deploy to production
         run: |
           sh -c "/app/deploy.sh vaults"
         shell: bash
         env:
-          ENVIRONMENT: dev
+          ENVIRONMENT: prod

@@ -6,9 +6,11 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IHyperlaneMailbox} from "./interfaces/IHyperlaneMailbox.sol";
 import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
+import "hardhat/console.sol";
 
 error BridgingFailed(uint256 nonce);
 error InsufficientValue(uint256 received, uint256 expected);
+error FailedFeeRefund(uint256 value);
 
 interface IRelayBridge {
   function bridge(
@@ -172,14 +174,18 @@ contract RelayBridge is IRelayBridge {
       BRIDGE_PROXY
     );
 
-    // refund extra value to msg.sender (we ignore failures here)
+    // refund extra value to msg.sender
+    uint leftOverValue = 0;
     if (ASSET != address(0)) {
-      if (msg.value > hyperlaneFee) {
-        msg.sender.call{value: msg.value - hyperlaneFee}(new bytes(0));
-      }
+      leftOverValue = msg.value - hyperlaneFee;
     } else {
-      if (msg.value > hyperlaneFee + amount) {
-        msg.sender.call{value: msg.value - hyperlaneFee - amount}(new bytes(0));
+      leftOverValue = msg.value - hyperlaneFee - amount;
+    }
+
+    if (leftOverValue > 0) {
+      (bool sent, ) = msg.sender.call{value: leftOverValue}(new bytes(0));
+      if (!sent) {
+        revert FailedFeeRefund(leftOverValue);
       }
     }
   }

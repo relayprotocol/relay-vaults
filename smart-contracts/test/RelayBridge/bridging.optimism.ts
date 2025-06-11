@@ -61,6 +61,7 @@ describe.only('RelayBridge', function () {
       const nonce = await bridge.transferNonce()
       const balanceBefore = await getBalance(recipient, ethers.provider)
       const fee = await bridge.getFee(amount, recipient, l1Gas)
+
       const tx = await bridge
         .connect(user)
         .bridge(amount, recipient, ethers.ZeroAddress, l1Gas, '0x', {
@@ -92,7 +93,6 @@ describe.only('RelayBridge', function () {
 
       const balanceAfter = await getBalance(recipient, ethers.provider)
       const gasCost = receipt!.gasUsed * receipt!.gasPrice
-      console.log({ balanceBefore, amount, fee, gasCost })
       expect(balanceAfter).to.be.equal(balanceBefore - amount - fee - gasCost)
       const nonceAfter = await bridge.transferNonce()
       expect(nonceAfter).to.be.equal(nonce + 1n)

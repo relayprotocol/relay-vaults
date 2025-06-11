@@ -73,7 +73,7 @@ jobs:
             TAG=${{ github.ref_name }}
 
   deploy-prod:
-    name: Deploy to Development
+    name: Deploy to production
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/main'

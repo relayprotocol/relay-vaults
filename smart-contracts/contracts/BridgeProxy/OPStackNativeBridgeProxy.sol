@@ -22,7 +22,7 @@ contract OPStackNativeBridgeProxy is BridgeProxy {
     address l1Asset,
     uint256 amount,
     bytes calldata data,
-    bytes calldata extraData
+    bytes calldata /* extraData */
   ) external payable override {
     if (currency == address(0)) {
       L2StandardBridge(STANDARD_BRIDGE).bridgeETHTo{value: amount}(

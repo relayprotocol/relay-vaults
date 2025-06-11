@@ -27,7 +27,7 @@ struct BridgeTransaction {
   uint256 l1Gas;
   bytes extraData;
   uint256 nonce;
-  bytes data;
+  bytes txParams;
   uint32 poolChainId;
   bytes32 poolId;
 }
@@ -71,7 +71,7 @@ contract RelayBridge is IRelayBridge {
     address recipient,
     uint256 l1Gas
   ) external view returns (uint256 fee) {
-    bytes memory data = abi.encode(
+    bytes memory txParams = abi.encode(
       transferNonce, // use the current transferNonce
       recipient,
       amount,
@@ -85,7 +85,7 @@ contract RelayBridge is IRelayBridge {
       IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
         poolChainId,
         poolId,
-        data,
+        txParams,
         StandardHookMetadata.overrideGasLimit(l1Gas)
       );
   }
@@ -110,7 +110,7 @@ contract RelayBridge is IRelayBridge {
       l1Gas: l1Gas,
       extraData: extraData,
       nonce: transferNonce++, // Associate the withdrawal to a unique id
-      data: abi.encode(nonce, recipient, amount, block.timestamp),
+      txParams: abi.encode(nonce, recipient, amount, block.timestamp),
       poolChainId: uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID()),
       poolId: bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())))
     });
@@ -119,7 +119,7 @@ contract RelayBridge is IRelayBridge {
     uint256 hyperlaneFee = IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
       transaction.poolChainId,
       transaction.poolId,
-      transaction.data,
+      transaction.txParams,
       StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 
@@ -147,7 +147,7 @@ contract RelayBridge is IRelayBridge {
         ASSET,
         l1Asset,
         amount,
-        transaction.data,
+        transaction.txParams,
         extraData
       )
     );
@@ -157,7 +157,7 @@ contract RelayBridge is IRelayBridge {
     IHyperlaneMailbox(HYPERLANE_MAILBOX).dispatch{value: hyperlaneFee}(
       transaction.poolChainId,
       transaction.poolId,
-      transaction.data,
+      transaction.txParams,
       StandardHookMetadata.overrideGasLimit(l1Gas)
     );
 

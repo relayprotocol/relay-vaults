@@ -24,7 +24,7 @@ contract ZkSyncBridgeProxy is BridgeProxy {
     address currency,
     address /* l1Asset */,
     uint256 amount,
-    bytes calldata /* data */,
+    bytes calldata /* txParams */,
     bytes calldata /* extraData */
   ) external payable override {
     // Check if this is a native token withdrawal

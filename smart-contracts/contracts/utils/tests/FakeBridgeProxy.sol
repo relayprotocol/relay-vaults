@@ -15,7 +15,7 @@ contract FakeBridgeProxy is BridgeProxy {
     address /* currency */,
     address /* l1Asset */,
     uint256 amount,
-    bytes calldata /* data */,
+    bytes calldata /* txParams */,
     bytes calldata /* extraData */
   ) external payable override {
     if (amount == 13371337133713371337) {

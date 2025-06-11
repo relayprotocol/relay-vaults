@@ -61,6 +61,7 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
       ethers.ZeroAddress,
       amount,
       '0x',
+      '0x',
       {
         gasLimit: 30000000,
         value: amount,
@@ -206,7 +207,6 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
 
   it('should work for the base sequence using ERC20', async () => {
     // We use ethereumAssets.udt) for example as it has already been bridged to OP
-    const [user] = await ethers.getSigners()
 
     const parameters = {
       OPStackNativeBridgeProxy: {
@@ -238,6 +238,7 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
       op1Assets.udt,
       networks[1].assets.udt,
       amount,
+      '0x',
       '0x',
       {
         gasLimit: 30000000,

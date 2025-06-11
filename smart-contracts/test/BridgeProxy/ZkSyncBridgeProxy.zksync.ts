@@ -57,6 +57,7 @@ describe('ZkSyncBridgeProxy', function () {
         ethers.ZeroAddress, // l1 native token
         amount,
         '0x', //empty data
+        '0x', //empty extraData
         { value: amount }
       )
 

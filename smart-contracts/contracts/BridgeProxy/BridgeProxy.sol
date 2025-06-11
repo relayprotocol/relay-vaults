@@ -35,10 +35,11 @@ contract BridgeProxy {
   // We use `delegateCall` so that the the user can approve the Bridge contract
   // and not worry/care about The proxyBridge contract.
   function bridge(
-    address /*currency*/,
-    address /*l1Asset*/,
-    uint256 /*amount*/,
-    bytes calldata /*data*/
+    address /* currency */,
+    address /* l1Asset */,
+    uint256 /* amount */,
+    bytes calldata /* txParams */,
+    bytes calldata /* extraData */
   ) external payable virtual {
     revert BridgeNotImplemented();
   }

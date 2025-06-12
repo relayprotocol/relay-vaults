@@ -183,7 +183,7 @@ describe('RelayBridge', function () {
       bridge = deployment.bridge
     })
 
-    it.only('should work for the base sequence using an ERC20', async () => {
+    it('should work for the base sequence using an ERC20', async () => {
       const [user] = users
       const bridgeAddress = await bridge.getAddress()
       const recipient = await user.getAddress()
@@ -269,15 +269,17 @@ describe('RelayBridge', function () {
       const amount = ethers.parseEther('1')
 
       // Approve
-      await weth.approve(bridgeAddress, amount)
+      await weth.connect(user).approve(bridgeAddress, amount)
 
       const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
 
       await expect(
-        bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, '0x', {
-          value: fee / 2n,
-        })
+        bridge
+          .connect(user)
+          .bridge(amount, recipient, wethAddressOnL1, l1Gas, '0x', {
+            value: fee / 2n,
+          })
       )
         .to.be.revertedWithCustomError(bridge, 'InsufficientValue')
         .withArgs(fee / 2n, fee)
@@ -311,15 +313,17 @@ describe('RelayBridge', function () {
       const balanceOfEthBefore = await getBalance(recipient, ethers.provider)
 
       // Approve
-      await weth.approve(bridgeAddress, amount)
+      await weth.connect(user).approve(bridgeAddress, amount)
 
       const fee = await bridge.getFee(amount, recipient, l1Gas)
       const wethAddressOnL1 = ethers.ZeroAddress
       const value = fee * 10n
       const expectedBalanceAfter = balanceOfEthBefore - value
-      await bridge.bridge(amount, recipient, wethAddressOnL1, l1Gas, '0x', {
-        value,
-      })
+      await bridge
+        .connect(user)
+        .bridge(amount, recipient, wethAddressOnL1, l1Gas, '0x', {
+          value,
+        })
 
       const balanceOfEthAfter = await getBalance(recipient, ethers.provider)
 

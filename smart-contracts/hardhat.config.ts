@@ -40,14 +40,7 @@ if (!DEPLOYER_PRIVATE_KEY) {
 }
 
 // parse networks from file
-const networks = {
-  hardhat: {
-    accounts: {
-      mnemonic:
-        'risk cheap pioneer joy shrimp fiscal kind legal pelican motor leaf drift',
-    },
-  },
-}
+const networks = { hardhat: {} }
 Object.keys(nets).forEach((id) => {
   const { slug, rpc, isTestnet, stack } = nets[id]
   let accounts

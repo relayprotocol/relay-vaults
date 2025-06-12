@@ -18,6 +18,7 @@ import './tasks/deploy/relay-pool-factory'
 import './tasks/deploy/relay-bridge-factory'
 import './tasks/deploy/verify'
 import './tasks/deploy/timelock'
+import './tasks/deploy/set-earliest-block'
 
 // Helpers/tests
 import './tasks/networks'

@@ -7,7 +7,6 @@ task(
   const { chainId } = await ethers.provider.getNetwork()
 
   const network = networks[chainId.toString()]
-  console.log(network)
 
   const etherscanNetworkName =
     Number(chainId) == 1 ? 'mainnet' : network.name.toLowerCase()

@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const optimism: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     udt: '0xc709c9116dBf29Da9c25041b13a07A0e68aC5d2D',
     usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
@@ -37,6 +37,7 @@ export const optimism: ChildNetworkConfig = {
   rpc: process.env.RPC_10
     ? [process.env.RPC_10]
     : ['https://gateway.tenderly.co/public/optimism'],
-  slug: 'op',
   stack: 'optimism',
 }
+
+export default config

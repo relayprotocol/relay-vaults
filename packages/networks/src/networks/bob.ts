@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const bob: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
     // TODO: add USDC
@@ -24,6 +24,7 @@ export const bob: ChildNetworkConfig = {
   rpc: process.env.RPC_60808
     ? [process.env.RPC_60808]
     : ['https://rpc.gobob.xyz'],
-  slug: 'bob',
   stack: 'optimism-alt',
 }
+
+export default config

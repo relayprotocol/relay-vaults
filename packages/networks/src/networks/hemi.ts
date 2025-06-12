@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const hemi: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
     // TODO: add USDC
@@ -24,6 +24,7 @@ export const hemi: ChildNetworkConfig = {
   rpc: process.env.RPC_43111
     ? [process.env.RPC_43111]
     : ['https://rpc.hemi.network/rpc'],
-  slug: 'hemi',
   stack: 'optimism',
 }
+
+export default config

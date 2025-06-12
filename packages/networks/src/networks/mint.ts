@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const mint: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0xb62F35B9546A908d11c5803ecBBA735AbC3E3eaE',
     weth: '0x4200000000000000000000000000000000000006',
@@ -24,6 +24,7 @@ export const mint: ChildNetworkConfig = {
   rpc: process.env.RPC_1337
     ? [process.env.RPC_1337]
     : ['https://rpc.mintchain.io'],
-  slug: 'mint',
   stack: 'optimism-alt',
 }
+
+export default config

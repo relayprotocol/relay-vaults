@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const zero: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0x6a6394F47DD0BAF794808F2749C09bd4Ee874E70',
     weth: '0xAc98B49576B1C892ba6BFae08fE1BB0d80Cf599c',
@@ -24,7 +24,8 @@ export const zero: ChildNetworkConfig = {
   name: 'Zero',
   parentChainId: 1,
   rpc: ['https://rpc.zerion.io/v1/zero'],
-  slug: 'zero',
   stack: 'zksync',
   withdrawalDelay: 10800, // 3 hrs
 }
+
+export default config

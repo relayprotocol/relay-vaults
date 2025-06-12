@@ -25,7 +25,7 @@ describe('Forwarder', function () {
   let forwarder: Forwarder
   let mockSafe: MockSafe
   let mockTarget: MockTarget
-  let testData: `$0x{string}`
+  let testData: string
   let owner1: SignerWithAddress
   let owner2: SignerWithAddress
   let owner3: SignerWithAddress
@@ -189,7 +189,7 @@ describe('Forwarder', function () {
       )
     })
 
-    it('should emit Forwarded event for each owner', async function () {
+    it('should emit Forwarded event for each call', async function () {
       // Test event emission for owner1
       const tx1 = await forwarder
         .connect(owner1)

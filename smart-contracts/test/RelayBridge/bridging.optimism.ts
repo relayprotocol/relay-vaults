@@ -54,7 +54,7 @@ describe('RelayBridge', function () {
       bridge = deployment.bridge
     })
 
-    it.only('should work for the base sequence using ETH', async () => {
+    it('should work for the base sequence using ETH', async () => {
       const [user] = users
 
       const recipient = await user.getAddress()

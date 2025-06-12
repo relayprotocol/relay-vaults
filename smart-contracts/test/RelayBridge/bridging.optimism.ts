@@ -16,7 +16,7 @@ const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 const l1Gas = '500000'
 
 // This runs in an OP fork because we need Hyperlane to work, but we don't actually use the OPStack native bridge.
-describe.only('RelayBridge', function () {
+describe('RelayBridge', function () {
   let bridge: RelayBridge
   let bridgeProxyAddress: string
   const users: ethers.Wallet[] = []

@@ -24,10 +24,11 @@ describe.only('RelayBridge', function () {
   describe('with ETH', () => {
     before(async () => {
       const signers = await ethers.getSigners()
-      for (let i = 0; i < signers.length; i++) {
-        users[i] = ethers.Wallet.createRandom().connect(ethers.provider)
-        signers[i].sendTransaction({
-          to: users[i].address,
+      for (const signer of signers) {
+        const userWallet = ethers.Wallet.createRandom().connect(ethers.provider)
+        users.push(userWallet)
+        await signer.sendTransaction({
+          to: userWallet.address,
           value: ethers.parseEther('10'),
         })
       }

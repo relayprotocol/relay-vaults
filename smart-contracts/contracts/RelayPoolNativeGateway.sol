@@ -6,23 +6,23 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 import {IWETH} from "./interfaces/IWETH.sol";
 
-/// @notice Error when ETH transfer fails
-error EthTransferFailed();
-
-/// @notice Error when contract receives ETH from non-WETH address
-error OnlyWethCanSendEth();
-
-/// @notice Error when ETH remains in contract after operation
-error RemainingEth();
-
-/// @notice Error when slippage protection is triggered
-error SlippageExceeded();
-
 /// @title RelayPoolNativeGateway
 /// @author Relay Protocol
 /// @notice Gateway contract for depositing and withdrawing native ETH to/from WETH-based RelayPools
 /// @dev Handles wrapping/unwrapping of ETH and provides slippage protection for all operations
 contract RelayPoolNativeGateway {
+  /// @notice Error when ETH transfer fails
+  error EthTransferFailed();
+
+  /// @notice Error when contract receives ETH from non-WETH address
+  error OnlyWethCanSendEth();
+
+  /// @notice Error when ETH remains in contract after operation
+  error RemainingEth();
+
+  /// @notice Error when slippage protection is triggered
+  error SlippageExceeded();
+
   /// @notice The Wrapped ETH (WETH) contract
   /// @dev Used to wrap/unwrap native ETH for pool operations
   IWETH public immutable WETH;

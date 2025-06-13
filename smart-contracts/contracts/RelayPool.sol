@@ -13,121 +13,121 @@ import {HyperlaneMessage} from "./Types.sol";
 import {IBridgeProxy} from "./interfaces/IBridgeProxy.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-/// @notice Configuration for an authorized origin chain and bridge
-/// @param chainId The chain ID of the origin chain
-/// @param bridge The address of the bridge contract on the origin chain
-/// @param curator The address authorized to disable this origin
-/// @param maxDebt Maximum outstanding debt allowed from this origin
-/// @param outstandingDebt Current outstanding debt from this origin
-/// @param proxyBridge The address of the proxy bridge contract for claiming funds
-/// @param bridgeFee Fee charged for bridging (in fractional basis points)
-/// @param coolDown Minimum time in seconds between message timestamp and processing
-struct OriginSettings {
-  uint32 chainId;
-  address bridge;
-  address curator;
-  uint256 maxDebt;
-  uint256 outstandingDebt;
-  address proxyBridge;
-  uint32 bridgeFee; // fractional basis points
-  uint32 coolDown; // in seconds
-}
-
-/// @notice Parameters for adding a new origin
-/// @param curator The address authorized to disable this origin
-/// @param chainId The chain ID of the origin chain
-/// @param bridge The address of the bridge contract on the origin chain
-/// @param proxyBridge The address of the proxy bridge contract for claiming funds
-/// @param maxDebt Maximum outstanding debt allowed from this origin
-/// @param bridgeFee Fee charged for bridging (in fractional basis points)
-/// @param coolDown Minimum time in seconds between message timestamp and processing
-struct OriginParam {
-  address curator;
-  uint32 chainId;
-  address bridge;
-  address proxyBridge;
-  uint256 maxDebt;
-  uint32 bridgeFee; // fractional basis points
-  uint32 coolDown; // in seconds
-}
-
-/// @notice Error when caller is not authorized for the operation
-/// @param sender The address that attempted the unauthorized call
-error UnauthorizedCaller(address sender);
-
-/// @notice Error when attempting to swap the pool's underlying asset
-/// @param token The token address that was attempted to be swapped
-error UnauthorizedSwap(address token);
-
-/// @notice Error when message is from an unauthorized origin
-/// @param chainId The chain ID of the unauthorized origin
-/// @param bridge The bridge address of the unauthorized origin
-error UnauthorizedOrigin(uint32 chainId, address bridge);
-
-/// @notice Error when attempting to process an already processed message
-/// @param chainId The chain ID of the message origin
-/// @param bridge The bridge address of the message origin
-/// @param nonce The nonce of the already processed message
-error MessageAlreadyProcessed(uint32 chainId, address bridge, uint256 nonce);
-
-/// @notice Error when origin would exceed its maximum allowed debt
-/// @param chainId The chain ID of the origin
-/// @param bridge The bridge address of the origin
-/// @param maxDebt The maximum allowed debt for this origin
-/// @param nonce The nonce of the rejected transaction
-/// @param recipient The intended recipient of the funds
-/// @param amount The amount that would exceed the debt limit
-error TooMuchDebtFromOrigin(
-  uint32 chainId,
-  address bridge,
-  uint256 maxDebt,
-  uint256 nonce,
-  address recipient,
-  uint256 amount
-);
-
-/// @notice Error when native currency transfer fails
-/// @param recipient The intended recipient of the transfer
-/// @param amount The amount that failed to transfer
-error FailedTransfer(address recipient, uint256 amount);
-
-/// @notice Error when insufficient funds are available
-/// @param amount The amount available
-/// @param balance The balance required
-error InsufficientFunds(uint256 amount, uint256 balance);
-
-/// @notice Error when native currency is sent to a non-WETH pool
-error NotAWethPool();
-
-/// @notice Error when message timestamp is too recent based on cooldown period
-/// @param chainId The chain ID of the message origin
-/// @param bridge The bridge address of the message origin
-/// @param nonce The nonce of the message
-/// @param timestamp The timestamp of the message
-/// @param coolDown The required cooldown period
-error MessageTooRecent(
-  uint32 chainId,
-  address bridge,
-  uint256 nonce,
-  uint256 timestamp,
-  uint32 coolDown
-);
-
-/// @notice Error when share price is below minimum acceptable threshold
-/// @param actualPrice The actual share price
-/// @param minPrice The minimum acceptable share price
-error SharePriceTooLow(uint256 actualPrice, uint256 minPrice);
-
-/// @notice Error when share price is above maximum acceptable threshold
-/// @param actualPrice The actual share price
-/// @param maxPrice The maximum acceptable share price
-error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
-
 /// @title RelayPool
 /// @author Relay Protocol
 /// @notice ERC4626 vault that enables cross-chain asset bridging and yield generation
 /// @dev Receives bridged assets via Hyperlane, provides instant liquidity, and deposits idle funds into yield pools
 contract RelayPool is ERC4626, Ownable {
+  /// @notice Configuration for an authorized origin chain and bridge
+  /// @param chainId The chain ID of the origin chain
+  /// @param bridge The address of the bridge contract on the origin chain
+  /// @param curator The address authorized to disable this origin
+  /// @param maxDebt Maximum outstanding debt allowed from this origin
+  /// @param outstandingDebt Current outstanding debt from this origin
+  /// @param proxyBridge The address of the proxy bridge contract for claiming funds
+  /// @param bridgeFee Fee charged for bridging (in fractional basis points)
+  /// @param coolDown Minimum time in seconds between message timestamp and processing
+  struct OriginSettings {
+    uint32 chainId;
+    address bridge;
+    address curator;
+    uint256 maxDebt;
+    uint256 outstandingDebt;
+    address proxyBridge;
+    uint32 bridgeFee; // fractional basis points
+    uint32 coolDown; // in seconds
+  }
+
+  /// @notice Parameters for adding a new origin
+  /// @param curator The address authorized to disable this origin
+  /// @param chainId The chain ID of the origin chain
+  /// @param bridge The address of the bridge contract on the origin chain
+  /// @param proxyBridge The address of the proxy bridge contract for claiming funds
+  /// @param maxDebt Maximum outstanding debt allowed from this origin
+  /// @param bridgeFee Fee charged for bridging (in fractional basis points)
+  /// @param coolDown Minimum time in seconds between message timestamp and processing
+  struct OriginParam {
+    address curator;
+    uint32 chainId;
+    address bridge;
+    address proxyBridge;
+    uint256 maxDebt;
+    uint32 bridgeFee; // fractional basis points
+    uint32 coolDown; // in seconds
+  }
+
+  /// @notice Error when caller is not authorized for the operation
+  /// @param sender The address that attempted the unauthorized call
+  error UnauthorizedCaller(address sender);
+
+  /// @notice Error when attempting to swap the pool's underlying asset
+  /// @param token The token address that was attempted to be swapped
+  error UnauthorizedSwap(address token);
+
+  /// @notice Error when message is from an unauthorized origin
+  /// @param chainId The chain ID of the unauthorized origin
+  /// @param bridge The bridge address of the unauthorized origin
+  error UnauthorizedOrigin(uint32 chainId, address bridge);
+
+  /// @notice Error when attempting to process an already processed message
+  /// @param chainId The chain ID of the message origin
+  /// @param bridge The bridge address of the message origin
+  /// @param nonce The nonce of the already processed message
+  error MessageAlreadyProcessed(uint32 chainId, address bridge, uint256 nonce);
+
+  /// @notice Error when origin would exceed its maximum allowed debt
+  /// @param chainId The chain ID of the origin
+  /// @param bridge The bridge address of the origin
+  /// @param maxDebt The maximum allowed debt for this origin
+  /// @param nonce The nonce of the rejected transaction
+  /// @param recipient The intended recipient of the funds
+  /// @param amount The amount that would exceed the debt limit
+  error TooMuchDebtFromOrigin(
+    uint32 chainId,
+    address bridge,
+    uint256 maxDebt,
+    uint256 nonce,
+    address recipient,
+    uint256 amount
+  );
+
+  /// @notice Error when native currency transfer fails
+  /// @param recipient The intended recipient of the transfer
+  /// @param amount The amount that failed to transfer
+  error FailedTransfer(address recipient, uint256 amount);
+
+  /// @notice Error when insufficient funds are available
+  /// @param amount The amount available
+  /// @param balance The balance required
+  error InsufficientFunds(uint256 amount, uint256 balance);
+
+  /// @notice Error when native currency is sent to a non-WETH pool
+  error NotAWethPool();
+
+  /// @notice Error when message timestamp is too recent based on cooldown period
+  /// @param chainId The chain ID of the message origin
+  /// @param bridge The bridge address of the message origin
+  /// @param nonce The nonce of the message
+  /// @param timestamp The timestamp of the message
+  /// @param coolDown The required cooldown period
+  error MessageTooRecent(
+    uint32 chainId,
+    address bridge,
+    uint256 nonce,
+    uint256 timestamp,
+    uint32 coolDown
+  );
+
+  /// @notice Error when share price is below minimum acceptable threshold
+  /// @param actualPrice The actual share price
+  /// @param minPrice The minimum acceptable share price
+  error SharePriceTooLow(uint256 actualPrice, uint256 minPrice);
+
+  /// @notice Error when share price is above maximum acceptable threshold
+  /// @param actualPrice The actual share price
+  /// @param maxPrice The maximum acceptable share price
+  error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
+
   /// @notice The address of the Hyperlane mailbox
   /// @dev Used to receive cross-chain messages
   address public immutable HYPERLANE_MAILBOX;

@@ -7,16 +7,16 @@ import {BridgeProxy} from "./BridgeProxy.sol";
 import {IL2GatewayRouter} from "../interfaces/arb/IArbL2GatewayRouter.sol";
 import {IArbSys} from "../interfaces/arb/IArbSys.sol";
 
-/// @notice Error when L2 token address doesn't match the calculated address from L1 token
-/// @param expected The expected L2 token address calculated from L1 token
-/// @param actual The actual L2 token address provided
-error AssetMismatch(address expected, address actual);
-
 /// @title ArbitrumOrbitNativeBridgeProxy
 /// @author Relay Protocol
 /// @notice Bridge proxy implementation for Arbitrum Orbit L2 to L1 token bridging
 /// @dev Handles both native ETH and ERC20 token bridging from Arbitrum Orbit L2s to their L1
 contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
+  /// @notice Error when L2 token address doesn't match the calculated address from L1 token
+  /// @param expected The expected L2 token address calculated from L1 token
+  /// @param actual The actual L2 token address provided
+  error AssetMismatch(address expected, address actual);
+
   /// @notice Arbitrum system precompile for native ETH withdrawals
   /// @dev Located at a fixed address on all Arbitrum chains
   IArbSys public immutable ARB_SYS =

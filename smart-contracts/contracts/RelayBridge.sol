@@ -7,19 +7,6 @@ import {IHyperlaneMailbox} from "./interfaces/IHyperlaneMailbox.sol";
 import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
-/// @notice Error for failed bridging operations
-/// @param nonce The nonce of the failed transaction
-error BridgingFailed(uint256 nonce);
-
-/// @notice Error for insufficient native value sent to cover fees or asset
-/// @param received The amount of native currency received
-/// @param expected The amount of native currency expected
-error InsufficientValue(uint256 received, uint256 expected);
-
-/// @notice Error when refunding leftover native value fails
-/// @param value The amount of native currency that failed to refund
-error FailedFeeRefund(uint256 value);
-
 /// @title IRelayBridge
 /// @author Relay Protocol
 /// @notice Interface for the RelayBridge contract
@@ -41,24 +28,37 @@ interface IRelayBridge {
   ) external payable returns (uint256 nonce);
 }
 
-/// @dev Internal struct capturing parameters for a bridge transaction
-struct BridgeTransaction {
-  uint256 amount;
-  address recipient;
-  address poolAsset;
-  uint256 poolGas;
-  bytes extraData;
-  uint256 nonce;
-  bytes txParams;
-  uint32 poolChainId;
-  bytes32 poolId;
-}
-
 /// @title RelayBridge
 /// @author Relay Protocol
 /// @notice RelayBridge contract enabling cross-chain bridging via Hyperlane
 /// @dev Bridges assets from an origin chain to a configured pool chain
 contract RelayBridge is IRelayBridge {
+  /// @dev Internal struct capturing parameters for a bridge transaction
+  struct BridgeTransaction {
+    uint256 amount;
+    address recipient;
+    address poolAsset;
+    uint256 poolGas;
+    bytes extraData;
+    uint256 nonce;
+    bytes txParams;
+    uint32 poolChainId;
+    bytes32 poolId;
+  }
+
+  /// @notice Error for failed bridging operations
+  /// @param nonce The nonce of the failed transaction
+  error BridgingFailed(uint256 nonce);
+
+  /// @notice Error for insufficient native value sent to cover fees or asset
+  /// @param received The amount of native currency received
+  /// @param expected The amount of native currency expected
+  error InsufficientValue(uint256 received, uint256 expected);
+
+  /// @notice Error when refunding leftover native value fails
+  /// @param value The amount of native currency that failed to refund
+  error FailedFeeRefund(uint256 value);
+
   /// @notice Counter for assigning unique nonces to bridge transactions
   /// @dev Incremented with each bridge transaction to ensure uniqueness
   uint256 public transferNonce;

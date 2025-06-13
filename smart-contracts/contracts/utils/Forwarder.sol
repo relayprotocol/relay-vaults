@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-
-
 interface ISafe {
   function isOwner(address) external view returns (bool);
 }
@@ -13,7 +10,7 @@ interface ISafe {
  * @dev A contract that forwards calls to another address if the caller is approved.
  * Supports SAFE integration.
  */
-contract Forwarder is Ownable {
+contract Forwarder {
     // Errors 
     error NotMultisigOwner(address);
     error InvalidTargetAddress();
@@ -32,7 +29,7 @@ contract Forwarder is Ownable {
       _;
     }
 
-    constructor(address _safeAddress) Ownable(_safeAddress) {
+    constructor(address _safeAddress) {
       safeAddress = _safeAddress;
     }
 

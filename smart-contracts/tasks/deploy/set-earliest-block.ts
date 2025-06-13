@@ -1,5 +1,5 @@
 import networks from '@relay-protocol/networks'
-import { readFileSync, writeFile, writeFileSync } from 'fs'
+import { outputJSON, readJson } from 'fs-extra'
 import { task } from 'hardhat/config'
 
 const EARLIEST_BLOCKS_FILE =
@@ -16,15 +16,11 @@ task(
   const { chainId } = await ethers.provider.getNetwork()
   const network = networks[chainId.toString()]
   if (!network.earliestBlock) {
-    const data = readFileSync(EARLIEST_BLOCKS_FILE, 'utf-8')
-    const earliestBlocks = JSON.parse(data)
+    const earliestBlocks = await readJson(EARLIEST_BLOCKS_FILE, 'utf-8')
     const latestBlock = await ethers.provider.getBlockNumber()
     earliestBlocks[network.slug!] = roundDownToThousand(latestBlock)
+    await outputJSON(EARLIEST_BLOCKS_FILE, earliestBlocks, { spaces: 2 })
 
-    await writeFileSync(
-      EARLIEST_BLOCKS_FILE,
-      JSON.stringify(earliestBlocks, null, 2)
-    )
     console.log(
       `Set earliest block for ${network.slug} to ${earliestBlocks[network.slug!]}`
     )

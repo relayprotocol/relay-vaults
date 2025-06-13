@@ -23,7 +23,9 @@ files.forEach((file) => {
   exportLines.push(`export const ${fileNameWithoutExt} = {
   slug: '${fileNameWithoutExt}',
   ...config_${importVar},
-  earliestBlock: typedEarliestBlocks['${fileNameWithoutExt}'],
+}
+if (typedEarliestBlocks['${fileNameWithoutExt}']) {
+  ${fileNameWithoutExt}['earliestBlock'] = typedEarliestBlocks['${fileNameWithoutExt}']
 }
 `)
 })

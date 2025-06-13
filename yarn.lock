@@ -4829,6 +4829,7 @@ __metadata:
     eslint: "npm:9.28.0"
     fs-extra: "npm:11.3.0"
     tsup: "npm:8.5.0"
+    tsx: "npm:4.19.4"
     typescript: "npm:5.8.3"
   languageName: unknown
   linkType: soft

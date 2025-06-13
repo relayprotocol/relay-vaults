@@ -18,7 +18,7 @@ contract Forwarder {
     error ForwardFailed();
     error RefundFailed();
     
-    // Optional SAFE address that can also forward calls
+    // SAFE address that contains the whitelist of allowed callers
     address public safeAddress;
     
     // Events

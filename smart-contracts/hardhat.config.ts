@@ -133,6 +133,10 @@ Object.values(registry).forEach((v) => {
 })
 
 const config: HardhatUserConfig = {
+  docgen: {
+    exclude: ['interfaces', 'utils'],
+    pages: 'files',
+  },
   etherscan,
   networks,
   solidity: {

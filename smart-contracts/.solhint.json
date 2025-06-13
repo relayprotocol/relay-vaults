@@ -1,6 +1,7 @@
 {
   "extends": "solhint:recommended",
   "rules": {
+    "no-unused-import": "error",
     "avoid-low-level-calls": "off",
     "ordering": "off",
     "func-visibility": [

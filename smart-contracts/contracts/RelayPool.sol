@@ -11,8 +11,6 @@ import {ITokenSwap} from "./interfaces/ITokenSwap.sol";
 import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
 import {IBridgeProxy} from "./interfaces/IBridgeProxy.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import {FixedPointMathLib} from "solmate/src/utils/FixedPointMathLib.sol";
 
 struct OriginSettings {
   uint32 chainId;

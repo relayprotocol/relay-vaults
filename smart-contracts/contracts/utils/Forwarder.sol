@@ -8,7 +8,7 @@ interface ISafe {
 /**
  * @title Forwarder
  * @dev A contract that forwards calls to another address if the caller is approved.
- * Supports SAFE integration.
+ * @notice The whitelist is maintained using a SAFE multisig.
  */
 contract Forwarder {
     // Errors 
@@ -28,15 +28,17 @@ contract Forwarder {
       if (!ISafe(safeAddress).isOwner(msg.sender)) revert NotMultisigOwner(msg.sender);
       _;
     }
-
+    /**
+     * @param _safeAddress The address of the SAFE contract
+     */    
     constructor(address _safeAddress) {
       safeAddress = _safeAddress;
     }
 
     /**
-     * @dev Forward a call to another address
+     * Forwards a call to another address with optional ETH value
      * @param to The address to forward the call to
-     * @param data The data to forward
+     * @param data The calldata to forward
      * @param value The amount of ETH to forward
      */
     function forward(address to, bytes calldata data, uint256 value) onlyMultisigOwner external payable  {
@@ -56,7 +58,7 @@ contract Forwarder {
     }
 
     /**
-     * @dev Receive function to accept ETH
+     * @dev Allows the contract to receive ETH
      */
     receive() external payable {}
 } 

@@ -1,10 +1,10 @@
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
-import { Forwarder, MockSafe, MockTarget } from '../../typechain-types'
+import { OriginCurator, MockSafe, MockTarget } from '../../typechain-types'
 
-describe('Forwarder', function () {
-  let forwarder: Forwarder
+describe('OriginCurator', function () {
+  let originCurator: OriginCurator
   let mockSafe: MockSafe
   let mockTarget: MockTarget
   let testData: string
@@ -25,10 +25,10 @@ describe('Forwarder', function () {
     ])
     await mockSafe.waitForDeployment()
 
-    // Deploy forwarder contract
-    const Forwarder = await ethers.getContractFactory('Forwarder')
-    forwarder = await Forwarder.deploy(await mockSafe.getAddress())
-    await forwarder.waitForDeployment()
+    // Deploy originCurator contract
+    const OriginCurator = await ethers.getContractFactory('OriginCurator')
+    originCurator = await OriginCurator.deploy(await mockSafe.getAddress())
+    await originCurator.waitForDeployment()
 
     // Deploy mock target contract
     const MockTarget = await ethers.getContractFactory('MockTarget')
@@ -42,7 +42,7 @@ describe('Forwarder', function () {
 
   describe('Initialization', function () {
     it('should set the correct SAFE address', async function () {
-      expect(await forwarder.safeAddress()).to.equal(
+      expect(await originCurator.safeAddress()).to.equal(
         await mockSafe.getAddress()
       )
     })
@@ -57,14 +57,14 @@ describe('Forwarder', function () {
       )
 
       // Test forwarding from owner1
-      await forwarder
+      await originCurator
         .connect(owner1)
         .forward(await mockTarget.getAddress(), testData, testValue, {
           value: testValue,
         })
 
       // Test forwarding from owner2
-      await forwarder
+      await originCurator
         .connect(owner2)
         .forward(await mockTarget.getAddress(), testData, testValue, {
           value: testValue,
@@ -83,7 +83,7 @@ describe('Forwarder', function () {
       )
 
       // Forward a call to receiveCall
-      const tx = await forwarder
+      const tx = await originCurator
         .connect(owner1)
         .forward(
           await mockTarget.getAddress(),
@@ -95,13 +95,13 @@ describe('Forwarder', function () {
       // Verify the call was executed correctly
       await expect(tx)
         .to.emit(mockTarget, 'CallReceived')
-        .withArgs(await forwarder.getAddress(), callData, testValue)
+        .withArgs(await originCurator.getAddress(), callData, testValue)
     })
 
     it('should handle failed forwarded calls', async function () {
       // Forward a call to failCall
       await expect(
-        forwarder
+        originCurator
           .connect(owner1)
           .forward(
             await mockTarget.getAddress(),
@@ -109,37 +109,37 @@ describe('Forwarder', function () {
             testValue,
             { value: testValue }
           )
-      ).to.be.revertedWithCustomError(forwarder, 'ForwardFailed')
+      ).to.be.revertedWithCustomError(originCurator, 'ForwardFailed')
     })
 
     it('should revert if caller is not a SAFE owner', async function () {
       await expect(
-        forwarder
+        originCurator
           .connect(attacker)
           .forward(await mockTarget.getAddress(), testData, testValue, {
             value: testValue,
           })
-      ).to.be.revertedWithCustomError(forwarder, 'NotMultisigOwner')
+      ).to.be.revertedWithCustomError(originCurator, 'NotMultisigOwner')
     })
 
     it('should revert if target address is zero', async function () {
       await expect(
-        forwarder
+        originCurator
           .connect(owner1)
           .forward(ethers.ZeroAddress, testData, testValue, {
             value: testValue,
           })
-      ).to.be.revertedWithCustomError(forwarder, 'InvalidTargetAddress')
+      ).to.be.revertedWithCustomError(originCurator, 'InvalidTargetAddress')
     })
 
     it('should revert if insufficient value sent', async function () {
       await expect(
-        forwarder
+        originCurator
           .connect(owner1)
           .forward(await mockTarget.getAddress(), testData, testValue, {
             value: testValue - 1n,
           })
-      ).to.be.revertedWithCustomError(forwarder, 'InsufficientValueSent')
+      ).to.be.revertedWithCustomError(originCurator, 'InsufficientValueSent')
     })
 
     it('should refund excess value', async function () {
@@ -148,7 +148,7 @@ describe('Forwarder', function () {
         owner1.address
       )
 
-      const tx = await forwarder
+      const tx = await originCurator
         .connect(owner1)
         .forward(await mockTarget.getAddress(), testData, testValue, {
           value: testValue + excessValue,
@@ -166,14 +166,14 @@ describe('Forwarder', function () {
 
     it('should emit Forwarded event when called', async function () {
       // Test event emission for owner1
-      const tx1 = await forwarder
+      const tx1 = await originCurator
         .connect(owner1)
         .forward(await mockTarget.getAddress(), testData, testValue, {
           value: testValue,
         })
 
       await expect(tx1)
-        .to.emit(forwarder, 'Forwarded')
+        .to.emit(originCurator, 'Forwarded')
         .withArgs(await mockTarget.getAddress(), testData, testValue)
     })
   })
@@ -183,7 +183,7 @@ describe('Forwarder', function () {
       const value = ethers.parseEther('1')
       await expect(
         owner1.sendTransaction({
-          to: await forwarder.getAddress(),
+          to: await originCurator.getAddress(),
           value: value,
         })
       ).to.not.be.reverted

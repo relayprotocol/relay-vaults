@@ -6,11 +6,11 @@ interface ISafe {
 }
 
 /**
- * @title Forwarder
+ * @title Origin Curator for Relay Vaults 
  * @dev A contract that forwards calls to another address if the caller is approved.
- * @notice The whitelist is maintained using a SAFE multisig.
+ * @notice Used as curator for Relay Vaults. The whitelist is maintained using a SAFE multisig.
  */
-contract Forwarder {
+contract OriginCurator {
     // Errors 
     error NotMultisigOwner(address);
     error InvalidTargetAddress();

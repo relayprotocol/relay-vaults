@@ -11,6 +11,7 @@ import {ITokenSwap} from "./interfaces/ITokenSwap.sol";
 import {TypeCasts} from "./utils/TypeCasts.sol";
 import {HyperlaneMessage} from "./Types.sol";
 import {IBridgeProxy} from "./interfaces/IBridgeProxy.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 struct OriginSettings {
   uint32 chainId;

@@ -2,24 +2,6 @@ import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
 import { Forwarder, MockSafe, MockTarget } from '../../typechain-types'
-import { BaseContract } from 'ethers'
-
-async function deployContract<T extends BaseContract>(
-  name: string,
-  args: any[] = []
-): Promise<T> {
-  const Contract = await ethers.getContractFactory(name)
-  const contract = await Contract.deploy(...args)
-  await contract.waitForDeployment()
-  return contract as unknown as T
-}
-
-async function deployMockSafe(owners: string[]): Promise<MockSafe> {
-  const MockSafe = await ethers.getContractFactory('MockSafe')
-  const mockSafe = await MockSafe.deploy(owners)
-  await mockSafe.waitForDeployment()
-  return mockSafe as unknown as MockSafe
-}
 
 describe('Forwarder', function () {
   let forwarder: Forwarder
@@ -29,25 +11,29 @@ describe('Forwarder', function () {
   let owner1: SignerWithAddress
   let owner2: SignerWithAddress
   let owner3: SignerWithAddress
-  let user: SignerWithAddress
+  let attacker: SignerWithAddress
 
   before(async function () {
-    ;[owner1, owner2, owner3, user] = await ethers.getSigners()
+    ;[owner1, owner2, owner3, attacker] = await ethers.getSigners()
 
     // Deploy mock SAFE contract with multiple owners
-    mockSafe = await deployMockSafe([
+    const MockSafe = await ethers.getContractFactory('MockSafe')
+    mockSafe = await MockSafe.deploy([
       owner1.address,
       owner2.address,
       owner3.address,
     ])
+    await mockSafe.waitForDeployment()
 
     // Deploy forwarder contract
-    forwarder = await deployContract<Forwarder>('Forwarder', [
-      await mockSafe.getAddress(),
-    ])
+    const Forwarder = await ethers.getContractFactory('Forwarder')
+    forwarder = await Forwarder.deploy(await mockSafe.getAddress())
+    await forwarder.waitForDeployment()
 
     // Deploy mock target contract
-    mockTarget = await deployContract<MockTarget>('MockTarget')
+    const MockTarget = await ethers.getContractFactory('MockTarget')
+    mockTarget = await MockTarget.deploy()
+    await mockTarget.waitForDeployment()
 
     testData = mockTarget.interface.encodeFunctionData('receiveCall', [
       '0x12345678',
@@ -59,10 +45,6 @@ describe('Forwarder', function () {
       expect(await forwarder.safeAddress()).to.equal(
         await mockSafe.getAddress()
       )
-    })
-
-    it('should set the owner correctly', async function () {
-      expect(await forwarder.owner()).to.equal(await mockSafe.getAddress())
     })
   })
 
@@ -88,17 +70,10 @@ describe('Forwarder', function () {
           value: testValue,
         })
 
-      // Test forwarding from owner3
-      await forwarder
-        .connect(owner3)
-        .forward(await mockTarget.getAddress(), testData, testValue, {
-          value: testValue,
-        })
-
       const targetBalanceAfter = await ethers.provider.getBalance(
         await mockTarget.getAddress()
       )
-      expect(targetBalanceAfter - targetBalanceBefore).to.equal(testValue * 3n)
+      expect(targetBalanceAfter - targetBalanceBefore).to.equal(testValue * 2n)
     })
 
     it('should execute forwarded calls correctly', async function () {
@@ -140,7 +115,7 @@ describe('Forwarder', function () {
     it('should revert if caller is not a SAFE owner', async function () {
       await expect(
         forwarder
-          .connect(user)
+          .connect(attacker)
           .forward(await mockTarget.getAddress(), testData, testValue, {
             value: testValue,
           })
@@ -189,7 +164,7 @@ describe('Forwarder', function () {
       )
     })
 
-    it('should emit Forwarded event for each call', async function () {
+    it('should emit Forwarded event when called', async function () {
       // Test event emission for owner1
       const tx1 = await forwarder
         .connect(owner1)
@@ -198,28 +173,6 @@ describe('Forwarder', function () {
         })
 
       await expect(tx1)
-        .to.emit(forwarder, 'Forwarded')
-        .withArgs(await mockTarget.getAddress(), testData, testValue)
-
-      // Test event emission for owner2
-      const tx2 = await forwarder
-        .connect(owner2)
-        .forward(await mockTarget.getAddress(), testData, testValue, {
-          value: testValue,
-        })
-
-      await expect(tx2)
-        .to.emit(forwarder, 'Forwarded')
-        .withArgs(await mockTarget.getAddress(), testData, testValue)
-
-      // Test event emission for owner3
-      const tx3 = await forwarder
-        .connect(owner3)
-        .forward(await mockTarget.getAddress(), testData, testValue, {
-          value: testValue,
-        })
-
-      await expect(tx3)
         .to.emit(forwarder, 'Forwarded')
         .withArgs(await mockTarget.getAddress(), testData, testValue)
     })

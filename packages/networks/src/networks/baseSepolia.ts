@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const baseSepolia: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
     weth: '0x999B45BB215209e567FaF486515af43b8353e393',
@@ -36,6 +36,7 @@ export const baseSepolia: ChildNetworkConfig = {
   rpc: process.env.RPC_84532
     ? [process.env.RPC_84532]
     : ['https://base-sepolia.gateway.tenderly.co'],
-  slug: 'base-sepolia',
   stack: 'optimism',
 }
+
+export default config

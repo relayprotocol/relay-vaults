@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const arbitrumNova: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0x750ba8b76187092B0D1E87E28daaf484d1b5273b',
     weth: '0x765277EebeCA2e31912C9946eAe1021199B39C61',
@@ -27,6 +27,7 @@ export const arbitrumNova: ChildNetworkConfig = {
   rpc: process.env.RPC_42170
     ? [process.env.RPC_42170]
     : ['https://nova.arbitrum.io/rpc'],
-  slug: 'arb-nova',
   stack: 'arbitrum',
 }
+
+export default config

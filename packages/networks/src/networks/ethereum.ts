@@ -1,6 +1,6 @@
 import { L1NetworkConfig } from '@relay-protocol/types'
 
-export const ethereum: L1NetworkConfig = {
+const config: L1NetworkConfig = {
   assets: {
     udt: '0x90DE74265a416e1393A450752175AED98fe11517',
     usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -14,8 +14,9 @@ export const ethereum: L1NetworkConfig = {
   rpc: process.env.RPC_1
     ? [process.env.RPC_1]
     : ['https://mainnet.gateway.tenderly.co'],
-  slug: 'ethereum',
   uniswapV3: {
     universalRouterAddress: '0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B',
   },
 }
+
+export default config

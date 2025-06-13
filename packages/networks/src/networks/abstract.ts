@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const abstract: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1',
     weth: '0x3439153EB7AF838Ad19d56E1571FBD09333C2809',
@@ -26,7 +26,8 @@ export const abstract: ChildNetworkConfig = {
   rpc: process.env.RPC_2741
     ? [process.env.RPC_2741]
     : ['https://api.mainnet.abs.xyz'],
-  slug: 'abstract',
   stack: 'zksync',
   withdrawalDelay: 10800,
 }
+
+export default config

@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const redstone: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0xD5d59fC063e7548b6015A36fEb10B875924A19be',
     weth: '0x4200000000000000000000000000000000000006',
@@ -24,6 +24,7 @@ export const redstone: ChildNetworkConfig = {
   rpc: process.env.RPC_690
     ? [process.env.RPC_690]
     : ['https://rpc.redstonechain.com'],
-  slug: 'redstone',
   stack: 'optimism-alt',
 }
+
+export default config

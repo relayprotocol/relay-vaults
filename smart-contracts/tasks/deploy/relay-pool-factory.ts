@@ -39,6 +39,7 @@ task('deploy:pool-factory', 'Deploy a relay vault factory')
     const poolFactoryAddress = await relayPoolFactory.getAddress()
 
     console.log(`✅ relayPoolFactory deployed to: ${poolFactoryAddress}`)
+    await run('set-earliest-block')
 
     await run('deploy:verify', {
       address: await timelockTemplate.getAddress(),

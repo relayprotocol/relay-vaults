@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const swell: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
     // TODO: add USDC
@@ -24,6 +24,7 @@ export const swell: ChildNetworkConfig = {
   rpc: process.env.RPC_1923
     ? [process.env.RPC_1923]
     : ['https://swell-mainnet.alt.technology'],
-  slug: 'swell',
   stack: 'optimism-alt',
 }
+
+export default config

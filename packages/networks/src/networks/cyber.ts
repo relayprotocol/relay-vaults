@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const cyber: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0x81759AdbF5520aD94da10991DfA29Ff147d3337b',
     weth: '0x4200000000000000000000000000000000000006',
@@ -24,6 +24,7 @@ export const cyber: ChildNetworkConfig = {
   rpc: process.env.RPC_7560
     ? [process.env.RPC_7560]
     : ['https://cyber.rpc.thirdweb.com'],
-  slug: 'cyber',
   stack: 'optimism',
 }
+
+export default config

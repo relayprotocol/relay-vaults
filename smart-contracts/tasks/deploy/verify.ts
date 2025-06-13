@@ -5,10 +5,11 @@ task(
   'Verifies a contract utility, includes retries and wait times'
 ).setAction(async ({ address, constructorArguments }, { config, ethers }) => {
   const { chainId } = await ethers.provider.getNetwork()
+
+  const network = networks[chainId.toString()]
+
   const etherscanNetworkName =
-    Number(chainId) == 1
-      ? 'mainnet'
-      : networks[chainId.toString()].name.toLowerCase()
+    Number(chainId) == 1 ? 'mainnet' : network.name.toLowerCase()
 
   if (!config.etherscan.apiKey[etherscanNetworkName]) {
     console.error(

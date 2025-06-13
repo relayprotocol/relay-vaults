@@ -18,7 +18,7 @@
     "lint": "eslint",
     "clean": "rm -rf ./dist",
     "codegen": "tsx src/generate-index.ts",
-    "build": "tsup src/index.ts --dts --format esm,cjs"
+    "build": "yarn run codegen && tsup src/index.ts --dts --format esm,cjs"
   },
   "devDependencies": {
     "@relay-protocol/eslint-config": "workspace:^",

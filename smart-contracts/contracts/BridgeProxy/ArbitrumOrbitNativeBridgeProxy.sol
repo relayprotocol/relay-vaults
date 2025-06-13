@@ -30,7 +30,10 @@ contract ArbitrumOrbitNativeBridgeProxy is BridgeProxy {
     ROUTER = IL2GatewayRouter(routerGateway);
   }
 
-  // DOCS https://docs.arbitrum.io/build-decentralized-apps/token-bridging/token-bridge-erc20
+  /// @notice Bridges tokens from L2 to L1 on the Arbitrum Orbit stack.
+  /// @param asset l2 token address
+  /// @param l1Currency l1 token address
+  /// @param amount amount of tokens to bridge
   function bridge(
     address asset, //l2 token
     address l1Currency, //l1 token

@@ -7,25 +7,42 @@ import {IHyperlaneMailbox} from "./interfaces/IHyperlaneMailbox.sol";
 import {StandardHookMetadata} from "./utils/StandardHookMetadata.sol";
 import {BridgeProxy} from "./BridgeProxy/BridgeProxy.sol";
 
+/// @notice Error for failed bridging operations
+/// @param nonce The nonce of the failed transaction
 error BridgingFailed(uint256 nonce);
+
+/// @notice Error for insufficient native value sent to cover fees or asset
+/// @param received The amount of native currency received
+/// @param expected The amount of native currency expected
 error InsufficientValue(uint256 received, uint256 expected);
+
+/// @notice Error when refunding leftover native value fails
+/// @param value The amount of native currency that failed to refund
 error FailedFeeRefund(uint256 value);
 
 interface IRelayBridge {
+  /// @notice Bridges an asset (ERC20 token or native currency) from the origin chain to a pool chain
+  /// @param amount Amount of asset units to bridge (ERC20 tokens or native currency)
+  /// @param recipient Address on the pool chain to receive the bridged asset
+  /// @param poolAsset Address of the asset on the pool chain to bridge to
+  /// @param poolGas Gas limit for the pool chain transaction
+  /// @param extraData Extra data passed to the bridge proxy
+  /// @return nonce Unique identifier for this bridge transaction
   function bridge(
     uint256 amount,
     address recipient,
-    address l1Asset,
-    uint256 l1Gas,
+    address poolAsset,
+    uint256 poolGas,
     bytes calldata extraData
   ) external payable returns (uint256 nonce);
 }
 
+/// @dev Internal struct capturing parameters for a bridge transaction
 struct BridgeTransaction {
   uint256 amount;
   address recipient;
-  address l1Asset;
-  uint256 l1Gas;
+  address poolAsset;
+  uint256 poolGas;
   bytes extraData;
   uint256 nonce;
   bytes txParams;
@@ -33,47 +50,72 @@ struct BridgeTransaction {
   bytes32 poolId;
 }
 
+/// @notice RelayBridge contract enabling cross-chain bridging via Hyperlane
+/// @dev Bridges assets from an origin chain to a configured pool chain
 contract RelayBridge is IRelayBridge {
+  /// @notice Counter for assigning unique nonces to bridge transactions
   uint256 public transferNonce;
+
+  /// @notice Asset address on the origin chain being bridged (address(0) for native currency)
   address public immutable ASSET;
+
+  /// @notice BridgeProxy contract handling origin-chain transfer logic
   BridgeProxy public immutable BRIDGE_PROXY;
+
+  /// @notice Hyperlane Mailbox contract for cross-chain messaging
   address public immutable HYPERLANE_MAILBOX;
 
+  /// @notice Emitted when a bridge transaction is initiated on the origin chain
+  /// @param nonce Nonce of the transaction
+  /// @param sender Address on the origin chain that initiated the bridge
+  /// @param recipient Address on the pool chain to receive assets
+  /// @param ASSET Asset address on the origin chain (address(0) for native currency)
+  /// @param poolAsset Asset address on the pool chain (address(0) for native currency)
+  /// @param amount Amount of asset units bridged
+  /// @param BRIDGE_PROXY BridgeProxy used
   event BridgeInitiated(
     uint256 indexed nonce,
     address indexed sender,
     address recipient,
     address ASSET,
-    address l1Asset,
+    address poolAsset,
     uint256 amount,
     BridgeProxy BRIDGE_PROXY
   );
 
+  /// @notice Emitted after a bridge transaction is executed on the pool chain
+  /// @param nonce Nonce of the executed transaction
   event BridgeExecuted(uint256 indexed nonce);
 
+  /// @notice Emitted if a bridge transaction is cancelled prior to execution
+  /// @param nonce Nonce of the cancelled transaction
   event BridgeCancelled(uint256 indexed nonce);
 
+  /// @param asset Asset address on the origin chain to bridge (0 for native currency)
+  /// @param bridgeProxy BridgeProxy contract for origin-chain transfers
+  /// @param hyperlaneMailbox Hyperlane Mailbox address for messaging
   constructor(
-    address _asset,
-    BridgeProxy _bridgeProxy,
-    address _hyperlaneMailbox
+    address asset,
+    BridgeProxy bridgeProxy,
+    address hyperlaneMailbox
   ) {
-    ASSET = _asset;
-    BRIDGE_PROXY = _bridgeProxy;
-    HYPERLANE_MAILBOX = _hyperlaneMailbox;
+    ASSET = asset;
+    BRIDGE_PROXY = bridgeProxy;
+    HYPERLANE_MAILBOX = hyperlaneMailbox;
   }
 
-  /// @notice Calculates the Hyperlane fee required for bridging
-  /// @param amount Amount of tokens to bridge
-  /// @param recipient Address that will receive the bridged tokens
-  /// @return fee The required fee in native currency
+  /// @notice Calculates the fee required in native currency to dispatch a cross-chain message
+  /// @param amount Amount of asset units to bridge
+  /// @param recipient Address on the pool chain that will receive the bridged asset
+  /// @param poolGas Gas limit for the pool chain transaction
+  /// @return fee Required fee in native currency for dispatch
   function getFee(
     uint256 amount,
     address recipient,
-    uint256 l1Gas
+    uint256 poolGas
   ) external view returns (uint256 fee) {
     bytes memory txParams = abi.encode(
-      transferNonce, // use the current transferNonce
+      transferNonce,
       recipient,
       amount,
       block.timestamp
@@ -81,35 +123,28 @@ contract RelayBridge is IRelayBridge {
     uint32 poolChainId = uint32(BRIDGE_PROXY.RELAY_POOL_CHAIN_ID());
     bytes32 poolId = bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())));
 
-    // Get the fee for the cross-chain message
-    return
-      IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
-        poolChainId,
-        poolId,
-        txParams,
-        StandardHookMetadata.overrideGasLimit(l1Gas)
-      );
+    fee = IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
+      poolChainId,
+      poolId,
+      txParams,
+      StandardHookMetadata.overrideGasLimit(poolGas)
+    );
   }
 
-  /// @notice Bridges tokens from the L2 to the L1
-  /// @param amount Amount of tokens to bridge
-  /// @param recipient Address that will receive the bridged tokens
-  /// @param l1Asset Address of the L1 asset to bridge
-  /// @param l1Gas Gas limit for the L1 transaction
-  /// @param extraData Extra data to pass to the bridge proxy
+  /// @inheritdoc IRelayBridge
   function bridge(
     uint256 amount,
     address recipient,
-    address l1Asset,
-    uint256 l1Gas,
+    address poolAsset,
+    uint256 poolGas,
     bytes calldata extraData
   ) external payable returns (uint256 nonce) {
     nonce = transferNonce++;
     BridgeTransaction memory transaction = BridgeTransaction({
       amount: amount,
       recipient: recipient,
-      l1Asset: l1Asset,
-      l1Gas: l1Gas,
+      poolAsset: poolAsset,
+      poolGas: poolGas,
       extraData: extraData,
       nonce: nonce,
       txParams: abi.encode(nonce, recipient, amount, block.timestamp),
@@ -117,16 +152,14 @@ contract RelayBridge is IRelayBridge {
       poolId: bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())))
     });
 
-    // Get the fee for the cross-chain message
     uint256 hyperlaneFee = IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
       transaction.poolChainId,
       transaction.poolId,
       transaction.txParams,
-      StandardHookMetadata.overrideGasLimit(l1Gas)
+      StandardHookMetadata.overrideGasLimit(poolGas)
     );
 
     if (ASSET != address(0)) {
-      // Take the ERC20 tokens from the sender
       SafeERC20.safeTransferFrom(
         IERC20(ASSET),
         msg.sender,
@@ -142,12 +175,11 @@ contract RelayBridge is IRelayBridge {
       }
     }
 
-    // Issue transfer on the bridge
     (bool success, ) = address(BRIDGE_PROXY).delegatecall(
       abi.encodeWithSignature(
         "bridge(address,address,uint256,bytes,bytes)",
         ASSET,
-        l1Asset,
+        poolAsset,
         amount,
         transaction.txParams,
         extraData
@@ -155,12 +187,11 @@ contract RelayBridge is IRelayBridge {
     );
     if (!success) revert BridgingFailed(nonce);
 
-    // Send the Hyperlane message, with the right fee
     IHyperlaneMailbox(HYPERLANE_MAILBOX).dispatch{value: hyperlaneFee}(
       transaction.poolChainId,
       transaction.poolId,
       transaction.txParams,
-      StandardHookMetadata.overrideGasLimit(l1Gas)
+      StandardHookMetadata.overrideGasLimit(poolGas)
     );
 
     emit BridgeInitiated(
@@ -168,24 +199,18 @@ contract RelayBridge is IRelayBridge {
       msg.sender,
       recipient,
       ASSET,
-      l1Asset,
+      poolAsset,
       amount,
       BRIDGE_PROXY
     );
 
-    // refund extra value to msg.sender
-    uint leftOverValue = 0;
-    if (ASSET != address(0)) {
-      leftOverValue = msg.value - hyperlaneFee;
-    } else {
-      leftOverValue = msg.value - hyperlaneFee - amount;
-    }
+    uint256 leftOverValue = ASSET != address(0)
+      ? msg.value - hyperlaneFee
+      : msg.value - hyperlaneFee - amount;
 
     if (leftOverValue > 0) {
       (bool sent, ) = msg.sender.call{value: leftOverValue}(new bytes(0));
-      if (!sent) {
-        revert FailedFeeRefund(leftOverValue);
-      }
+      if (!sent) revert FailedFeeRefund(leftOverValue);
     }
   }
 }

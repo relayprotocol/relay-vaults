@@ -4,6 +4,7 @@ import '@nomicfoundation/hardhat-ignition-ethers'
 import '@matterlabs/hardhat-zksync'
 import { networks as nets } from '@relay-protocol/networks'
 import registry from '@hyperlane-xyz/registry'
+import 'solidity-docgen'
 
 // Interracting
 import './tasks/pool'
@@ -148,10 +149,10 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+
   sourcify: {
     enabled: false,
   },
-
   zksolc: {
     settings: {
       contractsToCompile: [

@@ -20,6 +20,10 @@ error InsufficientValue(uint256 received, uint256 expected);
 /// @param value The amount of native currency that failed to refund
 error FailedFeeRefund(uint256 value);
 
+/// @title IRelayBridge
+/// @author Relay Protocol
+/// @notice Interface for the RelayBridge contract
+/// @dev Defines the bridge function for cross-chain asset transfers
 interface IRelayBridge {
   /// @notice Bridges an asset (ERC20 token or native currency) from the origin chain to a pool chain
   /// @param amount Amount of asset units to bridge (ERC20 tokens or native currency)
@@ -50,19 +54,25 @@ struct BridgeTransaction {
   bytes32 poolId;
 }
 
+/// @title RelayBridge
+/// @author Relay Protocol
 /// @notice RelayBridge contract enabling cross-chain bridging via Hyperlane
 /// @dev Bridges assets from an origin chain to a configured pool chain
 contract RelayBridge is IRelayBridge {
   /// @notice Counter for assigning unique nonces to bridge transactions
+  /// @dev Incremented with each bridge transaction to ensure uniqueness
   uint256 public transferNonce;
 
   /// @notice Asset address on the origin chain being bridged (address(0) for native currency)
+  /// @dev Immutable to ensure the bridge always handles the same asset
   address public immutable ASSET;
 
   /// @notice BridgeProxy contract handling origin-chain transfer logic
+  /// @dev Uses delegatecall to execute custom bridge logic
   BridgeProxy public immutable BRIDGE_PROXY;
 
   /// @notice Hyperlane Mailbox contract for cross-chain messaging
+  /// @dev Used to dispatch messages to the pool chain
   address public immutable HYPERLANE_MAILBOX;
 
   /// @notice Emitted when a bridge transaction is initiated on the origin chain
@@ -84,13 +94,17 @@ contract RelayBridge is IRelayBridge {
   );
 
   /// @notice Emitted after a bridge transaction is executed on the pool chain
+  /// @dev This event would be emitted by the pool chain contract
   /// @param nonce Nonce of the executed transaction
   event BridgeExecuted(uint256 indexed nonce);
 
   /// @notice Emitted if a bridge transaction is cancelled prior to execution
+  /// @dev This event would be emitted if a bridge is cancelled
   /// @param nonce Nonce of the cancelled transaction
   event BridgeCancelled(uint256 indexed nonce);
 
+  /// @notice Initializes the RelayBridge with asset and infrastructure contracts
+  /// @dev All parameters are immutable after deployment
   /// @param asset Asset address on the origin chain to bridge (0 for native currency)
   /// @param bridgeProxy BridgeProxy contract for origin-chain transfers
   /// @param hyperlaneMailbox Hyperlane Mailbox address for messaging
@@ -105,6 +119,7 @@ contract RelayBridge is IRelayBridge {
   }
 
   /// @notice Calculates the fee required in native currency to dispatch a cross-chain message
+  /// @dev Uses Hyperlane's quoteDispatch to estimate the cross-chain messaging fee
   /// @param amount Amount of asset units to bridge
   /// @param recipient Address on the pool chain that will receive the bridged asset
   /// @param poolGas Gas limit for the pool chain transaction
@@ -132,6 +147,12 @@ contract RelayBridge is IRelayBridge {
   }
 
   /// @inheritdoc IRelayBridge
+  /// @dev Executes a cross-chain bridge transaction with the following steps:
+  ///      1. Validates sufficient payment for fees (and asset amount if native)
+  ///      2. Transfers the asset from sender to this contract (if ERC20)
+  ///      3. Executes bridge logic via delegatecall to BRIDGE_PROXY
+  ///      4. Dispatches cross-chain message via Hyperlane
+  ///      5. Refunds any excess native currency to sender
   function bridge(
     uint256 amount,
     address recipient,
@@ -139,7 +160,10 @@ contract RelayBridge is IRelayBridge {
     uint256 poolGas,
     bytes calldata extraData
   ) external payable returns (uint256 nonce) {
+    // Assign unique nonce and increment counter
     nonce = transferNonce++;
+
+    // Package all transaction parameters
     BridgeTransaction memory transaction = BridgeTransaction({
       amount: amount,
       recipient: recipient,
@@ -152,6 +176,7 @@ contract RelayBridge is IRelayBridge {
       poolId: bytes32(uint256(uint160(BRIDGE_PROXY.RELAY_POOL())))
     });
 
+    // Calculate Hyperlane messaging fee
     uint256 hyperlaneFee = IHyperlaneMailbox(HYPERLANE_MAILBOX).quoteDispatch(
       transaction.poolChainId,
       transaction.poolId,
@@ -159,7 +184,9 @@ contract RelayBridge is IRelayBridge {
       StandardHookMetadata.overrideGasLimit(poolGas)
     );
 
+    // Handle asset transfer and fee validation
     if (ASSET != address(0)) {
+      // ERC20 token: transfer from sender and validate fee payment
       SafeERC20.safeTransferFrom(
         IERC20(ASSET),
         msg.sender,
@@ -170,11 +197,13 @@ contract RelayBridge is IRelayBridge {
         revert InsufficientValue(msg.value, hyperlaneFee);
       }
     } else {
+      // Native currency: validate payment covers both amount and fee
       if (msg.value < hyperlaneFee + amount) {
         revert InsufficientValue(msg.value, hyperlaneFee + amount);
       }
     }
 
+    // Execute bridge logic via delegatecall to maintain context
     (bool success, ) = address(BRIDGE_PROXY).delegatecall(
       abi.encodeWithSignature(
         "bridge(address,address,uint256,bytes,bytes)",
@@ -187,6 +216,7 @@ contract RelayBridge is IRelayBridge {
     );
     if (!success) revert BridgingFailed(nonce);
 
+    // Dispatch cross-chain message via Hyperlane
     IHyperlaneMailbox(HYPERLANE_MAILBOX).dispatch{value: hyperlaneFee}(
       transaction.poolChainId,
       transaction.poolId,
@@ -204,6 +234,7 @@ contract RelayBridge is IRelayBridge {
       BRIDGE_PROXY
     );
 
+    // Calculate and refund excess native currency
     uint256 leftOverValue = ASSET != address(0)
       ? msg.value - hyperlaneFee
       : msg.value - hyperlaneFee - amount;

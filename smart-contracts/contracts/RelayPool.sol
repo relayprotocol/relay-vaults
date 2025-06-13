@@ -268,29 +268,29 @@ contract RelayPool is ERC4626, Ownable {
   /// @param asset The underlying asset for this vault
   /// @param name The name of the vault token
   /// @param symbol The symbol of the vault token
-  /// @param _yieldPool The initial yield pool for depositing assets
-  /// @param _weth The WETH contract address (for native currency pools)
-  /// @param _curator The address that will own the pool after deployment
+  /// @param baseYieldPool The initial yield pool for depositing assets
+  /// @param weth The WETH contract address (for native currency pools)
+  /// @param curator The address that will own the pool after deployment
   constructor(
     address hyperlaneMailbox,
     ERC20 asset,
     string memory name,
     string memory symbol,
-    address _yieldPool,
-    address _weth,
-    address _curator
+    address baseYieldPool,
+    address weth,
+    address curator
   ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
 
     // set the yieldPool
-    yieldPool = _yieldPool;
+    yieldPool = baseYieldPool;
 
     // set weth
-    WETH = _weth;
+    WETH = weth;
 
     // Change the owner to the curator
-    transferOwnership(_curator);
+    transferOwnership(curator);
   }
 
   /// @notice Updates the streaming period for fee accrual
@@ -694,10 +694,10 @@ contract RelayPool is ERC4626, Ownable {
 
   /// @notice Sets the token swap contract address
   /// @dev Used for swapping non-asset tokens received by the pool
-  /// @param _tokenSwapAddress The new token swap contract address
-  function setTokenSwap(address _tokenSwapAddress) external onlyOwner {
+  /// @param newTokenSwapAddress The new token swap contract address
+  function setTokenSwap(address newTokenSwapAddress) external onlyOwner {
     address prevTokenSwapAddress = tokenSwapAddress;
-    tokenSwapAddress = _tokenSwapAddress;
+    tokenSwapAddress = newTokenSwapAddress;
     emit TokenSwapChanged(prevTokenSwapAddress, tokenSwapAddress);
   }
 

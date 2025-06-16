@@ -110,6 +110,7 @@ type relayPool {
   createdAt: BigInt!
   createdAtBlock: BigInt!
   curator: timelock
+  decimals: Int!
   name: String!
   outstandingDebt: BigInt!
   symbol: String!
@@ -693,6 +694,14 @@ input relayPoolFilter {
   curator_ends_with: String
   curator_not_starts_with: String
   curator_not_ends_with: String
+  decimals: Int
+  decimals_not: Int
+  decimals_in: [Int]
+  decimals_not_in: [Int]
+  decimals_gt: Int
+  decimals_lt: Int
+  decimals_gte: Int
+  decimals_lte: Int
   name: String
   name_not: String
   name_in: [String]

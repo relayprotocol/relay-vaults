@@ -4884,6 +4884,7 @@ __metadata:
     prettier-plugin-solidity: "npm:2.0.0"
     solhint: "npm:5.1.0"
     solidity-coverage: "npm:0.8.16"
+    solidity-docgen: "npm:0.6.0-beta.36"
     solmate: "npm:6.8.0"
     ts-node: "npm:10.9.2"
     typechain: "npm:8.3.2"
@@ -10540,7 +10541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"handlebars@npm:^4.0.1":
+"handlebars@npm:^4.0.1, handlebars@npm:^4.7.7":
   version: 4.7.8
   resolution: "handlebars@npm:4.7.8"
   dependencies:
@@ -14721,6 +14722,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"solidity-ast@npm:^0.4.38":
+  version: 0.4.60
+  resolution: "solidity-ast@npm:0.4.60"
+  checksum: 10/1811d4f5c3b767875819127a9eed125700840124d4d958a09f77cca33f224b4d075567344e366d12569fc6a1974798a30359fb817abf7cbaf320fbd7891e95bd
+  languageName: node
+  linkType: hard
+
 "solidity-ast@npm:^0.4.51, solidity-ast@npm:^0.4.56":
   version: 0.4.59
   resolution: "solidity-ast@npm:0.4.59"
@@ -14756,6 +14764,18 @@ __metadata:
   bin:
     solidity-coverage: plugins/bin.js
   checksum: 10/e63355e9ddfa9e998df1e63c2d790ec17896786554cb84f9d2cd6340dd471dd082806a169f42d64f80b52f4d695bdb8a01af8e675bd5cfa1683062df77d1e1fa
+  languageName: node
+  linkType: hard
+
+"solidity-docgen@npm:0.6.0-beta.36":
+  version: 0.6.0-beta.36
+  resolution: "solidity-docgen@npm:0.6.0-beta.36"
+  dependencies:
+    handlebars: "npm:^4.7.7"
+    solidity-ast: "npm:^0.4.38"
+  peerDependencies:
+    hardhat: ^2.8.0
+  checksum: 10/7c055101f5801d9eb812c0275551de59f0bdd0ec886ab23af1cd25dc33322947205f298a78b9389ba155aee9338718b5d93933fb303c00144b556178808d6656
   languageName: node
   linkType: hard
 

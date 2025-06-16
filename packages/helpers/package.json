@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@bgd-labs/aave-address-book": "4.22.2",
+    "@bgd-labs/aave-address-book": "4.22.3",
     "ethers": "6.14.3",
     "zksync-ethers": "6.17.0"
   },

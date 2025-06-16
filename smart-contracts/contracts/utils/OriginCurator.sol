@@ -5,11 +5,9 @@ interface ISafe {
   function isOwner(address) external view returns (bool);
 }
 
-/**
- * @title Origin Curator for Relay Vaults 
- * @dev A contract that forwards calls to another address if the caller is approved.
- * @notice Used as curator for Relay Vaults. The whitelist is maintained using a SAFE multisig.
- */
+/// @title Origin Curator for Relay Vaults 
+/// @notice Used as curator for Relay Vaults. The whitelist is maintained using a SAFE multisig.
+/// @dev A contract that forwards calls to another address if the caller is approved.
 contract OriginCurator {
     // Errors 
     error NotMultisigOwner(address);
@@ -18,7 +16,7 @@ contract OriginCurator {
     error ForwardFailed();
     error RefundFailed();
     
-    // SAFE address that contains the whitelist of allowed callers
+    /// @notice SAFE address that contains the whitelist of allowed callers
     address public safeAddress;
     
     // Events
@@ -28,19 +26,17 @@ contract OriginCurator {
       if (!ISafe(safeAddress).isOwner(msg.sender)) revert NotMultisigOwner(msg.sender);
       _;
     }
-    /**
-     * @param _safeAddress The address of the SAFE contract
-     */    
+
+    /// @notice Creates a new Origin Curator contract
+    /// @param _safeAddress The address of the SAFE contract
     constructor(address _safeAddress) {
       safeAddress = _safeAddress;
     }
 
-    /**
-     * Forwards a call to another address with optional ETH value
-     * @param to The address to forward the call to
-     * @param data The calldata to forward
-     * @param value The amount of ETH to forward
-     */
+    /// @notice Forwards a call to another address with optional ETH value
+    /// @param to The address to forward the call to
+    /// @param data The calldata to forward
+    /// @param value The amount of ETH to forward
     function forward(address to, bytes calldata data, uint256 value) onlyMultisigOwner external payable  {
         if (to == address(0)) revert InvalidTargetAddress();
         if (msg.value < value) revert InsufficientValueSent();
@@ -57,8 +53,6 @@ contract OriginCurator {
         emit Forwarded(to, data, value);
     }
 
-    /**
-     * @dev Allows the contract to receive ETH
-     */
+    /// @notice Allows the contract to receive ETH
     receive() external payable {}
 } 

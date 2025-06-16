@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const base: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     udt: '0xD7eA82D19f1f59FF1aE95F1945Ee6E6d86A25B96',
     usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
@@ -37,6 +37,7 @@ export const base: ChildNetworkConfig = {
   rpc: process.env.RPC_8453
     ? [process.env.RPC_8453]
     : ['https://gateway.tenderly.co/public/base'],
-  slug: 'base',
   stack: 'optimism',
 }
+
+export default config

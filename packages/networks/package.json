@@ -17,15 +17,17 @@
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
     "clean": "rm -rf ./dist",
-    "build": "tsup src/index.ts --dts --format esm,cjs"
+    "codegen": "tsx src/generate-index.ts",
+    "build": "yarn run codegen && tsup src/index.ts --dts --format esm,cjs"
   },
   "devDependencies": {
     "@relay-protocol/eslint-config": "workspace:^",
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
     "@relay-protocol/types": "workspace:./packages/types",
-    "eslint": "9.25.1",
+    "eslint": "9.28.0",
     "fs-extra": "11.3.0",
-    "tsup": "8.4.0",
+    "tsup": "8.5.0",
+    "tsx": "4.19.4",
     "typescript": "5.8.3"
   },
   "files": [

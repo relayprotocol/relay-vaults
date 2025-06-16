@@ -1,7 +1,7 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // https://docs.zora.co/zora-network/network#zora-network-mainnet
-export const zora: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
   },
@@ -25,6 +25,7 @@ export const zora: ChildNetworkConfig = {
   rpc: process.env.RPC_7777777
     ? [process.env.RPC_7777777]
     : ['https://rpc.zora.energy'],
-  slug: 'zora',
   stack: 'optimism',
 }
+
+export default config

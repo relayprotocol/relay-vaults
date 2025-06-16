@@ -2,6 +2,8 @@
 
 This package contains network configurations for various L2 chains supported by the Relay Protocol, including chain IDs, RPC endpoints, bridge contracts, and supported assets.
 
+To build, make sure you run both `yarn run codegen` and `yarn run build`.
+
 ### chain IDs/ RPC endpoints
 
 RPC endpoints can be found at https://chainlist.org/ or https://chainid.network

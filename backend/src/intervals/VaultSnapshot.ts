@@ -13,11 +13,11 @@
 import { eq } from 'ponder'
 import { ponder } from 'ponder:registry'
 import { vaultSnapshot, relayPool } from 'ponder:schema'
-import { erc4626Abi, erc20Abi } from 'viem'
+import { erc4626Abi, erc20Abi, Address } from 'viem'
 
 ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   // Helper function to fetch share price using a contract's address
-  async function fetchSharePrice(contractAddress: string) {
+  async function fetchSharePrice(contractAddress: Address) {
     // Retrieve the contract's decimals
     const decimals = await context.client.readContract({
       abi: erc20Abi,
@@ -43,7 +43,8 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   const vaults = await context.db.sql
     .select()
     .from(relayPool)
-    .where(eq(relayPool.chainId, context.network.chainId))
+    // @ts-expect-error - context.chain.id is not typed properly in Ponder
+    .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
   for (const vault of vaults) {

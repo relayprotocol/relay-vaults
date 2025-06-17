@@ -36,7 +36,7 @@ export default async function ({
   // Update the relay pool record with the new outstanding debt.
   await context.db
     .update(relayPool, {
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: poolAddress,
     })
     .set({
@@ -45,7 +45,7 @@ export default async function ({
 
   await context.db
     .update(poolOrigin, {
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       originBridge: origin.bridge,
       originChainId: origin.chainId,
       pool: poolAddress,

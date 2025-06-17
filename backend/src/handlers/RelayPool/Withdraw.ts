@@ -15,7 +15,7 @@ export default async function ({
 
   // Get the relay pool to find its yield pool
   const pool = await context.db.find(relayPool, {
-    chainId: context.network.chainId,
+    chainId: context.chain.id,
     contractAddress: event.log.address,
   })
 
@@ -42,7 +42,7 @@ export default async function ({
     // Update relay pool
     context.db
       .update(relayPool, {
-        chainId: context.network.chainId,
+        chainId: context.chain.id,
         contractAddress: event.log.address,
       })
       .set({
@@ -56,7 +56,7 @@ export default async function ({
       .values({
         assets,
         blockNumber,
-        chainId: context.network.chainId,
+        chainId: context.chain.id,
         id: `${transactionHash}-${event.log.logIndex}`,
         owner,
         receiver,
@@ -72,7 +72,7 @@ export default async function ({
 
   // Get user balance
   const user = await context.db.find(userBalance, {
-    chainId: context.network.chainId,
+    chainId: context.chain.id,
     relayPool: event.log.address,
     wallet: owner,
   })
@@ -80,7 +80,7 @@ export default async function ({
   // Update user balance
   await context.db
     .update(userBalance, {
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       relayPool: event.log.address,
       wallet: owner,
     })

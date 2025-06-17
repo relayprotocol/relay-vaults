@@ -16,7 +16,7 @@ export default async function ({
     .insert(poolOrigin)
     .values({
       bridgeFee: origin.bridgeFee,
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       coolDown: origin.coolDown,
       curator: origin.curator,
       currentOutstandingDebt: BigInt(0),

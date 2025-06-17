@@ -14,7 +14,7 @@ export default async function ({
     .insert(relayBridge)
     .values({
       asset: asset as `0x${string}`,
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: bridge as `0x${string}`,
       createdAt: event.block.timestamp,
       createdAtBlock: event.block.number,

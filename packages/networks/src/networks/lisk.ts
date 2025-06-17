@@ -6,12 +6,13 @@ const config: ChildNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    optimism: {
+    optimismAlt: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
         portalProxy: '0x26dB93F8b8b4f7016240af62F7730979d353f9A7',
+        outputOracle: '0x113cB99283AF242Da0A0C54347667edF531Aa7d6',
       },
     },
   },
@@ -25,7 +26,7 @@ const config: ChildNetworkConfig = {
   rpc: process.env.RPC_1135
     ? [process.env.RPC_1135]
     : ['https://rpc.api.lisk.com'],
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }
 
 export default config

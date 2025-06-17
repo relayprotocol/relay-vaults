@@ -3,8 +3,8 @@ import networks from '@relay-protocol/networks'
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // Constants for status checking
-const MAX_BLOCKS_WITHOUT_PROOF = 2000 // Maximum number of blocks without a proof before considering chain down
-const MAX_TIME_WITHOUT_PROOF = 3600 * 5 // 2 hours in seconds
+const MAX_BLOCKS_WITHOUT_PROOF = 4000 // Maximum number of blocks without a proof before considering chain down
+const MAX_TIME_WITHOUT_PROOF = 3600 * 10 // hours in seconds
 
 export interface L2Status {
   isUp: boolean

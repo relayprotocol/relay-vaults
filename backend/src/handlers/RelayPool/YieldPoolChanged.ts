@@ -15,7 +15,7 @@ export default async function ({
       yieldPool: event.args.newPool as `0x${string}`,
     })
     .where(
-      eq(relayPool.chainId, context.network.chainId),
+      eq(relayPool.chainId, context.chain.id),
       eq(relayPool.contractAddress, event.log.address as `0x${string}`)
     )
 }

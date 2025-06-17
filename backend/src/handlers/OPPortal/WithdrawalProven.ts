@@ -12,7 +12,7 @@ export default async function ({
   event: Event<'OPPortal:WithdrawalProven'>
   context: Context<'OPPortal:WithdrawalProven'>
 }) {
-  const networkConfig = networks[context.network.chainId] as ChildNetworkConfig
+  const networkConfig = networks[context.chain.id] as ChildNetworkConfig
   const delay = BigInt(networkConfig.withdrawalDelay || SEVEN_DAYS)
 
   await context.db.sql

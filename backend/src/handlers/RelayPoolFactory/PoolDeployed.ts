@@ -1,15 +1,18 @@
 import { RelayPool } from '@relay-protocol/abis'
 import { Context, Event } from 'ponder:registry'
-import { relayPool, timelock, yieldPool } from 'ponder:schema'
+import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'
 
 export default async function ({
   event,
   context,
 }: {
+  // @ts-expect-error - Ponder event types are not properly exported
   event: Event<'RelayPoolFactory:PoolDeployed'>
+  // @ts-expect-error - Ponder context types are not properly exported
   context: Context<'RelayPoolFactory:PoolDeployed'>
 }) {
+  // @ts-expect-error - event.args is not properly typed
   const { pool, asset, thirdPartyPool } = event.args
 
   // Fetch the name of the third-party yield pool,
@@ -33,6 +36,7 @@ export default async function ({
     context.client.readContract({
       abi: RelayPool,
       address: pool,
+      args: [],
       functionName: 'owner',
     }),
   ])
@@ -42,7 +46,8 @@ export default async function ({
     .insert(yieldPool)
     .values({
       asset: asset as `0x${string}`,
-      chainId: context.network.chainId,
+      // @ts-expect-error - context.chain.id is not properly typed in Ponder
+      chainId: context.chain.id,
       contractAddress: thirdPartyPool as `0x${string}`,
       lastUpdated: BigInt(event.block.timestamp),
       name: yieldName,
@@ -57,7 +62,8 @@ export default async function ({
     .insert(relayPool)
     .values({
       asset: asset as `0x${string}`,
-      chainId: context.network.chainId,
+      // @ts-expect-error - context.chain.id is not properly typed in Ponder
+      chainId: context.chain.id,
       contractAddress: pool as `0x${string}`,
       createdAt: event.block.timestamp,
       createdAtBlock: event.block.number,

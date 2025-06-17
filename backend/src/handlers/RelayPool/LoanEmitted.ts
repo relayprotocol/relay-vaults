@@ -38,7 +38,7 @@ export default async function ({
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
   // Retrieve the RelayPool record based on the contract address that emitted the event
   const poolRecord = await context.db.find(relayPool, {
-    chainId: context.network.chainId,
+    chainId: context.chain.id,
     contractAddress: event.log.address,
   })
   if (!poolRecord) {
@@ -68,7 +68,7 @@ export default async function ({
 
   await context.db
     .update(relayPool, {
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: event.log.address,
     })
     .set({ totalBridgeFees: updatedTotalBridgeFees.toString() })

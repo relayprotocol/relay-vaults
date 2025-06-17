@@ -14,7 +14,7 @@ export default async function ({
   await context.db
     .insert(timelock)
     .values({
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: event.log.address as `0x${string}`,
     })
     .onConflictDoNothing()
@@ -38,7 +38,7 @@ export default async function ({
   )
 
   const t = await context.db.find(timelock, {
-    chainId: context.network.chainId,
+    chainId: context.chain.id,
     contractAddress: event.log.address,
   })
 
@@ -53,7 +53,7 @@ export default async function ({
       })
       .where(
         and(
-          eq(timelock.chainId, context.network.chainId),
+          eq(timelock.chainId, context.chain.id),
           eq(timelock.contractAddress, event.log.address)
         )
       )
@@ -65,7 +65,7 @@ export default async function ({
       })
       .where(
         and(
-          eq(timelock.chainId, context.network.chainId),
+          eq(timelock.chainId, context.chain.id),
           eq(timelock.contractAddress, event.log.address)
         )
       )
@@ -77,7 +77,7 @@ export default async function ({
       })
       .where(
         and(
-          eq(timelock.chainId, context.network.chainId),
+          eq(timelock.chainId, context.chain.id),
           eq(timelock.contractAddress, event.log.address)
         )
       )

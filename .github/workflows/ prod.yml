@@ -80,7 +80,7 @@ jobs:
     # needs: [build-docker-image]
     environment: prod
     container:
-      image: ghcr.io/unevenlabs/infrastructure/deployer:latest
+      image: ghcr.io/unevenlabs/infrastructure/deployer:1.0.0
       credentials:
         username: ${{ secrets.DEVOPSBOT_LOGIN }}
         password: ${{ secrets.DEVOPSBOT_TOKEN }}

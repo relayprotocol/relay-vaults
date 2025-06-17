@@ -14,7 +14,7 @@ ponder.on('RelayPoolSnapshot:block', async ({ event, context }) => {
   const pools = await context.db.sql
     .select()
     .from(relayPool)
-    .where(eq(relayPool.chainId, context.network.chainId))
+    .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
   // Skip execution if no pools exist yet

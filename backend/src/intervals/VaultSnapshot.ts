@@ -43,7 +43,7 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   const vaults = await context.db.sql
     .select()
     .from(relayPool)
-    .where(eq(relayPool.chainId, context.network.chainId))
+    .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
   for (const vault of vaults) {

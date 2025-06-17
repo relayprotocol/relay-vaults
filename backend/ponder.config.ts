@@ -1,6 +1,5 @@
 import { createConfig, factory } from 'ponder'
 import { ABIs } from '@relay-protocol/helpers'
-import { http } from 'viem'
 
 import {
   RelayPool,
@@ -17,41 +16,41 @@ import { L1NetworkConfig, ChildNetworkConfig } from '@relay-protocol/types'
 const deployedAddresses = getAddresses()
 
 // RPC configurations
-const usedNetworks = Object.keys(networks).reduce((usedNetworks, chainId) => {
+const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
   return {
-    ...usedNetworks,
+    ...usedChains,
     [networks[chainId].slug]: {
-      chainId: Number(chainId),
-      transport: http(networks[chainId].rpc[0]),
+      id: Number(chainId),
+      rpc: networks[chainId].rpc[0],
     },
   }
 }, {})
 
-// VaultSnapshot networks
-const vaultSnapshotNetworks = Object.keys(networks)
+// VaultSnapshot chains
+const vaultSnapshotChains = Object.keys(networks)
   .filter((chainId) => {
     return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
-  .reduce((vaultSnapshotNetworks, chainId) => {
+  .reduce((vaultSnapshotChains, chainId) => {
     const network = networks[chainId]
     return {
-      ...vaultSnapshotNetworks,
+      ...vaultSnapshotChains,
       [network.slug]: {
         startBlock: network.earliestBlock,
       },
     }
   }, {})
 
-// RelayBridge networks
-const relayBridgeNetworks = Object.keys(networks)
+// RelayBridge chains
+const relayBridgeChains = Object.keys(networks)
   .filter((chainId) => {
     return (networks[chainId] as ChildNetworkConfig).parentChainId
   })
-  .reduce((relayBridgeNetworks, chainId) => {
+  .reduce((relayBridgeChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
     if (!addresses?.RelayBridgeFactory) {
-      return relayBridgeNetworks
+      return relayBridgeChains
     }
     return {
       [network.slug]: {
@@ -64,46 +63,46 @@ const relayBridgeNetworks = Object.keys(networks)
         }),
         startBlock: network.earliestBlock,
       },
-      ...relayBridgeNetworks,
+      ...relayBridgeChains,
     }
   }, {})
 
-// RelayBridgeFactory networks
-const relayBridgeFactoryNetworks = Object.keys(networks)
+// RelayBridgeFactory
+const relayBridgeFactoryChains = Object.keys(networks)
   .filter((chainId) => {
     return (networks[chainId] as ChildNetworkConfig).parentChainId
   })
-  .reduce((relayBridgeFactoryNetworks, chainId) => {
+  .reduce((relayBridgeFactoryChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
 
     if (!addresses?.RelayBridgeFactory) {
-      return relayBridgeFactoryNetworks
+      return relayBridgeFactoryChains
     }
     return {
       [network.slug]: {
         address: addresses.RelayBridgeFactory,
         startBlock: network.earliestBlock,
       },
-      ...relayBridgeFactoryNetworks,
+      ...relayBridgeFactoryChains,
     }
   }, {})
 
-// RelayPoolFactory networks
-const relayPoolFactoryNetworks = Object.keys(networks)
+// RelayPoolFactory
+const relayPoolFactoryChains = Object.keys(networks)
   .filter((chainId) => {
     return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
-  .reduce((relayPoolFactoryNetworks, chainId) => {
+  .reduce((relayPoolFactoryChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
 
     if (!addresses?.RelayPoolFactory) {
-      return relayPoolFactoryNetworks
+      return relayPoolFactoryChains
     }
 
     return {
-      ...relayPoolFactoryNetworks,
+      ...relayPoolFactoryChains,
       [network.slug]: {
         address: addresses.RelayPoolFactory,
         startBlock: network.earliestBlock,
@@ -111,18 +110,18 @@ const relayPoolFactoryNetworks = Object.keys(networks)
     }
   }, {})
 
-const relayPoolNetworks = Object.keys(networks)
+const relayPoolChains = Object.keys(networks)
   .filter((chainId) => {
     return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
-  .reduce((relayPoolNetworks, chainId) => {
+  .reduce((relayPoolChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
     if (!addresses?.RelayPoolFactory) {
-      return relayPoolNetworks
+      return relayPoolChains
     }
     return {
-      ...relayPoolNetworks,
+      ...relayPoolChains,
       [network.slug]: {
         address: factory({
           address: addresses.RelayPoolFactory,
@@ -136,18 +135,18 @@ const relayPoolNetworks = Object.keys(networks)
     }
   }, {})
 
-const relayPoolTimelockNetworks = Object.keys(networks)
+const relayPoolTimelockChains = Object.keys(networks)
   .filter((chainId) => {
     return !(networks[chainId] as ChildNetworkConfig).parentChainId
   })
-  .reduce((relayPoolTimelockNetworks, chainId) => {
+  .reduce((relayPoolTimelockChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
     if (!addresses?.RelayPoolFactory) {
-      return relayPoolTimelockNetworks
+      return relayPoolTimelockChains
     }
     return {
-      ...relayPoolTimelockNetworks,
+      ...relayPoolTimelockChains,
       [network.slug]: {
         address: factory({
           address: addresses.RelayPoolFactory,
@@ -161,167 +160,167 @@ const relayPoolTimelockNetworks = Object.keys(networks)
     }
   }, {})
 
-interface OPPortalNetworks {
+interface OPPortalChains {
   [key: string]: {
     address: string[]
     startBlock: number
   }
 }
 
-const oPPortalNetworks: OPPortalNetworks = Object.keys(networks)
+const oPPortalChains: OPPortalChains = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
     return (networks[chainId] as ChildNetworkConfig).bridges?.optimism?.parent
       .portalProxy
   })
-  .reduce((oPPortalNetworks, chainId) => {
+  .reduce((oPPortalChains, chainId) => {
     const l2Network = networks[chainId] as ChildNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
-    if (!oPPortalNetworks[l1Network.slug]) {
-      oPPortalNetworks[l1Network.slug] = {
+    if (!oPPortalChains[l1Network.slug]) {
+      oPPortalChains[l1Network.slug] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
     if (
-      !oPPortalNetworks[l1Network.slug].address.includes(
+      !oPPortalChains[l1Network.slug].address.includes(
         l2Network.bridges.optimism!.parent.portalProxy
       )
     ) {
-      oPPortalNetworks[l1Network.slug].address.push(
+      oPPortalChains[l1Network.slug].address.push(
         l2Network.bridges.optimism!.parent.portalProxy
       )
     }
-    return oPPortalNetworks
-  }, {} as OPPortalNetworks)
+    return oPPortalChains
+  }, {} as OPPortalChains)
 
-interface OrbitOutboxNetworks {
+interface OrbitOutboxChains {
   [key: string]: {
     address: string[]
     startBlock: number
   }
 }
 
-const orbitOutboxNetworks: OrbitOutboxNetworks = Object.keys(networks)
+const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
     return (networks[chainId] as ChildNetworkConfig).bridges?.arbitrum?.parent
       .outbox
   })
-  .reduce((orbitOutboxNetworks, chainId) => {
+  .reduce((orbitOutboxChains, chainId) => {
     const l2Network = networks[chainId] as ChildNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
-    if (!orbitOutboxNetworks[l1Network.slug]) {
-      orbitOutboxNetworks[l1Network.slug] = {
+    if (!orbitOutboxChains[l1Network.slug]) {
+      orbitOutboxChains[l1Network.slug] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
     if (
-      !orbitOutboxNetworks[l1Network.slug].address.includes(
+      !orbitOutboxChains[l1Network.slug].address.includes(
         l2Network.bridges.arbitrum!.parent.outbox
       )
     ) {
-      orbitOutboxNetworks[l1Network.slug].address.push(
+      orbitOutboxChains[l1Network.slug].address.push(
         l2Network.bridges.arbitrum!.parent.outbox
       )
     }
-    return orbitOutboxNetworks
-  }, {} as OrbitOutboxNetworks)
+    return orbitOutboxChains
+  }, {} as OrbitOutboxChains)
 
-interface zkSyncNetworks {
+interface zkSyncChains {
   [key: string]: {
     address: string[]
     startBlock: number
   }
 }
 
-const zkSyncNetworks: zkSyncNetworks = Object.keys(networks)
+const zkSyncChains: zkSyncChains = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
     return (networks[chainId] as ChildNetworkConfig).bridges?.zksync?.parent
       .nativeTokenVault
   })
-  .reduce((zkSyncNetworks, chainId) => {
+  .reduce((zkSyncChains, chainId) => {
     // No sepolia while debugging!
     if (chainId === '300') {
-      return zkSyncNetworks
+      return zkSyncChains
     }
     const l2Network = networks[chainId] as ChildNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
-    if (!zkSyncNetworks[l1Network.slug]) {
-      zkSyncNetworks[l1Network.slug] = {
+    if (!zkSyncChains[l1Network.slug]) {
+      zkSyncChains[l1Network.slug] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
     if (
-      !zkSyncNetworks[l1Network.slug].address.includes(
+      !zkSyncChains[l1Network.slug].address.includes(
         l2Network.bridges.zksync!.parent.nativeTokenVault
       )
     ) {
-      zkSyncNetworks[l1Network.slug].address.push(
+      zkSyncChains[l1Network.slug].address.push(
         l2Network.bridges.zksync!.parent.nativeTokenVault
       )
     }
-    return zkSyncNetworks
-  }, {} as zkSyncNetworks)
+    return zkSyncChains
+  }, {} as zkSyncChains)
 
 export default createConfig({
   blocks: {
     RelayPoolSnapshot: {
       interval: 25,
-      network: vaultSnapshotNetworks,
+      chain: vaultSnapshotChains,
     },
     VaultSnapshot: {
       interval: 25,
-      network: vaultSnapshotNetworks,
+      chain: vaultSnapshotChains,
     },
   },
   contracts: {
     L1NativeTokenVault: {
       abi: ABIs.L1NativeTokenVault,
-      network: zkSyncNetworks,
+      chain: zkSyncChains,
     },
 
     OPPortal: {
       abi: ABIs.Portal2,
-      network: oPPortalNetworks,
+      chain: oPPortalChains,
     },
 
     OrbitOutbox: {
       abi: ABIs.Outbox,
-      network: orbitOutboxNetworks,
+      chain: orbitOutboxChains,
     },
 
     RelayBridge: {
       abi: RelayBridge as Abi,
-      network: relayBridgeNetworks,
+      chain: relayBridgeChains,
     },
 
     RelayBridgeFactory: {
       abi: RelayBridgeFactory as Abi,
-      network: relayBridgeFactoryNetworks,
+      chain: relayBridgeFactoryChains,
     },
 
     RelayPool: {
       abi: RelayPool as Abi,
-      network: relayPoolNetworks,
+      chain: relayPoolChains,
     },
 
     RelayPoolFactory: {
       abi: RelayPoolFactory as Abi,
-      network: relayPoolFactoryNetworks,
+      chain: relayPoolFactoryChains,
     },
 
     RelayPoolTimelock: {
       abi: TimelockControllerUpgradeable as Abi,
-      network: relayPoolTimelockNetworks,
+      chain: relayPoolTimelockChains,
     },
   },
   database: {
     connectionString: process.env.DATABASE_URL,
     kind: 'postgres',
   },
-  networks: usedNetworks,
+  chains: usedChains,
 })

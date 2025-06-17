@@ -86,7 +86,7 @@ const APY_INTERVAL_SEC = 7 * 24 * 3600 // 7-day window; for all-time, we set to 
 
 ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   // Helper function to fetch share price using a contract's address
-  async function fetchSharePrice(contractAddress: string) {
+  async function fetchSharePrice(contractAddress: Address) {
     // Retrieve the contract's decimals
     const decimals = await context.client.readContract({
       abi: erc20Abi,
@@ -112,7 +112,8 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   const vaults = await context.db.sql
     .select()
     .from(relayPool)
-    .where(eq(relayPool.chainId, context.network.chainId))
+    // @ts-expect-error - context.chain.id is not typed properly in Ponder
+    .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
   // Skip operation if no vaults exist yet

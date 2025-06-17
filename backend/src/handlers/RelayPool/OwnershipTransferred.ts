@@ -19,7 +19,7 @@ export default async function ({
     })
     .where(
       and(
-        eq(relayPool.chainId, context.network.chainId),
+        eq(relayPool.chainId, context.chain.id),
         eq(relayPool.contractAddress, event.log.address)
       )
     )
@@ -28,7 +28,7 @@ export default async function ({
   await context.db
     .insert(timelock)
     .values({
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: newOwner as `0x${string}`,
     })
     .onConflictDoNothing()

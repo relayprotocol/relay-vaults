@@ -11,7 +11,7 @@ export default async function ({
   const poolAddress = event.log.address
 
   await context.db.delete(poolOrigin, {
-    chainId: context.network.chainId,
+    chainId: context.chain.id,
     originBridge: event.args.bridge as `0x${string}`,
     originChainId: event.args.chainId,
     pool: poolAddress as `0x${string}`,

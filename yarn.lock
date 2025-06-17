@@ -4723,7 +4723,7 @@ __metadata:
     husky: "npm:9.1.7"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:16.1.0"
-    ponder: "npm:0.11.12"
+    ponder: "npm:0.11.17"
     prettier: "npm:3.5.3"
     typescript: "npm:5.8.3"
     viem: "npm:2.31.0"
@@ -13279,9 +13279,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ponder@npm:0.11.12":
-  version: 0.11.12
-  resolution: "ponder@npm:0.11.12"
+"ponder@npm:0.11.17":
+  version: 0.11.17
+  resolution: "ponder@npm:0.11.17"
   dependencies:
     "@babel/code-frame": "npm:^7.23.4"
     "@commander-js/extra-typings": "npm:^12.0.1"
@@ -13327,7 +13327,7 @@ __metadata:
       optional: true
   bin:
     ponder: dist/esm/bin/ponder.js
-  checksum: 10/986b414c6a0aead57966bfa30e6d03b605838dc5623ae30adc8f74d5c67a77cc50ede0f02f455c02f47a88b43242f024cc377977aa36445bf15e2652b4b20d79
+  checksum: 10/4b258c8388c7ab888ac829809d01648271e7700c1ea5a066ab4d814735dd361ac63bde925760f402da871835d6014481561660ac069ee1acf054697167c360f8
   languageName: node
   linkType: hard
 

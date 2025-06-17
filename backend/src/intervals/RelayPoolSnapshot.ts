@@ -14,6 +14,7 @@ ponder.on('RelayPoolSnapshot:block', async ({ event, context }) => {
   const pools = await context.db.sql
     .select()
     .from(relayPool)
+    // @ts-expect-error - context.chain.id is not typed properly in Ponder
     .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
@@ -51,8 +52,8 @@ ponder.on('RelayPoolSnapshot:block', async ({ event, context }) => {
         })
         .set({
           decimals: Number(decimals),
-          totalAssets,
-          totalShares,
+          totalAssets: BigInt(totalAssets as string),
+          totalShares: BigInt(totalShares as string),
         })
     } catch (error) {
       console.error(

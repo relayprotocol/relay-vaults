@@ -4,8 +4,7 @@ import { L2Status } from './types'
 import networks from '@relay-protocol/networks'
 
 export async function checkZkSyncStatus(
-  chain: ChildNetworkConfig,
-  maxBlocksWithoutProof = 2000
+  chain: ChildNetworkConfig
 ): Promise<L2Status> {
   // diamond Proxy is main zkSync contract on L1
   const diamondProxyAddress = chain.bridges?.zksync?.parent?.diamondProxy
@@ -23,7 +22,10 @@ export async function checkZkSyncStatus(
   )
   // look back in blocks for events
   const filter = contract.filters.BlockExecution
-  const events = await contract.queryFilter(filter, -maxBlocksWithoutProof)
+  const events = await contract.queryFilter(
+    filter,
+    -chain.bridges.zksync?.parent.maxBlocksWithoutProof!
+  )
 
   if (events.length === 0) {
     return {
@@ -50,10 +52,12 @@ export async function checkZkSyncStatus(
   }
 
   const timeSinceLastProof = Math.floor(Date.now() / 1000) - block.timestamp
-
+  const lastestBlock = await l1Provider.getBlock('latest')
   return {
     isUp: true,
     lastProofBlock: Number(latestEvent.args.blockNumber),
+    blocksSinceLastProof:
+      lastestBlock?.number! - Number(latestEvent.args.blockNumber),
     lastProofTimestamp: block.timestamp,
     timeSinceLastProof,
   }

@@ -3,5 +3,6 @@ export interface L2Status {
   lastProofBlock?: number
   lastProofTimestamp?: number
   timeSinceLastProof?: number
+  blocksSinceLastProof?: number
   error?: string
 }

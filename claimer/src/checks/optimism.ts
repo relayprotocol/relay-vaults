@@ -6,8 +6,7 @@ import networks from '@relay-protocol/networks'
 // deprec version of OP stack using l2OutputOracle (before bedrock)
 // https://gov.optimism.io/t/final-protocol-upgrade-7-fault-proofs/8161
 export async function checkOptimismStatus(
-  chain: ChildNetworkConfig,
-  maxBlocksWithoutProof = 4000
+  chain: ChildNetworkConfig
 ): Promise<L2Status> {
   const l2OutputOracleAddress =
     chain.bridges?.optimismAlt?.parent?.outputOracle!
@@ -29,7 +28,10 @@ export async function checkOptimismStatus(
   )
   // look back in blocks
   const filter = contract.filters.OutputProposed
-  const events = await contract.queryFilter(filter, -maxBlocksWithoutProof)
+  const events = await contract.queryFilter(
+    filter,
+    -chain.bridges.optimismAlt?.parent.maxBlocksWithoutProof!
+  )
 
   if (events.length === 0) {
     return {
@@ -50,10 +52,14 @@ export async function checkOptimismStatus(
   const timeSinceLastProof =
     Math.floor(Date.now() / 1000) - Number(latestEvent.args.l1Timestamp)
 
+  const lastestBlock = await l1Provider.getBlock('latest')
+
   return {
     isUp: true,
     lastProofBlock: Number(latestEvent.blockNumber),
     lastProofTimestamp: Number(latestEvent.args.l1Timestamp),
+    blocksSinceLastProof:
+      lastestBlock?.number! - Number(latestEvent.blockNumber),
     timeSinceLastProof,
   }
 }

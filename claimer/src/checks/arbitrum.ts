@@ -4,8 +4,7 @@ import { L2Status } from './types'
 import networks from '@relay-protocol/networks'
 
 export async function checkArbitrumStatus(
-  chain: ChildNetworkConfig,
-  maxBlocksWithoutProof = 1000
+  chain: ChildNetworkConfig
 ): Promise<L2Status> {
   const rollupAddress = chain.bridges?.arbitrum?.parent?.rollup
   if (!rollupAddress) {
@@ -23,7 +22,10 @@ export async function checkArbitrumStatus(
   const filter = contract.filters.AssertionConfirmed
 
   // look back in blocks
-  const events = await contract.queryFilter(filter, -maxBlocksWithoutProof)
+  const events = await contract.queryFilter(
+    filter,
+    -chain.bridges.arbitrum?.parent.maxBlocksWithoutProof!
+  )
 
   if (events.length === 0) {
     return {
@@ -50,10 +52,12 @@ export async function checkArbitrumStatus(
   }
 
   const timeSinceLastProof = Math.floor(Date.now() / 1000) - block.timestamp
+  const lastestBlock = await l1Provider.getBlock('latest')
   return {
     isUp: true,
     lastProofBlock: latestEvent.blockNumber,
     lastProofTimestamp: block.timestamp,
+    blocksSinceLastProof: lastestBlock?.number! - latestEvent.blockNumber,
     timeSinceLastProof,
   }
 }

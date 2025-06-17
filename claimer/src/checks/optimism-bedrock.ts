@@ -57,7 +57,8 @@ export async function checkOptimismBedrockStatus(
     Math.floor(Date.now() / 1000) - Number(timestamp.toString())
 
   return {
-    isUp: timeSinceLastGame < maxTimeWithoutProof,
+    isUp:
+      timeSinceLastGame < chain.bridges.optimism?.parent.maxTimeWithoutProof!,
     lastProofBlock: 0,
     lastProofTimestamp: Number(timestamp.toString()),
     timeSinceLastProof: timeSinceLastGame,

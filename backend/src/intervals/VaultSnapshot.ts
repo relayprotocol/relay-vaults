@@ -157,13 +157,14 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
 
     // vault apy computation
     try {
-      // Fetch the earliest snapshot for this vault **and yield pool** as reference.
+      // Fetch snapshots for this vault and yield pool, ordered by timestamp
       const historicalSnapshots = await context.db.sql
         .select()
         .from(vaultSnapshot)
         .where(eq(vaultSnapshot.vault, vault.contractAddress))
         .where(eq(vaultSnapshot.chainId, vault.chainId))
         .where(eq(vaultSnapshot.yieldPool, vault.yieldPool))
+        .orderBy('timestamp ASC')
         .execute()
 
       if (historicalSnapshots.length > 0) {
@@ -204,12 +205,13 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
 
     // base yield apy computation
     try {
-      // Fetch earliest snapshot for this yield pool (chainId + yieldPool match)
+      // Fetch snapshots for this yield pool, ordered by timestamp
       const historicalYieldSnapshots = await context.db.sql
         .select()
         .from(vaultSnapshot)
         .where(eq(vaultSnapshot.yieldPool, vault.yieldPool))
         .where(eq(vaultSnapshot.chainId, vault.chainId))
+        .orderBy('timestamp ASC')
         .execute()
 
       if (historicalYieldSnapshots.length > 0) {

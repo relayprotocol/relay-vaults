@@ -39,7 +39,7 @@ type Query {
 }
 
 type yieldPool {
-  apy: String!
+  apy: Int!
   asset: String!
   chainId: Int!
   contractAddress: String!
@@ -56,16 +56,14 @@ type yieldPoolPage {
 input yieldPoolFilter {
   AND: [yieldPoolFilter]
   OR: [yieldPoolFilter]
-  apy: String
-  apy_not: String
-  apy_in: [String]
-  apy_not_in: [String]
-  apy_contains: String
-  apy_not_contains: String
-  apy_starts_with: String
-  apy_ends_with: String
-  apy_not_starts_with: String
-  apy_not_ends_with: String
+  apy: Int
+  apy_not: Int
+  apy_in: [Int]
+  apy_not_in: [Int]
+  apy_gt: Int
+  apy_lt: Int
+  apy_gte: Int
+  apy_lte: Int
   asset: String
   asset_not: String
   asset_in: [String]
@@ -115,7 +113,7 @@ input yieldPoolFilter {
 }
 
 type relayPool {
-  apy: String!
+  apy: Int!
   asset: String!
   chainId: Int!
   contractAddress: String!
@@ -663,16 +661,14 @@ type relayPoolPage {
 input relayPoolFilter {
   AND: [relayPoolFilter]
   OR: [relayPoolFilter]
-  apy: String
-  apy_not: String
-  apy_in: [String]
-  apy_not_in: [String]
-  apy_contains: String
-  apy_not_contains: String
-  apy_starts_with: String
-  apy_ends_with: String
-  apy_not_starts_with: String
-  apy_not_ends_with: String
+  apy: Int
+  apy_not: Int
+  apy_in: [Int]
+  apy_not_in: [Int]
+  apy_gt: Int
+  apy_lt: Int
+  apy_gte: Int
+  apy_lte: Int
   asset: String
   asset_not: String
   asset_in: [String]

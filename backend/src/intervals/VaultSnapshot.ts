@@ -10,10 +10,11 @@
  * 4. Stores the snapshot with block metadata in the vaultSnapshot table.
  */
 
-import { eq } from 'ponder'
+import { eq, and } from 'ponder'
 import { ponder } from 'ponder:registry'
 import { vaultSnapshot, relayPool, yieldPool } from 'ponder:schema'
 import { erc4626Abi, erc20Abi } from 'viem'
+import type { Address } from 'viem'
 
 /**
  * Helper to calculate apy from price data
@@ -32,10 +33,11 @@ function calculateAPY(
   const secondsPerYear = 365 * 24 * 3600
   const growthFactor = currentPrice / startingPrice
   const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
-  const apyPercentage = apyValue * 100
 
-  // Round to 2 decimal places
-  return Math.round(apyPercentage * 100) / 100
+  // Convert to basis points
+  const apyBips = Math.round(apyValue * 10000)
+
+  return apyBips
 }
 /**
  * Helper to pick a reference snapshot.
@@ -163,10 +165,14 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
       const historicalSnapshots = await context.db.sql
         .select()
         .from(vaultSnapshot)
-        .where(eq(vaultSnapshot.vault, vault.contractAddress))
-        .where(eq(vaultSnapshot.chainId, vault.chainId))
-        .where(eq(vaultSnapshot.yieldPool, vault.yieldPool))
-        .orderBy('timestamp ASC')
+        .where(
+          and(
+            eq(vaultSnapshot.vault, vault.contractAddress),
+            eq(vaultSnapshot.chainId, vault.chainId),
+            eq(vaultSnapshot.yieldPool, vault.yieldPool)
+          )
+        )
+        .orderBy(vaultSnapshot.timestamp)
         .execute()
 
       if (historicalSnapshots.length > 0) {
@@ -211,9 +217,13 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
       const historicalYieldSnapshots = await context.db.sql
         .select()
         .from(vaultSnapshot)
-        .where(eq(vaultSnapshot.yieldPool, vault.yieldPool))
-        .where(eq(vaultSnapshot.chainId, vault.chainId))
-        .orderBy('timestamp ASC')
+        .where(
+          and(
+            eq(vaultSnapshot.yieldPool, vault.yieldPool),
+            eq(vaultSnapshot.chainId, vault.chainId)
+          )
+        )
+        .orderBy(vaultSnapshot.timestamp)
         .execute()
 
       if (historicalYieldSnapshots.length > 0) {

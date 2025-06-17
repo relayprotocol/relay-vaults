@@ -2,7 +2,7 @@ import { index, onchainTable, primaryKey, relations } from 'ponder'
 
 /**
  * Track yield pools
- * - apy: Annual Percentage Yield
+ * - apy: Annual Percentage Yield in basis points
  * - contractAddress: Contract address
  * - asset: Asset (token) address
  * - name: Yield pool name
@@ -11,7 +11,7 @@ import { index, onchainTable, primaryKey, relations } from 'ponder'
 export const yieldPool = onchainTable(
   'yield_pool',
   (t) => ({
-    apy: t.numeric().notNull().default('0'),
+    apy: t.integer().notNull().default(0),
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
@@ -29,7 +29,7 @@ export const yieldPool = onchainTable(
 
 /**
  * Track relay pools
- * - apy: Annual Percentage Yield
+ * - apy: Annual Percentage Yield in basis points
  * - contractAddress: Contract address
  * - curator: Address of the curator
  * - asset: Asset (token) address
@@ -46,7 +46,7 @@ export const yieldPool = onchainTable(
 export const relayPool = onchainTable(
   'relay_pool',
   (t) => ({
-    apy: t.numeric().notNull().default('0'),
+    apy: t.integer().notNull().default(0),
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),

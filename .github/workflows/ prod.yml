@@ -91,3 +91,6 @@ jobs:
         shell: bash
         env:
           ENVIRONMENT: prod
+          GITHUB_TOKEN: ${{ secrets.DEVOPSBOT_TOKEN }}
+          SERVICE: relay-vaults
+          GITHUB_SHA: ${{ github.sha }}

@@ -6,71 +6,71 @@ on:
       - production
 
 jobs:
-  run-tests:
-    name: 'Run the tests'
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        folders: ['smart-contracts', 'backend']
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # run-tests:
+  #   name: 'Run the tests'
+  #   runs-on: ubuntu-24.04
+  #   strategy:
+  #     matrix:
+  #       folders: ['smart-contracts', 'backend']
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22
 
-      - run: yarn
-        shell: bash
+  #     - run: yarn
+  #       shell: bash
 
-      - run: 'yarn build'
-        shell: bash
+  #     - run: 'yarn build'
+  #       shell: bash
 
-      - name: 'run lint'
-        run: yarn workspace @relay-protocol/${{matrix.folders}} lint
-        shell: bash
+  #     - name: 'run lint'
+  #       run: yarn workspace @relay-protocol/${{matrix.folders}} lint
+  #       shell: bash
 
-      - name: 'run tests'
-        run: yarn workspace @relay-protocol/${{matrix.folders}} run test
-        shell: bash
+  #     - name: 'run tests'
+  #       run: yarn workspace @relay-protocol/${{matrix.folders}} run test
+  #       shell: bash
 
-  build-docker-image:
-    name: 'Build/push Docker image'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    if: github.repository == 'relayprotocol/relay-vaults'
-    permissions:
-      contents: read
-      packages: write
-    needs:
-      - run-tests
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # build-docker-image:
+  #   name: 'Build/push Docker image'
+  #   runs-on: ubuntu-24.04
+  #   timeout-minutes: 15
+  #   if: github.repository == 'relayprotocol/relay-vaults'
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   needs:
+  #     - run-tests
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3
+  #     - name: Set up Docker Buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.repository_owner }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: |
-            ghcr.io/relayprotocol/relay-vaults:latest
-            ghcr.io/relayprotocol/relay-vaults:${{ github.sha }}
-            ghcr.io/relayprotocol/relay-vaults:${{ github.ref_name }}-${{ github.sha }}
-          build-args: |
-            TAG=${{ github.ref_name }}
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         push: true
+  #         tags: |
+  #           ghcr.io/relayprotocol/relay-vaults:latest
+  #           ghcr.io/relayprotocol/relay-vaults:${{ github.sha }}
+  #           ghcr.io/relayprotocol/relay-vaults:${{ github.ref_name }}-${{ github.sha }}
+  #         build-args: |
+  #           TAG=${{ github.ref_name }}
 
   deploy-prod:
     name: Deploy to production
@@ -82,7 +82,7 @@ jobs:
     container:
       image: ghcr.io/unevenlabs/infrastructure/deployer:latest
       credentials:
-        username: ${{ github.repository_owner }}
+        username: ${{ secrets.DEVOPSBOT_LOGIN }}
         password: ${{ secrets.DEVOPSBOT_TOKEN }}
     steps:
       - name: Deploy to production

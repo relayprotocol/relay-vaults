@@ -173,7 +173,6 @@ export async function getGame(
 
   // Get the latest game
   const game = await contract.gameAtIndex(latestGameIndex)
-  console.log({ latestGameIndex, game })
   return game
 }
 

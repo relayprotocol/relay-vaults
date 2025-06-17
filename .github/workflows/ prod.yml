@@ -83,7 +83,7 @@ jobs:
       image: ghcr.io/unevenlabs/infrastructure/deployer:latest
       credentials:
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.DEVOPSBOT_TOKEN }}
     steps:
       - name: Deploy to production
         run: |

@@ -13,6 +13,7 @@ const config: ChildNetworkConfig = {
       parent: {
         portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
         outputOracle: '0x6daF3a3497D8abdFE12915aDD9829f83A79C0d51',
+        maxBlocksWithoutProof: 200,
       },
     },
   },

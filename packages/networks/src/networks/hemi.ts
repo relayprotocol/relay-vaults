@@ -6,12 +6,13 @@ const config: ChildNetworkConfig = {
     // TODO: add USDC
   },
   bridges: {
-    optimism: {
+    optimismAlt: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
         portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
+        outputOracle: '0x6daF3a3497D8abdFE12915aDD9829f83A79C0d51',
       },
     },
   },
@@ -24,7 +25,7 @@ const config: ChildNetworkConfig = {
   rpc: process.env.RPC_43111
     ? [process.env.RPC_43111]
     : ['https://rpc.hemi.network/rpc'],
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }
 
 export default config

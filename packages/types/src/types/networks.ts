@@ -13,6 +13,16 @@ export interface ChildNetworkConfig extends NetworkConfig {
     optimism?: {
       parent: {
         portalProxy: string
+        gameFactory: string
+      }
+      child: {
+        messagePasser: string
+      }
+    }
+    optimismAlt?: {
+      parent: {
+        outputOracle: string
+        portalProxy: string
       }
       child: {
         messagePasser: string
@@ -45,6 +55,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
       parent: {
         sharedDefaultBridge: string
         nativeTokenVault: string
+        diamondProxy: string
       }
       child: {
         l1Messenger: string

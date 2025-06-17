@@ -106,7 +106,7 @@ async function checkOptimismStatus(
   l1Provider: JsonRpcProvider,
   currentL1Block: number
 ): Promise<L2Status> {
-  const l2OutputOracleAddress = chain.bridges?.optimism?.parent?.portalProxy
+  const l2OutputOracleAddress = chain.bridges?.optimism?.parent?.outputOracle
   if (!l2OutputOracleAddress) {
     throw new Error('L2OutputOracle address not configured')
   }
@@ -296,7 +296,7 @@ async function checkZkSyncStatus(
   currentL1Block: number
 ): Promise<L2Status> {
   // diamond Proxy is main zkSync contract on L1
-  const diamondProxyAddress = chain.bridges?.zksync?.parent?.sharedDefaultBridge
+  const diamondProxyAddress = chain.bridges?.zksync?.parent?.diamondProxy
   if (!diamondProxyAddress) {
     throw new Error('Diamond Proxy address not configured')
   }

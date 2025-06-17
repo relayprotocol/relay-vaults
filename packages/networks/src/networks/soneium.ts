@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const soneium: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369',
     weth: '0x4200000000000000000000000000000000000006',
@@ -22,6 +22,7 @@ export const soneium: ChildNetworkConfig = {
   name: 'Soneium',
   parentChainId: 1,
   rpc: ['https://rpc.soneium.org'],
-  slug: 'soneium',
   stack: 'optimism',
 }
+
+export default config

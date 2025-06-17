@@ -1,6 +1,6 @@
 import { L1NetworkConfig } from '@relay-protocol/types'
 
-export const sepolia: L1NetworkConfig = {
+const config: L1NetworkConfig = {
   assets: {
     udt: '0x4C38B5Dcc47c4990363F22bFeb2add741123914F',
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
@@ -16,8 +16,9 @@ export const sepolia: L1NetworkConfig = {
   rpc: process.env.RPC_11155111
     ? [process.env.RPC_11155111]
     : ['https://ethereum-sepolia-rpc.publicnode.com'],
-  slug: 'sepolia',
   uniswapV3: {
     universalRouterAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
   },
 }
+
+export default config

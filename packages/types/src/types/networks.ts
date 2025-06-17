@@ -57,7 +57,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
 export interface NetworkConfig {
   chainId: number | bigint
   name: string
-  slug: string
+  slug?: string
   earliestBlock: number
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
@@ -66,7 +66,7 @@ export interface NetworkConfig {
   rpc: [string, ...string[]]
 }
 
-interface NetworkAssets {
+export interface NetworkAssets {
   [asset: string]: string
 }
 

@@ -54,6 +54,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       ethers.ZeroAddress,
       amount,
       '0x',
+      '0x',
       {
         gasLimit: 30000000,
         value: amount,
@@ -229,6 +230,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
       baseAssets.udt,
       networks[1].assets.udt,
       amount,
+      '0x',
       '0x',
       {
         gasLimit: 30000000,

@@ -1,6 +1,6 @@
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
-export const ancient8: ChildNetworkConfig = {
+const config: ChildNetworkConfig = {
   assets: {
     usdc: '0x97423A68BAe94b5De52d767a17aBCc54c157c0E5',
     weth: '0x4200000000000000000000000000000000000006',
@@ -22,6 +22,7 @@ export const ancient8: ChildNetworkConfig = {
   name: 'Ancient8',
   parentChainId: 1,
   rpc: ['https://rpc.ancient8.gg'],
-  slug: 'ancient8',
   stack: 'optimism',
 }
+
+export default config

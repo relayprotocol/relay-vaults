@@ -12,6 +12,7 @@ const config: ChildNetworkConfig = {
       },
       parent: {
         portalProxy: '0x1d59bc9fcE6B8E2B1bf86D4777289FFd83D24C99',
+        gameFactory: '0xbF4676f21a7889E0Fd61BcDc9b98E60b01C1B36F',
       },
     },
   },

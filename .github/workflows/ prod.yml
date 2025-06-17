@@ -78,7 +78,7 @@ jobs:
     timeout-minutes: 15
     if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/main'
     needs: [build-docker-image]
-    environment: dev
+    environment: prod
     container:
       image: ghcr.io/unevenlabs/infrastructure/deployer:latest
       credentials:

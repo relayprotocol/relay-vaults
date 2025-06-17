@@ -12,10 +12,38 @@
 
 import { eq } from 'ponder'
 import { ponder } from 'ponder:registry'
-import { vaultSnapshot, relayPool } from 'ponder:schema'
+import { vaultSnapshot, relayPool, yieldPool } from 'ponder:schema'
 import { erc4626Abi, erc20Abi } from 'viem'
 
 ponder.on('VaultSnapshot:block', async ({ event, context }) => {
+  // Helper function to calculate APY from price data
+  function calculateAPY(
+    currentPrice: number,
+    startingPrice: number,
+    currentTimestamp: number,
+    startingTimestamp: number
+  ): string | null {
+    if (startingPrice <= 0 || currentPrice === startingPrice) return null
+
+    const deltaTime = currentTimestamp - startingTimestamp
+    if (deltaTime <= 0) return null
+
+    const secondsPerYear = 365 * 24 * 3600
+    const growthFactor = currentPrice / startingPrice
+    const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
+    const apyPercentage = apyValue * 100
+
+    return apyPercentage.toFixed(2)
+  }
+
+  // Helper function to extract snapshot data
+  function extractSnapshotData(snapshot: any, priceField: string) {
+    return {
+      price: Number(snapshot[priceField]),
+      timestamp: Number(snapshot.timestamp),
+    }
+  }
+
   // Helper function to fetch share price using a contract's address
   async function fetchSharePrice(contractAddress: string) {
     // Retrieve the contract's decimals
@@ -46,6 +74,11 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
     .where(eq(relayPool.chainId, context.network.chainId))
     .execute()
 
+  // Skip operation if no vaults exist yet
+  if (vaults.length === 0) {
+    return
+  }
+
   for (const vault of vaults) {
     // Fetch vault and yield pool share prices concurrently (they are independent)
     const [vaultSharePrice, yieldPoolSharePrice] = await Promise.all([
@@ -59,6 +92,7 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
     const snapshot = {
       sharePrice: vaultSharePrice.toString(),
       timestamp: event.block.timestamp,
+      yieldPool: vault.yieldPool,
       yieldPoolSharePrice: yieldPoolSharePrice.toString(),
     }
 
@@ -72,5 +106,94 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
         vault: vault.contractAddress,
       })
       .onConflictDoUpdate(snapshot)
+
+    // vault apy computation
+    try {
+      // Fetch the earliest snapshot for this vault **and yield pool** as reference.
+      const historicalSnapshots = await context.db.sql
+        .select()
+        .from(vaultSnapshot)
+        .where(eq(vaultSnapshot.vault, vault.contractAddress))
+        .where(eq(vaultSnapshot.chainId, vault.chainId))
+        .where(eq(vaultSnapshot.yieldPool, vault.yieldPool))
+        .execute()
+
+      if (historicalSnapshots.length > 0) {
+        const vaultData = extractSnapshotData(
+          historicalSnapshots[0],
+          'sharePrice'
+        )
+        const vaultAPY = calculateAPY(
+          Number(vaultSharePrice),
+          vaultData.price,
+          Number(event.block.timestamp),
+          vaultData.timestamp
+        )
+
+        if (vaultAPY) {
+          // Update the relayPool table with the newly calculated apy
+          await context.db
+            .update(relayPool, {
+              chainId: vault.chainId,
+              contractAddress: vault.contractAddress,
+            })
+            .set({
+              apy: vaultAPY,
+            })
+        }
+      }
+    } catch (e) {
+      console.error(
+        `Failed to compute APY for vault ${vault.contractAddress} on chain ${vault.chainId}:`,
+        e
+      )
+    }
+
+    // base yield apy computation
+    try {
+      // Fetch earliest snapshot for this yield pool (chainId + yieldPool match)
+      const historicalYieldSnapshots = await context.db.sql
+        .select()
+        .from(vaultSnapshot)
+        .where(eq(vaultSnapshot.yieldPool, vault.yieldPool))
+        .where(eq(vaultSnapshot.chainId, vault.chainId))
+        .execute()
+
+      if (historicalYieldSnapshots.length > 0) {
+        const yieldData = extractSnapshotData(
+          historicalYieldSnapshots[0],
+          'yieldPoolSharePrice'
+        )
+        const baseYieldAPY = calculateAPY(
+          Number(yieldPoolSharePrice),
+          yieldData.price,
+          Number(event.block.timestamp),
+          yieldData.timestamp
+        )
+
+        if (baseYieldAPY) {
+          // Upsert the yieldPool table with the newly calculated apy
+          await context.db
+            .insert(yieldPool)
+            .values({
+              apy: baseYieldAPY,
+              asset: vault.asset, // required field
+              chainId: vault.chainId,
+              contractAddress: vault.yieldPool,
+              lastUpdated: event.block.timestamp,
+              name: 'Unknown', // placeholder - will be updated by event handlers
+            })
+            .onConflictDoUpdate({
+              apy: baseYieldAPY,
+              lastUpdated: event.block.timestamp,
+            })
+        }
+      }
+    } catch (e) {
+      console.error(
+        `Failed to compute base yield APY for yield pool ${vault.yieldPool} on chain ${vault.chainId}:`,
+        e
+      )
+    }
   }
 })

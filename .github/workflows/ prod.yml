@@ -76,9 +76,9 @@ jobs:
     name: Deploy to production
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/main'
+    if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/production'
     needs: [build-docker-image]
-    environment: dev
+    environment: prod
     container:
       image: ghcr.io/unevenlabs/infrastructure/deployer:latest
       credentials:

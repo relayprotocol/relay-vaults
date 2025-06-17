@@ -6,13 +6,13 @@ const config: ChildNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    optimism: {
+    optimismAlt: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
         portalProxy: '0x1d59bc9fcE6B8E2B1bf86D4777289FFd83D24C99',
-        gameFactory: '0xbF4676f21a7889E0Fd61BcDc9b98E60b01C1B36F',
+        outputOracle: '0xa669A743b065828682eE16109273F5CFeF5e676d',
       },
     },
   },
@@ -25,7 +25,7 @@ const config: ChildNetworkConfig = {
   rpc: process.env.RPC_7560
     ? [process.env.RPC_7560]
     : ['https://cyber.rpc.thirdweb.com'],
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }
 
 export default config

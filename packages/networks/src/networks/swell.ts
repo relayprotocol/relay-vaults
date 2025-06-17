@@ -25,7 +25,7 @@ const config: ChildNetworkConfig = {
   rpc: process.env.RPC_1923
     ? [process.env.RPC_1923]
     : ['https://swell-mainnet.alt.technology'],
-  stack: 'optimism-alt',
+  stack: 'optimism',
 }
 
 export default config

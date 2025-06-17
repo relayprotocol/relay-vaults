@@ -34,7 +34,8 @@ function calculateAPY(
   const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
   const apyPercentage = apyValue * 100
 
-  return apyPercentage
+  // Round to 2 decimal places
+  return Math.round(apyPercentage * 100) / 100
 }
 /**
  * Helper to pick a reference snapshot.

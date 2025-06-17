@@ -80,14 +80,18 @@ jobs:
     needs: [build-docker-image]
     environment: prod
     container:
-      image: ghcr.io/unevenlabs/infrastructure/deployer:latest
+      image: ghcr.io/unevenlabs/infrastructure/deployer:1.0.3
       credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ secrets.DEVOPSBOT_LOGIN }}
+        password: ${{ secrets.DEVOPSBOT_TOKEN }}
     steps:
       - name: Deploy to production
         run: |
-          sh -c "/app/deploy.sh vaults"
+          bash -c "/app/deploy.sh"
         shell: bash
         env:
-          ENVIRONMENT: prod
+          ENVIRONMENT: "prod"
+          SERVICE: "relay-vaults"
+          GITHUB_SHA: "${{ github.sha }}"
+          GITHUB_TOKEN: "${{ secrets.DEVOPSBOT_TOKEN }}"
+          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}

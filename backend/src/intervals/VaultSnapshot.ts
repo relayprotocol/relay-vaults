@@ -34,10 +34,7 @@ function calculateAPY(
   const growthFactor = currentPrice / startingPrice
   const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
 
-  // Convert to basis points
-  const apyBips = Math.round(apyValue * 10000)
-
-  return apyBips
+  return Math.round(apyValue * 10000)
 }
 /**
  * Helper to pick a reference snapshot.

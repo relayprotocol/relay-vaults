@@ -39,6 +39,7 @@ type Query {
 }
 
 type yieldPool {
+  apy: String!
   asset: String!
   chainId: Int!
   contractAddress: String!
@@ -55,6 +56,16 @@ type yieldPoolPage {
 input yieldPoolFilter {
   AND: [yieldPoolFilter]
   OR: [yieldPoolFilter]
+  apy: String
+  apy_not: String
+  apy_in: [String]
+  apy_not_in: [String]
+  apy_contains: String
+  apy_not_contains: String
+  apy_starts_with: String
+  apy_ends_with: String
+  apy_not_starts_with: String
+  apy_not_ends_with: String
   asset: String
   asset_not: String
   asset_in: [String]
@@ -104,6 +115,7 @@ input yieldPoolFilter {
 }
 
 type relayPool {
+  apy: String!
   asset: String!
   chainId: Int!
   contractAddress: String!
@@ -486,6 +498,7 @@ type vaultSnapshot {
   sharePrice: String!
   timestamp: BigInt!
   vault: String!
+  yieldPool: String!
   yieldPoolSharePrice: String!
   pool: relayPool
 }
@@ -537,6 +550,16 @@ input vaultSnapshotFilter {
   vault_ends_with: String
   vault_not_starts_with: String
   vault_not_ends_with: String
+  yieldPool: String
+  yieldPool_not: String
+  yieldPool_in: [String]
+  yieldPool_not_in: [String]
+  yieldPool_contains: String
+  yieldPool_not_contains: String
+  yieldPool_starts_with: String
+  yieldPool_ends_with: String
+  yieldPool_not_starts_with: String
+  yieldPool_not_ends_with: String
   yieldPoolSharePrice: String
   yieldPoolSharePrice_not: String
   yieldPoolSharePrice_in: [String]
@@ -640,6 +663,16 @@ type relayPoolPage {
 input relayPoolFilter {
   AND: [relayPoolFilter]
   OR: [relayPoolFilter]
+  apy: String
+  apy_not: String
+  apy_in: [String]
+  apy_not_in: [String]
+  apy_contains: String
+  apy_not_contains: String
+  apy_starts_with: String
+  apy_ends_with: String
+  apy_not_starts_with: String
+  apy_not_ends_with: String
   asset: String
   asset_not: String
   asset_in: [String]

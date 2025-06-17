@@ -5,12 +5,12 @@ import { finalizeWithdrawals } from './src/finalize-withdrawals'
 import { checkL2Chains } from './src/check-l2-status'
 
 const run = async () => {
-  const { vaultService } = await start()
-  await proveTransactions({ vaultService })
-  await finalizeWithdrawals({ vaultService })
-  await claimTransactions({ vaultService })
+  // const { vaultService } = await start()
+  // await proveTransactions({ vaultService })
+  // await finalizeWithdrawals({ vaultService })
+  // await claimTransactions({ vaultService })
   await checkL2Chains()
-  await stop()
+  // await stop()
   console.log('Done!')
 }
 

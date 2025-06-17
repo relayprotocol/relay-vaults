@@ -1,6 +1,6 @@
 import { RelayPool } from '@relay-protocol/abis'
 import { Context, Event } from 'ponder:registry'
-import { relayPool, timelock, yieldPool } from 'ponder:schema'
+import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'
 
 export default async function ({
@@ -42,7 +42,7 @@ export default async function ({
     .insert(yieldPool)
     .values({
       asset: asset as `0x${string}`,
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: thirdPartyPool as `0x${string}`,
       lastUpdated: BigInt(event.block.timestamp),
       name: yieldName,
@@ -57,7 +57,7 @@ export default async function ({
     .insert(relayPool)
     .values({
       asset: asset as `0x${string}`,
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       contractAddress: pool as `0x${string}`,
       createdAt: event.block.timestamp,
       createdAtBlock: event.block.number,

@@ -14,7 +14,7 @@ export default async function ({
   event: Event<'RelayBridge:BridgeInitiated'>
   context: Context<'RelayBridge:BridgeInitiated'>
 }) {
-  const networkConfig = networks[context.network.chainId] as ChildNetworkConfig
+  const networkConfig = networks[context.chain.id] as ChildNetworkConfig
   const { nonce, sender, recipient, ASSET, amount, BRIDGE_PROXY } = event.args
 
   // Parse logs to find the DispatchId event and extract hyperlaneMessageId
@@ -127,7 +127,7 @@ export default async function ({
     .values({
       nonce,
       originBridgeAddress: event.log.address,
-      originChainId: context.network.chainId,
+      originChainId: context.chain.id,
       ...values,
     })
     .onConflictDoUpdate(values)

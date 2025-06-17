@@ -35,6 +35,7 @@ export const yieldPool = onchainTable(
  * - totalAssets: Total assets in pool
  * - totalShares: Total shares issued
  * - totalBridgeFees: Total bridge fees accumulated
+ * - decimals: Token decimals for the asset
  * - chainId: Chain ID where the pool is deployed
  * - createdAt: Block timestamp of creation
  * - createdAtBlock: Block number of creation
@@ -48,6 +49,7 @@ export const relayPool = onchainTable(
     createdAt: t.bigint().notNull(),
     createdAtBlock: t.bigint().notNull(),
     curator: t.hex().notNull(),
+    decimals: t.integer().notNull().default(18),
     name: t.text().notNull(),
     outstandingDebt: t.bigint().notNull(),
     symbol: t.text().notNull(),

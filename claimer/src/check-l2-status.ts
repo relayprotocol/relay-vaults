@@ -1,4 +1,3 @@
-import { JsonRpcProvider } from 'ethers'
 import networks from '@relay-protocol/networks'
 import { ChildNetworkConfig } from '@relay-protocol/types'
 import { L2Status } from './checks/types'
@@ -6,10 +5,6 @@ import { checkOptimismBedrockStatus } from './checks/optimism-bedrock'
 import { checkOptimismStatus } from './checks/optimism'
 import { checkArbitrumStatus } from './checks/arbitrum'
 import { checkZkSyncStatus } from './checks/zksync'
-
-// Constants for status checking
-const MAX_BLOCKS_WITHOUT_PROOF = 4000 // Maximum number of blocks without a proof before considering chain down
-const MAX_TIME_WITHOUT_PROOF = 3600 * 10 // hours in seconds
 
 // get all L2/L3 chains
 export async function getL2s() {

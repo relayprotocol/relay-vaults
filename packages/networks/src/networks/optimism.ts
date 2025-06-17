@@ -26,7 +26,7 @@ const config: ChildNetworkConfig = {
       parent: {
         portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
         gameFactory: '0xe5965Ab5962eDc7477C8520243A95517CD252fA9',
-        maxTimeWithoutProof: 2000,
+        maxTimeWithoutProof: 3600,
       },
     },
   },

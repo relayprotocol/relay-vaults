@@ -81,13 +81,13 @@ export async function checkL2Status(chainId: number): Promise<L2Status> {
 
     // Different handling based on L2 stack type
     if (chain.stack === 'optimism') {
+      return await checkOptimismBedrockStatus(chain, l1Provider, currentL1Block)
+    } else if (chain.stack === 'optimism-alt') {
       return await checkOptimismStatus(chain, l1Provider, currentL1Block)
-      // } else if (chain.stack === 'optimism-alt') {
-      //   return await checkOptimismBedrockStatus(chain, l1Provider, currentL1Block)
-      // } else if (chain.stack === 'arbitrum') {
-      //   return await checkArbitrumStatus(chain, l1Provider, currentL1Block)
-      // } else if (chain.stack === 'zksync') {
-      //   return await checkZkSyncStatus(chain, l1Provider, currentL1Block)
+    } else if (chain.stack === 'arbitrum') {
+      return await checkArbitrumStatus(chain, l1Provider, currentL1Block)
+    } else if (chain.stack === 'zksync') {
+      return await checkZkSyncStatus(chain, l1Provider, currentL1Block)
     } else {
       throw new Error(`Unsupported L2 stack type: ${chain.stack}`)
     }

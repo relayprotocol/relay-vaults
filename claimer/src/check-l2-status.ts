@@ -3,7 +3,7 @@ import networks from '@relay-protocol/networks'
 import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // Constants for status checking
-const MAX_BLOCKS_WITHOUT_PROOF = 100 // Maximum number of blocks without a proof before considering chain down
+const MAX_BLOCKS_WITHOUT_PROOF = 2000 // Maximum number of blocks without a proof before considering chain down
 const MAX_TIME_WITHOUT_PROOF = 3600 * 2 // 2 hours in seconds
 
 export interface L2Status {
@@ -32,32 +32,30 @@ export async function checkL2Chains() {
   for (const chain of l2Chains) {
     try {
       const status = await checkL2Status(Number(chain.chainId))
-      console.log(`\nL2 Status Results for ${chain.name} ${chain.chainId}:`)
-      console.log('------------------')
-      console.log(`Chain is up: ${status.isUp}`)
-
       if (!status.isUp) {
-        console.log(`FAIL: ${status.error}`)
-      }
+        console.log(`\nL2 ${chain.name} ${chain.chainId} is down:`)
+        console.log('------------------')
+        console.log(`Chain is up: ${status.isUp}`)
 
-      if (status.lastProofBlock) {
-        console.log(`Last proof block: ${status.lastProofBlock}`)
-      }
+        if (status.lastProofBlock) {
+          console.log(`Last proof block: ${status.lastProofBlock}`)
+        }
 
-      if (status.lastProofTimestamp) {
-        console.log(
-          `Last proof timestamp: ${new Date(status.lastProofTimestamp * 1000).toISOString()}`
-        )
-      }
+        if (status.lastProofTimestamp) {
+          console.log(
+            `Last proof timestamp: ${new Date(status.lastProofTimestamp * 1000).toISOString()}`
+          )
+        }
 
-      if (status.timeSinceLastProof) {
-        console.log(
-          `Time since last proof: ${status.timeSinceLastProof} seconds`
-        )
-      }
+        if (status.timeSinceLastProof) {
+          console.log(
+            `Time since last proof: ${status.timeSinceLastProof} seconds`
+          )
+        }
 
-      if (status.error) {
-        console.log(`Error: ${status.error}`)
+        if (status.error) {
+          console.log(`Error: ${status.error}`)
+        }
       }
     } catch (error) {
       console.log(error)
@@ -103,16 +101,16 @@ export async function checkL2Status(chainId: number): Promise<L2Status> {
 // https://gov.optimism.io/t/final-protocol-upgrade-7-fault-proofs/8161
 async function checkOptimismStatus(
   chain: ChildNetworkConfig,
-  l1Provider: JsonRpcProvider,
-  currentL1Block: number
+  l1Provider: JsonRpcProvider
 ): Promise<L2Status> {
-  const l2OutputOracleAddress = chain.bridges?.optimism?.parent?.outputOracle
+  const l2OutputOracleAddress =
+    chain.bridges?.optimismAlt?.parent?.outputOracle!
   if (!l2OutputOracleAddress) {
     throw new Error('L2OutputOracle address not configured')
   }
 
   const L2OutputOracleABI = [
-    'event OutputProposed(uint256 indexed outputIndex, bytes32 outputRoot, uint256 l2BlockNumber, uint256 l1Timestamp)',
+    'event OutputProposed(bytes32 indexed outputRoot, uint256 indexed outputIndex, uint256 indexed l2BlockNumber, uint256 l1Timestamp)',
   ]
 
   const contract = new Contract(
@@ -120,11 +118,9 @@ async function checkOptimismStatus(
     L2OutputOracleABI,
     l1Provider
   )
-  const filter = contract.filters.OutputProposed()
-
   // look back in blocks
-  const fromBlock = currentL1Block - MAX_BLOCKS_WITHOUT_PROOF
-  const events = await contract.queryFilter(filter, fromBlock, 'latest')
+  const filter = contract.filters.OutputProposed
+  const events = await contract.queryFilter(filter, -MAX_BLOCKS_WITHOUT_PROOF)
 
   if (events.length === 0) {
     return {
@@ -144,13 +140,9 @@ async function checkOptimismStatus(
 
   const timeSinceLastProof =
     Math.floor(Date.now() / 1000) - Number(latestEvent.args.l1Timestamp)
-  const blocksSinceLastProof =
-    currentL1Block - Number(latestEvent.args.l2BlockNumber)
 
   return {
-    isUp:
-      timeSinceLastProof < MAX_TIME_WITHOUT_PROOF &&
-      blocksSinceLastProof < MAX_BLOCKS_WITHOUT_PROOF,
+    isUp: timeSinceLastProof < MAX_TIME_WITHOUT_PROOF,
     lastProofBlock: Number(latestEvent.args.l2BlockNumber),
     lastProofTimestamp: Number(latestEvent.args.l1Timestamp),
     timeSinceLastProof,
@@ -159,6 +151,7 @@ async function checkOptimismStatus(
 
 const DISPUTE_GAME_FACTORY_ABI = [
   'function getGame(uint256 _index) external view returns (address gameProxy, uint256 timestamp, uint256 blockNumber, bytes32 rootClaim, bytes extraData)',
+  'function getGameCount() external view returns (uint256 count)',
 ]
 
 export async function getGame(

@@ -11,7 +11,7 @@ import { index, onchainTable, primaryKey, relations } from 'ponder'
 export const yieldPool = onchainTable(
   'yield_pool',
   (t) => ({
-    apy: t.text().notNull().default('0.00'),
+    apy: t.numeric().notNull().default('0'),
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
@@ -46,7 +46,7 @@ export const yieldPool = onchainTable(
 export const relayPool = onchainTable(
   'relay_pool',
   (t) => ({
-    apy: t.text().notNull().default('0.00'),
+    apy: t.numeric().notNull().default('0'),
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),

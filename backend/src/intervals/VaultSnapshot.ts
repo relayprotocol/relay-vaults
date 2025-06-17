@@ -23,7 +23,7 @@ function calculateAPY(
   startingPrice: number,
   currentTimestamp: number,
   startingTimestamp: number
-): string | null {
+): number | null {
   if (startingPrice <= 0 || currentPrice === startingPrice) return null
 
   const deltaTime = currentTimestamp - startingTimestamp
@@ -34,7 +34,7 @@ function calculateAPY(
   const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
   const apyPercentage = apyValue * 100
 
-  return apyPercentage.toFixed(2)
+  return apyPercentage
 }
 /**
  * Helper to pick a reference snapshot.

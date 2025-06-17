@@ -80,6 +80,14 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   }
 
   for (const vault of vaults) {
+    // Skip if the vault has no yield pool
+    if (!vault.yieldPool) {
+      console.warn(
+        `Vault ${vault.contractAddress} has no valid yield pool, skipping...`
+      )
+      continue
+    }
+
     // Fetch vault and yield pool share prices concurrently (they are independent)
     const [vaultSharePrice, yieldPoolSharePrice] = await Promise.all([
       fetchSharePrice(vault.contractAddress), // vault's own share price

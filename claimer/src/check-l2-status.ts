@@ -4,7 +4,7 @@ import { ChildNetworkConfig } from '@relay-protocol/types'
 
 // Constants for status checking
 const MAX_BLOCKS_WITHOUT_PROOF = 2000 // Maximum number of blocks without a proof before considering chain down
-const MAX_TIME_WITHOUT_PROOF = 3600 * 2 // 2 hours in seconds
+const MAX_TIME_WITHOUT_PROOF = 3600 * 5 // 2 hours in seconds
 
 export interface L2Status {
   isUp: boolean
@@ -150,15 +150,13 @@ async function checkOptimismStatus(
 }
 
 const DISPUTE_GAME_FACTORY_ABI = [
-  'function getGame(uint256 _index) external view returns (address gameProxy, uint256 timestamp, uint256 blockNumber, bytes32 rootClaim, bytes extraData)',
-  'function getGameCount() external view returns (uint256 count)',
+  'function gameAtIndex(uint256 _index) external view returns (uint32 gameType_, uint64 timestamp_, address proxy_)',
+  'function gameCount() external view returns (uint256 count)',
 ]
 
 export async function getGame(
   l1ChainId: number,
-  fromBlock: number,
-  disputeGameFactoryAddress: string,
-  portalAddress: string
+  disputeGameFactoryAddress: string
 ) {
   const provider = new JsonRpcProvider(networks[l1ChainId].rpc[0])
   const contract = new Contract(
@@ -168,40 +166,32 @@ export async function getGame(
   )
 
   // Get the latest game index
-  const latestGameIndex = (await contract.getGameCount()) - 1n
+  const latestGameIndex = (await contract.gameCount()) - 1n
   if (latestGameIndex < 0n) {
     return null
   }
 
   // Get the latest game
-  const game = await contract.getGame(latestGameIndex)
+  const game = await contract.gameAtIndex(latestGameIndex)
+  console.log({ latestGameIndex, game })
   return game
 }
 
 async function checkOptimismBedrockStatus(
-  chain: ChildNetworkConfig,
-  l1Provider: JsonRpcProvider,
-  currentL1Block: number
+  chain: ChildNetworkConfig
 ): Promise<L2Status> {
-  const disputeGameFactoryAddress = chain.bridges?.optimism?.parent?.portalProxy
-  const portalAddress = chain.bridges?.optimism?.parent?.portalProxy
+  const disputeGameFactoryAddress = chain.bridges?.optimism?.parent?.gameFactory
 
-  if (!disputeGameFactoryAddress || !portalAddress) {
+  if (!disputeGameFactoryAddress) {
     throw new Error(
-      'Missing required contract addresses for Bedrock status check'
+      'Missing required gameFactory contract addresses for Bedrock status check'
     )
   }
-
-  // Get the latest L2 block number
-  const l2Provider = new JsonRpcProvider(chain.rpc[0])
-  const currentL2Block = await l2Provider.getBlockNumber()
 
   // Get the latest game
   const latestGame = await getGame(
     chain.parentChainId,
-    currentL2Block - MAX_BLOCKS_WITHOUT_PROOF, // Look for games within last 100 blocks
-    disputeGameFactoryAddress,
-    portalAddress
+    disputeGameFactoryAddress
   )
 
   if (!latestGame) {
@@ -212,15 +202,15 @@ async function checkOptimismBedrockStatus(
   }
 
   // Get the L2 block number from the game
-  const abiCoder = new AbiCoder()
-  const l2Block = abiCoder.decode(['uint256'], latestGame[4])[0] as bigint
+
+  const [, timestamp] = latestGame
   const timeSinceLastGame =
-    Math.floor(Date.now() / 1000) - Number(latestGame[2]) // timestamp is at index 2
+    Math.floor(Date.now() / 1000) - Number(timestamp.toString())
 
   return {
     isUp: timeSinceLastGame < MAX_TIME_WITHOUT_PROOF,
-    lastProofBlock: Number(l2Block),
-    lastProofTimestamp: Number(latestGame[2]),
+    lastProofBlock: 0,
+    lastProofTimestamp: Number(timestamp.toString()),
     timeSinceLastProof: timeSinceLastGame,
   }
 }

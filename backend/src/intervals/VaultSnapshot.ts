@@ -10,7 +10,7 @@
  * 4. Stores the snapshot with block metadata in the vaultSnapshot table.
  */
 
-import { eq, and } from 'ponder'
+import { eq, and, desc, lte } from 'ponder'
 import { ponder } from 'ponder:registry'
 import { vaultSnapshot, relayPool, yieldPool } from 'ponder:schema'
 import { erc4626Abi, erc20Abi } from 'viem'
@@ -36,52 +36,97 @@ function calculateAPY(
 
   return Math.round(apyValue * 10000)
 }
-/**
- * Helper to pick a reference snapshot.
- * If intervalSeconds is provided (>0), it returns the snapshot whose timestamp is
- * the first one *before* (currentTimestamp - intervalSeconds). Otherwise it
- * returns the very first (oldest) snapshot (default behaviour).
- */
-function selectSnapshot(
-  snapshots: any[],
-  priceField: string,
-  currentTimestamp: number,
-  intervalSeconds?: number
-) {
-  if (snapshots.length === 0) return null
-
-  // Default: oldest snapshot
-  if (!intervalSeconds || intervalSeconds <= 0) {
-    const snap = snapshots[0]
-    return {
-      price: Number(snap[priceField]),
-      timestamp: Number(snap.timestamp),
-    }
-  }
-
-  const targetTimestamp = currentTimestamp - intervalSeconds
-
-  // Iterate from newest to oldest to find the first snap at or before the target timestamp
-  for (let i = snapshots.length - 1; i >= 0; i--) {
-    const snap = snapshots[i]
-    if (Number(snap.timestamp) <= targetTimestamp) {
-      return {
-        price: Number(snap[priceField]),
-        timestamp: Number(snap.timestamp),
-      }
-    }
-  }
-
-  // if no snapshot meets the interval requirement, fallback to oldest
-  const fallback = snapshots[0]
-  return {
-    price: Number(fallback[priceField]),
-    timestamp: Number(fallback.timestamp),
-  }
-}
 
 // Determine APY interval (seconds)
 const APY_INTERVAL_SEC = 7 * 24 * 3600 // 7-day window; for all-time, we set to 0
+
+/**
+ * Fetch a reference snapshot for a given vault.
+ */
+async function fetchVaultReferenceSnapshot(
+  db: any,
+  vaultAddress: Address,
+  chainId: number,
+  yieldPoolAddress: Address,
+  nowTimestamp: number,
+  intervalSeconds: number
+) {
+  // Query builder with the common predicates
+  const baseWhere = and(
+    eq(vaultSnapshot.vault, vaultAddress),
+    eq(vaultSnapshot.chainId, chainId),
+    eq(vaultSnapshot.yieldPool, yieldPoolAddress)
+  )
+
+  // Helper to materialise the query with order & limit
+  const getOne = async (additionalAnd?: any) => {
+    const whereClause = additionalAnd
+      ? and(baseWhere, additionalAnd)
+      : baseWhere
+    const rows: any[] = await db.sql
+      .select()
+      .from(vaultSnapshot)
+      .where(whereClause)
+      .orderBy(
+        additionalAnd ? desc(vaultSnapshot.timestamp) : vaultSnapshot.timestamp
+      )
+      .limit(1)
+      .execute()
+    return rows.length ? rows[0] : null
+  }
+
+  if (intervalSeconds <= 0) {
+    // All-time APY → take the very first snapshot (oldest)
+    return await getOne()
+  }
+
+  const cutoff = BigInt(nowTimestamp - intervalSeconds)
+  const ref = await getOne(lte(vaultSnapshot.timestamp, cutoff))
+  if (ref) return ref
+
+  // Fallback to the oldest if nothing satisfies the window
+  return await getOne()
+}
+
+/**
+ * Fetch a reference snapshot for a yield pool (aggregated across vaults).
+ */
+async function fetchYieldPoolReferenceSnapshot(
+  db: any,
+  yieldPoolAddress: Address,
+  chainId: number,
+  nowTimestamp: number,
+  intervalSeconds: number
+) {
+  const baseWhere = and(
+    eq(vaultSnapshot.yieldPool, yieldPoolAddress),
+    eq(vaultSnapshot.chainId, chainId)
+  )
+
+  const getOne = async (additionalAnd?: any) => {
+    const whereClause = additionalAnd
+      ? and(baseWhere, additionalAnd)
+      : baseWhere
+    const rows: any[] = await db.sql
+      .select()
+      .from(vaultSnapshot)
+      .where(whereClause)
+      .orderBy(
+        additionalAnd ? desc(vaultSnapshot.timestamp) : vaultSnapshot.timestamp
+      )
+      .limit(1)
+      .execute()
+    return rows.length ? rows[0] : null
+  }
+
+  if (intervalSeconds <= 0) return await getOne()
+
+  const cutoff = BigInt(nowTimestamp - intervalSeconds)
+  const ref = await getOne(lte(vaultSnapshot.timestamp, cutoff))
+  if (ref) return ref
+
+  return await getOne()
+}
 
 ponder.on('VaultSnapshot:block', async ({ event, context }) => {
   // Helper function to fetch share price using a contract's address
@@ -158,47 +203,32 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
 
     // vault apy computation
     try {
-      // Fetch snapshots for this vault and yield pool, ordered by timestamp
-      const historicalSnapshots = await context.db.sql
-        .select()
-        .from(vaultSnapshot)
-        .where(
-          and(
-            eq(vaultSnapshot.vault, vault.contractAddress),
-            eq(vaultSnapshot.chainId, vault.chainId),
-            eq(vaultSnapshot.yieldPool, vault.yieldPool)
-          )
-        )
-        .orderBy(vaultSnapshot.timestamp)
-        .execute()
+      const vaultRef = await fetchVaultReferenceSnapshot(
+        context.db,
+        vault.contractAddress,
+        vault.chainId,
+        vault.yieldPool,
+        Number(event.block.timestamp),
+        APY_INTERVAL_SEC
+      )
 
-      if (historicalSnapshots.length > 0) {
-        const vaultData = selectSnapshot(
-          historicalSnapshots,
-          'sharePrice',
+      if (vaultRef) {
+        const vaultAPY = calculateAPY(
+          Number(vaultSharePrice),
+          Number(vaultRef.sharePrice),
           Number(event.block.timestamp),
-          APY_INTERVAL_SEC
+          Number(vaultRef.timestamp)
         )
 
-        if (vaultData) {
-          const vaultAPY = calculateAPY(
-            Number(vaultSharePrice),
-            vaultData.price,
-            Number(event.block.timestamp),
-            vaultData.timestamp
-          )
-
-          if (vaultAPY) {
-            // update the pool's apy
-            await context.db
-              .update(relayPool, {
-                chainId: vault.chainId,
-                contractAddress: vault.contractAddress,
-              })
-              .set({
-                apy: vaultAPY,
-              })
-          }
+        if (vaultAPY !== null) {
+          await context.db
+            .update(relayPool, {
+              chainId: vault.chainId,
+              contractAddress: vault.contractAddress,
+            })
+            .set({
+              apy: vaultAPY,
+            })
         }
       }
     } catch (e) {
@@ -210,52 +240,37 @@ ponder.on('VaultSnapshot:block', async ({ event, context }) => {
 
     // base yield apy computation
     try {
-      // Fetch snapshots for this yield pool, ordered by timestamp
-      const historicalYieldSnapshots = await context.db.sql
-        .select()
-        .from(vaultSnapshot)
-        .where(
-          and(
-            eq(vaultSnapshot.yieldPool, vault.yieldPool),
-            eq(vaultSnapshot.chainId, vault.chainId)
-          )
-        )
-        .orderBy(vaultSnapshot.timestamp)
-        .execute()
+      const yieldRef = await fetchYieldPoolReferenceSnapshot(
+        context.db,
+        vault.yieldPool,
+        vault.chainId,
+        Number(event.block.timestamp),
+        APY_INTERVAL_SEC
+      )
 
-      if (historicalYieldSnapshots.length > 0) {
-        const yieldData = selectSnapshot(
-          historicalYieldSnapshots,
-          'yieldPoolSharePrice',
+      if (yieldRef) {
+        const baseYieldAPY = calculateAPY(
+          Number(yieldPoolSharePrice),
+          Number(yieldRef.yieldPoolSharePrice ?? yieldRef.price),
           Number(event.block.timestamp),
-          APY_INTERVAL_SEC
+          Number(yieldRef.timestamp)
         )
 
-        if (yieldData) {
-          const baseYieldAPY = calculateAPY(
-            Number(yieldPoolSharePrice),
-            yieldData.price,
-            Number(event.block.timestamp),
-            yieldData.timestamp
-          )
-
-          if (baseYieldAPY) {
-            // update the yield pool's apy
-            await context.db
-              .insert(yieldPool)
-              .values({
-                apy: baseYieldAPY,
-                asset: vault.asset,
-                chainId: vault.chainId,
-                contractAddress: vault.yieldPool,
-                lastUpdated: event.block.timestamp,
-                name: 'Unknown', // placeholder - will be updated by event handlers
-              })
-              .onConflictDoUpdate({
-                apy: baseYieldAPY,
-                lastUpdated: event.block.timestamp,
-              })
-          }
+        if (baseYieldAPY !== null) {
+          await context.db
+            .insert(yieldPool)
+            .values({
+              apy: baseYieldAPY,
+              asset: vault.asset,
+              chainId: vault.chainId,
+              contractAddress: vault.yieldPool,
+              lastUpdated: event.block.timestamp,
+              name: 'Unknown',
+            })
+            .onConflictDoUpdate({
+              apy: baseYieldAPY,
+              lastUpdated: event.block.timestamp,
+            })
         }
       }
     } catch (e) {

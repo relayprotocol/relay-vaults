@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/production'
-    needs: [build-docker-image]
+    # needs: [build-docker-image]
     environment: prod
     container:
       image: ghcr.io/unevenlabs/infrastructure/deployer:latest

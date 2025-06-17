@@ -286,10 +286,12 @@ async function checkZkSyncStatus(
 
   const contract = new Contract(
     diamondProxyAddress,
-    ['event BlockExecution(uint256 indexed blockNumber)'],
+    [
+      'event BlockExecution(uint256 indexed blockNumber, bytes32 indexed blockHash, bytes32 indexed commitment)',
+    ],
     l1Provider
   )
-  const filter = contract.filters.BlockExecution()
+  const filter = contract.filters.BlockExecution
 
   // look back in blocks
   const fromBlock = currentL1Block - MAX_BLOCKS_WITHOUT_PROOF

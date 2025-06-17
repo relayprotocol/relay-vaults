@@ -224,12 +224,13 @@ async function checkArbitrumStatus(
     throw new Error('Rollup address not configured')
   }
 
+  // TODO: use AssertionConfirmed ?
   const arbitrumRollupAbi = [
-    'event AssertionCreated(uint64 assertionID, bytes32 vmHash, bytes32 inboxHash, uint256 afterInboxBatchAcc, bytes32 stateHash, uint256 parentID)',
+    'event AssertionConfirmed(bytes32 indexed assertionHash, bytes32 blockHash, bytes32 sendRoot)',
   ]
 
   const contract = new Contract(rollupAddress, arbitrumRollupAbi, l1Provider)
-  const filter = contract.filters.NodeCreated()
+  const filter = contract.filters.AssertionConfirmed
 
   // look back in blocks
   const fromBlock = currentL1Block - MAX_BLOCKS_WITHOUT_PROOF

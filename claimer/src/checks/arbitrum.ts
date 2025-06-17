@@ -50,10 +50,9 @@ export async function checkArbitrumStatus(
   }
 
   const timeSinceLastProof = Math.floor(Date.now() / 1000) - block.timestamp
-
   return {
     isUp: true,
-    lastProofBlock: Number(latestEvent.args.nodeNum),
+    lastProofBlock: latestEvent.blockNumber,
     lastProofTimestamp: block.timestamp,
     timeSinceLastProof,
   }

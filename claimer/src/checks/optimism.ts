@@ -52,7 +52,7 @@ export async function checkOptimismStatus(
 
   return {
     isUp: true,
-    lastProofBlock: Number(latestEvent.args.l2BlockNumber),
+    lastProofBlock: Number(latestEvent.blockNumber),
     lastProofTimestamp: Number(latestEvent.args.l1Timestamp),
     timeSinceLastProof,
   }

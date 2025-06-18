@@ -19,6 +19,7 @@ const config: ChildNetworkConfig = {
         nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',
         sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
         diamondProxy: '0x32400084c286cf3e17e7b677ea9583e60a000324',
+        maxBlocksWithoutProof: 500,
       },
     },
   },

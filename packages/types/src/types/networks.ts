@@ -14,6 +14,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
       parent: {
         portalProxy: string
         gameFactory: string
+        maxTimeWithoutProof: number // duration before a OP bedrock chain is deemed halted/inactive
       }
       child: {
         messagePasser: string
@@ -23,6 +24,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
       parent: {
         outputOracle: string
         portalProxy: string
+        maxBlocksWithoutProof: number // number of blocks before a chain is deemed halted/inactive
       }
       child: {
         messagePasser: string
@@ -33,6 +35,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
         outbox: string
         rollup: string
         routerGateway: string
+        maxBlocksWithoutProof: number // number of L1 blocks before a chain is deemed halted/inactive
       }
       child: {
         arbSys: string
@@ -56,6 +59,7 @@ export interface ChildNetworkConfig extends NetworkConfig {
         sharedDefaultBridge: string
         nativeTokenVault: string
         diamondProxy: string
+        maxBlocksWithoutProof: number // number of L1 blocks before a chain is deemed halted/inactive
       }
       child: {
         l1Messenger: string

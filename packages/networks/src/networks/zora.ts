@@ -1,4 +1,4 @@
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 
 // https://docs.zora.co/zora-network/network#zora-network-mainnet
 const config: ChildNetworkConfig = {

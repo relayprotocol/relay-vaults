@@ -1,7 +1,7 @@
 import { JsonRpcProvider, Contract } from 'ethers'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 
 const DISPUTE_GAME_FACTORY_ABI = [
   'function gameAtIndex(uint256 _index) external view returns (uint32 gameType_, uint64 timestamp_, address proxy_)',

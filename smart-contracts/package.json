@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/smart-contracts",
+  "name": "@relay-vaults/smart-contracts",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:relayprotocol/vaults.git",
@@ -32,7 +32,7 @@
     "@nomicfoundation/hardhat-network-helpers": "1.0.12",
     "@nomicfoundation/hardhat-toolbox": "5.0.0",
     "@nomicfoundation/hardhat-verify": "2.0.12",
-    "@relay-protocol/helpers": "workspace:*",
+    "@relay-vaults/helpers": "workspace:*",
     "@typechain/ethers-v6": "0.5.1",
     "@typechain/hardhat": "9.1.0",
     "@types/chai": "4.3.20",

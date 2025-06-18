@@ -7,7 +7,7 @@ import {
   TimelockControllerUpgradeable,
 } from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
-import { getEvent } from '@relay-protocol/helpers'
+import { getEvent } from '@relay-vaults/helpers'
 
 describe('RelayPoolFactory: deployment', () => {
   let userAddress

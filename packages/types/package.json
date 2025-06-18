@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/types",
+  "name": "@relay-vaults/types",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "lint": "eslint"
   },
   "devDependencies": {
-    "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
+    "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "eslint": "9.28.0",
     "typescript": "5.8.3"
   }

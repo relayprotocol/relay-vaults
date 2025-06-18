@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { MyWeth } from '../../typechain-types'
 

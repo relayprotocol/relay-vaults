@@ -1,7 +1,7 @@
 // hardhat ignition is not supported rn
 // https://github.com/NomicFoundation/hardhat-ignition/issues/825
 import { type JsonRpcResult } from 'ethers'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { outputJSON } from 'fs-extra'
 import path from 'path'

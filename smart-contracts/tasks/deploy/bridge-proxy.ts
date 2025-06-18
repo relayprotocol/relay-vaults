@@ -1,5 +1,5 @@
 import { task } from 'hardhat/config'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import { type BaseContract } from 'ethers'
 import { Select, Confirm, Input } from 'enquirer'
 import fs from 'fs'
@@ -9,8 +9,8 @@ import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNative
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
-import { L1NetworkConfig, ChildNetworkConfig } from '@relay-protocol/types'
-import { getProvider } from '@relay-protocol/helpers'
+import { L1NetworkConfig, ChildNetworkConfig } from '@relay-vaults/types'
+import { getProvider } from '@relay-vaults/helpers'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 

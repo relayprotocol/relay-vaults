@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { quote } from '../../lib/uniswap'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 
 describe('Uniswap Quote', function () {
   // Use a longer timeout for mainnet fork tests

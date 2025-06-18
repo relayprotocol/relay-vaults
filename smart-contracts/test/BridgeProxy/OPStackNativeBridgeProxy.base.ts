@@ -1,12 +1,12 @@
 import { ethers, ignition } from 'hardhat'
-import { ABIs } from '@relay-protocol/helpers'
+import { ABIs } from '@relay-vaults/helpers'
 import { expect } from 'chai'
 import { stealERC20 } from '../utils/hardhat'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 import { AbiCoder, Log } from 'ethers'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 const { assets: ethereumAssets } = networks[1]
 const { assets: baseAssets, bridges } = networks[8453] as ChildNetworkConfig
 

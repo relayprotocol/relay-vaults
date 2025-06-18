@@ -1,8 +1,8 @@
 import fs from 'fs'
 import { task } from 'hardhat/config'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import { AutoComplete, Input } from 'enquirer'
-import { getEvent } from '@relay-protocol/helpers'
+import { getEvent } from '@relay-vaults/helpers'
 import VerifiableBridgeModule from '../../ignition/modules/VerifiableBridgeModule'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'

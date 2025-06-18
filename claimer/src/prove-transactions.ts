@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
-import { RelayVaultService } from '@relay-protocol/client'
-import networks from '@relay-protocol/networks'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { RelayVaultService } from '@relay-vaults/client'
+import networks from '@relay-vaults/networks'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import { submitProof } from './relay'
 
 const GET_ALL_TRANSACTIONS_TO_PROVE = gql`

@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config'
 
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
 
 task('deploy:pool-factory', 'Deploy a relay vault factory')

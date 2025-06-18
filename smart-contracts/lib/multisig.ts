@@ -1,4 +1,4 @@
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import SafeApiKit from '@safe-global/api-kit'
 import Safe from '@safe-global/protocol-kit'
 import { Confirm, Select } from 'enquirer'

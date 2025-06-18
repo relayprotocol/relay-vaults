@@ -119,13 +119,13 @@ async function fetchYieldPoolReferenceSnapshot(
     return rows.length ? rows[0] : null
   }
 
-  if (intervalSeconds <= 0) return await getOne()
+  if (intervalSeconds <= 0) return getOne()
 
   const cutoff = BigInt(nowTimestamp - intervalSeconds)
   const ref = await getOne(lte(vaultSnapshot.timestamp, cutoff))
   if (ref) return ref
 
-  return await getOne()
+  return getOne()
 }
 
 ponder.on('VaultSnapshot:block', async ({ event, context }) => {

@@ -2,6 +2,7 @@ import { index, onchainTable, primaryKey, relations } from 'ponder'
 
 /**
  * Track yield pools
+ * - apy: Annual Percentage Yield in basis points
  * - contractAddress: Contract address
  * - asset: Asset (token) address
  * - name: Yield pool name
@@ -10,6 +11,7 @@ import { index, onchainTable, primaryKey, relations } from 'ponder'
 export const yieldPool = onchainTable(
   'yield_pool',
   (t) => ({
+    apy: t.integer().notNull().default(0),
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
@@ -27,6 +29,7 @@ export const yieldPool = onchainTable(
 
 /**
  * Track relay pools
+ * - apy: Annual Percentage Yield in basis points
  * - contractAddress: Contract address
  * - curator: Address of the curator
  * - asset: Asset (token) address
@@ -43,6 +46,7 @@ export const yieldPool = onchainTable(
 export const relayPool = onchainTable(
   'relay_pool',
   (t) => ({
+    apy: t.integer().notNull().default(0),
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
@@ -305,6 +309,7 @@ export const vaultSnapshot = onchainTable(
     sharePrice: t.numeric().notNull(),
     timestamp: t.bigint().notNull(),
     vault: t.hex().notNull(),
+    yieldPool: t.hex().notNull(),
     yieldPoolSharePrice: t.numeric().notNull(),
   }),
   (table) => ({
@@ -312,6 +317,7 @@ export const vaultSnapshot = onchainTable(
       columns: [table.chainId, table.blockNumber, table.vault],
     }),
     vaultChainIdx: index().on(table.vault, table.chainId),
+    yieldPoolIdx: index().on(table.yieldPool),
   })
 )
 

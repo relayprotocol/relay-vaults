@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 
 import RelayBridgeFactoryModule from '../../ignition/modules/RelayBridgeFactoryModule'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { deployContract } from '../../lib/zksync'
 
 task('deploy:bridge-factory', 'Deploy a relay bridge factory').setAction(

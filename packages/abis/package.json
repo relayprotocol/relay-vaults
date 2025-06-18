@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/abis",
+  "name": "@relay-vaults/abis",
   "version": "1.0.2",
   "license": "MIT",
   "main": "dist/index.js",
@@ -14,8 +14,8 @@
   "scripts": {
     "release": "npm publish",
     "clean": "rm -rf dist",
-    "build:contracts": "yarn workspace @relay-protocol/smart-contracts build",
-    "build:export-abis": "yarn workspace @relay-protocol/smart-contracts build:abis",
+    "build:contracts": "yarn workspace @relay-vaults/smart-contracts build",
+    "build:export-abis": "yarn workspace @relay-vaults/smart-contracts build:abis",
     "build:copy-versions": "cp -r ./src/versions ./dist/versions",
     "update": "yarn build:contracts && yarn build:export-abis",
     "build:ts": "tsup src/index.ts --dts --format esm,cjs",
@@ -25,8 +25,8 @@
     "snapshot": "./bin/snapshot.sh"
   },
   "devDependencies": {
-    "@relay-protocol/helpers": "^workspace:*",
-    "@relay-protocol/networks": "1.1.1",
+    "@relay-vaults/helpers": "^workspace:*",
+    "@relay-vaults/networks": "1.1.1",
     "tsup": "8.5.0",
     "typescript": "5.8.3"
   },

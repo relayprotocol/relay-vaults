@@ -1,4 +1,4 @@
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 
 const config: ChildNetworkConfig = {
   assets: {
@@ -25,6 +25,7 @@ const config: ChildNetworkConfig = {
       parent: {
         portalProxy: '0x49f53e41452C74589E85cA1677426Ba426459e85',
         gameFactory: '0xd6E6dBf4F7EA0ac412fD8b65ED297e64BB7a06E1',
+        maxTimeWithoutProof: 3600,
       },
     },
   },

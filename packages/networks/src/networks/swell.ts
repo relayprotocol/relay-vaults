@@ -1,4 +1,4 @@
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 
 const config: ChildNetworkConfig = {
   assets: {
@@ -13,6 +13,7 @@ const config: ChildNetworkConfig = {
       parent: {
         portalProxy: '0x758E0EE66102816F5C3Ec9ECc1188860fbb87812',
         gameFactory: '0x87690676786cDc8cCA75A472e483AF7C8F2f0F57',
+        maxTimeWithoutProof: 4000,
       },
     },
   },
@@ -25,7 +26,7 @@ const config: ChildNetworkConfig = {
   rpc: process.env.RPC_1923
     ? [process.env.RPC_1923]
     : ['https://swell-mainnet.alt.technology'],
-  stack: 'optimism-alt',
+  stack: 'optimism',
 }
 
 export default config

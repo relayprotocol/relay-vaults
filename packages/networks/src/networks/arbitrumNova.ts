@@ -1,4 +1,4 @@
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 
 const config: ChildNetworkConfig = {
   assets: {
@@ -15,6 +15,7 @@ const config: ChildNetworkConfig = {
         outbox: '0xD4B80C3D7240325D18E645B49e6535A3Bf95cc58',
         rollup: '0xE7E8cCC7c381809BDC4b213CE44016300707B7Bd',
         routerGateway: '0xC840838Bc438d73C16c2f8b22D2Ce3669963cD48',
+        maxBlocksWithoutProof: 500,
       },
     },
   },

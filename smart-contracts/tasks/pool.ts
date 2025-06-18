@@ -1,8 +1,8 @@
 import { task } from 'hardhat/config'
-import { checkAllowance, getStataToken } from '@relay-protocol/helpers'
+import { checkAllowance, getStataToken } from '@relay-vaults/helpers'
 import { Input, Select, AutoComplete } from 'enquirer'
 import { getPoolsForNetwork } from './deploy/bridge-proxy'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { executeThruTimelock } from '../lib/multisig'
 
 task('pool:deposit', 'Deposit ERC20 tokens in a relay vault')

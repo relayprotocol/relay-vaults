@@ -1,10 +1,10 @@
 {
-  "name": "@relay-protocol/backend",
+  "name": "@relay-vaults/backend",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "ponder dev",
-    "start": "ponder start",
+    "start": "ponder start --schema $IMAGE_TAG",
     "db": "ponder db",
     "codegen": "ponder codegen",
     "serve": "ponder serve",
@@ -16,8 +16,8 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
-    "@relay-protocol/abis": "workspace:*",
-    "@relay-protocol/addresses": "1.0.5",
+    "@relay-vaults/abis": "workspace:*",
+    "@relay-vaults/addresses": "1.0.5",
     "hono": "4.7.11",
     "ponder": "0.11.17",
     "viem": "2.31.0"
@@ -27,7 +27,7 @@
     "@typescript-eslint/eslint-plugin": "8.34.0",
     "@typescript-eslint/parser": "8.34.0",
     "eslint": "9.28.0",
-    "eslint-config-ponder": "0.11.12",
+    "eslint-config-ponder": "0.11.17",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.1",
     "husky": "9.1.7",

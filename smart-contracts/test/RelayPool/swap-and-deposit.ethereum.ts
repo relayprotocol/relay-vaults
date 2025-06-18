@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { mintUSDC, stealERC20 } from '../utils/hardhat'
 import { reverts } from '../utils/errors'
@@ -13,7 +13,7 @@ import {
   TokenSwap,
 } from '../../typechain-types'
 import TokenSwapModule from '../../ignition/modules/TokenSwapModule'
-import { getBalance, getEvent } from '@relay-protocol/helpers'
+import { getBalance, getEvent } from '@relay-vaults/helpers'
 import { Signer, ZeroAddress } from 'ethers'
 
 const {

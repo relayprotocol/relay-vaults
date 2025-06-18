@@ -2,7 +2,7 @@ import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
 import '@matterlabs/hardhat-zksync'
-import { networks as nets } from '@relay-protocol/networks'
+import { networks as nets } from '@relay-vaults/networks'
 import registry from '@hyperlane-xyz/registry'
 import 'solidity-docgen'
 

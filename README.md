@@ -24,4 +24,4 @@ This contract has a `bridge` method which needs to be called with the following 
 Prior to calling this, your code needs to compute the hyperlane fee that needs to be passed as `value`. For this you can call `getFee` with the `amount` (uint256) and `recipient` (address) values.
 Additionally, if the asset is an ERC20, you need to use the ERC20 contract's `approve` method to allow the `RelayBridge` contract to spend some of your tokens (allowance needs to be _at least_ the `amount`). If using the native asset you need to add the `amount` and the `fee` returned by `getFee`.
 
-You can find the ABI for the `Relay Bridge` contract in the `@relay-protocol/abis` npm package, and the addresses in `@relay-protocol/addresses`.
+You can find the ABI for the `Relay Bridge` contract in the `@relay-vaults/abis` npm package, and the addresses in `@relay-vaults/addresses`.

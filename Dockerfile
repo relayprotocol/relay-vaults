@@ -35,10 +35,8 @@ RUN yarn install --mode=skip-build
 ENV NODE_ENV=production
 
 
-# Add Railway specific ARGs and persist them into ENV
-ARG RAILWAY_DEPLOYMENT_ID
+# Add specific ARGs and persist them into ENV
 ARG DATABASE_URL
-ENV RAILWAY_DEPLOYMENT_ID=$RAILWAY_DEPLOYMENT_ID
 ENV DATABASE_URL=$DATABASE_URL
 
 # Expose port

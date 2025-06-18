@@ -1,5 +1,5 @@
-import networks from '@relay-protocol/networks'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import networks from '@relay-vaults/networks'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import { SEVEN_DAYS } from '../../constants'
 import { eq, and } from 'ponder'
 import { Context, Event } from 'ponder:registry'

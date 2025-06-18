@@ -1,0 +1,38 @@
+name: Release to Production
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  merge-to-production:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: ${{ vars.APP_ID }}
+          application_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Merge main into production
+        run: |
+          git fetch origin production
+          git checkout main
+          git reset --soft origin/production
+          git checkout -b production
+          git commit -a -m "Release ${{ github.event.release.tag_name }}"
+          git push https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/relayprotocol/relay-vaults.git production

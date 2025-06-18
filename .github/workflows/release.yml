@@ -2,7 +2,7 @@ name: Release to Production
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   merge-to-production:

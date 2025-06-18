@@ -1,10 +1,10 @@
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction } from 'ponder:schema'
-import { ABIs } from '@relay-protocol/helpers'
-import { BridgeProxy } from '@relay-protocol/abis'
-import networks from '@relay-protocol/networks'
+import { ABIs } from '@relay-vaults/helpers'
+import { BridgeProxy } from '@relay-vaults/abis'
+import networks from '@relay-vaults/networks'
 import { decodeEventLog } from 'viem'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import { SEVEN_DAYS } from '../../constants'
 
 export default async function ({

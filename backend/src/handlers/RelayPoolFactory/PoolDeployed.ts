@@ -1,4 +1,4 @@
-import { RelayPool } from '@relay-protocol/abis'
+import { RelayPool } from '@relay-vaults/abis'
 import { Context, Event } from 'ponder:registry'
 import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'

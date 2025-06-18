@@ -1,4 +1,4 @@
-import { L1NetworkConfig } from '@relay-protocol/types'
+import { L1NetworkConfig } from '@relay-vaults/types'
 
 const config: L1NetworkConfig = {
   assets: {

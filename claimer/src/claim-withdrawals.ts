@@ -1,6 +1,6 @@
-import { RelayVaultService } from '@relay-protocol/client'
+import { RelayVaultService } from '@relay-vaults/client'
 import { gql } from 'graphql-request'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { ethers } from 'ethers'
 import { claimFunds } from './relay'
 

@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/helpers",
+  "name": "@relay-vaults/helpers",
   "version": "1.0.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -31,8 +31,8 @@
     "build:index": "tsc && node dist/scripts/buildAbisIndex.js && tsc"
   },
   "devDependencies": {
-    "@relay-protocol/networks": "workspace:^",
-    "@relay-protocol/tsconfig": "workspace:^",
+    "@relay-vaults/networks": "workspace:^",
+    "@relay-vaults/tsconfig": "workspace:^",
     "@types/copyfiles": "2",
     "@types/fs-extra": "11",
     "copyfiles": "2.4.1",

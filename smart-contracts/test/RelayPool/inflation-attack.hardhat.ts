@@ -1,9 +1,9 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { MyToken, MyYieldPool, RelayPool } from '../../typechain-types'
 import RelayPoolFactoryModule from '../../ignition/modules/RelayPoolFactoryModule'
-import { getEvent } from '@relay-protocol/helpers'
+import { getEvent } from '@relay-vaults/helpers'
 
 describe('RelayPool: inflation attack', () => {
   let relayPool: RelayPool

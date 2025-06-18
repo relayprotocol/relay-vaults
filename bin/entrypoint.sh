@@ -1,4 +1,4 @@
 #!/bin/sh
-echo "Running command: yarn workspace @relay-protocol/$@"
+echo "Running command: yarn workspace @relay-vaults/$@"
 
-yarn workspace @relay-protocol/$@
+yarn workspace @relay-vaults/$@

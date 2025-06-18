@@ -1,11 +1,11 @@
 import { ethers, zksyncEthers } from 'hardhat'
 import { expect } from 'chai'
 import { parseUnits, TransactionReceipt, type Signer } from 'ethers'
-import { getBalance, getEvent } from '@relay-protocol/helpers'
-import { networks } from '@relay-protocol/networks'
+import { getBalance, getEvent } from '@relay-vaults/helpers'
+import { networks } from '@relay-vaults/networks'
 import { ZkSyncBridgeProxy } from '../../typechain-types'
 
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 
 const chainId = 324 // zkSync Era mainnet
 const destinationChainId = 1 // Ethereum mainnet

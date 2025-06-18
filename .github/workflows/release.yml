@@ -16,6 +16,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate GitHub App token
+        id: app-token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          appId: ${{ secrets.APP_ID }}
+          privateKey: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Configure Git
         run: |
           git config user.name "GitHub Actions"
@@ -28,4 +35,4 @@ jobs:
           git reset --soft origin/production
           git checkout -b production
           git commit -a -m "Release ${{ github.event.release.tag_name }}"
-          git push origin production
+          git push https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/relayprotocol/relay-vaults.git production

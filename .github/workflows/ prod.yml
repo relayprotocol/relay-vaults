@@ -1,4 +1,4 @@
-name: Main Branch
+name: Production Branch
 
 on:
   push:
@@ -90,8 +90,8 @@ jobs:
           bash -c "/app/deploy.sh"
         shell: bash
         env:
-          ENVIRONMENT: "prod"
-          SERVICE: "relay-vaults"
-          GITHUB_SHA: "${{ github.sha }}"
-          GITHUB_TOKEN: "${{ secrets.DEVOPSBOT_TOKEN }}"
+          ENVIRONMENT: 'prod'
+          SERVICE: 'relay-vaults'
+          GITHUB_SHA: '${{ github.sha }}'
+          GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
           DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}

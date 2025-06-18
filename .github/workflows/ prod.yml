@@ -1,4 +1,4 @@
-name: Main Branch
+name: Production Branch
 
 on:
   push:

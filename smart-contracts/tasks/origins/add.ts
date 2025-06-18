@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 import { Select, Input, Confirm } from 'enquirer'
-import { networks } from '@relay-protocol/networks'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { networks } from '@relay-vaults/networks'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import {
   getPoolsForNetwork,
   getBridgesForNetwork,

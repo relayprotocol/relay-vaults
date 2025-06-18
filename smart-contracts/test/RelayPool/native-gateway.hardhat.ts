@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
 
 import { IWETH, RelayPool, RelayPoolNativeGateway } from '../../typechain-types'
-import { getBalance } from '@relay-protocol/helpers'
+import { getBalance } from '@relay-vaults/helpers'
 import { reverts } from '../utils/errors'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { ZeroAddress } from 'ethers'

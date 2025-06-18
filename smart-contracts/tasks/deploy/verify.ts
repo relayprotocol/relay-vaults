@@ -1,5 +1,5 @@
 import { task } from 'hardhat/config'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 task(
   'deploy:verify',
   'Verifies a contract utility, includes retries and wait times'

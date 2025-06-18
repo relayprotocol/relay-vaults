@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import { IUSDC, ERC4626, RelayPool } from '../../typechain-types'
-import { getStataToken } from '@relay-protocol/helpers'
+import { getStataToken } from '@relay-vaults/helpers'
 import { mintUSDC } from '../utils/hardhat'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 

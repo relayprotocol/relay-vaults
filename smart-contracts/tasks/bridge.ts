@@ -1,8 +1,8 @@
-import { getBalance, checkAllowance, getEvent } from '@relay-protocol/helpers'
-import { ABIs } from '@relay-protocol/helpers'
+import { getBalance, checkAllowance, getEvent } from '@relay-vaults/helpers'
+import { ABIs } from '@relay-vaults/helpers'
 import { Select, Input, Confirm } from 'enquirer'
 import { task } from 'hardhat/config'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import { getBridgesForNetwork } from './deploy/bridge-proxy'
 import { AbiCoder } from 'ethers'
 

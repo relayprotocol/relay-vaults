@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config'
 import { getPoolsForNetwork } from '../deploy/bridge-proxy'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { Select, Confirm } from 'enquirer'
 import { executeThruTimelock } from '../../lib/multisig'
 import { ZeroAddress } from 'ethers'

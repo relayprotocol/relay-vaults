@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config'
 
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import { boolean } from 'hardhat/internal/core/params/argumentTypes'
 
 BigInt.prototype.toJSON = function () {

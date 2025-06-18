@@ -1,6 +1,6 @@
 import { ZeroAddress } from 'ethers'
-import networks from '@relay-protocol/networks'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import networks from '@relay-vaults/networks'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 
 const ENDPOINT = 'https://api.relay.link'
 const TESTNETS_ENDPOINT = 'https://api.testnets.relay.link'

@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/monorepo",
+  "name": "@relay-vaults/monorepo",
   "version": "1.0.0",
   "main": "index.js",
   "repository": {
@@ -20,17 +20,17 @@
   ],
   "scripts": {
     "test": "yarn packages --parallel run test",
-    "packages": "yarn workspaces foreach --recursive --from '{@relay-protocol/addresses,@relay-protocol/eslint-config,@relay-protocol/helpers,@relay-protocol/networks,@relay-protocol/tsconfig,@relay-protocol/types,@relay-protocol/abis,@relay-protocol/client}'",
+    "packages": "yarn workspaces foreach --recursive --from '{@relay-vaults/addresses,@relay-vaults/eslint-config,@relay-vaults/helpers,@relay-vaults/networks,@relay-vaults/tsconfig,@relay-vaults/types,@relay-vaults/abis,@relay-vaults/client}'",
     "packages:clean": "yarn packages --parallel run clean",
     "packages:build": "yarn packages --topological-dev run build",
-    "prebuild": "yarn workspace @relay-protocol/backend codegen",
+    "prebuild": "yarn workspace @relay-vaults/backend codegen",
     "build": "yarn packages:clean && yarn packages:build",
     "clean": "yarn packages:clean",
     "lint": "yarn packages --parallel run lint",
-    "backend:dev": "yarn build && yarn workspace @relay-protocol/backend dev",
-    "backend:start": "yarn workspace @relay-protocol/backend start",
-    "claimer:dev": "yarn build && yarn workspace @relay-protocol/claimer dev",
-    "claimer:start": "yarn workspace @relay-protocol/claimer start"
+    "backend:dev": "yarn build && yarn workspace @relay-vaults/backend dev",
+    "backend:start": "yarn workspace @relay-vaults/backend start",
+    "claimer:dev": "yarn build && yarn workspace @relay-vaults/claimer dev",
+    "claimer:start": "yarn workspace @relay-vaults/claimer start"
   },
   "engines": {
     "node": "22"

@@ -1,4 +1,4 @@
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { outputJSON, readJson } from 'fs-extra'
 import { task } from 'hardhat/config'
 

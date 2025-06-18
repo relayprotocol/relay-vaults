@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/addresses",
+  "name": "@relay-vaults/addresses",
   "version": "1.0.5",
   "license": "MIT",
   "main": "dist/index.js",
@@ -24,9 +24,9 @@
     "tsx": "4.19.4"
   },
   "devDependencies": {
-    "@relay-protocol/eslint-config": "workspace:^",
-    "@relay-protocol/tsconfig": "workspace:./packages/tsconfig",
-    "@relay-protocol/types": "workspace:./packages/types",
+    "@relay-vaults/eslint-config": "workspace:^",
+    "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
+    "@relay-vaults/types": "workspace:./packages/types",
     "@types/node": "22.15.31",
     "eslint": "9.28.0",
     "tsup": "8.5.0",

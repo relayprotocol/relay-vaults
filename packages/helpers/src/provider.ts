@@ -1,5 +1,5 @@
 import { ethers, type JsonRpcResult } from 'ethers'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 
 export const getProvider = (chainId: bigint | string | number) => {
   const { rpc } = networks[chainId.toString()]

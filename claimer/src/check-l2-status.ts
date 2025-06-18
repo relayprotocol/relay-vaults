@@ -1,5 +1,5 @@
-import networks from '@relay-protocol/networks'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import networks from '@relay-vaults/networks'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './checks/types'
 import { checkOptimismBedrockStatus } from './checks/optimism-bedrock'
 import { checkOptimismStatus } from './checks/optimism'

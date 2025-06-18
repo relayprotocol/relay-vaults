@@ -1,4 +1,4 @@
-import { TimelockControllerUpgradeable } from '@relay-protocol/abis'
+import { TimelockControllerUpgradeable } from '@relay-vaults/abis'
 import { and, eq } from 'ponder'
 import { Context, Event } from 'ponder:registry'
 import { timelock } from 'ponder:schema'

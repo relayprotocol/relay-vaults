@@ -1,10 +1,10 @@
 import { expect } from 'chai'
 import { ethers, ignition } from 'hardhat'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import { IUSDC, ERC4626, RelayPool } from '../../typechain-types'
 import { mintUSDC } from '../utils/hardhat'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
-import { getEvents } from '@relay-protocol/helpers'
+import { getEvents } from '@relay-vaults/helpers'
 
 const {
   assets: { usdc: USDC, weth },

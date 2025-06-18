@@ -1,4 +1,4 @@
-import { RelayVaultService } from '@relay-protocol/client'
+import { RelayVaultService } from '@relay-vaults/client'
 import { gql } from 'graphql-request'
 import { finalizeWithdrawal } from './relay'
 

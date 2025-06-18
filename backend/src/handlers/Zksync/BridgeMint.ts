@@ -1,6 +1,6 @@
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 import { eq, and } from 'ponder'
-import { ABIs } from '@relay-protocol/helpers'
+import { ABIs } from '@relay-vaults/helpers'
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction } from 'ponder:schema'
 import { decodeFunctionData, keccak256 } from 'viem'

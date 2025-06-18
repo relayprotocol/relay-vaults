@@ -20,8 +20,8 @@ jobs:
         id: app-token
         uses: peter-murray/workflow-application-token-action@v2
         with:
-          application_private_key: ${{ secrets.APP_ID }}
-          application_id: ${{ secrets.APP_PRIVATE_KEY }}
+          application_id: ${{ vars.APP_ID }}
+          application_private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Configure Git
         run: |

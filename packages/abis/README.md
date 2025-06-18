@@ -5,10 +5,10 @@ Contains all ABIs for Relay Pool contracts.
 ## Usage
 
 ```js
-import { RelayPool } from '@relay-protocol/abis'
+import { RelayPool } from '@relay-vaults/abis'
 
 // import all the ABIs
-import * as RelayProtocolAbis from '@relay-protocol/abis'
+import * as RelayProtocolAbis from '@relay-vaults/abis'
 ```
 
 ## How to upgrade

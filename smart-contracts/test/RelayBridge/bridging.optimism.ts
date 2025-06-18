@@ -1,11 +1,11 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
 
-import { getBalance } from '@relay-protocol/helpers'
+import { getBalance } from '@relay-vaults/helpers'
 
 import { Log } from 'ethers'
 
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 import RelayBridgeModule from '../../ignition/modules/RelayBridgeModule'
 import { MyWeth, RelayBridge } from '../../typechain-types'
 

@@ -1,5 +1,5 @@
 {
-  "name": "@relay-protocol/backend",
+  "name": "@relay-vaults/backend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,8 +16,8 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
-    "@relay-protocol/abis": "workspace:*",
-    "@relay-protocol/addresses": "1.0.5",
+    "@relay-vaults/abis": "workspace:*",
+    "@relay-vaults/addresses": "1.0.5",
     "hono": "4.7.11",
     "ponder": "0.11.17",
     "viem": "2.31.0"

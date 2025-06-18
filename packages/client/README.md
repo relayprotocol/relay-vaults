@@ -1,11 +1,11 @@
-# `@relay-protocol/client`
+# `@relay-vaults/client`
 
 TypeScript client for the Relay Protocol API with type-safe queries and responses.
 
 ## Installation
 
 ```bash
-yarn add @relay-protocol/client
+yarn add @relay-vaults/client
 ```
 
 ## Features
@@ -19,7 +19,7 @@ yarn add @relay-protocol/client
 ### Basic Usage
 
 ```typescript
-import { RelayVaultService } from '@relay-protocol/client'
+import { RelayVaultService } from '@relay-vaults/client'
 
 const vaultService = new RelayVaultService('https://api.example.com/graphql')
 
@@ -32,7 +32,7 @@ const userBalances = await vaultService.getUserBalances('0xabc...')
 ### SDK Access
 
 ```typescript
-import { RelayClient } from '@relay-protocol/client'
+import { RelayClient } from '@relay-vaults/client'
 
 const client = new RelayClient('https://api.example.com/graphql')
 
@@ -47,7 +47,7 @@ const { data } = await client.sdk.GetAllPools({
 ### Custom Queries
 
 ```typescript
-import { RelayVaultService, gql } from '@relay-protocol/client'
+import { RelayVaultService, gql } from '@relay-vaults/client'
 
 const vaultService = new RelayVaultService('https://api.example.com/graphql')
 

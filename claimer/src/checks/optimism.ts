@@ -1,7 +1,7 @@
 import { JsonRpcProvider, Contract, EventLog } from 'ethers'
-import { ChildNetworkConfig } from '@relay-protocol/types'
+import { ChildNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
-import networks from '@relay-protocol/networks'
+import networks from '@relay-vaults/networks'
 
 // deprec version of OP stack using l2OutputOracle (before bedrock)
 // https://gov.optimism.io/t/final-protocol-upgrade-7-fault-proofs/8161

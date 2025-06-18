@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 
 import RelayPoolNativeGatewayModule from '../../ignition/modules/RelayPoolNativeGatewayModule'
-import { networks } from '@relay-protocol/networks'
+import { networks } from '@relay-vaults/networks'
 
 task(
   'deploy:native-gateway',

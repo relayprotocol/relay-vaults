@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 import { AutoComplete, Input } from 'enquirer'
-import { networks } from '@relay-protocol/networks'
-import { getStataToken, getEvent } from '@relay-protocol/helpers'
+import { networks } from '@relay-vaults/networks'
+import { getStataToken, getEvent } from '@relay-vaults/helpers'
 import fs from 'fs'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'

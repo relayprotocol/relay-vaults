@@ -1,4 +1,4 @@
-const sharedConfig = require('@relay-protocol/eslint-config')
+const sharedConfig = require('@relay-vaults/eslint-config')
 const sortKeysFix = require('eslint-plugin-sort-keys-fix')
 module.exports = [
   ...sharedConfig,

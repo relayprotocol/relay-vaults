@@ -1,5 +1,5 @@
 import { createConfig, factory } from 'ponder'
-import { ABIs } from '@relay-protocol/helpers'
+import { ABIs } from '@relay-vaults/helpers'
 
 import {
   RelayPool,
@@ -7,11 +7,11 @@ import {
   RelayPoolFactory,
   RelayBridgeFactory,
   TimelockControllerUpgradeable,
-} from '@relay-protocol/abis'
+} from '@relay-vaults/abis'
 import { Abi, AbiEvent } from 'viem'
-import { getAddresses } from '@relay-protocol/addresses'
-import networks from '@relay-protocol/networks'
-import { L1NetworkConfig, ChildNetworkConfig } from '@relay-protocol/types'
+import { getAddresses } from '@relay-vaults/addresses'
+import networks from '@relay-vaults/networks'
+import { L1NetworkConfig, ChildNetworkConfig } from '@relay-vaults/types'
 
 const deployedAddresses = getAddresses()
 

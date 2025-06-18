@@ -21,7 +21,8 @@ jobs:
 
       - name: Merge main into production
         run: |
+          git fetch origin production
           git checkout production
-          git pull origin production
-          git merge origin/main --no-ff -m "Merge main into production for release ${{ github.event.release.tag_name }}"
+          git reset --soft origin/main
+          git commit -a -m "Release ${{ github.event.release.tag_name }}"
           git push origin production

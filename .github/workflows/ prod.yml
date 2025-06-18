@@ -28,11 +28,11 @@ jobs:
         shell: bash
 
       - name: 'run lint'
-        run: yarn workspace @relay-protocol/${{matrix.folders}} lint
+        run: yarn workspace @relay-vaults/${{matrix.folders}} lint
         shell: bash
 
       - name: 'run tests'
-        run: yarn workspace @relay-protocol/${{matrix.folders}} run test
+        run: yarn workspace @relay-vaults/${{matrix.folders}} run test
         shell: bash
 
   build-docker-image:
@@ -90,8 +90,8 @@ jobs:
           bash -c "/app/deploy.sh"
         shell: bash
         env:
-          ENVIRONMENT: "prod"
-          SERVICE: "relay-vaults"
-          GITHUB_SHA: "${{ github.sha }}"
-          GITHUB_TOKEN: "${{ secrets.DEVOPSBOT_TOKEN }}"
+          ENVIRONMENT: 'prod'
+          SERVICE: 'relay-vaults'
+          GITHUB_SHA: '${{ github.sha }}'
+          GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
           DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}

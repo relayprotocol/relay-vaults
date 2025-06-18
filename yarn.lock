@@ -4802,23 +4802,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-protocol/monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@relay-protocol/monorepo@workspace:."
-  dependencies:
-    eslint: "npm:9.28.0"
-    eslint-plugin-evm-address-to-checksummed: "npm:0.0.6"
-    eslint-plugin-json: "npm:4.0.1"
-    eslint-plugin-mocha: "npm:11.1.0"
-    eslint-plugin-prettier: "npm:5.4.1"
-    eslint-plugin-sort-keys-fix: "npm:1.1.2"
-    husky: "npm:9.1.7"
-    lint-staged: "npm:16.1.0"
-    prettier: "npm:3.5.3"
-    typescript-eslint: "npm:8.34.0"
-  languageName: unknown
-  linkType: soft
-
 "@relay-protocol/networks@npm:1.1.1, @relay-protocol/networks@workspace:*, @relay-protocol/networks@workspace:^, @relay-protocol/networks@workspace:packages/networks":
   version: 0.0.0-use.local
   resolution: "@relay-protocol/networks@workspace:packages/networks"
@@ -4906,6 +4889,23 @@ __metadata:
     "@relay-protocol/tsconfig": "workspace:./packages/tsconfig"
     eslint: "npm:9.28.0"
     typescript: "npm:5.8.3"
+  languageName: unknown
+  linkType: soft
+
+"@relay-vaults/monorepo@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@relay-vaults/monorepo@workspace:."
+  dependencies:
+    eslint: "npm:9.28.0"
+    eslint-plugin-evm-address-to-checksummed: "npm:0.0.6"
+    eslint-plugin-json: "npm:4.0.1"
+    eslint-plugin-mocha: "npm:11.1.0"
+    eslint-plugin-prettier: "npm:5.4.1"
+    eslint-plugin-sort-keys-fix: "npm:1.1.2"
+    husky: "npm:9.1.7"
+    lint-staged: "npm:16.1.0"
+    prettier: "npm:3.5.3"
+    typescript-eslint: "npm:8.34.0"
   languageName: unknown
   linkType: soft
 

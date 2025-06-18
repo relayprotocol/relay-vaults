@@ -65,5 +65,5 @@ docker run relay-vaults \
   -p 3000:3000 \
   -t relay-vaults \
   --name relay-backend
-  backend "start backend:start --schema $RAILWAY_DEPLOYMENT_ID"
+  backend "start backend:start"
 ```

@@ -24,5 +24,5 @@ jobs:
           git fetch origin production
           git checkout production
           git reset --soft origin/main
-          git commit -m "Release ${{ github.event.release.tag_name }}"
+          git commit -a -m "Release ${{ github.event.release.tag_name }}"
           git push origin production

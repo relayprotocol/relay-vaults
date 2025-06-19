@@ -4,7 +4,7 @@ import { ABIs } from '@relay-vaults/helpers'
 import { BridgeProxy } from '@relay-vaults/abis'
 import networks from '@relay-vaults/networks'
 import { decodeEventLog } from 'viem'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { SEVEN_DAYS } from '../../constants'
 
 export default async function ({
@@ -14,7 +14,7 @@ export default async function ({
   event: Event<'RelayBridge:BridgeInitiated'>
   context: Context<'RelayBridge:BridgeInitiated'>
 }) {
-  const networkConfig = networks[context.chain.id] as ChildNetworkConfig
+  const networkConfig = networks[context.chain.id] as OriginNetworkConfig
   const { nonce, sender, recipient, ASSET, amount, BRIDGE_PROXY } = event.args
 
   // Parse logs to find the DispatchId event and extract hyperlaneMessageId

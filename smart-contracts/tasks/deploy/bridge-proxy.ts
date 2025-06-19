@@ -9,7 +9,7 @@ import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNative
 import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
-import { L1NetworkConfig, ChildNetworkConfig } from '@relay-vaults/types'
+import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 import { getProvider } from '@relay-vaults/helpers'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
@@ -51,10 +51,10 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
-    const { bridges, name: networkName } = networkConfig as L1NetworkConfig
+    const { bridges, name: networkName } = networkConfig as VaultNetworkConfig
 
     // eslint-disable-next-line prefer-const
-    let { parentChainId, stack } = networkConfig as ChildNetworkConfig
+    let { parentChainId, stack } = networkConfig as OriginNetworkConfig
 
     const isL2 = !!parentChainId
 

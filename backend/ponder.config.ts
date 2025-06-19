@@ -170,11 +170,10 @@ interface OPPortalChains {
 const oPPortalChains: OPPortalChains = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
+    const originNetwork = networks[chainId] as OriginNetworkConfig
     return (
-      (networks[chainId] as OriginNetworkConfig).bridges?.optimismAlt?.parent
-        .portalProxy ||
-      (networks[chainId] as OriginNetworkConfig).bridges?.optimism?.parent
-        .portalProxy
+      originNetwork.bridges?.optimismAlt?.parent.portalProxy ||
+      originNetwork.bridges?.optimism?.parent.portalProxy
     )
   })
   .reduce((oPPortalChains, chainId) => {

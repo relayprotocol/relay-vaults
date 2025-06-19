@@ -1,6 +1,6 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { ChildNetworkConfig, L1NetworkConfig } from '@relay-vaults/types'
 
-const config: ChildNetworkConfig = {
+const config: ChildNetworkConfig & L1NetworkConfig = {
   assets: {
     usdc: '0x750ba8b76187092B0D1E87E28daaf484d1b5273b',
     weth: '0x765277EebeCA2e31912C9946eAe1021199B39C61',
@@ -29,6 +29,9 @@ const config: ChildNetworkConfig = {
     ? [process.env.RPC_42170]
     : ['https://nova.arbitrum.io/rpc'],
   stack: 'arbitrum',
+  uniswapV3: {
+    universalRouterAddress: '0xa51afafe0263b40edaef0df8781ea9aa03e381a3',
+  },
 }
 
 export default config

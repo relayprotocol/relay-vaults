@@ -15,7 +15,7 @@ const config: L1NetworkConfig = {
     ? [process.env.RPC_1]
     : ['https://mainnet.gateway.tenderly.co'],
   uniswapV3: {
-    universalRouterAddress: '0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B',
+    universalRouterAddress: '0x66a9893cc07d91d95644aedd05d03f95e1dba8af',
   },
 }
 

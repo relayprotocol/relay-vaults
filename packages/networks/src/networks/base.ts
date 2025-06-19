@@ -1,6 +1,6 @@
-import { OriginNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig, VaultNetworkConfig } from '@relay-vaults/types'
 
-const config: OriginNetworkConfig = {
+const config: OriginNetworkConfig & VaultNetworkConfig = {
   assets: {
     udt: '0xD7eA82D19f1f59FF1aE95F1945Ee6E6d86A25B96',
     usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
@@ -40,6 +40,9 @@ const config: OriginNetworkConfig = {
     ? [process.env.RPC_8453]
     : ['https://gateway.tenderly.co/public/base'],
   stack: 'optimism',
+  uniswapV3: {
+    universalRouterAddress: '0x6fF5693b99212Da76ad316178A184AB56D299b43',
+  },
 }
 
 export default config

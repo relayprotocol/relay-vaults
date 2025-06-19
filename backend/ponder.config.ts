@@ -19,8 +19,10 @@ const deployedAddresses = getAddresses()
 const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
   return {
     ...usedChains,
-    [networks[chainId].slug]: {
+    [networks[chainId].slug!]: {
       id: Number(chainId),
+      maxRequestsPerSecond: 500,
+      pollingInterval: 100,
       rpc: networks[chainId].rpc[0],
     },
   }
@@ -271,14 +273,15 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
 export default createConfig({
   blocks: {
     RelayPoolSnapshot: {
-      interval: 25,
       chain: vaultSnapshotChains,
+      interval: 25,
     },
     VaultSnapshot: {
-      interval: 25,
       chain: vaultSnapshotChains,
+      interval: 25,
     },
   },
+  chains: usedChains,
   contracts: {
     L1NativeTokenVault: {
       abi: ABIs.L1NativeTokenVault,
@@ -324,5 +327,5 @@ export default createConfig({
     connectionString: process.env.DATABASE_URL,
     kind: 'postgres',
   },
-  chains: usedChains,
+  ordering: 'multichain', // or "omnichain" — see below
 })

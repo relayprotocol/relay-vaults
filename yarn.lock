@@ -4683,13 +4683,13 @@ __metadata:
   resolution: "@relay-vaults/abis@workspace:packages/abis"
   dependencies:
     "@relay-vaults/helpers": "^workspace:*"
-    "@relay-vaults/networks": "npm:1.1.1"
+    "@relay-vaults/networks": "npm:1.2.0"
     tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
   languageName: unknown
   linkType: soft
 
-"@relay-vaults/addresses@npm:1.0.5, @relay-vaults/addresses@workspace:packages/addresses":
+"@relay-vaults/addresses@npm:1.1.0, @relay-vaults/addresses@workspace:packages/addresses":
   version: 0.0.0-use.local
   resolution: "@relay-vaults/addresses@workspace:packages/addresses"
   dependencies:
@@ -4711,7 +4711,7 @@ __metadata:
   resolution: "@relay-vaults/backend@workspace:backend"
   dependencies:
     "@relay-vaults/abis": "workspace:*"
-    "@relay-vaults/addresses": "npm:1.0.5"
+    "@relay-vaults/addresses": "npm:1.1.0"
     "@types/node": "npm:22.15.31"
     "@typescript-eslint/eslint-plugin": "npm:8.34.0"
     "@typescript-eslint/parser": "npm:8.34.0"
@@ -4734,7 +4734,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-vaults/claimer@workspace:claimer"
   dependencies:
-    "@relay-vaults/client": "npm:0.0.2"
+    "@relay-vaults/client": "npm:0.1.0"
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/helpers": "workspace:*"
     "@relay-vaults/networks": "workspace:*"
@@ -4748,7 +4748,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-vaults/client@npm:0.0.2, @relay-vaults/client@workspace:packages/client":
+"@relay-vaults/client@npm:0.1.0, @relay-vaults/client@workspace:packages/client":
   version: 0.0.0-use.local
   resolution: "@relay-vaults/client@workspace:packages/client"
   dependencies:
@@ -4819,7 +4819,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-vaults/networks@npm:1.1.1, @relay-vaults/networks@workspace:*, @relay-vaults/networks@workspace:^, @relay-vaults/networks@workspace:packages/networks":
+"@relay-vaults/networks@npm:1.2.0, @relay-vaults/networks@workspace:*, @relay-vaults/networks@workspace:^, @relay-vaults/networks@workspace:packages/networks":
   version: 0.0.0-use.local
   resolution: "@relay-vaults/networks@workspace:packages/networks"
   dependencies:

@@ -1,6 +1,7 @@
 {
   "name": "@relay-vaults/types",
   "version": "0.0.1",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "Relay Protocol shared types",

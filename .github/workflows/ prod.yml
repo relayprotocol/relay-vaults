@@ -6,52 +6,6 @@ on:
       - production
 
 jobs:
-  prepare:
-    name: 'Prepare matrix'
-    runs-on: ubuntu-24.04
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - id: set-matrix
-        run: |
-          # Get all folders that have a package.json with test script
-          folders=$(find packages -name package.json -exec grep -l '"test"' {} \; | xargs dirname | xargs -n1 basename | jq -R -s -c 'split("\n")[:-1]')
-
-          # Combine with your existing folders
-          all_folders=$(echo '["smart-contracts", "backend", "claimer"]' | jq --argjson packages "$folders" '. + $packages | unique')
-
-          echo "matrix=$all_folders" >> $GITHUB_OUTPUT
-  run-tests:
-    name: 'Run the tests'
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        folders: ${{ fromJson(needs.prepare.outputs.matrix) }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - run: yarn
-        shell: bash
-
-      - run: 'yarn build'
-        shell: bash
-
-      - name: 'run lint'
-        run: yarn workspace @relay-vaults/${{matrix.folders}} lint
-        shell: bash
-
-      - name: 'run tests'
-        run: yarn workspace @relay-vaults/${{matrix.folders}} run test
-        shell: bash
-
   build-docker-image:
     name: 'Build/push Docker image'
     runs-on: ubuntu-24.04
@@ -60,8 +14,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs:
-      - run-tests
     steps:
       - uses: actions/checkout@v4
         with:

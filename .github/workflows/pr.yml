@@ -32,6 +32,7 @@ jobs:
 
   run-tests:
     name: 'Run the tests'
+    needs: prepare
     runs-on: ubuntu-24.04
     strategy:
       matrix:

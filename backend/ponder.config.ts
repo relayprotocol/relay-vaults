@@ -181,8 +181,8 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
 
     const parent =
-      l2Network.bridges.optimism!.parent ||
-      l2Network.bridges.optimismAlt!.parent
+      l2Network.bridges.optimism?.parent ||
+      l2Network.bridges.optimismAlt?.parent
 
     if (!oPPortalChains[l1Network.slug]) {
       oPPortalChains[l1Network.slug] = {

@@ -3,6 +3,7 @@ import { RelayVaultService } from '@relay-vaults/client'
 import networks from '@relay-vaults/networks'
 import { ChildNetworkConfig } from '@relay-vaults/types'
 import { submitProof } from './relay'
+import { logger } from './logger'
 
 const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
   query GetAllBridgeTransactionsToProve(
@@ -54,7 +55,7 @@ export const proveTransactions = async ({
       const bridgeTransaction = bridgeTransactions.items[i]
       await submitProof(bridgeTransaction)
     } catch (error) {
-      console.error(error)
+      logger.error(error)
     }
   }
 }

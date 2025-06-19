@@ -1,6 +1,7 @@
 import { ZeroAddress } from 'ethers'
 import networks from '@relay-vaults/networks'
 import { ChildNetworkConfig } from '@relay-vaults/types'
+import { logger } from './logger'
 
 const ENDPOINT = 'https://api.relay.link'
 const TESTNETS_ENDPOINT = 'https://api.testnets.relay.link'
@@ -25,7 +26,7 @@ const sendRequest = async (endpoint: string, body: any) => {
   })
   if (response.status !== 200) {
     const text = await response.text()
-    console.error(`Relay API returned ${response.status}: ${text}`)
+    logger.error(`Relay API returned ${response.status}: ${text}`)
   }
 
   return
@@ -51,7 +52,7 @@ export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
   const originNetwork = networks[
     bridgeTransaction.originChainId
   ] as ChildNetworkConfig
-  console.log(
+  logger.info(
     `Submitting proof after ${after(bridgeTransaction.originTimestamp)} for ${bridgeTransaction.originTxHash} on ${originNetwork.name}`
   )
   const network = networks[bridgeTransaction.destinationPoolChainId]
@@ -73,7 +74,7 @@ export const finalizeWithdrawal = async (
   const stack = (
     networks[bridgeTransaction.originChainId] as ChildNetworkConfig
   ).stack
-  console.log(
+  logger.info(
     `Finalizing ${bridgeTransaction.originTxHash} on ${stack} after ${after(bridgeTransaction.originTimestamp)}`
   )
   const network = networks[bridgeTransaction.destinationPoolChainId]

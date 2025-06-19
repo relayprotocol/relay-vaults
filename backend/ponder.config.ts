@@ -37,7 +37,7 @@ const vaultSnapshotChains = Object.keys(networks)
     const network = networks[chainId]
     return {
       ...vaultSnapshotChains,
-      [network.slug]: {
+      [network.slug!]: {
         startBlock: network.earliestBlock,
       },
     }
@@ -55,7 +55,7 @@ const relayBridgeChains = Object.keys(networks)
       return relayBridgeChains
     }
     return {
-      [network.slug]: {
+      [network.slug!]: {
         address: factory({
           address: addresses.RelayBridgeFactory,
           event: RelayBridgeFactory.find(
@@ -82,7 +82,7 @@ const relayBridgeFactoryChains = Object.keys(networks)
       return relayBridgeFactoryChains
     }
     return {
-      [network.slug]: {
+      [network.slug!]: {
         address: addresses.RelayBridgeFactory,
         startBlock: network.earliestBlock,
       },
@@ -105,7 +105,7 @@ const relayPoolFactoryChains = Object.keys(networks)
 
     return {
       ...relayPoolFactoryChains,
-      [network.slug]: {
+      [network.slug!]: {
         address: addresses.RelayPoolFactory,
         startBlock: network.earliestBlock,
       },
@@ -124,7 +124,7 @@ const relayPoolChains = Object.keys(networks)
     }
     return {
       ...relayPoolChains,
-      [network.slug]: {
+      [network.slug!]: {
         address: factory({
           address: addresses.RelayPoolFactory,
           event: RelayPoolFactory.find(
@@ -149,7 +149,7 @@ const relayPoolTimelockChains = Object.keys(networks)
     }
     return {
       ...relayPoolTimelockChains,
-      [network.slug]: {
+      [network.slug!]: {
         address: factory({
           address: addresses.RelayPoolFactory,
           event: RelayPoolFactory.find(
@@ -186,14 +186,14 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
       l2Network.bridges.optimism?.parent ||
       l2Network.bridges.optimismAlt?.parent
 
-    if (!oPPortalChains[l1Network.slug]) {
-      oPPortalChains[l1Network.slug] = {
+    if (!oPPortalChains[l1Network.slug!]) {
+      oPPortalChains[l1Network.slug!] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
-    if (!oPPortalChains[l1Network.slug].address.includes(parent.portalProxy)) {
-      oPPortalChains[l1Network.slug].address.push(parent.portalProxy)
+    if (!oPPortalChains[l1Network.slug!].address.includes(parent.portalProxy)) {
+      oPPortalChains[l1Network.slug!].address.push(parent.portalProxy)
     }
     return oPPortalChains
   }, {} as OPPortalChains)
@@ -214,18 +214,18 @@ const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
   .reduce((orbitOutboxChains, chainId) => {
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
-    if (!orbitOutboxChains[l1Network.slug]) {
-      orbitOutboxChains[l1Network.slug] = {
+    if (!orbitOutboxChains[l1Network.slug!]) {
+      orbitOutboxChains[l1Network.slug!] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
     if (
-      !orbitOutboxChains[l1Network.slug].address.includes(
+      !orbitOutboxChains[l1Network.slug!].address.includes(
         l2Network.bridges.arbitrum!.parent.outbox
       )
     ) {
-      orbitOutboxChains[l1Network.slug].address.push(
+      orbitOutboxChains[l1Network.slug!].address.push(
         l2Network.bridges.arbitrum!.parent.outbox
       )
     }
@@ -252,18 +252,18 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
     }
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
-    if (!zkSyncChains[l1Network.slug]) {
-      zkSyncChains[l1Network.slug] = {
+    if (!zkSyncChains[l1Network.slug!]) {
+      zkSyncChains[l1Network.slug!] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
     if (
-      !zkSyncChains[l1Network.slug].address.includes(
+      !zkSyncChains[l1Network.slug!].address.includes(
         l2Network.bridges.zksync!.parent.nativeTokenVault
       )
     ) {
-      zkSyncChains[l1Network.slug].address.push(
+      zkSyncChains[l1Network.slug!].address.push(
         l2Network.bridges.zksync!.parent.nativeTokenVault
       )
     }

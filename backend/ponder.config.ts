@@ -11,7 +11,7 @@ import {
 import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-vaults/addresses'
 import networks from '@relay-vaults/networks'
-import { L1NetworkConfig, ChildNetworkConfig } from '@relay-vaults/types'
+import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 
 const deployedAddresses = getAddresses()
 
@@ -29,7 +29,7 @@ const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
 // VaultSnapshot chains
 const vaultSnapshotChains = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as ChildNetworkConfig).parentChainId
+    return !(networks[chainId] as OriginNetworkConfig).parentChainId
   })
   .reduce((vaultSnapshotChains, chainId) => {
     const network = networks[chainId]
@@ -44,7 +44,7 @@ const vaultSnapshotChains = Object.keys(networks)
 // RelayBridge chains
 const relayBridgeChains = Object.keys(networks)
   .filter((chainId) => {
-    return (networks[chainId] as ChildNetworkConfig).parentChainId
+    return (networks[chainId] as OriginNetworkConfig).parentChainId
   })
   .reduce((relayBridgeChains, chainId) => {
     const network = networks[chainId]
@@ -70,7 +70,7 @@ const relayBridgeChains = Object.keys(networks)
 // RelayBridgeFactory
 const relayBridgeFactoryChains = Object.keys(networks)
   .filter((chainId) => {
-    return (networks[chainId] as ChildNetworkConfig).parentChainId
+    return (networks[chainId] as OriginNetworkConfig).parentChainId
   })
   .reduce((relayBridgeFactoryChains, chainId) => {
     const network = networks[chainId]
@@ -91,7 +91,7 @@ const relayBridgeFactoryChains = Object.keys(networks)
 // RelayPoolFactory
 const relayPoolFactoryChains = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as ChildNetworkConfig).parentChainId
+    return !(networks[chainId] as OriginNetworkConfig).parentChainId
   })
   .reduce((relayPoolFactoryChains, chainId) => {
     const network = networks[chainId]
@@ -112,7 +112,7 @@ const relayPoolFactoryChains = Object.keys(networks)
 
 const relayPoolChains = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as ChildNetworkConfig).parentChainId
+    return !(networks[chainId] as OriginNetworkConfig).parentChainId
   })
   .reduce((relayPoolChains, chainId) => {
     const network = networks[chainId]
@@ -137,7 +137,7 @@ const relayPoolChains = Object.keys(networks)
 
 const relayPoolTimelockChains = Object.keys(networks)
   .filter((chainId) => {
-    return !(networks[chainId] as ChildNetworkConfig).parentChainId
+    return !(networks[chainId] as OriginNetworkConfig).parentChainId
   })
   .reduce((relayPoolTimelockChains, chainId) => {
     const network = networks[chainId]
@@ -170,12 +170,12 @@ interface OPPortalChains {
 const oPPortalChains: OPPortalChains = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
-    return (networks[chainId] as ChildNetworkConfig).bridges?.optimism?.parent
+    return (networks[chainId] as OriginNetworkConfig).bridges?.optimism?.parent
       .portalProxy
   })
   .reduce((oPPortalChains, chainId) => {
-    const l2Network = networks[chainId] as ChildNetworkConfig
-    const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
+    const l2Network = networks[chainId] as OriginNetworkConfig
+    const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
     if (!oPPortalChains[l1Network.slug]) {
       oPPortalChains[l1Network.slug] = {
         address: [],
@@ -204,12 +204,12 @@ interface OrbitOutboxChains {
 const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
-    return (networks[chainId] as ChildNetworkConfig).bridges?.arbitrum?.parent
+    return (networks[chainId] as OriginNetworkConfig).bridges?.arbitrum?.parent
       .outbox
   })
   .reduce((orbitOutboxChains, chainId) => {
-    const l2Network = networks[chainId] as ChildNetworkConfig
-    const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
+    const l2Network = networks[chainId] as OriginNetworkConfig
+    const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
     if (!orbitOutboxChains[l1Network.slug]) {
       orbitOutboxChains[l1Network.slug] = {
         address: [],
@@ -238,7 +238,7 @@ interface zkSyncChains {
 const zkSyncChains: zkSyncChains = Object.keys(networks)
   .filter((chainId) => {
     // on the L1 chain
-    return (networks[chainId] as ChildNetworkConfig).bridges?.zksync?.parent
+    return (networks[chainId] as OriginNetworkConfig).bridges?.zksync?.parent
       .nativeTokenVault
   })
   .reduce((zkSyncChains, chainId) => {
@@ -246,8 +246,8 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
     if (chainId === '300') {
       return zkSyncChains
     }
-    const l2Network = networks[chainId] as ChildNetworkConfig
-    const l1Network = networks[l2Network.parentChainId] as L1NetworkConfig
+    const l2Network = networks[chainId] as OriginNetworkConfig
+    const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
     if (!zkSyncChains[l1Network.slug]) {
       zkSyncChains[l1Network.slug] = {
         address: [],

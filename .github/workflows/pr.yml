@@ -63,10 +63,9 @@ jobs:
           path: |
             */dist
             */build
-            */.next
             packages/*/dist
             packages/*/build
-            .turbo
+
           key: ${{ runner.os }}-build-${{ github.sha }}
 
       - name: Build all packages
@@ -103,10 +102,9 @@ jobs:
           path: |
             */dist
             */build
-            */.next
             packages/*/dist
             packages/*/build
-            .turbo
+
           key: ${{ runner.os }}-build-${{ github.sha }}
           fail-on-cache-miss: true
 

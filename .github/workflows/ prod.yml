@@ -6,12 +6,29 @@ on:
       - production
 
 jobs:
+  prepare:
+    name: 'Prepare matrix'
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: set-matrix
+        run: |
+          # Get all folders that have a package.json with test script
+          folders=$(find packages -name package.json -exec grep -l '"test"' {} \; | xargs dirname | xargs -n1 basename | jq -R -s -c 'split("\n")[:-1]')
+
+          # Combine with your existing folders
+          all_folders=$(echo '["smart-contracts", "backend", "claimer"]' | jq --argjson packages "$folders" '. + $packages | unique')
+
+          echo "matrix=$all_folders" >> $GITHUB_OUTPUT
   run-tests:
     name: 'Run the tests'
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        folders: ['smart-contracts', 'backend', 'claimer', 'packages/*']
+        folders: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
         with:

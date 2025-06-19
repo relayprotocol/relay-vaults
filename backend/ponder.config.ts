@@ -38,7 +38,7 @@ const vaultSnapshotChains = Object.keys(networks)
     return {
       ...vaultSnapshotChains,
       [network.slug!]: {
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -63,7 +63,7 @@ const relayBridgeChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'bridge',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
       ...relayBridgeChains,
     }
@@ -84,7 +84,7 @@ const relayBridgeFactoryChains = Object.keys(networks)
     return {
       [network.slug!]: {
         address: addresses.RelayBridgeFactory,
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
       ...relayBridgeFactoryChains,
     }
@@ -107,7 +107,7 @@ const relayPoolFactoryChains = Object.keys(networks)
       ...relayPoolFactoryChains,
       [network.slug!]: {
         address: addresses.RelayPoolFactory,
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -132,7 +132,7 @@ const relayPoolChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'pool',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -157,7 +157,7 @@ const relayPoolTimelockChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'timelock',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -189,7 +189,7 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
     if (!oPPortalChains[l1Network.slug!]) {
       oPPortalChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (!oPPortalChains[l1Network.slug!].address.includes(parent.portalProxy)) {
@@ -217,7 +217,7 @@ const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
     if (!orbitOutboxChains[l1Network.slug!]) {
       orbitOutboxChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (
@@ -255,7 +255,7 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
     if (!zkSyncChains[l1Network.slug!]) {
       zkSyncChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (

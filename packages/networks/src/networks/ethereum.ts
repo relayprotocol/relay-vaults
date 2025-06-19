@@ -15,7 +15,7 @@ const config: VaultNetworkConfig = {
     ? [process.env.RPC_1]
     : ['https://mainnet.gateway.tenderly.co'],
   uniswapV3: {
-    universalRouterAddress: '0x66a9893cc07d91d95644aedd05d03f95e1dba8af',
+    universalRouterAddress: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
   },
 }
 

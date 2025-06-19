@@ -73,7 +73,7 @@ export interface NetworkConfig {
   chainId: number | bigint
   name: string
   slug?: string
-  earliestBlock: number
+  earliestBlock?: number
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
   isTestnet: boolean

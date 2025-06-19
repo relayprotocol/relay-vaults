@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        folders: ['smart-contracts', 'backend']
+        folders: ['smart-contracts', 'backend', 'claimer', 'packages/*']
     steps:
       - uses: actions/checkout@v4
         with:

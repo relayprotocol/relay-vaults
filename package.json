@@ -20,6 +20,8 @@
   ],
   "scripts": {
     "test": "yarn packages --parallel run test",
+    "packages-to-publish": "yarn workspaces foreach --all --no-private",
+    "bump": "yarn packages-to-publish version",
     "packages": "yarn workspaces foreach --recursive --from '{@relay-vaults/addresses,@relay-vaults/eslint-config,@relay-vaults/helpers,@relay-vaults/networks,@relay-vaults/tsconfig,@relay-vaults/types,@relay-vaults/abis,@relay-vaults/client}'",
     "packages:clean": "yarn packages --parallel run clean",
     "packages:build": "yarn packages --topological-dev run build",

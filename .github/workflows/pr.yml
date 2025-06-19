@@ -12,10 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - id: set-matrix
+      - name: Debug environment
+        run: |
+          echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
+          echo "Current directory: $(pwd)"
+          ls -la
+
+      - name: Set up matrix
+        id: set-matrix
         run: |
           chmod +x .github/scripts/set-matrix.sh
           .github/scripts/set-matrix.sh
+
+      - name: Debug output
+        run: |
+          echo "Output file contents:"
+          cat "$GITHUB_OUTPUT"
+          echo "Matrix value: ${{ steps.set-matrix.outputs.matrix }}"
 
   run-tests:
     name: 'Run the tests'

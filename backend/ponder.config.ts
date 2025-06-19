@@ -180,20 +180,19 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
   .reduce((oPPortalChains, chainId) => {
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
+
+    const parent =
+      l2Network.bridges.optimism!.parent ||
+      l2Network.bridges.optimismAlt!.parent
+
     if (!oPPortalChains[l1Network.slug]) {
       oPPortalChains[l1Network.slug] = {
         address: [],
         startBlock: l1Network.earliestBlock,
       }
     }
-    if (
-      !oPPortalChains[l1Network.slug].address.includes(
-        l2Network.bridges.optimism!.parent.portalProxy
-      )
-    ) {
-      oPPortalChains[l1Network.slug].address.push(
-        l2Network.bridges.optimism!.parent.portalProxy
-      )
+    if (!oPPortalChains[l1Network.slug].address.includes(parent.portalProxy)) {
+      oPPortalChains[l1Network.slug].address.push(parent.portalProxy)
     }
     return oPPortalChains
   }, {} as OPPortalChains)

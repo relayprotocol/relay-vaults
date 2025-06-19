@@ -16,13 +16,9 @@ jobs:
 
       - id: set-matrix
         run: |
-          # Get all folders that have a package.json with test script
-          folders=$(find packages -name package.json -exec grep -l '"test"' {} \; | xargs dirname | xargs -n1 basename | jq -R -s -c 'split("\n")[:-1]')
+          chmod +x .github/scripts/set-matrix.sh
+          .github/scripts/set-matrix.sh
 
-          # Combine with your existing folders
-          all_folders=$(echo '["smart-contracts", "backend", "claimer"]' | jq --argjson packages "$folders" '. + $packages | unique')
-
-          echo "matrix=$all_folders" >> $GITHUB_OUTPUT
   run-tests:
     name: 'Run the tests'
     runs-on: ubuntu-24.04

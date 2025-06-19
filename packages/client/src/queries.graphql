@@ -1,26 +1,101 @@
 # Get all pools
-query GetAllPools(
+query GetAllPools($limit: Int, $originsLimit: Int, $where: relayPoolFilter) {
+  relayPools(limit: $limit, where: $where) {
+    items {
+      apy
+      asset
+      chainId
+      contractAddress
+      createdAt
+      createdAtBlock
+      curator {
+        cancellers
+        chainId
+        contractAddress
+        executors
+        proposers
+      }
+      decimals
+      name
+      origins(limit: $originsLimit) {
+        totalCount
+        items {
+          bridgeFee
+          chainId
+          coolDown
+          curator
+          currentOutstandingDebt
+          maxDebt
+          originBridge
+          originChainId
+          proxyBridge
+        }
+      }
+      outstandingDebt
+      symbol
+      totalAssets
+      totalBridgeFees
+      totalShares
+      yieldPool
+    }
+  }
+}
+
+# Get all yield pools
+query GetAllYieldPools($limit: Int, $where: yieldPoolFilter) {
+  yieldPools(limit: $limit, where: $where) {
+    items {
+      apy
+      asset
+      chainId
+      contractAddress
+      lastUpdated
+      name
+    }
+  }
+}
+
+# Get all pools with snapshots
+query GetAllPoolsWithSnapshots(
   $limit: Int
   $originsLimit: Int
   $snapshotsLimit: Int
   $targetTimestamp: BigInt!
   $orderDirection: String!
+  $where: relayPoolFilter
 ) {
-  relayPools(limit: $limit) {
+  relayPools(limit: $limit, where: $where) {
     items {
+      apy
       asset
-      contractAddress
-      totalAssets
-      outstandingDebt
       chainId
+      contractAddress
+      createdAt
+      createdAtBlock
+      curator {
+        cancellers
+        chainId
+        contractAddress
+        executors
+        proposers
+      }
+      decimals
+      name
       origins(limit: $originsLimit) {
         totalCount
         items {
-          proxyBridge
-          originChainId
+          bridgeFee
+          chainId
+          coolDown
+          curator
+          currentOutstandingDebt
+          maxDebt
           originBridge
+          originChainId
+          proxyBridge
         }
       }
+      outstandingDebt
       snapshots(
         limit: $snapshotsLimit
         where: { timestamp_lte: $targetTimestamp }
@@ -28,13 +103,20 @@ query GetAllPools(
         orderDirection: $orderDirection
       ) {
         items {
-          vault
           blockNumber
-          timestamp
+          chainId
           sharePrice
+          timestamp
+          vault
+          yieldPool
           yieldPoolSharePrice
         }
       }
+      symbol
+      totalAssets
+      totalBridgeFees
+      totalShares
+      yieldPool
     }
   }
 }
@@ -42,15 +124,20 @@ query GetAllPools(
 # Get a specific pool
 query GetRelayPool($contractAddress: String!, $chainId: Float!) {
   relayPool(contractAddress: $contractAddress, chainId: $chainId) {
-    contractAddress
+    apy
     asset
-    yieldPool
-    outstandingDebt
-    totalAssets
-    totalShares
     chainId
+    contractAddress
     createdAt
     createdAtBlock
+    decimals
+    name
+    outstandingDebt
+    symbol
+    totalAssets
+    totalBridgeFees
+    totalShares
+    yieldPool
   }
 }
 
@@ -64,22 +151,27 @@ query GetAllBridgeTransactionsByType(
     limit: $limit
   ) {
     items {
-      originBridgeAddress
-      nonce
-      originChainId
+      amount
+      arbTransactionIndex
+      asset
       destinationPoolAddress
       destinationPoolChainId
-      originSender
       destinationRecipient
-      asset
-      amount
+      expectedFinalizationTimestamp
+      finalizationTimestamp
       hyperlaneMessageId
-      nativeBridgeStatus
-      opProofTxHash
-      nativeBridgeFinalizedTxHash
       loanEmittedTxHash
+      nativeBridgeFinalizedTxHash
+      nativeBridgeStatus
+      nonce
+      opProofTxHash
+      opWithdrawalHash
+      originBridgeAddress
+      originChainId
+      originSender
       originTimestamp
       originTxHash
+      zksyncWithdrawalHash
     }
   }
 }
@@ -94,27 +186,29 @@ query GetPoolDetails(
   $orderDirection: String!
 ) {
   relayPool(contractAddress: $poolAddress, chainId: $chainId) {
-    yieldPool
-    contractAddress
-    chainId
+    apy
     asset
-    totalAssets
-    totalShares
-    outstandingDebt
-    totalBridgeFees
+    chainId
+    contractAddress
+    createdAt
+    createdAtBlock
+    decimals
+    name
     origins(limit: $originsLimit) {
       totalCount
       items {
-        chainId
-        proxyBridge
         bridgeFee
+        chainId
         coolDown
-        originChainId
-        originBridge
+        curator
         currentOutstandingDebt
         maxDebt
+        originBridge
+        originChainId
+        proxyBridge
       }
     }
+    outstandingDebt
     snapshots(
       limit: $snapshotsLimit
       where: { timestamp_lte: $targetTimestamp }
@@ -122,22 +216,32 @@ query GetPoolDetails(
       orderDirection: $orderDirection
     ) {
       items {
-        vault
         blockNumber
-        timestamp
+        chainId
         sharePrice
+        timestamp
+        vault
+        yieldPool
         yieldPoolSharePrice
       }
     }
+    symbol
+    totalAssets
+    totalBridgeFees
+    totalShares
+    yieldPool
   }
 }
 
 # Get yield pool information
 query GetYieldPool($yieldPoolAddress: String!, $chainId: Float!) {
   yieldPool(contractAddress: $yieldPoolAddress, chainId: $chainId) {
+    apy
+    asset
+    chainId
     contractAddress
-    name
     lastUpdated
+    name
   }
 }
 
@@ -165,11 +269,20 @@ query GetUserBalances($walletAddress: String!, $limit: Int) {
       totalDeposited
       totalWithdrawn
       pool {
-        contractAddress
+        apy
         asset
-        totalAssets
-        totalShares
         chainId
+        contractAddress
+        createdAt
+        createdAtBlock
+        decimals
+        name
+        outstandingDebt
+        symbol
+        totalAssets
+        totalBridgeFees
+        totalShares
+        yieldPool
       }
     }
   }
@@ -190,11 +303,20 @@ query GetUserBalanceForPool(
       totalDeposited
       totalWithdrawn
       pool {
-        contractAddress
+        apy
         asset
         chainId
+        contractAddress
+        createdAt
+        createdAtBlock
+        decimals
+        name
+        outstandingDebt
+        symbol
         totalAssets
+        totalBridgeFees
         totalShares
+        yieldPool
       }
     }
   }

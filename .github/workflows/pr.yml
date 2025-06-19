@@ -5,7 +5,7 @@ on:
 
 jobs:
   prepare:
-    name: 'Prepare matrix'
+    name: 'Prepare'
     runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -17,6 +17,16 @@ jobs:
         run: |
           chmod +x .github/scripts/set-matrix.sh
           .github/scripts/set-matrix.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: yarn
+        shell: bash
+
+      - run: 'yarn build'
+        shell: bash
 
   run-tests:
     name: 'Run the tests'
@@ -37,25 +47,16 @@ jobs:
       #     files: |
       #       ${{ matrix.folders }}/**
 
-      - uses: actions/setup-node@v4
-        # if: steps.changed-files.outputs.any_modified == 'true'
-        with:
-          node-version: 22
-
-      - run: yarn
-        # if: steps.changed-files.outputs.any_modified == 'true'
-        shell: bash
-
-      - run: 'yarn build'
-        # if: steps.changed-files.outputs.any_modified == 'true'
+      - name: 'change directory'
+        run: cd ${{ matrix.folders }}
         shell: bash
 
       - name: 'run lint'
-        run: yarn workspace @relay-vaults/${{matrix.folders}} lint
+        run: yarn lint
         # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - name: 'run tests'
-        run: yarn workspace @relay-vaults/${{matrix.folders}} run test
+        run: yarn run test
         # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash

@@ -6,7 +6,7 @@ import { networks } from '@relay-vaults/networks'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 import { AbiCoder, Log } from 'ethers'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 const { assets: ethereumAssets } = networks[1]
 const {
   assets: op1Assets,
@@ -15,7 +15,7 @@ const {
       parent: { portalProxy },
     },
   },
-} = networks[10] as ChildNetworkConfig
+} = networks[10] as OriginNetworkConfig
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'

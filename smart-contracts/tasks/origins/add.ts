@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config'
 import { Select, Input, Confirm } from 'enquirer'
 import { networks } from '@relay-vaults/networks'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import {
   getPoolsForNetwork,
   getBridgesForNetwork,
@@ -37,7 +37,7 @@ task('pool:add-origin', 'Add origin for a pool')
       const [user] = await ethers.getSigners()
       const userAddress = await user.getAddress()
       const { chainId } = await ethers.provider.getNetwork()
-      const network = networks[chainId.toString()] as ChildNetworkConfig
+      const network = networks[chainId.toString()] as OriginNetworkConfig
 
       if (network.parentChainId) {
         throw Error('Origins can only be added on L1')
@@ -62,7 +62,7 @@ task('pool:add-origin', 'Add origin for a pool')
       if (!l2ChainId) {
         // We need to select the L2 chain!
         const possibleL2s = Object.values(networks).filter(
-          (n) => (n as ChildNetworkConfig).parentChainId == chainId
+          (n) => (n as OriginNetworkConfig).parentChainId == chainId
         )
         const l2chainName = await new Select({
           choices: possibleL2s.map((network) => network.name),
@@ -208,7 +208,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       const [user] = await ethers.getSigners()
       const userAddress = await user.getAddress()
       const { chainId } = await ethers.provider.getNetwork()
-      const network = networks[chainId.toString()] as ChildNetworkConfig
+      const network = networks[chainId.toString()] as OriginNetworkConfig
 
       if (network.parentChainId) {
         throw Error('Origins can only be added on L1')
@@ -233,7 +233,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       if (!l2ChainId) {
         // We need to select the L2 chain!
         const possibleL2s = Object.values(networks).filter(
-          (n) => (n as ChildNetworkConfig).parentChainId == chainId
+          (n) => (n as OriginNetworkConfig).parentChainId == chainId
         )
         const l2chainName = await new Select({
           choices: possibleL2s.map((network) => network.name),

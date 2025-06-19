@@ -5,7 +5,7 @@ import { getBalance, getEvent } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
 import { ZkSyncBridgeProxy } from '../../typechain-types'
 
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
 const chainId = 324 // zkSync Era mainnet
 const destinationChainId = 1 // Ethereum mainnet
@@ -16,7 +16,7 @@ const {
     },
   },
   assets,
-} = networks[chainId] as ChildNetworkConfig
+} = networks[chainId] as OriginNetworkConfig
 
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'

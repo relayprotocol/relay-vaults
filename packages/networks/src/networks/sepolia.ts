@@ -1,6 +1,6 @@
-import { L1NetworkConfig } from '@relay-vaults/types'
+import { VaultNetworkConfig } from '@relay-vaults/types'
 
-const config: L1NetworkConfig = {
+const config: VaultNetworkConfig = {
   assets: {
     udt: '0x4C38B5Dcc47c4990363F22bFeb2add741123914F',
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',

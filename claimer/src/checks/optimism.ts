@@ -1,12 +1,12 @@
 import { JsonRpcProvider, Contract, EventLog } from 'ethers'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
 import networks from '@relay-vaults/networks'
 
 // deprec version of OP stack using l2OutputOracle (before bedrock)
 // https://gov.optimism.io/t/final-protocol-upgrade-7-fault-proofs/8161
 export async function checkOptimismStatus(
-  chain: ChildNetworkConfig
+  chain: OriginNetworkConfig
 ): Promise<L2Status> {
   const l2OutputOracleAddress =
     chain.bridges?.optimismAlt?.parent?.outputOracle!

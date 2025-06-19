@@ -1,10 +1,10 @@
 import { JsonRpcProvider, Contract, EventLog } from 'ethers'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
 import networks from '@relay-vaults/networks'
 
 export async function checkArbitrumStatus(
-  chain: ChildNetworkConfig
+  chain: OriginNetworkConfig
 ): Promise<L2Status> {
   const rollupAddress = chain.bridges?.arbitrum?.parent?.rollup
   if (!rollupAddress) {

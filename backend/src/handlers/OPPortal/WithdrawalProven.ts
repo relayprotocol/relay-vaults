@@ -1,5 +1,5 @@
 import networks from '@relay-vaults/networks'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { SEVEN_DAYS } from '../../constants'
 import { eq, and } from 'ponder'
 import { Context, Event } from 'ponder:registry'
@@ -12,7 +12,7 @@ export default async function ({
   event: Event<'OPPortal:WithdrawalProven'>
   context: Context<'OPPortal:WithdrawalProven'>
 }) {
-  const networkConfig = networks[context.chain.id] as ChildNetworkConfig
+  const networkConfig = networks[context.chain.id] as OriginNetworkConfig
   const delay = BigInt(networkConfig.withdrawalDelay || SEVEN_DAYS)
 
   await context.db.sql

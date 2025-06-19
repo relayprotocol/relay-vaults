@@ -1,10 +1,10 @@
 import { JsonRpcProvider, Contract, EventLog } from 'ethers'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
 import networks from '@relay-vaults/networks'
 
 export async function checkZkSyncStatus(
-  chain: ChildNetworkConfig
+  chain: OriginNetworkConfig
 ): Promise<L2Status> {
   // diamond Proxy is main zkSync contract on L1
   const diamondProxyAddress = chain.bridges?.zksync?.parent?.diamondProxy

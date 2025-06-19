@@ -5,18 +5,6 @@ set -euo pipefail
 # Initialize array with base folders
 folders=('smart-contracts' 'backend' 'claimer')
 
-# Function to add to GITHUB_OUTPUT if it exists
-output_to_github() {
-  local key="$1"
-  local value="$2"
-  
-  if [ -n "${GITHUB_OUTPUT:-}" ]; then
-    echo "${key}=${value}" >> "$GITHUB_OUTPUT"
-  else
-    echo "[LOCAL] Would set ${key}=${value}" >&2
-  fi
-}
-
 # Add all packages
 if [ -d "packages" ]; then
   echo "Adding packages..." >&2
@@ -36,7 +24,13 @@ fi
 json_array=$(printf '%s\n' "${folders[@]}" | jq -R . | jq -s -c .)
 
 # Output for GitHub Actions
-output_to_github "matrix" "$json_array"
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  echo "matrix=${json_array}" >> "$GITHUB_OUTPUT"
+  echo "Successfully wrote to GITHUB_OUTPUT" >&2
+else
+  echo "[LOCAL] Would set matrix=${json_array}" >&2
+fi
 
-echo -e "\nGenerated matrix: $json_array"
+# Always show the result
+echo "Generated matrix: ${json_array}"
 echo "Total folders: ${#folders[@]}"

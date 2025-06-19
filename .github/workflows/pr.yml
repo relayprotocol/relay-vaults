@@ -12,23 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug environment
-        run: |
-          echo "GITHUB_OUTPUT=$GITHUB_OUTPUT"
-          echo "Current directory: $(pwd)"
-          ls -la
-
       - name: Set up matrix
         id: set-matrix
         run: |
           chmod +x .github/scripts/set-matrix.sh
           .github/scripts/set-matrix.sh
-
-      - name: Debug output
-        run: |
-          echo "Output file contents:"
-          cat "$GITHUB_OUTPUT"
-          echo "Matrix value: ${{ steps.set-matrix.outputs.matrix }}"
 
   run-tests:
     name: 'Run the tests'
@@ -42,32 +30,32 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v46
-        with:
-          files: |
-            ${{ matrix.folders }}/**
+      # - name: Get changed files
+      #   id: changed-files
+      #   uses: tj-actions/changed-files@v46
+      #   with:
+      #     files: |
+      #       ${{ matrix.folders }}/**
 
       - uses: actions/setup-node@v4
-        if: steps.changed-files.outputs.any_modified == 'true'
+        # if: steps.changed-files.outputs.any_modified == 'true'
         with:
           node-version: 22
 
       - run: yarn
-        if: steps.changed-files.outputs.any_modified == 'true'
+        # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - run: 'yarn build'
-        if: steps.changed-files.outputs.any_modified == 'true'
+        # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - name: 'run lint'
         run: yarn workspace @relay-vaults/${{matrix.folders}} lint
-        if: steps.changed-files.outputs.any_modified == 'true'
+        # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - name: 'run tests'
         run: yarn workspace @relay-vaults/${{matrix.folders}} run test
-        if: steps.changed-files.outputs.any_modified == 'true'
+        # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash

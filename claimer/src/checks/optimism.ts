@@ -9,7 +9,7 @@ export async function checkOptimismStatus(
   chain: OriginNetworkConfig
 ): Promise<L2Status> {
   const l2OutputOracleAddress =
-    chain.bridges?.optimismAlt?.parent?.outputOracle!
+    chain.bridges!.optimismAlt!.parent!.outputOracle!
   if (!l2OutputOracleAddress) {
     throw new Error('L2OutputOracle address not configured')
   }
@@ -30,13 +30,13 @@ export async function checkOptimismStatus(
   const filter = contract.filters.OutputProposed
   const events = await contract.queryFilter(
     filter,
-    -chain.bridges.optimismAlt?.parent.maxBlocksWithoutProof!
+    -chain.bridges.optimismAlt!.parent.maxBlocksWithoutProof!
   )
 
   if (events.length === 0) {
     return {
-      isUp: false,
       error: 'No output proposals found',
+      isUp: false,
     }
   }
 
@@ -44,8 +44,8 @@ export async function checkOptimismStatus(
   const latestEvent = events[events.length - 1]
   if (!(latestEvent instanceof EventLog)) {
     return {
-      isUp: false,
       error: 'Invalid event format',
+      isUp: false,
     }
   }
 
@@ -55,11 +55,11 @@ export async function checkOptimismStatus(
   const lastestBlock = await l1Provider.getBlock('latest')
 
   return {
+    blocksSinceLastProof:
+      lastestBlock!.number! - Number(latestEvent.blockNumber),
     isUp: true,
     lastProofBlock: Number(latestEvent.blockNumber),
     lastProofTimestamp: Number(latestEvent.args.l1Timestamp),
-    blocksSinceLastProof:
-      lastestBlock?.number! - Number(latestEvent.blockNumber),
     timeSinceLastProof,
   }
 }

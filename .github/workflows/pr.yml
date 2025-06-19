@@ -18,16 +18,6 @@ jobs:
           chmod +x .github/scripts/set-matrix.sh
           .github/scripts/set-matrix.sh
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - run: yarn
-        shell: bash
-
-      - run: 'yarn build'
-        shell: bash
-
   run-tests:
     name: 'Run the tests'
     needs: prepare
@@ -36,10 +26,6 @@ jobs:
       matrix:
         folders: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       # - name: Get changed files
       #   id: changed-files
       #   uses: tj-actions/changed-files@v46
@@ -47,8 +33,22 @@ jobs:
       #     files: |
       #       ${{ matrix.folders }}/**
 
+      - uses: actions/setup-node@v4
+        # if: steps.changed-files.outputs.any_modified == 'true'
+        with:
+          node-version: 22
+
+      - run: yarn
+        # if: steps.changed-files.outputs.any_modified == 'true'
+        shell: bash
+
+      - run: 'yarn build'
+        # if: steps.changed-files.outputs.any_modified == 'true'
+        shell: bash
+
       - name: 'change directory'
         run: cd ${{ matrix.folders }}
+        # if: steps.changed-files.outputs.any_modified == 'true'
         shell: bash
 
       - name: 'run lint'

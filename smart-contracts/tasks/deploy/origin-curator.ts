@@ -26,7 +26,6 @@ task('deploy:origin-curator', 'Deploy the Origin Curator')
     const originCuratorAddress = await originCurator.getAddress()
 
     console.log(`✅ originCurator deployed to: ${originCuratorAddress}`)
-    await run('set-earliest-block')
 
     await run('deploy:verify', {
       address: originCuratorAddress,

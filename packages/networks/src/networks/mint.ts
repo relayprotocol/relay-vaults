@@ -18,7 +18,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 185,
-  earliestBlock: 14354000,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   name: 'Mint',

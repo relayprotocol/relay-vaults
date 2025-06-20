@@ -4708,7 +4708,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-vaults/addresses@npm:1.0.5, @relay-vaults/addresses@workspace:packages/addresses":
+"@relay-vaults/addresses@workspace:*, @relay-vaults/addresses@workspace:packages/addresses":
   version: 0.0.0-use.local
   resolution: "@relay-vaults/addresses@workspace:packages/addresses"
   dependencies:
@@ -4730,7 +4730,7 @@ __metadata:
   resolution: "@relay-vaults/backend@workspace:backend"
   dependencies:
     "@relay-vaults/abis": "workspace:*"
-    "@relay-vaults/addresses": "npm:1.0.5"
+    "@relay-vaults/addresses": "workspace:*"
     "@types/node": "npm:22.15.31"
     "@typescript-eslint/eslint-plugin": "npm:8.34.0"
     "@typescript-eslint/parser": "npm:8.34.0"

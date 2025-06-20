@@ -321,3 +321,113 @@ query GetUserBalanceForPool(
     }
   }
 }
+
+# Get bridge transactions for a specific pool
+query GetPoolBridgeTransactions(
+  $poolAddress: String!
+  $poolChainId: Int!
+  $limit: Int
+  $orderBy: String
+  $orderDirection: String
+  $after: String
+  $before: String
+) {
+  bridgeTransactions(
+    where: {
+      destinationPoolAddress: $poolAddress
+      destinationPoolChainId: $poolChainId
+    }
+    limit: $limit
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    after: $after
+    before: $before
+  ) {
+    items {
+      amount
+      asset
+      destinationPoolAddress
+      destinationPoolChainId
+      destinationRecipient
+      expectedFinalizationTimestamp
+      finalizationTimestamp
+      hyperlaneMessageId
+      loanEmittedTxHash
+      nativeBridgeFinalizedTxHash
+      nativeBridgeStatus
+      nonce
+      originBridgeAddress
+      originChainId
+      originSender
+      originTimestamp
+      originTxHash
+      origin {
+        originChainId
+        originBridge
+        proxyBridge
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# Get bridge transactions for multiple pools
+query GetAllPoolsBridgeTransactions(
+  $poolAddresses: [String]
+  $poolChainIds: [Int]
+  $limit: Int
+  $orderBy: String
+  $orderDirection: String
+  $after: String
+  $before: String
+) {
+  bridgeTransactions(
+    where: {
+      destinationPoolAddress_in: $poolAddresses
+      destinationPoolChainId_in: $poolChainIds
+    }
+    limit: $limit
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    after: $after
+    before: $before
+  ) {
+    items {
+      amount
+      asset
+      destinationPoolAddress
+      destinationPoolChainId
+      destinationRecipient
+      expectedFinalizationTimestamp
+      finalizationTimestamp
+      hyperlaneMessageId
+      loanEmittedTxHash
+      nativeBridgeFinalizedTxHash
+      nativeBridgeStatus
+      nonce
+      originBridgeAddress
+      originChainId
+      originSender
+      originTimestamp
+      originTxHash
+      origin {
+        originChainId
+        originBridge
+        proxyBridge
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

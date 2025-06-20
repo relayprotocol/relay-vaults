@@ -11,7 +11,6 @@ task('deploy:origin-curator', 'Deploy the Origin Curator')
     const { name: networkName } = networks[chainId.toString()]
     console.log(`deploying on ${networkName} (${chainId})...`)
 
-    // deploy the pool using ignition
     const parameters = {
       OriginCurator: {
         multisig,

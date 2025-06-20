@@ -1,3 +1,6 @@
 {
-  "ethereum": 22741000
+  "ethereum": 22741000,
+  "sepolia": 8590000,
+  "arbitrum": 349398000,
+  "base": 31826000
 }

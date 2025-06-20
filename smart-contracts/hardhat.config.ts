@@ -20,6 +20,7 @@ import './tasks/deploy/relay-bridge-factory'
 import './tasks/deploy/verify'
 import './tasks/deploy/timelock'
 import './tasks/deploy/set-earliest-block'
+import './tasks/deploy/origin-curator'
 
 // Helpers/tests
 import './tasks/networks'

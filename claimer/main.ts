@@ -3,6 +3,7 @@ import { proveTransactions } from './src/prove-transactions'
 import { claimTransactions } from './src/claim-withdrawals'
 import { finalizeWithdrawals } from './src/finalize-withdrawals'
 import { checkL2Chains } from './src/check-l2-status'
+import { logger } from './src/logger'
 
 const run = async () => {
   const { vaultService } = await start()
@@ -11,10 +12,10 @@ const run = async () => {
   await claimTransactions({ vaultService })
   await checkL2Chains()
   await stop()
-  console.log('Done!')
+  logger.info('Done!')
 }
 
 run().catch((error) => {
-  console.error(error)
+  logger.error(error)
   process.exit(1)
 })

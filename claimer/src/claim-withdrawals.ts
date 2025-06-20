@@ -3,6 +3,7 @@ import { gql } from 'graphql-request'
 import networks from '@relay-vaults/networks'
 import { ethers } from 'ethers'
 import { claimFunds } from './relay'
+import { logger } from './logger'
 
 const GET_POOLS_AND_PROXY_BRIDGES = gql`
   query {
@@ -57,7 +58,7 @@ export const claimTransactions = async ({
       )
 
       if (balance >= 0 && BigInt(origin.currentOutstandingDebt) > 0) {
-        console.log(
+        logger.info(
           `Claim funds (${BigInt(origin.currentOutstandingDebt)}) for ${relayPool.contractAddress} on ${origin.proxyBridge} from ${origin.originChainId} ${origin.originBridge}`
         )
         await claimFunds(

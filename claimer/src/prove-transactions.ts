@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import { RelayVaultService } from '@relay-vaults/client'
 import networks from '@relay-vaults/networks'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { submitProof } from './relay'
 import { logger } from './logger'
 
@@ -31,7 +31,7 @@ const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
 `
 
 const OpChains: (number | bigint)[] = (
-  Object.values(networks) as ChildNetworkConfig[]
+  Object.values(networks) as OriginNetworkConfig[]
 )
   .filter((n) => n.stack === 'optimism' || n.stack === 'optimism-alt')
   .map((n) => n.chainId)

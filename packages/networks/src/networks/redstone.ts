@@ -1,6 +1,6 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+  import { OriginNetworkConfig } from '@relay-vaults/types'
 
-const config: ChildNetworkConfig = {
+const config: OriginNetworkConfig = {
   assets: {
     usdc: '0xD5d59fC063e7548b6015A36fEb10B875924A19be',
     weth: '0x4200000000000000000000000000000000000006',

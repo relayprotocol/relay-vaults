@@ -1,6 +1,6 @@
 import { ZeroAddress } from 'ethers'
 import networks from '@relay-vaults/networks'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { logger } from './logger'
 
 const ENDPOINT = 'https://api.relay.link'
@@ -51,7 +51,8 @@ const after = (timestamp: number) => {
 export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
   const originNetwork = networks[
     bridgeTransaction.originChainId
-  ] as ChildNetworkConfig
+
+  ] as OriginNetworkConfig
   logger.info(
     `Submitting proof after ${after(bridgeTransaction.originTimestamp)} for ${bridgeTransaction.originTxHash} on ${originNetwork.name}`
   )
@@ -72,7 +73,7 @@ export const finalizeWithdrawal = async (
   bridgeTransaction: BridgeTransaction
 ) => {
   const stack = (
-    networks[bridgeTransaction.originChainId] as ChildNetworkConfig
+    networks[bridgeTransaction.originChainId] as OriginNetworkConfig
   ).stack
   logger.info(
     `Finalizing ${bridgeTransaction.originTxHash} on ${stack} after ${after(bridgeTransaction.originTimestamp)}`

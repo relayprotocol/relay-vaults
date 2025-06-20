@@ -4767,7 +4767,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@relay-vaults/client@npm:0.0.2, @relay-vaults/client@workspace:packages/client":
+"@relay-vaults/client@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@relay-vaults/client@npm:0.0.2"
+  dependencies:
+    graphql: "npm:16.11.0"
+    graphql-request: "npm:7.2.0"
+    graphql-tag: "npm:2.12.6"
+  checksum: 10/bd0a64e3bc1299008edbfdce07e63d0de2fd04d6d3ffae054c59affb98d83789b8d58cae374e326677fa8d6da2a255024de835e9b20cfbaba8b670b9df65efae
+  languageName: node
+  linkType: hard
+
+"@relay-vaults/client@workspace:packages/client":
   version: 0.0.0-use.local
   resolution: "@relay-vaults/client@workspace:packages/client"
   dependencies:

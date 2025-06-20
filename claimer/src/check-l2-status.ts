@@ -1,5 +1,5 @@
 import networks from '@relay-vaults/networks'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './checks/types'
 import { checkOptimismBedrockStatus } from './checks/optimism-bedrock'
 import { checkOptimismStatus } from './checks/optimism'
@@ -10,7 +10,7 @@ import { logger } from './logger'
 // get all L2/L3 chains
 export async function getL2s() {
   const l2Chains = Object.values(networks).filter(
-    (chain): chain is ChildNetworkConfig =>
+    (chain): chain is OriginNetworkConfig =>
       'stack' in chain &&
       'parentChainId' in chain &&
       chain.chainId !== chain.parentChainId
@@ -39,7 +39,7 @@ export async function checkL2Chains() {
 
 export async function checkL2Status(chainId: number): Promise<L2Status> {
   try {
-    const chain = networks[chainId] as ChildNetworkConfig
+    const chain = networks[chainId] as OriginNetworkConfig
 
     if (!chain) {
       throw new Error(`Chain ${chainId} not found in config`)

@@ -1,4 +1,4 @@
-  import { OriginNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -6,7 +6,7 @@ const config: OriginNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    optimismAlt: {
+    optimism: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },

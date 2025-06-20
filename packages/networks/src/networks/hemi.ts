@@ -6,7 +6,7 @@ const config: OriginNetworkConfig = {
     // TODO: add USDC
   },
   bridges: {
-    optimismAlt: {
+    optimism: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },

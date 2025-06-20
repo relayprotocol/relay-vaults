@@ -173,18 +173,13 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
     const originNetwork = networks[chainId] as OriginNetworkConfig
-    return (
-      originNetwork.bridges?.optimismAlt?.parent.portalProxy ||
-      originNetwork.bridges?.optimism?.parent.portalProxy
-    )
+    return originNetwork.bridges?.optimism?.parent.portalProxy
   })
   .reduce((oPPortalChains, chainId) => {
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
 
-    const parent =
-      l2Network.bridges.optimism?.parent ||
-      l2Network.bridges.optimismAlt?.parent
+    const parent = l2Network.bridges.optimism?.parent
 
     if (!oPPortalChains[l1Network.slug!]) {
       oPPortalChains[l1Network.slug!] = {

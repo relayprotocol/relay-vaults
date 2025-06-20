@@ -34,7 +34,7 @@ task(
   // Wait for the transaction to be mined before verifying!
   let attempts = 0
   let verified = false
-  console.log(`Verifying... ${address}`)
+  process.stdout.write(`Verifying ${address} ...`)
 
   while (!verified) {
     attempts += 1
@@ -46,13 +46,14 @@ task(
         verified = true
       })
       .catch(async (e) => {
-        if (attempts >= 10) {
+        process.stdout.write('.')
+        if (attempts >= 50) {
           console.error(e)
           throw e
         }
         await new Promise((resolve) => setTimeout(resolve, 3000))
       })
   }
-  console.log(`Verified ${address}`)
+  console.log(`✅ Verified ${address}`)
   return address
 })

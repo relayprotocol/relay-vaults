@@ -6,7 +6,7 @@ const config: OriginNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    optimismAlt: {
+    optimismLegacy: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
@@ -24,7 +24,7 @@ const config: OriginNetworkConfig = {
   name: 'Ancient8',
   parentChainId: 1,
   rpc: ['https://rpc.ancient8.gg'],
-  stack: 'optimism-alt',
+  stack: 'optimism-legacy',
 }
 
 export default config

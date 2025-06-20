@@ -9,7 +9,7 @@ export async function checkOptimismStatus(
   chain: OriginNetworkConfig
 ): Promise<L2Status> {
   const l2OutputOracleAddress =
-    chain.bridges?.optimismAlt?.parent?.outputOracle!
+    chain.bridges?.optimismLegacy?.parent?.outputOracle!
   if (!l2OutputOracleAddress) {
     throw new Error('L2OutputOracle address not configured')
   }
@@ -30,7 +30,7 @@ export async function checkOptimismStatus(
   const filter = contract.filters.OutputProposed
   const events = await contract.queryFilter(
     filter,
-    -chain.bridges.optimismAlt?.parent.maxBlocksWithoutProof!
+    -chain.bridges.optimismLegacy?.parent.maxBlocksWithoutProof!
   )
 
   if (events.length === 0) {

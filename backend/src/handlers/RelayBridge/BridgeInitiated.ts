@@ -57,9 +57,9 @@ export default async function ({
       }
     } else if (
       // OP Alt event
-      networkConfig.bridges.optimismAlt?.child.messagePasser &&
+      networkConfig.bridges.optimismLegacy?.child.messagePasser &&
       log.address.toLowerCase() ===
-        networkConfig.bridges.optimismAlt?.child.messagePasser.toLowerCase()
+        networkConfig.bridges.optimismLegacy?.child.messagePasser.toLowerCase()
     ) {
       const decodedEvent = decodeEventLog({
         abi: ABIs.L2ToL1MessagePasser,

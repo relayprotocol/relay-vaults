@@ -66,7 +66,7 @@ export async function checkL2Status(chainId: number): Promise<L2Status> {
     // Different handling based on L2 stack type
     if (chain.stack === 'optimism') {
       return await checkOptimismBedrockStatus(chain)
-    } else if (chain.stack === 'optimism-alt') {
+    } else if (chain.stack === 'optimism-legacy') {
       return await checkOptimismStatus(chain)
     } else if (chain.stack === 'arbitrum') {
       return await checkArbitrumStatus(chain)

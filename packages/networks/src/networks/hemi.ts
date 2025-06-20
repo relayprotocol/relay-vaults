@@ -6,7 +6,7 @@ const config: OriginNetworkConfig = {
     // TODO: add USDC
   },
   bridges: {
-    optimismAlt: {
+    optimismLegacy: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
@@ -26,7 +26,7 @@ const config: OriginNetworkConfig = {
   rpc: process.env.RPC_43111
     ? [process.env.RPC_43111]
     : ['https://rpc.hemi.network/rpc'],
-  stack: 'optimism-alt',
+  stack: 'optimism-legacy',
 }
 
 export default config

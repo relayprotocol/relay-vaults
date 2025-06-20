@@ -6,7 +6,7 @@ export interface VaultNetworkConfig extends NetworkConfig {
 
 export interface OriginNetworkConfig extends NetworkConfig {
   parentChainId: number
-  stack: 'optimism' | 'optimism-alt' | 'arbitrum' | 'zksync' | 'zkevm'
+  stack: 'optimism' | 'optimism-legacy' | 'arbitrum' | 'zksync' | 'zkevm'
   withdrawalDelay?: number // withdrawal delay in seconds
 
   bridges: {
@@ -20,7 +20,7 @@ export interface OriginNetworkConfig extends NetworkConfig {
         messagePasser: string
       }
     }
-    optimismAlt?: {
+    optimismLegacy?: {
       parent: {
         outputOracle: string
         portalProxy: string

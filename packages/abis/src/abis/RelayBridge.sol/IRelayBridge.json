@@ -13,13 +13,18 @@
       },
       {
         "internalType": "address",
-        "name": "l1Asset",
+        "name": "poolAsset",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "l1Gas",
+        "name": "poolGas",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "extraData",
+        "type": "bytes"
       }
     ],
     "name": "bridge",

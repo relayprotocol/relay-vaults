@@ -10,6 +10,7 @@ const ignored = [
   'hardhat/console.sol:console',
   '@openzeppelin/contracts',
   'contracts/utils',
+  'contracts/mocks',
 ]
 
 const forced = [

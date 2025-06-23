@@ -8,7 +8,14 @@ import networks from '@relay-vaults/networks'
 export async function checkOptimismStatus(
   chain: OriginNetworkConfig
 ): Promise<L2Status> {
-  const l2OutputOracleAddress = chain.bridges?.optimism?.parent?.outputOracle!
+  const parent = chain.bridges?.optimism?.parent
+  if (!parent || !('outputOracle' in parent)) {
+    throw new Error(
+      'L2OutputOracle address not configured - this function is for legacy Optimism chains only'
+    )
+  }
+
+  const l2OutputOracleAddress = parent.outputOracle
   if (!l2OutputOracleAddress) {
     throw new Error('L2OutputOracle address not configured')
   }
@@ -29,7 +36,7 @@ export async function checkOptimismStatus(
   const filter = contract.filters.OutputProposed
   const events = await contract.queryFilter(
     filter,
-    -chain.bridges.optimism?.parent.maxBlocksWithoutProof!
+    -parent.maxBlocksWithoutProof
   )
 
   if (events.length === 0) {

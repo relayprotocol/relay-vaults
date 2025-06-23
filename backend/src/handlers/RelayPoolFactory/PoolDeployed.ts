@@ -2,6 +2,7 @@ import { RelayPool, TimelockControllerUpgradeable } from '@relay-vaults/abis'
 import { Context, Event } from 'ponder:registry'
 import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'
+import networks from '@relay-vaults/networks'
 
 export default async function ({
   event,
@@ -42,18 +43,19 @@ export default async function ({
   ])
 
   // Only index pools curated by our multisig or its timelock
-  const MULTISIG = (process.env.CURATOR_MULTISIG ?? '').toLowerCase()
+  // @ts-expect-error - context.chain.id is not properly typed in Ponder
+  const network = networks[context.chain.id]
+  const multisig = network?.curator?.toLowerCase()
 
-  if (!MULTISIG) {
-    console.warn(
-      'CURATOR_MULTISIG env variable not set. Skipping pool curation filtering.'
-    )
+  if (!multisig) {
+    console.warn('No curator configured. Skipping pool.')
+    return
   }
 
   let isCurated = false
 
   // 1. Direct ownership by multisig
-  if ((owner as string).toLowerCase() === MULTISIG) {
+  if ((owner as string).toLowerCase() === multisig) {
     isCurated = true
   } else {
     // 2. check PROPOSER_ROLE membership
@@ -67,7 +69,7 @@ export default async function ({
       const hasRole = (await context.client.readContract({
         abi: TimelockControllerUpgradeable,
         address: owner as `0x${string}`,
-        args: [proposerRole, MULTISIG],
+        args: [proposerRole, multisig],
         functionName: 'hasRole',
       })) as boolean
 

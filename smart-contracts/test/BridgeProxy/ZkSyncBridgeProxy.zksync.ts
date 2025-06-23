@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { parseUnits, TransactionReceipt, type Signer } from 'ethers'
 import { getBalance, getEvent } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
-import { ZkSyncBridgeProxy } from '../../typechain-types'
+import { ZkSyncWithdrawBridgeProxy } from '../../typechain-types'
 
 import { OriginNetworkConfig } from '@relay-vaults/types'
 
@@ -21,8 +21,8 @@ const {
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
-describe('ZkSyncBridgeProxy', function () {
-  let bridge: ZkSyncBridgeProxy
+describe('ZkSyncWithdrawBridgeProxy', function () {
+  let bridge: ZkSyncWithdrawBridgeProxy
   let recipient: Signer
 
   before(async () => {
@@ -36,7 +36,10 @@ describe('ZkSyncBridgeProxy', function () {
       l1BridgeProxy,
     ]
 
-    bridge = await zksyncEthers.deployContract('ZkSyncBridgeProxy', deployArgs)
+    bridge = await zksyncEthers.deployContract(
+      'ZkSyncWithdrawBridgeProxy',
+      deployArgs
+    )
   })
 
   describe('sending native token (ETH)', () => {

@@ -5,11 +5,11 @@ import {BridgeProxy} from "./BridgeProxy.sol";
 import {IL2SharedBridge} from "../interfaces/zksync/IL2SharedBridge.sol";
 import {IBaseToken} from "../interfaces/zksync/IBaseToken.sol";
 
-/// @title ZkSyncBridgeProxy
+/// @title ZkSyncWithdrawBridgeProxy
 /// @author Relay Protocol
 /// @notice Bridge proxy implementation for zkSync Era L2 to L1 bridging
 /// @dev Handles bridging of native ETH and ERC20 tokens from zkSync Era to Ethereum L1
-contract ZkSyncBridgeProxy is BridgeProxy {
+contract ZkSyncWithdrawBridgeProxy is BridgeProxy {
   /// @notice The zkSync L2 shared bridge contract for ERC20 withdrawals
   /// @dev Handles the withdrawal of ERC20 tokens to L1
   IL2SharedBridge public immutable L2_SHARED_BRIDGE;

@@ -8,7 +8,7 @@ import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
 import ArbitrumOrbitNativeWithdrawBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeWithdrawBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
-import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
+import ZkSyncWithdrawBridgeProxyModule from '../../ignition/modules/ZkSyncWithdrawBridgeProxyModule'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 import { getProvider } from '@relay-vaults/helpers'
 
@@ -250,21 +250,21 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         // deploy using `deployContract` helper (for zksync L2s)
         ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
-          'ZkSyncBridgeProxy',
+          'ZkSyncWithdrawBridgeProxy',
           [l2SharedDefaultBridge, parentChainId, poolAddress, l1BridgeProxy],
           deploymentId
         ))
       } else {
         // used ignition to deploy bridge on L1
         const parameters = {
-          ZkSyncBridgeProxy: {
+          ZkSyncWithdrawBridgeProxy: {
             l1SharedDefaultBridge,
             l2SharedDefaultBridge,
             ...defaultProxyModuleArguments,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(
-          ZkSyncBridgeProxyModule,
+          ZkSyncWithdrawBridgeProxyModule,
           {
             deploymentId,
             parameters,

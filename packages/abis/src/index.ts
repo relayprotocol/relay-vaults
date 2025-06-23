@@ -7,7 +7,7 @@ import ArbitrumOrbitNativeWithdrawBridgeProxy from './abis/BridgeProxy/ArbitrumO
 import BridgeProxy from './abis/BridgeProxy/BridgeProxy.sol/BridgeProxy.json'
 import CCTPBridgeProxy from './abis/BridgeProxy/CCTPBridgeProxy.sol/CCTPBridgeProxy.json'
 import OPStackNativeWithdrawBridgeProxy from './abis/BridgeProxy/OPStackNativeWithdrawBridgeProxy.sol/OPStackNativeWithdrawBridgeProxy.json'
-import ZkSyncBridgeProxy from './abis/BridgeProxy/ZkSyncBridgeProxy.sol/ZkSyncBridgeProxy.json'
+import ZkSyncWithdrawBridgeProxy from './abis/BridgeProxy/ZkSyncWithdrawBridgeProxy.sol/ZkSyncWithdrawBridgeProxy.json'
 import IRelayBridge from './abis/RelayBridge.sol/IRelayBridge.json'
 import RelayBridge from './abis/RelayBridge.sol/RelayBridge.json'
 import RelayBridgeFactory from './abis/RelayBridgeFactory.sol/RelayBridgeFactory.json'
@@ -50,7 +50,7 @@ export { ArbitrumOrbitNativeWithdrawBridgeProxy }
 export { BridgeProxy }
 export { CCTPBridgeProxy }
 export { OPStackNativeWithdrawBridgeProxy }
-export { ZkSyncBridgeProxy }
+export { ZkSyncWithdrawBridgeProxy }
 export { IRelayBridge }
 export { RelayBridge }
 export { RelayBridgeFactory }

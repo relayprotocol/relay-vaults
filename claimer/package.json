@@ -1,14 +1,15 @@
 {
   "name": "@relay-vaults/claimer",
   "version": "0.0.0",
+  "private": true,
   "scripts": {
     "start": "tsx main.ts",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint"
   },
   "devDependencies": {
-    "@relay-vaults/client": "0.0.2",
-    "@relay-vaults/eslint-config": "workspace:^",
+    "@relay-vaults/client": "workspace:*",
+    "@relay-vaults/eslint-config": "workspace:*",
     "@relay-vaults/helpers": "workspace:*",
     "@relay-vaults/networks": "workspace:*",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",

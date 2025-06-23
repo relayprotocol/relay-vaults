@@ -9,7 +9,7 @@ import { eq } from 'ponder'
 import { ponder } from 'ponder:registry'
 import { relayPool } from 'ponder:schema'
 
-ponder.on('RelayPoolSnapshot:block', async ({ event, context }) => {
+ponder.on('RelayPoolSnapshot:block', async ({ context }) => {
   // Retrieve all relay pools for the current chain
   const pools = await context.db.sql
     .select()

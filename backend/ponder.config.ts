@@ -19,8 +19,10 @@ const deployedAddresses = getAddresses()
 const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
   return {
     ...usedChains,
-    [networks[chainId].slug]: {
+    [networks[chainId].slug!]: {
       id: Number(chainId),
+      maxRequestsPerSecond: 500,
+      pollingInterval: 100,
       rpc: networks[chainId].rpc[0],
     },
   }
@@ -35,8 +37,8 @@ const vaultSnapshotChains = Object.keys(networks)
     const network = networks[chainId]
     return {
       ...vaultSnapshotChains,
-      [network.slug]: {
-        startBlock: network.earliestBlock,
+      [network.slug!]: {
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -53,7 +55,7 @@ const relayBridgeChains = Object.keys(networks)
       return relayBridgeChains
     }
     return {
-      [network.slug]: {
+      [network.slug!]: {
         address: factory({
           address: addresses.RelayBridgeFactory,
           event: RelayBridgeFactory.find(
@@ -61,7 +63,7 @@ const relayBridgeChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'bridge',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
       ...relayBridgeChains,
     }
@@ -80,9 +82,9 @@ const relayBridgeFactoryChains = Object.keys(networks)
       return relayBridgeFactoryChains
     }
     return {
-      [network.slug]: {
+      [network.slug!]: {
         address: addresses.RelayBridgeFactory,
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
       ...relayBridgeFactoryChains,
     }
@@ -103,9 +105,9 @@ const relayPoolFactoryChains = Object.keys(networks)
 
     return {
       ...relayPoolFactoryChains,
-      [network.slug]: {
+      [network.slug!]: {
         address: addresses.RelayPoolFactory,
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -122,7 +124,7 @@ const relayPoolChains = Object.keys(networks)
     }
     return {
       ...relayPoolChains,
-      [network.slug]: {
+      [network.slug!]: {
         address: factory({
           address: addresses.RelayPoolFactory,
           event: RelayPoolFactory.find(
@@ -130,7 +132,7 @@ const relayPoolChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'pool',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -147,7 +149,7 @@ const relayPoolTimelockChains = Object.keys(networks)
     }
     return {
       ...relayPoolTimelockChains,
-      [network.slug]: {
+      [network.slug!]: {
         address: factory({
           address: addresses.RelayPoolFactory,
           event: RelayPoolFactory.find(
@@ -155,7 +157,7 @@ const relayPoolTimelockChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'timelock',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -170,26 +172,28 @@ interface OPPortalChains {
 const oPPortalChains: OPPortalChains = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
-    return (networks[chainId] as OriginNetworkConfig).bridges?.optimism?.parent
-      .portalProxy
+    const originNetwork = networks[chainId] as OriginNetworkConfig
+    return (
+      originNetwork.bridges?.optimismAlt?.parent.portalProxy ||
+      originNetwork.bridges?.optimism?.parent.portalProxy
+    )
   })
   .reduce((oPPortalChains, chainId) => {
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
-    if (!oPPortalChains[l1Network.slug]) {
-      oPPortalChains[l1Network.slug] = {
+
+    const parent =
+      l2Network.bridges.optimism?.parent ||
+      l2Network.bridges.optimismAlt?.parent
+
+    if (!oPPortalChains[l1Network.slug!]) {
+      oPPortalChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
-    if (
-      !oPPortalChains[l1Network.slug].address.includes(
-        l2Network.bridges.optimism!.parent.portalProxy
-      )
-    ) {
-      oPPortalChains[l1Network.slug].address.push(
-        l2Network.bridges.optimism!.parent.portalProxy
-      )
+    if (!oPPortalChains[l1Network.slug!].address.includes(parent.portalProxy)) {
+      oPPortalChains[l1Network.slug!].address.push(parent.portalProxy)
     }
     return oPPortalChains
   }, {} as OPPortalChains)
@@ -210,18 +214,18 @@ const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
   .reduce((orbitOutboxChains, chainId) => {
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
-    if (!orbitOutboxChains[l1Network.slug]) {
-      orbitOutboxChains[l1Network.slug] = {
+    if (!orbitOutboxChains[l1Network.slug!]) {
+      orbitOutboxChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (
-      !orbitOutboxChains[l1Network.slug].address.includes(
+      !orbitOutboxChains[l1Network.slug!].address.includes(
         l2Network.bridges.arbitrum!.parent.outbox
       )
     ) {
-      orbitOutboxChains[l1Network.slug].address.push(
+      orbitOutboxChains[l1Network.slug!].address.push(
         l2Network.bridges.arbitrum!.parent.outbox
       )
     }
@@ -248,18 +252,18 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
     }
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
-    if (!zkSyncChains[l1Network.slug]) {
-      zkSyncChains[l1Network.slug] = {
+    if (!zkSyncChains[l1Network.slug!]) {
+      zkSyncChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (
-      !zkSyncChains[l1Network.slug].address.includes(
+      !zkSyncChains[l1Network.slug!].address.includes(
         l2Network.bridges.zksync!.parent.nativeTokenVault
       )
     ) {
-      zkSyncChains[l1Network.slug].address.push(
+      zkSyncChains[l1Network.slug!].address.push(
         l2Network.bridges.zksync!.parent.nativeTokenVault
       )
     }
@@ -269,14 +273,15 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
 export default createConfig({
   blocks: {
     RelayPoolSnapshot: {
-      interval: 25,
       chain: vaultSnapshotChains,
+      interval: 25,
     },
     VaultSnapshot: {
-      interval: 25,
       chain: vaultSnapshotChains,
+      interval: 25,
     },
   },
+  chains: usedChains,
   contracts: {
     L1NativeTokenVault: {
       abi: ABIs.L1NativeTokenVault,
@@ -322,5 +327,5 @@ export default createConfig({
     connectionString: process.env.DATABASE_URL,
     kind: 'postgres',
   },
-  chains: usedChains,
+  ordering: 'multichain', // or "omnichain" — see below
 })

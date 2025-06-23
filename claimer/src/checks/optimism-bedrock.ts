@@ -47,8 +47,8 @@ export async function checkOptimismBedrockStatus(
 
   if (!latestGame) {
     return {
-      isUp: false,
       error: 'No recent games found',
+      isUp: false,
     }
   }
 
@@ -58,7 +58,7 @@ export async function checkOptimismBedrockStatus(
 
   return {
     isUp:
-      timeSinceLastGame < chain.bridges.optimism?.parent.maxTimeWithoutProof!,
+      timeSinceLastGame < chain.bridges.optimism!.parent.maxTimeWithoutProof!,
     lastProofBlock: 0,
     lastProofTimestamp: Number(timestamp.toString()),
     timeSinceLastProof: timeSinceLastGame,

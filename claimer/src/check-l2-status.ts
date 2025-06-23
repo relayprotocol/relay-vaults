@@ -77,8 +77,8 @@ export async function checkL2Status(chainId: number): Promise<L2Status> {
     }
   } catch (error) {
     return {
-      isUp: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
+      isUp: false,
     }
   }
 }

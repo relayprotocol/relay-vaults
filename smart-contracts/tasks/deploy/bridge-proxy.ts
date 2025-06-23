@@ -130,19 +130,20 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
           ).interface,
           parentProvider
         )
-        const l1BridgeProxyPool = await parentBridgeProxyContract.RELAY_POOL()
-        const l1BridgeProxyChainId =
+        const vaultChainBridgeProxyPool =
+          await parentBridgeProxyContract.RELAY_POOL()
+        const vaultChainBridgeProxyChainId =
           await parentBridgeProxyContract.RELAY_POOL_CHAIN_ID()
 
         // l1BridgeProxy
         if (
           !(
-            l1BridgeProxyPool === poolAddress &&
-            l1BridgeProxyChainId === parentChainId
+            vaultChainBridgeProxyPool === poolAddress &&
+            Number(vaultChainBridgeProxyChainId) === Number(parentChainId)
           )
         ) {
           throw Error(
-            `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${parentChainId})`
+            `The bridge proxy on the vault chain (${vaultChainBridgeProxyPool} - ${vaultChainBridgeProxyChainId}) does not match the pool (${poolAddress} = ${parentChainId})`
           )
         }
 
@@ -202,7 +203,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     } else if (type === 'optimism') {
       const parameters = {
         OPStackNativeBridgeProxy: {
-          ...defaultProxyModuleArguments,
+          l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
+          relayPool: defaultProxyModuleArguments.relayPool,
+          relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
         },
       }
 

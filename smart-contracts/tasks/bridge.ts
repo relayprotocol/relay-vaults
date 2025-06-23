@@ -140,18 +140,18 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       if (l1BridgeProxyAddress !== origin.proxyBridge) {
         throw Error(
-          `The L1 bridge proxy (${l1BridgeProxyAddress}) does not match the origin (${origin.proxyBridge})`
+          `The bridge proxy on the pool's chain (${l1BridgeProxyAddress}) does not match the origin (${origin.proxyBridge})`
         )
       }
 
       if (
         !(
           l1BridgeProxyPool === poolAddress &&
-          l1BridgeProxyChainId === poolChainId
+          Number(l1BridgeProxyChainId) === Number(poolChainId)
         )
       ) {
         throw Error(
-          `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${poolChainId})`
+          `The bridge proxy on the pool's chain (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} - ${poolChainId})`
         )
       }
 

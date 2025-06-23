@@ -4715,7 +4715,7 @@ __metadata:
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     eslint: "npm:9.28.0"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.2.0"
@@ -4731,7 +4731,7 @@ __metadata:
   dependencies:
     "@relay-vaults/abis": "workspace:*"
     "@relay-vaults/addresses": "npm:1.0.5"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     "@typescript-eslint/eslint-plugin": "npm:8.34.0"
     "@typescript-eslint/parser": "npm:8.34.0"
     eslint: "npm:9.28.0"
@@ -4759,7 +4759,7 @@ __metadata:
     "@relay-vaults/networks": "workspace:*"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     eslint: "npm:9.28.0"
     ethers: "npm:6.14.3"
     tsx: "npm:4.19.4"
@@ -4790,7 +4790,7 @@ __metadata:
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     eslint: "npm:9.28.0"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.2.0"
@@ -4892,7 +4892,7 @@ __metadata:
     "@types/chai": "npm:4.3.20"
     "@types/fs-extra": "npm:11.0.4"
     "@types/mocha": "npm:10.0.10"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     "@types/semver": "npm:7"
     "@uniswap/v3-periphery": "npm:1.4.4"
     chai: "npm:4.5.0"
@@ -6378,12 +6378,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.15.31":
-  version: 22.15.31
-  resolution: "@types/node@npm:22.15.31"
+"@types/node@npm:22.15.32":
+  version: 22.15.32
+  resolution: "@types/node@npm:22.15.32"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10/999da153fae4687c416421850ebd3c94be75e0dae27ccad192d9a073c7e74baade987d68fc9f082a825c4672bd8a26867636663baad0b9e851baf7b36fb9fdd9
+  checksum: 10/10b4c106d0c512a1d35ec08142bd7fb5cf2e1df93fc5627b3c69dd843dec4be07a47f1fa7ede232ad84762d75a372ea35028b79ee1e753b6f2adecd0b2cb2f71
   languageName: node
   linkType: hard
 

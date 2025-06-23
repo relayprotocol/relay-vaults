@@ -12,9 +12,9 @@
     "@relay-vaults/eslint-config": "workspace:*",
     "@relay-vaults/helpers": "workspace:*",
     "@relay-vaults/networks": "workspace:*",
-    "@relay-vaults/tsconfig": "workspace:*",
-    "@relay-vaults/types": "workspace:*",
-    "@types/node": "22.15.31",
+    "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
+    "@relay-vaults/types": "workspace:./packages/types",
+    "@types/node": "22.15.32",
     "eslint": "9.28.0",
     "typescript": "5.8.3"
   },

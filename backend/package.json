@@ -24,11 +24,11 @@
     "viem": "2.31.0"
   },
   "devDependencies": {
-    "@types/node": "22.15.31",
+    "@types/node": "22.15.32",
     "@typescript-eslint/eslint-plugin": "8.34.0",
     "@typescript-eslint/parser": "8.34.0",
     "eslint": "9.28.0",
-    "eslint-config-ponder": "0.11.17",
+    "eslint-config-ponder": "0.11.19",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.1",
     "husky": "9.1.7",

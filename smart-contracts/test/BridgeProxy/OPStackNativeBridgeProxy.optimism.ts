@@ -3,7 +3,7 @@ import { ABIs } from '@relay-vaults/helpers'
 import { expect } from 'chai'
 import { stealERC20 } from '../utils/hardhat'
 import { networks } from '@relay-vaults/networks'
-import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
+import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
 
 import { AbiCoder, Log } from 'ethers'
 import { OriginNetworkConfig } from '@relay-vaults/types'
@@ -20,22 +20,25 @@ const {
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
-describe('OPStackNativeBridgeProxy: Op1', function () {
+describe('OPStackNativeWithdrawBridgeProxy: Op1', function () {
   it('should work for the base sequence using ETH', async () => {
     const [user] = await ethers.getSigners()
 
     // deploy
     const parameters = {
-      OPStackNativeBridgeProxy: {
+      OPStackNativeWithdrawBridgeProxy: {
         l1BridgeProxy,
         portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },
     }
-    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
-      parameters,
-    })
+    const { bridge } = await ignition.deploy(
+      OPStackNativeWithdrawBridgeProxyModule,
+      {
+        parameters,
+      }
+    )
     const bridgeAddress = await bridge.getAddress()
 
     const amount = ethers.parseEther('1')
@@ -209,16 +212,19 @@ describe('OPStackNativeBridgeProxy: Op1', function () {
     // We use ethereumAssets.udt) for example as it has already been bridged to OP
 
     const parameters = {
-      OPStackNativeBridgeProxy: {
+      OPStackNativeWithdrawBridgeProxy: {
         l1BridgeProxy,
         portalProxy: portalProxy,
         relayPool,
         relayPoolChainId: 1,
       },
     }
-    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
-      parameters,
-    })
+    const { bridge } = await ignition.deploy(
+      OPStackNativeWithdrawBridgeProxyModule,
+      {
+        parameters,
+      }
+    )
     const bridgeAddress = await bridge.getAddress()
 
     const amount = ethers.parseEther('1') // 1 ethereumAssets.udt)

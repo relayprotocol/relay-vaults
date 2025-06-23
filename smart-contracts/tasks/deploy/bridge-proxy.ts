@@ -5,7 +5,7 @@ import { Select, Confirm, Input } from 'enquirer'
 import fs from 'fs'
 
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
-import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
+import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
 import ArbitrumOrbitNativeWithdrawBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeWithdrawBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
@@ -198,14 +198,14 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'optimism') {
       const parameters = {
-        OPStackNativeBridgeProxy: {
+        OPStackNativeWithdrawBridgeProxy: {
           ...defaultProxyModuleArguments,
         },
       }
 
       // deploy OP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
+        OPStackNativeWithdrawBridgeProxyModule,
         {
           deploymentId,
           parameters,

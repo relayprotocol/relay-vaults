@@ -3,7 +3,7 @@ import { ethers, ignition } from 'hardhat'
 import { encodeData } from './hyperlane.hardhat'
 import RelayPoolModule from '../../ignition/modules/RelayPoolModule'
 import { MyToken, MyWeth, MyYieldPool, RelayPool } from '../../typechain-types'
-import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
+import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
 import { reverts } from '../utils/errors'
 
 const relayBridgeOptimism = '0x0000000000000000000000000000000000000010'
@@ -65,7 +65,7 @@ describe('RelayPool: claim for native ETH', () => {
     before(async () => {
       // Add origins (we use and OPStack origin here)
       const bridgeProxyParameters = {
-        OPStackNativeBridgeProxy: {
+        OPStackNativeWithdrawBridgeProxy: {
           l1BridgeProxy: ethers.ZeroAddress,
           portalProxy,
           relayPool: await relayPool.getAddress(),
@@ -73,7 +73,7 @@ describe('RelayPool: claim for native ETH', () => {
         },
       }
       const { bridge: opBridgeProxy } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
+        OPStackNativeWithdrawBridgeProxyModule,
         {
           parameters: bridgeProxyParameters,
         }
@@ -95,7 +95,7 @@ describe('RelayPool: claim for native ETH', () => {
       relayPool.addOrigin(origin)
 
       const { bridge: baseBridgeProxy } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
+        OPStackNativeWithdrawBridgeProxyModule,
         {
           parameters: bridgeProxyParameters,
         }
@@ -318,7 +318,7 @@ describe('RelayPool: claim for native ETH', () => {
     it('should prevent from claiming from unauthorized chain', async () => {
       // add origin
       const bridgeProxyParameters = {
-        OPStackNativeBridgeProxy: {
+        OPStackNativeWithdrawBridgeProxy: {
           l1BridgeProxy: ethers.ZeroAddress,
           portalProxy,
           relayPool: await relayPool.getAddress(),
@@ -326,7 +326,7 @@ describe('RelayPool: claim for native ETH', () => {
         },
       }
       const { bridge: opBridgeProxy } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
+        OPStackNativeWithdrawBridgeProxyModule,
         {
           parameters: bridgeProxyParameters,
         }
@@ -383,7 +383,7 @@ describe('RelayPool: claim for native ETH', () => {
 
       // add origin
       const bridgeProxyParameters = {
-        OPStackNativeBridgeProxy: {
+        OPStackNativeWithdrawBridgeProxy: {
           l1BridgeProxy: ethers.ZeroAddress,
           portalProxy,
           relayPool: await relayPool.getAddress(),
@@ -391,7 +391,7 @@ describe('RelayPool: claim for native ETH', () => {
         },
       }
       const { bridge: opBridgeProxy } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
+        OPStackNativeWithdrawBridgeProxyModule,
         {
           parameters: bridgeProxyParameters,
         }
@@ -495,16 +495,19 @@ describe('RelayPool: claim for an ERC20', () => {
 
     // Add origins (we use and OPStack origin here)
     const bridgeProxyParameters = {
-      OPStackNativeBridgeProxy: {
+      OPStackNativeWithdrawBridgeProxy: {
         l1BridgeProxy: ethers.ZeroAddress,
         portalProxy,
         relayPool: await relayPool.getAddress(),
         relayPoolChainId: 31337,
       },
     }
-    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
-      parameters: bridgeProxyParameters,
-    })
+    const { bridge } = await ignition.deploy(
+      OPStackNativeWithdrawBridgeProxyModule,
+      {
+        parameters: bridgeProxyParameters,
+      }
+    )
 
     origin = {
       bridge: relayBridgeOptimism,

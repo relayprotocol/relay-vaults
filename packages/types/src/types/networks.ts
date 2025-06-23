@@ -1,10 +1,10 @@
-export interface L1NetworkConfig extends NetworkConfig {
+export interface VaultNetworkConfig extends NetworkConfig {
   uniswapV3: {
     universalRouterAddress: string
   }
 }
 
-export interface ChildNetworkConfig extends NetworkConfig {
+export interface OriginNetworkConfig extends NetworkConfig {
   parentChainId: number
   stack: 'optimism' | 'optimism-alt' | 'arbitrum' | 'zksync' | 'zkevm'
   withdrawalDelay?: number // withdrawal delay in seconds
@@ -73,7 +73,7 @@ export interface NetworkConfig {
   chainId: number | bigint
   name: string
   slug?: string
-  earliestBlock: number
+  earliestBlock?: number
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
   isTestnet: boolean

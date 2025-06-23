@@ -1,6 +1,6 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
-const config: ChildNetworkConfig = {
+const config: OriginNetworkConfig = {
   assets: {
     dai: '0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656',
     eth: '0x000000000000000000000000000000000000800A',
@@ -16,10 +16,10 @@ const config: ChildNetworkConfig = {
         sharedDefaultBridge: '0x11f943b2c77b743AB90f4A0Ae7d5A4e7FCA3E102',
       },
       parent: {
+        diamondProxy: '0x32400084C286CF3E17e7B677ea9583e60a000324',
+        maxBlocksWithoutProof: 500,
         nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',
         sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
-        diamondProxy: '0x32400084c286cf3e17e7b677ea9583e60a000324',
-        maxBlocksWithoutProof: 500,
       },
     },
   },

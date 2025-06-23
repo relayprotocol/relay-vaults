@@ -1,6 +1,6 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
-const config: ChildNetworkConfig = {
+const config: OriginNetworkConfig = {
   assets: {
     udt: '0xc709c9116dBf29Da9c25041b13a07A0e68aC5d2D',
     usdc: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
@@ -24,9 +24,9 @@ const config: ChildNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
         gameFactory: '0xe5965Ab5962eDc7477C8520243A95517CD252fA9',
         maxTimeWithoutProof: 3600,
+        portalProxy: '0xbEb5Fc579115071764c7423A4f12eDde41f106Ed',
       },
     },
   },

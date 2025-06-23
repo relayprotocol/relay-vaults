@@ -1,7 +1,7 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
 // https://docs.zora.co/zora-network/network#zora-network-mainnet
-const config: ChildNetworkConfig = {
+const config: OriginNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
   },
@@ -11,9 +11,9 @@ const config: ChildNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0x1a0ad011913A150f69f6A19DF447A0CfD9551054',
         gameFactory: '0xB0F15106fa1e473Ddb39790f197275BC979Aa37e',
         maxTimeWithoutProof: 8000,
+        portalProxy: '0x1a0ad011913A150f69f6A19DF447A0CfD9551054',
       },
     },
   },

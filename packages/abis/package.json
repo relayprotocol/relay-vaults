@@ -35,5 +35,8 @@
     "versions",
     "index.js",
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "eslint": "9.29.0"
+  }
 }

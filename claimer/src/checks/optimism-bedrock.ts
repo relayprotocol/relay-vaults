@@ -1,5 +1,5 @@
 import { JsonRpcProvider, Contract } from 'ethers'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
 import networks from '@relay-vaults/networks'
 
@@ -28,7 +28,7 @@ async function getGame(l1ChainId: number, disputeGameFactoryAddress: string) {
 }
 
 export async function checkOptimismBedrockStatus(
-  chain: ChildNetworkConfig,
+  chain: OriginNetworkConfig,
   maxTimeWithoutProof = 3600 * 3
 ): Promise<L2Status> {
   const disputeGameFactoryAddress = chain.bridges?.optimism?.parent?.gameFactory
@@ -47,8 +47,8 @@ export async function checkOptimismBedrockStatus(
 
   if (!latestGame) {
     return {
-      isUp: false,
       error: 'No recent games found',
+      isUp: false,
     }
   }
 
@@ -58,7 +58,7 @@ export async function checkOptimismBedrockStatus(
 
   return {
     isUp:
-      timeSinceLastGame < chain.bridges.optimism?.parent.maxTimeWithoutProof!,
+      timeSinceLastGame < chain.bridges.optimism!.parent.maxTimeWithoutProof!,
     lastProofBlock: 0,
     lastProofTimestamp: Number(timestamp.toString()),
     timeSinceLastProof: timeSinceLastGame,

@@ -1,10 +1,10 @@
 import { JsonRpcProvider, Contract, EventLog } from 'ethers'
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
 import networks from '@relay-vaults/networks'
 
 export async function checkArbitrumStatus(
-  chain: ChildNetworkConfig
+  chain: OriginNetworkConfig
 ): Promise<L2Status> {
   const rollupAddress = chain.bridges?.arbitrum?.parent?.rollup
   if (!rollupAddress) {
@@ -24,13 +24,13 @@ export async function checkArbitrumStatus(
   // look back in blocks
   const events = await contract.queryFilter(
     filter,
-    -chain.bridges.arbitrum?.parent.maxBlocksWithoutProof!
+    -chain.bridges.arbitrum!.parent.maxBlocksWithoutProof!
   )
 
   if (events.length === 0) {
     return {
-      isUp: false,
       error: 'No new rollup nodes found',
+      isUp: false,
     }
   }
 
@@ -38,26 +38,26 @@ export async function checkArbitrumStatus(
   const latestEvent = events[events.length - 1]
   if (!(latestEvent instanceof EventLog)) {
     return {
-      isUp: false,
       error: 'Invalid event format',
+      isUp: false,
     }
   }
 
   const block = await l1Provider.getBlock(latestEvent.blockNumber)
   if (!block) {
     return {
-      isUp: false,
       error: 'Block not found',
+      isUp: false,
     }
   }
 
   const timeSinceLastProof = Math.floor(Date.now() / 1000) - block.timestamp
   const lastestBlock = await l1Provider.getBlock('latest')
   return {
+    blocksSinceLastProof: lastestBlock!.number! - latestEvent.blockNumber,
     isUp: true,
     lastProofBlock: latestEvent.blockNumber,
     lastProofTimestamp: block.timestamp,
-    blocksSinceLastProof: lastestBlock?.number! - latestEvent.blockNumber,
     timeSinceLastProof,
   }
 }

@@ -6,12 +6,23 @@ on:
       - main
 
 jobs:
-  run-tests:
-    name: 'Run the tests'
+  prepare:
+    name: 'Prepare'
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        folders: ['smart-contracts', 'backend']
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up matrix
+        id: set-matrix
+        run: |
+          chmod +x .github/scripts/set-matrix.sh
+          .github/scripts/set-matrix.sh
+
+  build:
+    name: 'Install and Build'
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,16 +32,98 @@ jobs:
         with:
           node-version: 22
 
-      - run: yarn
-        shell: bash
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-      - run: 'yarn build'
-        shell: bash
+      - name: Cache yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
-      - name: 'run lint'
-        run: yarn workspace @relay-vaults/${{matrix.folders}} lint
-        shell: bash
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            */node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: 'run tests'
-        run: yarn workspace @relay-vaults/${{matrix.folders}} run test
-        shell: bash
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Cache build outputs
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: |
+            */dist
+            */build
+            packages/*/dist
+            packages/*/build
+
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      - name: Build all packages
+        run: yarn build
+
+  run-tests:
+    name: 'Run tests - ${{ matrix.folders }}'
+    needs: [prepare, build]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        folders: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            */node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+          fail-on-cache-miss: true
+
+      - name: Restore build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            */dist
+            */build
+            packages/*/dist
+            packages/*/build
+
+          key: ${{ runner.os }}-build-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - name: Run lint
+        working-directory: ${{ matrix.folders }}
+        run: |
+          if [ -f "package.json" ] && grep -q '"lint"' package.json; then
+            yarn lint
+          else
+            echo "No lint script found, skipping"
+          fi
+
+      - name: Run tests
+        working-directory: ${{ matrix.folders }}
+        run: |
+          if [ -f "package.json" ] && grep -q '"test"' package.json; then
+            yarn test
+          else
+            echo "No test script found, skipping"
+          fi

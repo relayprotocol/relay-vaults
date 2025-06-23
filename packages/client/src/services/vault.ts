@@ -1,6 +1,7 @@
 import { RelayClient } from '../client'
 import type { DocumentNode } from 'graphql'
 import type { Variables } from 'graphql-request'
+import { RelayPoolFilter, YieldPoolFilter } from '../generated/graphql'
 
 /**
  * RelayVaultService provides a high-level interface for interacting with Relay Protocol vaults
@@ -51,6 +52,77 @@ export class RelayVaultService {
   }
 
   /**
+   * Get all relay pools without snapshot information (faster query)
+   *
+   * @param options - Query options
+   * @param options.limit - Maximum number of pools to fetch (default: 25)
+   * @param options.originsLimit - Maximum number of origins to fetch per pool (default: 10)
+   * @param options.chainIds - Array of chain IDs to filter by (optional)
+   * @param options.curator - Curator address to filter by (optional)
+   * @returns Promise containing all pool data without snapshots
+   */
+  async getAllPools(
+    options: {
+      limit?: number
+      originsLimit?: number
+      chainIds?: number[]
+      curator?: string
+    } = {}
+  ) {
+    const { limit = 25, originsLimit = 10, chainIds, curator } = options
+
+    // Build the where filter
+    const where: Partial<RelayPoolFilter> = {}
+
+    if (chainIds && chainIds.length > 0) {
+      where.chainId_in = chainIds
+    }
+
+    if (curator) {
+      where.curator = curator
+    }
+
+    const hasFilters = Object.keys(where).length > 0
+
+    return this.client.sdk.GetAllPools({
+      limit,
+      originsLimit,
+      where: hasFilters ? (where as RelayPoolFilter) : null,
+    })
+  }
+
+  /**
+   * Get all yield pools with optional chain filtering
+   *
+   * @param options - Query options
+   * @param options.limit - Maximum number of yield pools to fetch (default: 25)
+   * @param options.chainId - Chain ID to filter by (optional)
+   * @returns Promise containing all yield pool data
+   */
+  async getAllYieldPools(
+    options: {
+      limit?: number
+      chainId?: number
+    } = {}
+  ) {
+    const { limit = 25, chainId } = options
+
+    // Build the where filter
+    const where: Partial<YieldPoolFilter> = {}
+
+    if (chainId) {
+      where.chainId = chainId
+    }
+
+    const hasFilters = Object.keys(where).length > 0
+
+    return this.client.sdk.GetAllYieldPools({
+      limit,
+      where: hasFilters ? (where as YieldPoolFilter) : null,
+    })
+  }
+
+  /**
    * Get all relay pools with latest snapshot information
    *
    * @param options - Query options
@@ -59,31 +131,51 @@ export class RelayVaultService {
    * @param options.snapshotsLimit - Maximum number of snapshots to fetch per pool (default: 1)
    * @param options.targetTimestamp - The timestamp to get snapshot data for (default: current time)
    * @param options.orderDirection - The order direction for the snapshot query (default: "desc")
+   * @param options.chainIds - Array of chain IDs to filter by (optional)
+   * @param options.curator - Curator address to filter by (optional)
    * @returns Promise containing all pool data with snapshots
    */
-  async getAllPools(
+  async getAllPoolsWithSnapshots(
     options: {
       limit?: number
       originsLimit?: number
       snapshotsLimit?: number
       targetTimestamp?: string | number
       orderDirection?: string
+      chainIds?: number[]
+      curator?: string
     } = {}
   ) {
     const {
       limit = 10,
       originsLimit = 10,
       snapshotsLimit = 1,
-      targetTimestamp = Math.floor(Date.now() / 1000).toString(),
+      targetTimestamp = Math.floor(Date.now() / 1000),
       orderDirection = 'desc',
+      chainIds,
+      curator,
     } = options
 
-    return this.client.sdk.GetAllPools({
+    // Build the where filter
+    const where: Partial<RelayPoolFilter> = {}
+
+    if (chainIds && chainIds.length > 0) {
+      where.chainId_in = chainIds
+    }
+
+    if (curator) {
+      where.curator = curator
+    }
+
+    const hasFilters = Object.keys(where).length > 0
+
+    return this.client.sdk.GetAllPoolsWithSnapshots({
       limit,
       orderDirection,
       originsLimit,
       snapshotsLimit,
-      targetTimestamp,
+      targetTimestamp: targetTimestamp.toString(),
+      where: hasFilters ? (where as RelayPoolFilter) : null,
     })
   }
 
@@ -202,6 +294,94 @@ export class RelayVaultService {
       limit,
       poolAddress,
       walletAddress,
+    })
+  }
+
+  /**
+   * Get bridge transactions for a specific pool in reverse chronological order
+   *
+   * @param poolAddress - The pool's contract address
+   * @param poolChainId - The chain ID where the pool is deployed
+   * @param options - Query options
+   * @param options.limit - Maximum number of transactions to fetch (default: 100)
+   * @param options.orderBy - Field to order by (default: "originTimestamp")
+   * @param options.orderDirection - Order direction (default: "desc" for most recent first)
+   * @param options.after - Cursor to fetch results after (for infinite scrolling)
+   * @param options.before - Cursor to fetch results before (for pagination)
+   * @returns Promise containing the bridge transactions for the pool
+   */
+  async getPoolBridgeTransactions(
+    poolAddress: string,
+    poolChainId: number,
+    options: {
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+      after?: string
+      before?: string
+    } = {}
+  ) {
+    const {
+      limit = 100,
+      orderBy = 'originTimestamp',
+      orderDirection = 'desc',
+      after,
+      before,
+    } = options
+
+    return this.client.sdk.GetPoolBridgeTransactions({
+      after: after || null,
+      before: before || null,
+      limit,
+      orderBy,
+      orderDirection,
+      poolAddress,
+      poolChainId,
+    })
+  }
+
+  /**
+   * Get bridge transactions for multiple pools in reverse chronological order
+   *
+   * @param options - Query options
+   * @param options.poolAddresses - Array of pool contract addresses (optional)
+   * @param options.poolChainIds - Array of chain IDs where pools are deployed (optional)
+   * @param options.limit - Maximum number of transactions to fetch (default: 100)
+   * @param options.orderBy - Field to order by (default: "originTimestamp")
+   * @param options.orderDirection - Order direction (default: "desc" for most recent first)
+   * @param options.after - Cursor to fetch results after (for infinite scrolling)
+   * @param options.before - Cursor to fetch results before (for pagination)
+   * @returns Promise containing the bridge transactions for all specified pools
+   */
+  async getAllPoolsBridgeTransactions(
+    options: {
+      poolAddresses?: string[]
+      poolChainIds?: number[]
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+      after?: string
+      before?: string
+    } = {}
+  ) {
+    const {
+      poolAddresses,
+      poolChainIds,
+      limit = 100,
+      orderBy = 'originTimestamp',
+      orderDirection = 'desc',
+      after,
+      before,
+    } = options
+
+    return this.client.sdk.GetAllPoolsBridgeTransactions({
+      after: after || null,
+      before: before || null,
+      limit,
+      orderBy,
+      orderDirection,
+      poolAddresses: poolAddresses || null,
+      poolChainIds: poolChainIds || null,
     })
   }
 

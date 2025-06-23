@@ -1,6 +1,6 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
-const config: ChildNetworkConfig = {
+const config: OriginNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
     // TODO: add USDC
@@ -11,9 +11,9 @@ const config: ChildNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
-        outputOracle: '0x6daF3a3497D8abdFE12915aDD9829f83A79C0d51',
         maxBlocksWithoutProof: 200,
+        outputOracle: '0x6daF3a3497D8abdFE12915aDD9829f83A79C0d51',
+        portalProxy: '0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e',
       },
     },
   },

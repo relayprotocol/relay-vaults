@@ -4715,7 +4715,7 @@ __metadata:
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     eslint: "npm:9.28.0"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.2.0"
@@ -4731,11 +4731,11 @@ __metadata:
   dependencies:
     "@relay-vaults/abis": "workspace:*"
     "@relay-vaults/addresses": "workspace:*"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     "@typescript-eslint/eslint-plugin": "npm:8.34.0"
     "@typescript-eslint/parser": "npm:8.34.0"
     eslint: "npm:9.28.0"
-    eslint-config-ponder: "npm:0.11.17"
+    eslint-config-ponder: "npm:0.11.19"
     eslint-config-prettier: "npm:10.1.5"
     eslint-plugin-prettier: "npm:5.4.1"
     hono: "npm:4.7.11"
@@ -4759,7 +4759,7 @@ __metadata:
     "@relay-vaults/networks": "workspace:*"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     eslint: "npm:9.28.0"
     ethers: "npm:6.14.3"
     tsx: "npm:4.19.4"
@@ -4790,7 +4790,7 @@ __metadata:
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     eslint: "npm:9.28.0"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.2.0"
@@ -4892,7 +4892,7 @@ __metadata:
     "@types/chai": "npm:4.3.20"
     "@types/fs-extra": "npm:11.0.4"
     "@types/mocha": "npm:10.0.10"
-    "@types/node": "npm:22.15.31"
+    "@types/node": "npm:22.15.32"
     "@types/semver": "npm:7"
     "@uniswap/v3-periphery": "npm:1.4.4"
     chai: "npm:4.5.0"
@@ -6378,12 +6378,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.15.31":
-  version: 22.15.31
-  resolution: "@types/node@npm:22.15.31"
+"@types/node@npm:22.15.32":
+  version: 22.15.32
+  resolution: "@types/node@npm:22.15.32"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10/999da153fae4687c416421850ebd3c94be75e0dae27ccad192d9a073c7e74baade987d68fc9f082a825c4672bd8a26867636663baad0b9e851baf7b36fb9fdd9
+  checksum: 10/10b4c106d0c512a1d35ec08142bd7fb5cf2e1df93fc5627b3c69dd843dec4be07a47f1fa7ede232ad84762d75a372ea35028b79ee1e753b6f2adecd0b2cb2f71
   languageName: node
   linkType: hard
 
@@ -9263,14 +9263,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-ponder@npm:0.11.17":
-  version: 0.11.17
-  resolution: "eslint-config-ponder@npm:0.11.17"
+"eslint-config-ponder@npm:0.11.19":
+  version: 0.11.19
+  resolution: "eslint-config-ponder@npm:0.11.19"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^6.3.0
     "@typescript-eslint/parser": ^6.3.0
     eslint: ">= 3"
-  checksum: 10/25dacce33f03559e5636fcd8dbbed8488c72406bc051fb85b256170b28ad4f75e23044853aa35251c560276d6c3ff093d2da87948b59c3e119fb1fd8c7813a1d
+  checksum: 10/4dcaddc91301518a63a79def8571798f0a01dec9d9bf7277236c943e5e63c8949f8b0c5e99be3b8dacfab1eacc9d37da0222ef2bf781240cb9abc85d85096bee
   languageName: node
   linkType: hard
 

@@ -1,7 +1,7 @@
-import { ChildNetworkConfig } from '@relay-vaults/types'
+import { OriginNetworkConfig } from '@relay-vaults/types'
 
 // https://docs.zora.co/zora-network/network#zora-network-mainnet
-const config: ChildNetworkConfig = {
+const config: OriginNetworkConfig = {
   assets: {
     weth: '0x4200000000000000000000000000000000000006',
   },

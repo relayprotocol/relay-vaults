@@ -11,9 +11,9 @@ const config: OriginNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0x88e529A6ccd302c948689Cd5156C83D4614FAE92',
-        gameFactory: '0x512a3d2c7a43bd9261d2b8e8c9c70d4bd4d503c0',
+        gameFactory: '0x512A3d2c7a43BD9261d2B8E8C9c70D4bd4D503C0',
         maxTimeWithoutProof: 7200,
+        portalProxy: '0x88e529A6ccd302c948689Cd5156C83D4614FAE92',
       },
     },
   },

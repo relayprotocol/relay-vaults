@@ -34,8 +34,8 @@ export async function checkOptimismStatus(
 
   if (events.length === 0) {
     return {
-      isUp: false,
       error: 'No output proposals found',
+      isUp: false,
     }
   }
 
@@ -43,8 +43,8 @@ export async function checkOptimismStatus(
   const latestEvent = events[events.length - 1]
   if (!(latestEvent instanceof EventLog)) {
     return {
-      isUp: false,
       error: 'Invalid event format',
+      isUp: false,
     }
   }
 
@@ -54,11 +54,11 @@ export async function checkOptimismStatus(
   const lastestBlock = await l1Provider.getBlock('latest')
 
   return {
+    blocksSinceLastProof:
+      lastestBlock!.number! - Number(latestEvent.blockNumber),
     isUp: true,
     lastProofBlock: Number(latestEvent.blockNumber),
     lastProofTimestamp: Number(latestEvent.args.l1Timestamp),
-    blocksSinceLastProof:
-      lastestBlock?.number! - Number(latestEvent.blockNumber),
     timeSinceLastProof,
   }
 }

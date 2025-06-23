@@ -9,11 +9,11 @@ import {BridgeProxy} from "./BridgeProxy.sol";
 // docs
 // https://developers.circle.com/stablecoins/message-format
 
-/// @title CCTPBridgeProxy
+/// @title CCTPWithdrawBridgeProxy
 /// @author Relay Protocol
 /// @notice Bridge proxy implementation for Circle's Cross-Chain Transfer Protocol (CCTP)
 /// @dev Handles USDC bridging using Circle's burn-and-mint mechanism
-contract CCTPBridgeProxy is BridgeProxy {
+contract CCTPWithdrawBridgeProxy is BridgeProxy {
   /// @notice Circle's TokenMessenger contract for CCTP operations
   /// @dev Handles the burn-and-mint bridging of USDC
   ITokenMessenger public immutable MESSENGER;

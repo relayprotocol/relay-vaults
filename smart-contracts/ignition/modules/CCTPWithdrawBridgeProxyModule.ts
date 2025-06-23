@@ -1,6 +1,6 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules'
 
-export default buildModule('CCTPBridgeProxy', (m) => {
+export default buildModule('CCTPWithdrawBridgeProxy', (m) => {
   // unpack args
   const USDC = m.getParameter('usdc')
   const messenger = m.getParameter('messenger')
@@ -8,7 +8,7 @@ export default buildModule('CCTPBridgeProxy', (m) => {
   const relayPool = m.getParameter('relayPool')
   const l1BridgeProxy = m.getParameter('l1BridgeProxy')
 
-  const bridge = m.contract('CCTPBridgeProxy', [
+  const bridge = m.contract('CCTPWithdrawBridgeProxy', [
     messenger,
     USDC,
     relayPoolChainId,

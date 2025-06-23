@@ -4,7 +4,7 @@ import { type BaseContract } from 'ethers'
 import { Select, Confirm, Input } from 'enquirer'
 import fs from 'fs'
 
-import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
+import CCTPWithdrawBridgeProxyModule from '../../ignition/modules/CCTPWithdrawBridgeProxyModule'
 import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
 import ArbitrumOrbitNativeWithdrawBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeWithdrawBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
@@ -179,7 +179,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         assets: { usdc: USDC },
       } = networks[chainId.toString()]
       const parameters = {
-        CCTPBridgeProxy: {
+        CCTPWithdrawBridgeProxy: {
           messenger,
           usdc: USDC,
           ...defaultProxyModuleArguments,
@@ -190,10 +190,13 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       constructorArguments = [messenger, USDC]
 
       // deploy CCTP bridge
-      ;({ bridge: proxyBridge } = await ignition.deploy(CCTPBridgeProxyModule, {
-        deploymentId,
-        parameters,
-      }))
+      ;({ bridge: proxyBridge } = await ignition.deploy(
+        CCTPWithdrawBridgeProxyModule,
+        {
+          deploymentId,
+          parameters,
+        }
+      ))
       proxyBridgeAddress = await proxyBridge.getAddress()
       console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'optimism') {

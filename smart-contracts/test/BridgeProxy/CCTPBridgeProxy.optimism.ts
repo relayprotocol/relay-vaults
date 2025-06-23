@@ -6,8 +6,8 @@ import { getBalance, getEvent } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
 import { reverts } from '../utils/errors'
 
-import { CCTPBridgeProxy } from '../../typechain-types'
-import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
+import { CCTPWithdrawBridgeProxy } from '../../typechain-types'
+import CCTPWithdrawBridgeProxyModule from '../../ignition/modules/CCTPWithdrawBridgeProxyModule'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 
 const chainId = 10
@@ -23,8 +23,8 @@ const {
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
-describe('CCTPBridgeProxy', function () {
-  let bridge: CCTPBridgeProxy
+describe('CCTPWithdrawBridgeProxy', function () {
+  let bridge: CCTPWithdrawBridgeProxy
   let recipient: Signer
 
   before(async () => {
@@ -32,7 +32,7 @@ describe('CCTPBridgeProxy', function () {
 
     // deploy using ignition
     const parameters = {
-      CCTPBridgeProxy: {
+      CCTPWithdrawBridgeProxy: {
         l1BridgeProxy,
         messenger,
         relayPool,
@@ -41,11 +41,13 @@ describe('CCTPBridgeProxy', function () {
         usdc: assets.usdc,
       },
     }
-    ;({ bridge } = await ignition.deploy(CCTPBridgeProxyModule, { parameters }))
+    ;({ bridge } = await ignition.deploy(CCTPWithdrawBridgeProxyModule, {
+      parameters,
+    }))
 
-    // const CCTPBridgeProxy = await ethers.getContractFactory('CCTPBridgeProxy')
+    // const CCTPWithdrawBridgeProxy = await ethers.getContractFactory('CCTPWithdrawBridgeProxy')
     // setup all cctp domains
-    // bridge = await CCTPBridgeProxy.deploy(messenger, transmitter, assets.usdc)
+    // bridge = await CCTPWithdrawBridgeProxy.deploy(messenger, transmitter, assets.usdc)
   })
 
   describe('errors', () => {

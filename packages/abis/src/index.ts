@@ -5,7 +5,7 @@
 import TimelockControllerUpgradeable from './abis/@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol/TimelockControllerUpgradeable.json'
 import ArbitrumOrbitNativeWithdrawBridgeProxy from './abis/BridgeProxy/ArbitrumOrbitNativeWithdrawBridgeProxy.sol/ArbitrumOrbitNativeWithdrawBridgeProxy.json'
 import BridgeProxy from './abis/BridgeProxy/BridgeProxy.sol/BridgeProxy.json'
-import CCTPBridgeProxy from './abis/BridgeProxy/CCTPBridgeProxy.sol/CCTPBridgeProxy.json'
+import CCTPWithdrawBridgeProxy from './abis/BridgeProxy/CCTPWithdrawBridgeProxy.sol/CCTPWithdrawBridgeProxy.json'
 import OPStackNativeWithdrawBridgeProxy from './abis/BridgeProxy/OPStackNativeWithdrawBridgeProxy.sol/OPStackNativeWithdrawBridgeProxy.json'
 import ZkSyncWithdrawBridgeProxy from './abis/BridgeProxy/ZkSyncWithdrawBridgeProxy.sol/ZkSyncWithdrawBridgeProxy.json'
 import IRelayBridge from './abis/RelayBridge.sol/IRelayBridge.json'
@@ -48,7 +48,7 @@ import { RelayPool } from './versions'
 export { TimelockControllerUpgradeable }
 export { ArbitrumOrbitNativeWithdrawBridgeProxy }
 export { BridgeProxy }
-export { CCTPBridgeProxy }
+export { CCTPWithdrawBridgeProxy }
 export { OPStackNativeWithdrawBridgeProxy }
 export { ZkSyncWithdrawBridgeProxy }
 export { IRelayBridge }

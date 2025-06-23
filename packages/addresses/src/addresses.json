@@ -1,6 +1,7 @@
 {
   "1": {
-    "RelayPoolFactory": "0x7098c1873A6d6788726381E3a0855Da91331ff73"
+    "RelayPoolFactory": "0x7098c1873A6d6788726381E3a0855Da91331ff73",
+    "RelayPoolNativeGateway": "0xED8a2a23bf9D6818651527daaF3bf4FfEB53945F"
   },
   "185": {
     "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
@@ -24,19 +25,15 @@
     "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
   },
   "8453": {
-    "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4"
+    "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
+    "RelayPoolNativeGateway": "0x3257ADfbd11630962A8a1067e06Ab2a654c41f28"
   },
   "42161": {
-    "RelayPoolFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
+    "RelayPoolFactory": "0x857955aF88037B757e8c113Be40104530bA194d8",
+    "RelayPoolNativeGateway": "0x67DEfE8d90c8cD013fD527669e76e0bE420F1208"
   },
   "42170": {
     "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
-  },
-  "43111": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
-  },
-  "543210": {
-    "RelayBridgeFactory": "0xC411623b77144b38dd4d04DDd0B6efbCEB21b5dC"
   },
   "7777777": {
     "RelayBridgeFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4"

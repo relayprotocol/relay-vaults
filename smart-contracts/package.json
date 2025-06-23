@@ -2,6 +2,7 @@
   "name": "@relay-vaults/smart-contracts",
   "version": "1.0.0",
   "main": "index.js",
+  "private": true,
   "repository": "git@github.com:relayprotocol/vaults.git",
   "author": "Julien Genestoux <julien.genestoux@gmail.com>",
   "license": "MIT",

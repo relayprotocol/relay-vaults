@@ -56,21 +56,6 @@ export default async function ({
         opWithdrawalHash = decodedEvent.args.withdrawalHash
       }
     } else if (
-      // OP Alt event
-      networkConfig.bridges.optimismAlt?.child.messagePasser &&
-      log.address.toLowerCase() ===
-        networkConfig.bridges.optimismAlt?.child.messagePasser.toLowerCase()
-    ) {
-      const decodedEvent = decodeEventLog({
-        abi: ABIs.L2ToL1MessagePasser,
-        data: log.data,
-        topics: log.topics,
-      })
-
-      if (decodedEvent.eventName === 'MessagePassed') {
-        opWithdrawalHash = decodedEvent.args.withdrawalHash
-      }
-    } else if (
       // ARB event
       networkConfig.bridges.arbitrum?.child.arbSys &&
       log.address.toLowerCase() ===

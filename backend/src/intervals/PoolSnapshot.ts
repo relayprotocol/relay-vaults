@@ -59,8 +59,7 @@ async function fetchVaultReferenceSnapshot(
   if (intervalSeconds <= 0) return getOne()
 
   const cutoff = BigInt(nowTimestamp - intervalSeconds)
-  const ref = await getOne(lte(vaultSnapshot.timestamp, cutoff))
-  return ref || getOne()
+  return getOne(lte(vaultSnapshot.timestamp, cutoff))
 }
 
 /** Fetch a reference snapshot for a yield pool */
@@ -95,8 +94,7 @@ async function fetchYieldPoolReferenceSnapshot(
   if (intervalSeconds <= 0) return getOne()
 
   const cutoff = BigInt(nowTimestamp - intervalSeconds)
-  const ref = await getOne(lte(vaultSnapshot.timestamp, cutoff))
-  return ref || getOne()
+  return getOne(lte(vaultSnapshot.timestamp, cutoff))
 }
 
 /** Utility to fetch share price from an ERC4626 vault */
@@ -161,7 +159,6 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
         fetchSharePrice(context, pool.yieldPool, pool.decimals),
       ])
 
-      const snapshotId = `${pool.chainId}-${pool.contractAddress.toLowerCase()}-${event.block.number}`
       const snapshot = {
         sharePrice: vaultSharePrice.toString(),
         timestamp: event.block.timestamp,
@@ -175,14 +172,13 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           ...snapshot,
           blockNumber: event.block.number,
           chainId: pool.chainId,
-          id: snapshotId,
           vault: pool.contractAddress,
         })
         .onConflictDoUpdate(snapshot)
 
       // 4. Compute vault APY
       try {
-        const vaultRef = await fetchVaultReferenceSnapshot(
+        let vaultRef = await fetchVaultReferenceSnapshot(
           context.db,
           pool.contractAddress,
           pool.chainId,
@@ -190,6 +186,23 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           Number(event.block.timestamp),
           APY_INTERVAL_SEC
         )
+
+        // Fallback to oldest available snapshot if no interval match found
+        if (!vaultRef) {
+          const baseWhere = and(
+            eq(vaultSnapshot.vault, pool.contractAddress),
+            eq(vaultSnapshot.chainId, pool.chainId),
+            eq(vaultSnapshot.yieldPool, pool.yieldPool)
+          )
+          const rows: any[] = await context.db.sql
+            .select()
+            .from(vaultSnapshot)
+            .where(baseWhere)
+            .orderBy(vaultSnapshot.timestamp)
+            .limit(1)
+            .execute()
+          vaultRef = rows.length ? rows[0] : null
+        }
         if (vaultRef) {
           const vaultAPY = calculateAPY(
             Number(vaultSharePrice),
@@ -215,13 +228,29 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
 
       // 5. Compute base yield-pool APY
       try {
-        const yieldRef = await fetchYieldPoolReferenceSnapshot(
+        let yieldRef = await fetchYieldPoolReferenceSnapshot(
           context.db,
           pool.yieldPool,
           pool.chainId,
           Number(event.block.timestamp),
           APY_INTERVAL_SEC
         )
+
+        // Fallback to oldest available snapshot if no interval match found
+        if (!yieldRef) {
+          const baseWhere = and(
+            eq(vaultSnapshot.yieldPool, pool.yieldPool),
+            eq(vaultSnapshot.chainId, pool.chainId)
+          )
+          const rows: any[] = await context.db.sql
+            .select()
+            .from(vaultSnapshot)
+            .where(baseWhere)
+            .orderBy(vaultSnapshot.timestamp)
+            .limit(1)
+            .execute()
+          yieldRef = rows.length ? rows[0] : null
+        }
         if (yieldRef) {
           const baseAPY = calculateAPY(
             Number(yieldSharePrice),

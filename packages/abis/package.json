@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@relay-vaults/helpers": "^workspace:*",
-    "@relay-vaults/networks": "1.2.0",
+    "@relay-vaults/networks": "workspace:*",
     "tsup": "8.5.0",
     "typescript": "5.8.3"
   },

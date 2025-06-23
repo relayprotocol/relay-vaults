@@ -154,6 +154,8 @@ task('pool:add-origin', 'Add origin for a pool')
 
       const timelockAddress = await pool.owner()
       if (!curator) {
+        // TODO: get the origin curator contract address
+
         curator = await new Input({
           default: userAddress,
           message:

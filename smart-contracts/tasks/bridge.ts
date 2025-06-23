@@ -192,6 +192,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         amount,
         Math.floor(new Date().getTime() / 1000) - Number(origin.coolDown) - 60, // 1 minute before
       ])
+
       const handleTx = await pool.handle.populateTransaction(
         chainId,
         rawEthers.zeroPadValue(bridgeAddress, 32),
@@ -231,7 +232,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         throw Error('Not implemented yet')
       }
 
-      const tx = await bridge.bridge(amount, recipient, l1Asset, l1Gas, {
+      const tx = await bridge.bridge(amount, recipient, l1Asset, l1Gas, '0x', {
         value,
       })
 

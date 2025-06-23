@@ -10,18 +10,18 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Generate GitHub App token
         id: app-token
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Configure Git
         run: |
@@ -35,4 +35,4 @@ jobs:
           git reset --soft origin/production
           git checkout -b production
           git commit -a -m "Release ${{ github.event.release.tag_name }}"
-          git push https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/relayprotocol/relay-vaults.git production
+          git push origin production

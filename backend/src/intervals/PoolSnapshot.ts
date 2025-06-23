@@ -1,7 +1,7 @@
 import { eq, and, desc, lte } from 'ponder'
-import { ponder } from 'ponder:registry'
+import { Context, ponder } from 'ponder:registry'
 import { relayPool, vaultSnapshot, yieldPool } from 'ponder:schema'
-import { erc4626Abi, erc20Abi } from 'viem'
+import { erc4626Abi } from 'viem'
 import type { Address } from 'viem'
 
 /**
@@ -100,12 +100,11 @@ async function fetchYieldPoolReferenceSnapshot(
 }
 
 /** Utility to fetch share price from an ERC4626 vault */
-async function fetchSharePrice(context: any, contractAddress: Address) {
-  const decimals = await context.client.readContract({
-    abi: erc20Abi,
-    address: contractAddress,
-    functionName: 'decimals',
-  })
+async function fetchSharePrice(
+  context: Context,
+  contractAddress: Address,
+  decimals: number
+) {
   const shareUnit = BigInt(10) ** BigInt(decimals)
   const sharePrice = await context.client.readContract({
     abi: erc4626Abi,
@@ -130,7 +129,7 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
   for (const pool of pools) {
     try {
       // 1. Read live data from the vault contract
-      const [totalAssets, totalShares, decimals] = await Promise.all([
+      const [totalAssets, totalShares] = await Promise.all([
         context.client.readContract({
           abi: context.contracts.RelayPool.abi,
           address: pool.contractAddress,
@@ -141,11 +140,6 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           address: pool.contractAddress,
           functionName: 'totalSupply',
         }),
-        context.client.readContract({
-          abi: context.contracts.RelayPool.abi,
-          address: pool.contractAddress,
-          functionName: 'decimals',
-        }),
       ])
 
       // 2. Update relay_pool table with fresh metrics
@@ -155,7 +149,6 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           contractAddress: pool.contractAddress,
         })
         .set({
-          decimals: Number(decimals),
           totalAssets: BigInt(totalAssets as string),
           totalShares: BigInt(totalShares as string),
         })
@@ -164,8 +157,8 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
       if (!pool.yieldPool) continue // skip if no yield pool configured
 
       const [vaultSharePrice, yieldSharePrice] = await Promise.all([
-        fetchSharePrice(context, pool.contractAddress),
-        fetchSharePrice(context, pool.yieldPool),
+        fetchSharePrice(context, pool.contractAddress, pool.decimals),
+        fetchSharePrice(context, pool.yieldPool, pool.decimals),
       ])
 
       const snapshotId = `${pool.chainId}-${pool.contractAddress.toLowerCase()}-${event.block.number}`

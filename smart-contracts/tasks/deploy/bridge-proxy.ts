@@ -6,7 +6,7 @@ import fs from 'fs'
 
 import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
 import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
-import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
+import ArbitrumOrbitNativeWithdrawBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeWithdrawBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
@@ -223,14 +223,14 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         : ethers.ZeroAddress
 
       const parameters = {
-        ArbitrumOrbitNativeBridgeProxy: {
+        ArbitrumOrbitNativeWithdrawBridgeProxy: {
           routerGateway,
           ...defaultProxyModuleArguments,
         },
       }
       // deploy ARB bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
-        ArbitrumOrbitNativeBridgeProxyModule,
+        ArbitrumOrbitNativeWithdrawBridgeProxyModule,
         {
           deploymentId,
           parameters,

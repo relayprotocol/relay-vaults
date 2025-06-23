@@ -3,7 +3,7 @@
 // Refer to 'yarn build:index' for more
 
 import TimelockControllerUpgradeable from './abis/@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol/TimelockControllerUpgradeable.json'
-import ArbitrumOrbitNativeBridgeProxy from './abis/BridgeProxy/ArbitrumOrbitNativeBridgeProxy.sol/ArbitrumOrbitNativeBridgeProxy.json'
+import ArbitrumOrbitNativeWithdrawBridgeProxy from './abis/BridgeProxy/ArbitrumOrbitNativeWithdrawBridgeProxy.sol/ArbitrumOrbitNativeWithdrawBridgeProxy.json'
 import BridgeProxy from './abis/BridgeProxy/BridgeProxy.sol/BridgeProxy.json'
 import CCTPBridgeProxy from './abis/BridgeProxy/CCTPBridgeProxy.sol/CCTPBridgeProxy.json'
 import OPStackNativeBridgeProxy from './abis/BridgeProxy/OPStackNativeBridgeProxy.sol/OPStackNativeBridgeProxy.json'
@@ -46,7 +46,7 @@ import { RelayPool } from './versions'
 
 // exports
 export { TimelockControllerUpgradeable }
-export { ArbitrumOrbitNativeBridgeProxy }
+export { ArbitrumOrbitNativeWithdrawBridgeProxy }
 export { BridgeProxy }
 export { CCTPBridgeProxy }
 export { OPStackNativeBridgeProxy }

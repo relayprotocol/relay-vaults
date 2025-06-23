@@ -3,6 +3,10 @@ pragma solidity ^0.8.24;
 
 import {BridgeProxy} from "./BridgeProxy.sol";
 
+interface IUSDCe {
+  function withdraw(uint256 amount) external;
+}
+
 contract USDCBridgedStandardBridgeProxy is BridgeProxy {
   address public immutable USDCe; // usdc deployed using USDC bridged standard
 
@@ -23,6 +27,6 @@ contract USDCBridgedStandardBridgeProxy is BridgeProxy {
     bytes calldata /* extraData */
   ) external payable override {
     // withdraw USDC.e to root chain
-    IERC20(USDCe).withdraw(amount);
+    IUSDCe(USDCe).withdraw(amount);
   }
 }

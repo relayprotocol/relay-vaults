@@ -11,7 +11,7 @@ const config: OriginNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        maxBlocksWithoutProof: 2000,
+        maxBlocksWithoutProof: 3000,
         outputOracle: '0xB751A613f2Db932c6cdeF5048E6D2af05F9B98ED',
         portalProxy: '0x59625d1FE0Eeb8114a4d13c863978F39b3471781',
       },

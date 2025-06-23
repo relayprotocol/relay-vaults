@@ -34,7 +34,9 @@ task(
   // Wait for the transaction to be mined before verifying!
   let attempts = 0
   let verified = false
-  process.stdout.write(`Verifying ${address} ...`)
+  process.stdout.write(
+    `Verifying ${address} with ${JSON.stringify(constructorArguments)}...`
+  )
 
   while (!verified) {
     attempts += 1

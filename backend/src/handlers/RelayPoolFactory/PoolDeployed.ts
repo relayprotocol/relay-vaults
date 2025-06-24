@@ -2,6 +2,7 @@ import { RelayPool, TimelockControllerUpgradeable } from '@relay-vaults/abis'
 import { Context, Event } from 'ponder:registry'
 import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'
+import networks from '@relay-vaults/networks'
 
 export default async function ({
   event,
@@ -13,7 +14,13 @@ export default async function ({
   context: Context<'RelayPoolFactory:PoolDeployed'>
 }) {
   // @ts-expect-error - event.args is not properly typed
-  const { pool, asset, thirdPartyPool } = event.args
+  const { pool, asset, thirdPartyPool, timelock } = event.args
+  console.log({
+    asset,
+    pool,
+    thirdPartyPool,
+    timelock,
+  })
 
   // Fetch the name of the third-party yield pool,
   // and the name and symbol of the relay pool.
@@ -42,44 +49,43 @@ export default async function ({
   ])
 
   // Only index pools curated by our multisig or its timelock
-  const MULTISIG = (process.env.CURATOR_MULTISIG ?? '').toLowerCase()
+  // @ts-expect-error - context.chain.id is not properly typed in Ponder
+  const network = networks[context.chain.id]
+  const multisig = network?.curator?.toLowerCase()
 
-  if (!MULTISIG) {
-    console.warn(
-      'CURATOR_MULTISIG env variable not set. Skipping pool curation filtering.'
-    )
+  if (!multisig) {
+    console.info('No curator configured. Skipping pool.')
+    return
   }
 
   let isCurated = false
+  // check PROPOSER_ROLE
+  try {
+    const proposerRole = (await context.client.readContract({
+      abi: TimelockControllerUpgradeable,
+      address: multisig as `0x${string}`,
+      functionName: 'PROPOSER_ROLE',
+    })) as `0x${string}`
 
-  // 1. Direct ownership by multisig
-  if ((owner as string).toLowerCase() === MULTISIG) {
-    isCurated = true
-  } else {
-    // 2. check PROPOSER_ROLE membership
-    try {
-      const proposerRole = (await context.client.readContract({
-        abi: TimelockControllerUpgradeable,
-        address: owner as `0x${string}`,
-        functionName: 'PROPOSER_ROLE',
-      })) as `0x${string}`
+    const hasRole = (await context.client.readContract({
+      abi: TimelockControllerUpgradeable,
+      address: timelock as `0x${string}`,
+      args: [proposerRole, multisig],
+      functionName: 'hasRole',
+    })) as boolean
 
-      const hasRole = (await context.client.readContract({
-        abi: TimelockControllerUpgradeable,
-        address: owner as `0x${string}`,
-        args: [proposerRole, MULTISIG],
-        functionName: 'hasRole',
-      })) as boolean
-
-      isCurated = hasRole
-    } catch {
-      // If owner isn't a timelock or call fails, treat as not-curated
-      isCurated = false
-    }
+    isCurated = hasRole
+  } catch (e) {
+    // If owner isn't a timelock or call fails, treat as not-curated
+    isCurated = false
+    console.info(
+      `Could not check hasRole on timelock ${timelock}: ${(e as Error).message}`
+    )
   }
 
   // Skip indexing if we are not the curator of this pool
   if (!isCurated) {
+    console.info(`Pool ${pool} is not curated. Skipping.`)
     return
   }
 

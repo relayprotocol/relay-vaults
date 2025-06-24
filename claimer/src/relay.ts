@@ -51,7 +51,6 @@ const after = (timestamp: number) => {
 export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
   const originNetwork = networks[
     bridgeTransaction.originChainId
-
   ] as OriginNetworkConfig
   logger.info(
     `Submitting proof after ${after(bridgeTransaction.originTimestamp)} for ${bridgeTransaction.originTxHash} on ${originNetwork.name}`

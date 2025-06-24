@@ -1,5 +1,5 @@
 import { Context, Event } from 'ponder:registry'
-import { poolOrigin } from 'ponder:schema'
+import { poolOrigin, relayPool } from 'ponder:schema'
 
 export default async function ({
   event,
@@ -10,6 +10,16 @@ export default async function ({
 }) {
   const { origin } = event.args
   const poolAddress = event.log.address
+
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    console.info(`Skipping origin added for non-curated pool ${poolAddress}`)
+    return
+  }
 
   // Insert the pool origin
   await context.db

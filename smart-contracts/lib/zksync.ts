@@ -60,7 +60,7 @@ export const verifyContract = async ({
   while (tries < 5) {
     const fullyQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames()
     const fullyQualifiedName = fullyQualifiedNames.find(
-      (d) => d.split(':')[1] === 'RelayBridgeFactory'
+      (q) => q.split(':')[1] === 'RelayBridgeFactory'
     )
     try {
       await run('verify:verify', {

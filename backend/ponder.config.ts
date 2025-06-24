@@ -267,11 +267,7 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
 
 export default createConfig({
   blocks: {
-    RelayPoolSnapshot: {
-      chain: vaultSnapshotChains,
-      interval: 25,
-    },
-    VaultSnapshot: {
+    PoolSnapshot: {
       chain: vaultSnapshotChains,
       interval: 25,
     },

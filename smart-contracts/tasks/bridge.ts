@@ -91,9 +91,15 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       }
 
       if (!amount) {
+        const fullBalance = await getBalance(
+          userAddress,
+          assetAddress,
+          rawEthers.provider
+        )
+
         const amountInDecimals = await new Input({
           default: '0.1',
-          message: 'How much do you want to bridge?',
+          message: `How much do you want to bridge (full balance ${rawEthers.formatUnits(fullBalance, decimals)})?`,
           name: 'amount',
         }).run()
         amount = rawEthers.parseUnits(amountInDecimals, decimals)

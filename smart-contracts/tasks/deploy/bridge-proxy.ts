@@ -54,10 +54,10 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
-    const { bridges, name: networkName } = networkConfig as VaultNetworkConfig
+    const { name: networkName } = networkConfig as VaultNetworkConfig
 
     // eslint-disable-next-line prefer-const
-    let { parentChainId, stack } = networkConfig as OriginNetworkConfig
+    let { parentChainId, stack, bridges } = networkConfig as OriginNetworkConfig
 
     const isL2 = !!parentChainId
 
@@ -269,9 +269,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         // used ignition to deploy bridge on L1
         const parameters = {
           ZkSyncBridgeProxy: {
+            l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
             l1SharedDefaultBridge,
             l2SharedDefaultBridge,
-            ...defaultProxyModuleArguments,
+            relayPool: defaultProxyModuleArguments.relayPool,
+            relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(

@@ -1,7 +1,7 @@
 {
   "name": "@relay-vaults/client",
   "description": "Client library for interacting with the Relay Protocol API",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -39,7 +39,7 @@
     "@relay-vaults/eslint-config": "workspace:^",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "@types/node": "22.15.31",
+    "@types/node": "22.15.32",
     "eslint": "9.28.0",
     "tsup": "8.5.0",
     "typescript": "5.8.3"

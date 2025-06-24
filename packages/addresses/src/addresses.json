@@ -1,52 +1,47 @@
 {
   "1": {
-    "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
-    "RelayPoolNativeGateway": "0x4A0354089881Bc27ac179a12827c4C6be144bf03"
+    "RelayPoolFactory": "0x7098c1873A6d6788726381E3a0855Da91331ff73",
+    "RelayPoolNativeGateway": "0xED8a2a23bf9D6818651527daaF3bf4FfEB53945F"
   },
   "185": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
   },
   "690": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
   },
   "1135": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0xfA52054db476c897efE3d066050cefCa92dFc583"
   },
   "1868": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0x67DEfE8d90c8cD013fD527669e76e0bE420F1208"
   },
   "1923": {
-    "RelayBridgeFactory": "0x259813B665C8f6074391028ef782e27B65840d89"
+    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
   },
   "2741": {
-    "RelayBridgeFactory": "0x020d8F48E56F12C9213007186E2bbdD81Be45034"
+    "RelayBridgeFactory": "0xC411623b77144b38dd4d04DDd0B6efbCEB21b5dC"
   },
   "7560": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
+  },
+  "8453": {
+    "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
+    "RelayPoolNativeGateway": "0x3257ADfbd11630962A8a1067e06Ab2a654c41f28"
+  },
+  "42161": {
+    "RelayPoolFactory": "0x857955aF88037B757e8c113Be40104530bA194d8",
+    "RelayPoolNativeGateway": "0x67DEfE8d90c8cD013fD527669e76e0bE420F1208"
   },
   "42170": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
-  },
-  "43111": {
-    "RelayBridgeFactory": "0x259813B665C8f6074391028ef782e27B65840d89"
-  },
-  "60808": {
-    "RelayBridgeFactory": "0x259813B665C8f6074391028ef782e27B65840d89"
-  },
-  "84532": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
-  },
-  "543210": {
-    "RelayBridgeFactory": "0x020d8F48E56F12C9213007186E2bbdD81Be45034"
+    "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
   },
   "7777777": {
-    "RelayBridgeFactory": "0x259813B665C8f6074391028ef782e27B65840d89"
+    "RelayBridgeFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4"
   },
   "11155111": {
-    "RelayPoolFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4",
-    "RelayPoolNativeGateway": "0xb3DF7D7fEDc3Be5b7746031e72b408b077ABa593"
+    "RelayPoolFactory": "0xe3281A58257b664D0C70C87FA992493e6524c166"
   },
   "888888888": {
-    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+    "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
   }
 }

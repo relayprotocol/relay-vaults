@@ -8,12 +8,20 @@ task(
 
   const network = networks[chainId.toString()]
 
-  const etherscanNetworkName =
-    Number(chainId) == 1 ? 'mainnet' : network.name.toLowerCase()
-
+  let etherscanNetworkName
+  switch (Number(chainId)) {
+    case 1:
+      etherscanNetworkName = 'mainnet'
+      break
+    case 42161:
+      etherscanNetworkName = 'arbitrum'
+      break
+    default:
+      etherscanNetworkName = network.name.toLowerCase()
+  }
   if (!config.etherscan.apiKey[etherscanNetworkName]) {
     console.error(
-      `No Etherscan API key found for ${etherscanNetworkName}. Please add one to hardhat.config.ts`
+      `No Etherscan API key found for '${etherscanNetworkName}'. Please add one to hardhat.config.ts`
     )
     return
   }
@@ -26,7 +34,9 @@ task(
   // Wait for the transaction to be mined before verifying!
   let attempts = 0
   let verified = false
-  console.log(`Verifying... ${address}`)
+  process.stdout.write(
+    `Verifying ${address} with ${JSON.stringify(constructorArguments)}...`
+  )
 
   while (!verified) {
     attempts += 1
@@ -38,13 +48,14 @@ task(
         verified = true
       })
       .catch(async (e) => {
-        if (attempts >= 10) {
+        process.stdout.write('.')
+        if (attempts >= 50) {
           console.error(e)
           throw e
         }
         await new Promise((resolve) => setTimeout(resolve, 3000))
       })
   }
-  console.log(`Verified ${address}`)
+  console.log(`✅ Verified ${address}`)
   return address
 })

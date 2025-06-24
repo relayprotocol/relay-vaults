@@ -298,6 +298,94 @@ export class RelayVaultService {
   }
 
   /**
+   * Get bridge transactions for a specific pool in reverse chronological order
+   *
+   * @param poolAddress - The pool's contract address
+   * @param poolChainId - The chain ID where the pool is deployed
+   * @param options - Query options
+   * @param options.limit - Maximum number of transactions to fetch (default: 100)
+   * @param options.orderBy - Field to order by (default: "originTimestamp")
+   * @param options.orderDirection - Order direction (default: "desc" for most recent first)
+   * @param options.after - Cursor to fetch results after (for infinite scrolling)
+   * @param options.before - Cursor to fetch results before (for pagination)
+   * @returns Promise containing the bridge transactions for the pool
+   */
+  async getPoolBridgeTransactions(
+    poolAddress: string,
+    poolChainId: number,
+    options: {
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+      after?: string
+      before?: string
+    } = {}
+  ) {
+    const {
+      limit = 100,
+      orderBy = 'originTimestamp',
+      orderDirection = 'desc',
+      after,
+      before,
+    } = options
+
+    return this.client.sdk.GetPoolBridgeTransactions({
+      after: after || null,
+      before: before || null,
+      limit,
+      orderBy,
+      orderDirection,
+      poolAddress,
+      poolChainId,
+    })
+  }
+
+  /**
+   * Get bridge transactions for multiple pools in reverse chronological order
+   *
+   * @param options - Query options
+   * @param options.poolAddresses - Array of pool contract addresses (optional)
+   * @param options.poolChainIds - Array of chain IDs where pools are deployed (optional)
+   * @param options.limit - Maximum number of transactions to fetch (default: 100)
+   * @param options.orderBy - Field to order by (default: "originTimestamp")
+   * @param options.orderDirection - Order direction (default: "desc" for most recent first)
+   * @param options.after - Cursor to fetch results after (for infinite scrolling)
+   * @param options.before - Cursor to fetch results before (for pagination)
+   * @returns Promise containing the bridge transactions for all specified pools
+   */
+  async getAllPoolsBridgeTransactions(
+    options: {
+      poolAddresses?: string[]
+      poolChainIds?: number[]
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+      after?: string
+      before?: string
+    } = {}
+  ) {
+    const {
+      poolAddresses,
+      poolChainIds,
+      limit = 100,
+      orderBy = 'originTimestamp',
+      orderDirection = 'desc',
+      after,
+      before,
+    } = options
+
+    return this.client.sdk.GetAllPoolsBridgeTransactions({
+      after: after || null,
+      before: before || null,
+      limit,
+      orderBy,
+      orderDirection,
+      poolAddresses: poolAddresses || null,
+      poolChainIds: poolChainIds || null,
+    })
+  }
+
+  /**
    * Get all bridge transactions by status
    *
    * @param nativeBridgeStatus - The status of the bridge transactions to fetch

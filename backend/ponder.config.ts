@@ -38,7 +38,7 @@ const vaultSnapshotChains = Object.keys(networks)
     return {
       ...vaultSnapshotChains,
       [network.slug!]: {
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -63,7 +63,7 @@ const relayBridgeChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'bridge',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
       ...relayBridgeChains,
     }
@@ -84,7 +84,7 @@ const relayBridgeFactoryChains = Object.keys(networks)
     return {
       [network.slug!]: {
         address: addresses.RelayBridgeFactory,
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
       ...relayBridgeFactoryChains,
     }
@@ -107,7 +107,7 @@ const relayPoolFactoryChains = Object.keys(networks)
       ...relayPoolFactoryChains,
       [network.slug!]: {
         address: addresses.RelayPoolFactory,
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -132,7 +132,7 @@ const relayPoolChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'pool',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -157,7 +157,7 @@ const relayPoolTimelockChains = Object.keys(networks)
           ) as AbiEvent,
           parameter: 'timelock',
         }),
-        startBlock: network.earliestBlock,
+        startBlock: network.earliestBlock || 'latest',
       },
     }
   }, {})
@@ -173,23 +173,18 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
   .filter((chainId) => {
     // Get the chains that have an optimism bridge to the l1
     const originNetwork = networks[chainId] as OriginNetworkConfig
-    return (
-      originNetwork.bridges?.optimismAlt?.parent.portalProxy ||
-      originNetwork.bridges?.optimism?.parent.portalProxy
-    )
+    return originNetwork.bridges?.optimism?.parent.portalProxy
   })
   .reduce((oPPortalChains, chainId) => {
     const l2Network = networks[chainId] as OriginNetworkConfig
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
 
-    const parent =
-      l2Network.bridges.optimism?.parent ||
-      l2Network.bridges.optimismAlt?.parent
+    const parent = l2Network.bridges.optimism?.parent
 
     if (!oPPortalChains[l1Network.slug!]) {
       oPPortalChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (!oPPortalChains[l1Network.slug!].address.includes(parent.portalProxy)) {
@@ -217,7 +212,7 @@ const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
     if (!orbitOutboxChains[l1Network.slug!]) {
       orbitOutboxChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (
@@ -255,7 +250,7 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
     if (!zkSyncChains[l1Network.slug!]) {
       zkSyncChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock,
+        startBlock: l1Network.earliestBlock || 'latest',
       }
     }
     if (
@@ -272,11 +267,7 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
 
 export default createConfig({
   blocks: {
-    RelayPoolSnapshot: {
-      chain: vaultSnapshotChains,
-      interval: 25,
-    },
-    VaultSnapshot: {
+    PoolSnapshot: {
       chain: vaultSnapshotChains,
       interval: 25,
     },

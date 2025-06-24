@@ -1,6 +1,6 @@
 {
   "name": "@relay-vaults/addresses",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -27,7 +27,7 @@
     "@relay-vaults/eslint-config": "workspace:^",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "@types/node": "22.15.31",
+    "@types/node": "22.15.32",
     "eslint": "9.28.0",
     "tsup": "8.5.0",
     "typescript": "5.8.3"

@@ -7,7 +7,6 @@ const config: VaultNetworkConfig = {
     weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   },
   chainId: 1,
-  earliestBlock: 22000000,
   hyperlaneMailbox: '0xc005dc82818d67AF737725bD4bf75435d065D239',
   isTestnet: false,
   name: 'Ethereum',
@@ -15,7 +14,7 @@ const config: VaultNetworkConfig = {
     ? [process.env.RPC_1]
     : ['https://mainnet.gateway.tenderly.co'],
   uniswapV3: {
-    universalRouterAddress: '0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B',
+    universalRouterAddress: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
   },
 }
 

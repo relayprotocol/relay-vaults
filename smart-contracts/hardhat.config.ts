@@ -20,6 +20,7 @@ import './tasks/deploy/relay-bridge-factory'
 import './tasks/deploy/verify'
 import './tasks/deploy/timelock'
 import './tasks/deploy/set-earliest-block'
+import './tasks/deploy/origin-curator'
 
 // Helpers/tests
 import './tasks/networks'
@@ -83,7 +84,7 @@ if (forkUrl) {
 const etherscan = {
   apiKey: {
     abstract: 'UU3TIIASIBJ6GZ5NIHG2T5QDY2PVUGTCMI',
-    arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
+    arbitrum: 'KXH3DFHJP9T71ZZXVHKB33IMFKISQ5NIN1',
     arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
     base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',

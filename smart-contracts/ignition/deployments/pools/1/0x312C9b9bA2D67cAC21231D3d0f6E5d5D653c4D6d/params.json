@@ -1,9 +1,0 @@
-{
-  "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-  "hyperlaneMailbox": "0xc005dc82818d67AF737725bD4bf75435d065D239",
-  "name": "USD Coin Relay Vault",
-  "symbol": "relayUSDC",
-  "timelock": "0x04719a2c2bF08fE755297035337616662fA8d392",
-  "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "yieldPool": "0xd63070114470f685b75B74D60EEc7c1113d33a3D"
-}

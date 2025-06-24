@@ -24,13 +24,13 @@ export async function checkZkSyncStatus(
   const filter = contract.filters.BlockExecution
   const events = await contract.queryFilter(
     filter,
-    -chain.bridges.zksync?.parent.maxBlocksWithoutProof!
+    -chain.bridges.zksync!.parent.maxBlocksWithoutProof!
   )
 
   if (events.length === 0) {
     return {
-      isUp: false,
       error: 'No block executions found',
+      isUp: false,
     }
   }
 
@@ -38,26 +38,26 @@ export async function checkZkSyncStatus(
   const latestEvent = events[events.length - 1]
   if (!(latestEvent instanceof EventLog)) {
     return {
-      isUp: false,
       error: 'Invalid event format',
+      isUp: false,
     }
   }
 
   const block = await l1Provider.getBlock(latestEvent.blockNumber)
   if (!block) {
     return {
-      isUp: false,
       error: 'Block not found',
+      isUp: false,
     }
   }
 
   const timeSinceLastProof = Math.floor(Date.now() / 1000) - block.timestamp
   const lastestBlock = await l1Provider.getBlock('latest')
   return {
+    blocksSinceLastProof:
+      lastestBlock!.number! - Number(latestEvent.args.blockNumber),
     isUp: true,
     lastProofBlock: Number(latestEvent.args.blockNumber),
-    blocksSinceLastProof:
-      lastestBlock?.number! - Number(latestEvent.args.blockNumber),
     lastProofTimestamp: block.timestamp,
     timeSinceLastProof,
   }

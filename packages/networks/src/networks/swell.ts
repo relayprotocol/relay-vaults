@@ -18,7 +18,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 1923,
-  earliestBlock: 6009900,
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
   name: 'Swellchain',

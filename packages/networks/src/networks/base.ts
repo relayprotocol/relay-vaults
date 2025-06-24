@@ -31,7 +31,6 @@ const config: OriginNetworkConfig & VaultNetworkConfig = {
     },
   },
   chainId: 8453,
-  earliestBlock: 0,
   hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   isTestnet: false,
   name: 'Base',

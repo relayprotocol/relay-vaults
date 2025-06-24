@@ -26,8 +26,6 @@ const config: OriginNetworkConfig = {
 
   chainId: 324,
 
-  earliestBlock: 0,
-
   hyperlaneMailbox: '0xf44AdA86a1f765A938d404699B8070Dd47bD2431',
 
   isTestnet: false,

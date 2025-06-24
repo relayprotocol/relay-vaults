@@ -31,7 +31,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 10,
-  earliestBlock: 0,
   hyperlaneMailbox: '0xd4C1905BB1D26BC93DAC913e13CaCC278CdCC80D',
   isTestnet: false,
   name: 'OP Mainnet',

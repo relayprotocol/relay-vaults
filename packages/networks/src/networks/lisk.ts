@@ -18,7 +18,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 1135,
-  earliestBlock: 14049767,
   hyperlaneHook: '0x9844aFFaBE17c37F791ff99ABa58B0FbB75e22AF',
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,

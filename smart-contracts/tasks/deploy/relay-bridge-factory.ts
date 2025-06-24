@@ -44,6 +44,8 @@ task('deploy:bridge-factory', 'Deploy a relay bridge factory').setAction(
       )
       relayBridgeAddress = await relayBridgeFactory.getAddress()
     }
+
+    // TODO: We want to do that only if we actually deployed!
     await run('set-earliest-block')
     // Deploy a bridge contract by itself and verifies it to make sure all future bridges are verified as well.
     await run('deploy:bridge-verifiable')

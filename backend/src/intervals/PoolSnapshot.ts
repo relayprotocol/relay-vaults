@@ -25,55 +25,27 @@ function calculateAPY(
 // Determine APY interval (seconds)
 const APY_INTERVAL_SEC = 7 * 24 * 3600 // 7-day window; for all-time, set to 0
 
-/** Fetch a reference snapshot for a given vault */
-async function fetchVaultReferenceSnapshot(
-  db: any,
-  vaultAddress: Address,
-  chainId: number,
-  yieldPoolAddress: Address,
-  nowTimestamp: number,
-  intervalSeconds: number
-) {
-  const baseWhere = and(
-    eq(vaultSnapshot.vault, vaultAddress),
-    eq(vaultSnapshot.chainId, chainId),
-    eq(vaultSnapshot.yieldPool, yieldPoolAddress)
-  )
-
-  const getOne = async (additionalAnd?: any) => {
-    const whereClause = additionalAnd
-      ? and(baseWhere, additionalAnd)
-      : baseWhere
-    const rows: any[] = await db.sql
-      .select()
-      .from(vaultSnapshot)
-      .where(whereClause)
-      .orderBy(
-        additionalAnd ? desc(vaultSnapshot.timestamp) : vaultSnapshot.timestamp
-      )
-      .limit(1)
-      .execute()
-    return rows.length ? rows[0] : null
-  }
-
-  if (intervalSeconds <= 0) return getOne()
-
-  const cutoff = BigInt(nowTimestamp - intervalSeconds)
-  return getOne(lte(vaultSnapshot.timestamp, cutoff))
+type SnapshotRefFilters = {
+  vaultAddress?: Address
+  yieldPoolAddress: Address
+  chainId: number
 }
 
-/** Fetch a reference snapshot for a yield pool */
-async function fetchYieldPoolReferenceSnapshot(
+/** Fetch a reference snapshot for a given vault or yield pool */
+async function fetchReferenceSnapshot(
   db: any,
-  yieldPoolAddress: Address,
-  chainId: number,
+  filters: SnapshotRefFilters,
   nowTimestamp: number,
   intervalSeconds: number
 ) {
-  const baseWhere = and(
-    eq(vaultSnapshot.yieldPool, yieldPoolAddress),
-    eq(vaultSnapshot.chainId, chainId)
-  )
+  const conditions = [
+    eq(vaultSnapshot.yieldPool, filters.yieldPoolAddress),
+    eq(vaultSnapshot.chainId, filters.chainId),
+  ]
+  if (filters.vaultAddress) {
+    conditions.push(eq(vaultSnapshot.vault, filters.vaultAddress))
+  }
+  const baseWhere = and(...conditions)
 
   const getOne = async (additionalAnd?: any) => {
     const whereClause = additionalAnd
@@ -126,21 +98,24 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
 
   for (const pool of pools) {
     try {
-      // 1. Read live data from the vault contract
-      const [totalAssets, totalShares] = await Promise.all([
-        context.client.readContract({
-          abi: context.contracts.RelayPool.abi,
-          address: pool.contractAddress,
-          functionName: 'totalAssets',
-        }),
-        context.client.readContract({
-          abi: context.contracts.RelayPool.abi,
-          address: pool.contractAddress,
-          functionName: 'totalSupply',
-        }),
-      ])
+      // 1. Get live data from the vault contract and share prices
+      const [totalAssets, totalShares, vaultSharePrice, yieldSharePrice] =
+        await Promise.all([
+          context.client.readContract({
+            abi: context.contracts.RelayPool.abi,
+            address: pool.contractAddress,
+            functionName: 'totalAssets',
+          }),
+          context.client.readContract({
+            abi: context.contracts.RelayPool.abi,
+            address: pool.contractAddress,
+            functionName: 'totalSupply',
+          }),
+          fetchSharePrice(context, pool.contractAddress, pool.decimals),
+          fetchSharePrice(context, pool.yieldPool, pool.decimals),
+        ])
 
-      // 2. Update relay_pool table with fresh metrics
+      // 2. Update relay_pool table with fresh metrics and insert vault snapshot
       await context.db
         .update(relayPool, {
           chainId: pool.chainId,
@@ -150,14 +125,6 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           totalAssets: BigInt(totalAssets as string),
           totalShares: BigInt(totalShares as string),
         })
-
-      // 3. Snapshot share prices + compute APY
-      if (!pool.yieldPool) continue // skip if no yield pool configured
-
-      const [vaultSharePrice, yieldSharePrice] = await Promise.all([
-        fetchSharePrice(context, pool.contractAddress, pool.decimals),
-        fetchSharePrice(context, pool.yieldPool, pool.decimals),
-      ])
 
       const snapshot = {
         sharePrice: vaultSharePrice.toString(),
@@ -178,11 +145,13 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
 
       // 4. Compute vault APY
       try {
-        let vaultRef = await fetchVaultReferenceSnapshot(
+        let vaultRef = await fetchReferenceSnapshot(
           context.db,
-          pool.contractAddress,
-          pool.chainId,
-          pool.yieldPool,
+          {
+            chainId: pool.chainId,
+            vaultAddress: pool.contractAddress,
+            yieldPoolAddress: pool.yieldPool,
+          },
           Number(event.block.timestamp),
           APY_INTERVAL_SEC
         )
@@ -228,10 +197,12 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
 
       // 5. Compute base yield-pool APY
       try {
-        let yieldRef = await fetchYieldPoolReferenceSnapshot(
+        let yieldRef = await fetchReferenceSnapshot(
           context.db,
-          pool.yieldPool,
-          pool.chainId,
+          {
+            chainId: pool.chainId,
+            yieldPoolAddress: pool.yieldPool,
+          },
           Number(event.block.timestamp),
           APY_INTERVAL_SEC
         )

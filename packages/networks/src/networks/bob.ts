@@ -6,14 +6,14 @@ const config: OriginNetworkConfig = {
     // TODO: add USDC
   },
   bridges: {
-    optimismAlt: {
+    optimism: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0x8AdeE124447435fE03e3CD24dF3f4cAE32E65a3E',
+        maxBlocksWithoutProof: 1500,
         outputOracle: '0xdDa53E23f8a32640b04D7256e651C1db98dB11C1',
-        maxBlocksWithoutProof: 1000,
+        portalProxy: '0x8AdeE124447435fE03e3CD24dF3f4cAE32E65a3E',
       },
     },
   },

@@ -6,14 +6,14 @@ const config: OriginNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    optimismAlt: {
+    optimism: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        portalProxy: '0x639F2AECE398Aa76b07e59eF6abe2cFe32bacb68',
-        outputOracle: '0xB09DC08428C8b4EFB4ff9C0827386CDF34277996',
         maxBlocksWithoutProof: 500,
+        outputOracle: '0xB09DC08428C8b4EFB4ff9C0827386CDF34277996',
+        portalProxy: '0x639F2AECE398Aa76b07e59eF6abe2cFe32bacb68',
       },
     },
   },

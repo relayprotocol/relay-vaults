@@ -12,10 +12,10 @@ const config: OriginNetworkConfig = {
         sharedDefaultBridge: '0x954ba8223a6BFEC1Cc3867139243A02BA0Bc66e4',
       },
       parent: {
-        nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',
-        sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
         diamondProxy: '0xdbD849acC6bA61F461CB8A41BBaeE2D673CA02d9',
         maxBlocksWithoutProof: 1500,
+        nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',
+        sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
       },
     },
   },

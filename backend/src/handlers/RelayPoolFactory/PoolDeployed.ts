@@ -18,7 +18,7 @@ export default async function ({
 
   // Fetch the name of the third-party yield pool,
   // and the name and symbol of the relay pool.
-  const [yieldName, poolName, poolSymbol, owner] = await Promise.all([
+  const [yieldName, poolName, poolSymbol, owner, decimals] = await Promise.all([
     context.client.readContract({
       abi: erc20Abi,
       address: thirdPartyPool,
@@ -39,6 +39,12 @@ export default async function ({
       address: pool,
       args: [],
       functionName: 'owner',
+    }),
+    context.client.readContract({
+      abi: RelayPool,
+      address: pool,
+      args: [],
+      functionName: 'decimals',
     }),
   ])
 
@@ -121,6 +127,7 @@ export default async function ({
       createdAt: event.block.timestamp,
       createdAtBlock: event.block.number,
       curator: owner as `0x${string}`,
+      decimals: decimals as number,
       name: poolName,
       outstandingDebt: BigInt(0),
       symbol: poolSymbol,

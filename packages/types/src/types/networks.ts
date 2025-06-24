@@ -1,4 +1,5 @@
 export interface VaultNetworkConfig extends NetworkConfig {
+  curator?: string
   uniswapV3: {
     universalRouterAddress: string
   }
@@ -68,7 +69,6 @@ export interface OriginNetworkConfig extends NetworkConfig {
 
 export interface NetworkConfig {
   chainId: number | bigint
-  curator?: string
   name: string
   slug?: string
   earliestBlock?: number

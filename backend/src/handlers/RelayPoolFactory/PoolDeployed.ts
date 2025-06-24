@@ -15,12 +15,6 @@ export default async function ({
 }) {
   // @ts-expect-error - event.args is not properly typed
   const { pool, asset, thirdPartyPool, timelock } = event.args
-  console.log({
-    asset,
-    pool,
-    thirdPartyPool,
-    timelock,
-  })
 
   // Fetch the name of the third-party yield pool,
   // and the name and symbol of the relay pool.
@@ -61,20 +55,29 @@ export default async function ({
   let isCurated = false
   // check PROPOSER_ROLE
   try {
+    console.log({ timelock })
+
     const proposerRole = (await context.client.readContract({
       abi: TimelockControllerUpgradeable,
-      address: multisig as `0x${string}`,
+      address: timelock as `0x${string}`,
       functionName: 'PROPOSER_ROLE',
     })) as `0x${string}`
 
-    const hasRole = (await context.client.readContract({
+    console.log({ multisig, proposerRole, timelock })
+
+    const hasRole = await context.client.readContract({
       abi: TimelockControllerUpgradeable,
       address: timelock as `0x${string}`,
-      args: [proposerRole, multisig],
+      args: [
+        '0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1',
+        '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963',
+      ],
       functionName: 'hasRole',
-    })) as boolean
+    })
 
-    isCurated = hasRole
+    console.log({ hasRole })
+
+    isCurated = !!hasRole
   } catch (e) {
     // If owner isn't a timelock or call fails, treat as not-curated
     isCurated = false
@@ -82,6 +85,8 @@ export default async function ({
       `Could not check hasRole on timelock ${timelock}: ${(e as Error).message}`
     )
   }
+  console.log({ isCurated })
+  process.exit()
 
   // Skip indexing if we are not the curator of this pool
   if (!isCurated) {

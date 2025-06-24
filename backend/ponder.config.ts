@@ -268,12 +268,12 @@ const zkSyncNetworks: zkSyncNetworks = Object.keys(networks)
   }, {} as zkSyncNetworks)
 
 export default createConfig({
-  blocks: {
-    VaultSnapshot: {
-      interval: 25,
-      network: vaultSnapshotNetworks,
-    },
-  },
+  // blocks: {
+  //   VaultSnapshot: {
+  //     interval: 25,
+  //     network: vaultSnapshotNetworks,
+  //   },
+  // },
   contracts: {
     L1NativeTokenVault: {
       abi: ABIs.L1NativeTokenVault,

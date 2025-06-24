@@ -6,10 +6,10 @@ import {
   MyToken,
   MyWeth,
   MyYieldPool,
-  OPStackNativeBridgeProxy,
+  OPStackNativeWithdrawBridgeProxy,
   RelayPool,
 } from '../../typechain-types'
-import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
+import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
 
 const relayBridgeOptimism = '0x0000000000000000000000000000000000000010'
 const portalProxy = '0x49048044D57e1C92A77f79988d21Fa8fAF74E97e'
@@ -32,7 +32,7 @@ describe('RelayPool: when a message was never received from Hyperlane', () => {
   let myToken: MyToken
   let thirdPartyPool: MyYieldPool
   let myWeth: MyWeth
-  let bridgeProxy: OPStackNativeBridgeProxy
+  let bridgeProxy: OPStackNativeWithdrawBridgeProxy
 
   before(async () => {
     const [user] = await ethers.getSigners()
@@ -67,16 +67,19 @@ describe('RelayPool: when a message was never received from Hyperlane', () => {
     }))
 
     const bridgeProxyParameters = {
-      OPStackNativeBridgeProxy: {
+      OPStackNativeWithdrawBridgeProxy: {
         l1BridgeProxy: ethers.ZeroAddress,
         portalProxy,
         relayPool: await relayPool.getAddress(),
         relayPoolChainId: 31337,
       },
     }
-    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
-      parameters: bridgeProxyParameters,
-    })
+    const { bridge } = await ignition.deploy(
+      OPStackNativeWithdrawBridgeProxyModule,
+      {
+        parameters: bridgeProxyParameters,
+      }
+    )
     bridgeProxy = bridge
 
     await relayPool.addOrigin({

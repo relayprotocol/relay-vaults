@@ -3,17 +3,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_asset",
+        "name": "asset",
         "type": "address"
       },
       {
         "internalType": "contract BridgeProxy",
-        "name": "_bridgeProxy",
+        "name": "bridgeProxy",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_hyperlaneMailbox",
+        "name": "hyperlaneMailbox",
         "type": "address"
       }
     ],
@@ -29,6 +29,17 @@
       }
     ],
     "name": "BridgingFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "FailedFeeRefund",
     "type": "error"
   },
   {
@@ -114,7 +125,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "l1Asset",
+        "name": "poolAsset",
         "type": "address"
       },
       {
@@ -186,13 +197,18 @@
       },
       {
         "internalType": "address",
-        "name": "l1Asset",
+        "name": "poolAsset",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "l1Gas",
+        "name": "poolGas",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "extraData",
+        "type": "bytes"
       }
     ],
     "name": "bridge",
@@ -220,7 +236,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "l1Gas",
+        "name": "poolGas",
         "type": "uint256"
       }
     ],

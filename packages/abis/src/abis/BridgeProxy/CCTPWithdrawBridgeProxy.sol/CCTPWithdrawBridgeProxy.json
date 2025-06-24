@@ -2,6 +2,16 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "messenger",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "usdc",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "relayPoolChainId",
         "type": "uint256"
@@ -92,10 +102,36 @@
   },
   {
     "inputs": [],
+    "name": "ETHEREUM_DOMAIN",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "L1_BRIDGE_PROXY",
     "outputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MESSENGER",
+    "outputs": [
+      {
+        "internalType": "contract ITokenMessenger",
         "name": "",
         "type": "address"
       }
@@ -130,6 +166,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "USDC",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -138,7 +187,7 @@
       },
       {
         "internalType": "address",
-        "name": "l1Asset",
+        "name": "",
         "type": "address"
       },
       {
@@ -148,12 +197,12 @@
       },
       {
         "internalType": "bytes",
-        "name": "txParams",
+        "name": "",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "extraData",
+        "name": "",
         "type": "bytes"
       }
     ],

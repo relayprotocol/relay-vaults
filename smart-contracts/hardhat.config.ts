@@ -163,7 +163,7 @@ const config: HardhatUserConfig = {
       contractsToCompile: [
         'contracts/RelayPool.sol',
         'contracts/RelayBridgeFactory.sol',
-        'contracts/BridgeProxy/ZkSyncBridgeProxy.sol',
+        'contracts/BridgeProxy/ZkSyncWithdrawBridgeProxy.sol',
         'contracts/interfaces/IUSDC.sol',
         'contracts/utils/tests/MyToken.sol',
       ],

@@ -5,11 +5,11 @@ import {BridgeProxy} from "./BridgeProxy.sol";
 import {L2StandardBridge} from "../interfaces/L2StandardBridge.sol";
 import {IOptimismMintableERC20} from "../interfaces/IOptimismMintableERC20.sol";
 
-/// @title OPStackNativeBridgeProxy
+/// @title OPStackNativeWithdrawBridgeProxy
 /// @author Relay Protocol
 /// @notice Bridge proxy implementation for OP Stack L2 to L1 bridging
 /// @dev Handles bridging of native ETH and OP Stack mintable ERC20 tokens to L1
-contract OPStackNativeBridgeProxy is BridgeProxy {
+contract OPStackNativeWithdrawBridgeProxy is BridgeProxy {
   /// @notice The OP Stack standard bridge predeploy address
   /// @dev This address is consistent across all OP Stack chains
   address public constant STANDARD_BRIDGE =

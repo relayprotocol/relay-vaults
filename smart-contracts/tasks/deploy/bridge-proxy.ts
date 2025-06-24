@@ -4,11 +4,11 @@ import { type BaseContract } from 'ethers'
 import { Select, Confirm, Input } from 'enquirer'
 import fs from 'fs'
 
-import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
-import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
-import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeBridgeProxyModule'
+import CCTPWithdrawBridgeProxyModule from '../../ignition/modules/CCTPWithdrawBridgeProxyModule'
+import OPStackNativeWithdrawBridgeProxyModule from '../../ignition/modules/OPStackNativeWithdrawBridgeProxyModule'
+import ArbitrumOrbitNativeWithdrawBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeWithdrawBridgeProxyModule'
 import { deployContract } from '../../lib/zksync'
-import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
+import ZkSyncWithdrawBridgeProxyModule from '../../ignition/modules/ZkSyncWithdrawBridgeProxyModule'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 import { getProvider } from '@relay-vaults/helpers'
 
@@ -179,7 +179,7 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         assets: { usdc: USDC },
       } = networks[chainId.toString()]
       const parameters = {
-        CCTPBridgeProxy: {
+        CCTPWithdrawBridgeProxy: {
           messenger,
           usdc: USDC,
           ...defaultProxyModuleArguments,
@@ -190,22 +190,25 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
       constructorArguments = [messenger, USDC]
 
       // deploy CCTP bridge
-      ;({ bridge: proxyBridge } = await ignition.deploy(CCTPBridgeProxyModule, {
-        deploymentId,
-        parameters,
-      }))
+      ;({ bridge: proxyBridge } = await ignition.deploy(
+        CCTPWithdrawBridgeProxyModule,
+        {
+          deploymentId,
+          parameters,
+        }
+      ))
       proxyBridgeAddress = await proxyBridge.getAddress()
       console.log(`✅ CCTP bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'optimism') {
       const parameters = {
-        OPStackNativeBridgeProxy: {
+        OPStackNativeWithdrawBridgeProxy: {
           ...defaultProxyModuleArguments,
         },
       }
 
       // deploy OP bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
-        OPStackNativeBridgeProxyModule,
+        OPStackNativeWithdrawBridgeProxyModule,
         {
           deploymentId,
           parameters,
@@ -223,14 +226,14 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         : ethers.ZeroAddress
 
       const parameters = {
-        ArbitrumOrbitNativeBridgeProxy: {
+        ArbitrumOrbitNativeWithdrawBridgeProxy: {
           routerGateway,
           ...defaultProxyModuleArguments,
         },
       }
       // deploy ARB bridge
       ;({ bridge: proxyBridge } = await ignition.deploy(
-        ArbitrumOrbitNativeBridgeProxyModule,
+        ArbitrumOrbitNativeWithdrawBridgeProxyModule,
         {
           deploymentId,
           parameters,
@@ -250,21 +253,21 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         // deploy using `deployContract` helper (for zksync L2s)
         ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
-          'ZkSyncBridgeProxy',
+          'ZkSyncWithdrawBridgeProxy',
           [l2SharedDefaultBridge, parentChainId, poolAddress, l1BridgeProxy],
           deploymentId
         ))
       } else {
         // used ignition to deploy bridge on L1
         const parameters = {
-          ZkSyncBridgeProxy: {
+          ZkSyncWithdrawBridgeProxy: {
             l1SharedDefaultBridge,
             l2SharedDefaultBridge,
             ...defaultProxyModuleArguments,
           },
         }
         ;({ bridge: proxyBridge } = await ignition.deploy(
-          ZkSyncBridgeProxyModule,
+          ZkSyncWithdrawBridgeProxyModule,
           {
             deploymentId,
             parameters,

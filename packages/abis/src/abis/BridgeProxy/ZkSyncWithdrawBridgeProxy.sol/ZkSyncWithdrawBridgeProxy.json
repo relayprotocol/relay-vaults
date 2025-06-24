@@ -2,6 +2,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "l2SharedBridge",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "relayPoolChainId",
         "type": "uint256"
@@ -105,6 +110,32 @@
   },
   {
     "inputs": [],
+    "name": "L2_BASE_TOKEN",
+    "outputs": [
+      {
+        "internalType": "contract IBaseToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "L2_SHARED_BRIDGE",
+    "outputs": [
+      {
+        "internalType": "contract IL2SharedBridge",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "RELAY_POOL",
     "outputs": [
       {
@@ -138,7 +169,7 @@
       },
       {
         "internalType": "address",
-        "name": "l1Asset",
+        "name": "",
         "type": "address"
       },
       {
@@ -148,12 +179,12 @@
       },
       {
         "internalType": "bytes",
-        "name": "txParams",
+        "name": "",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "extraData",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -185,5 +216,9 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

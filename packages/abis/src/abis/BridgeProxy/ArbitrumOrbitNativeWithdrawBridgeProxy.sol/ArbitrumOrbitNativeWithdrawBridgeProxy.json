@@ -2,6 +2,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "routerGateway",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "relayPoolChainId",
         "type": "uint256"
@@ -19,6 +24,22 @@
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "expected",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "AssetMismatch",
+    "type": "error"
   },
   {
     "inputs": [],
@@ -92,6 +113,19 @@
   },
   {
     "inputs": [],
+    "name": "ARB_SYS",
+    "outputs": [
+      {
+        "internalType": "contract IArbSys",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "L1_BRIDGE_PROXY",
     "outputs": [
       {
@@ -130,15 +164,28 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "ROUTER",
+    "outputs": [
+      {
+        "internalType": "contract IL2GatewayRouter",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "currency",
+        "name": "asset",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "l1Asset",
+        "name": "l1Currency",
         "type": "address"
       },
       {
@@ -148,12 +195,12 @@
       },
       {
         "internalType": "bytes",
-        "name": "txParams",
+        "name": "",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "extraData",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -185,5 +232,9 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

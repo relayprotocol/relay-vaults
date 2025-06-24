@@ -9,7 +9,7 @@ const parseNetwork = (network: any) => {
   const { usdc } = network
   return toObject({
     ...network,
-    CCTPBridgeProxy: { ...usdc, usdc: usdc.token },
+    CCTPWithdrawBridgeProxy: { ...usdc, usdc: usdc.token },
   })
 }
 

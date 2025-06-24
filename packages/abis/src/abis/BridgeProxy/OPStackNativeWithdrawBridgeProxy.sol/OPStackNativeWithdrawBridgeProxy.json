@@ -105,6 +105,19 @@
   },
   {
     "inputs": [],
+    "name": "MIN_GAS_LIMIT",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "RELAY_POOL",
     "outputs": [
       {
@@ -130,6 +143,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "STANDARD_BRIDGE",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -148,12 +174,12 @@
       },
       {
         "internalType": "bytes",
-        "name": "txParams",
+        "name": "data",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "extraData",
+        "name": "",
         "type": "bytes"
       }
     ],
@@ -185,5 +211,9 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

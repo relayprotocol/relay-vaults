@@ -58,11 +58,15 @@ export const verifyContract = async ({
   const { run } = hre
   let tries = 0
   while (tries < 5) {
+    const fullyQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames()
+    const fullyQualifiedName = fullyQualifiedNames.find(
+      (q) => q.split(':')[1] === contract
+    )
     try {
       await run('verify:verify', {
         address,
         constructorArguments: deployArgs,
-        contract,
+        contract: fullyQualifiedName,
       })
       tries++
     } catch (error) {

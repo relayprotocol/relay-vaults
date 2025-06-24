@@ -69,19 +69,12 @@ export default async function ({
       functionName: 'PROPOSER_ROLE',
     })) as `0x${string}`
 
-    console.log({ multisig, proposerRole, timelock })
-
-    const hasRole = await context.client.readContract({
+    const hasRole = (await context.client.readContract({
       abi: TimelockControllerUpgradeable,
       address: timelock as `0x${string}`,
-      args: [
-        '0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1',
-        '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963',
-      ],
+      args: [proposerRole, multisig],
       functionName: 'hasRole',
-    })
-
-    console.log({ hasRole })
+    })) as boolean
 
     isCurated = !!hasRole
   } catch (e) {

@@ -30,7 +30,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 84532,
-  earliestBlock: 23000000,
   hyperlaneMailbox: '0x6966b0E55883d49BFB24539356a2f8A673E02039',
   isTestnet: true,
   name: 'Base Sepolia',

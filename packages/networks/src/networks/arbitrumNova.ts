@@ -20,7 +20,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 42170,
-  earliestBlock: 83282400,
   hyperlaneMailbox: '0x3a867fCfFeC2B790970eeBDC9023E75B0a172aa7',
   isTestnet: false,
   name: 'Arbitrum Nova',

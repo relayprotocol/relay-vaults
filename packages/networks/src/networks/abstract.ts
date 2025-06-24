@@ -20,7 +20,6 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 2741,
-  earliestBlock: 6286000,
   hyperlaneMailbox: '0x9BbDf86b272d224323136E15594fdCe487F40ce7',
   isTestnet: false,
   name: 'Abstract',

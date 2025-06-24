@@ -46,8 +46,11 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     'poolAddress',
     'the relay vault address where the funds are eventually sent'
   )
-  .addOptionalParam('l1BridgeProxy', 'The address of the bridge proxy on L1')
-  .setAction(async ({ type, poolAddress, l1BridgeProxy }, hre) => {
+  .addOptionalParam(
+    'parentBridgeProxy',
+    'The address of the bridge proxy on L1'
+  )
+  .setAction(async ({ type, poolAddress, parentBridgeProxy }, hre) => {
     const { ethers, ignition } = hre
     const { chainId } = await ethers.provider.getNetwork()
     const networkConfig = networks[chainId.toString()]
@@ -101,45 +104,46 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     }
 
     if (isL2) {
-      if (!l1BridgeProxy) {
+      if (!parentBridgeProxy) {
         // Get it from the file!
         try {
-          const l1BridgeProxyFile = `BridgeProxy-${parentChainId}-${poolAddress}-${type}/deployed_addresses.json`
-          const addresses = require(ignitionPath + l1BridgeProxyFile)
-          l1BridgeProxy = Object.values(addresses)[0]
+          const parentBridgeProxyFile = `BridgeProxy-${parentChainId}-${poolAddress}-${type}/deployed_addresses.json`
+          const addresses = require(ignitionPath + parentBridgeProxyFile)
+          parentBridgeProxy = Object.values(addresses)[0]
         } catch (error) {
           // Ignore
         }
 
-        if (!l1BridgeProxy) {
-          l1BridgeProxy = await new Input({
+        if (!parentBridgeProxy) {
+          parentBridgeProxy = await new Input({
             message:
               'Please enter the address of the corresponding BridgeProxy on the l1 :',
-            name: 'l1BridgeProxy',
+            name: 'parentBridgeProxy',
           }).run()
         }
         // check that pool settings on L1 are correct
-        const l1Provider = await getProvider(parentChainId)
-        const l1BridgeProxyContract = await new ethers.Contract(
-          l1BridgeProxy,
+        const parentProvider = await getProvider(parentChainId)
+        const parentBridgeProxyContract = await new ethers.Contract(
+          parentBridgeProxy,
           (
             await ethers.getContractAt('BridgeProxy', ethers.ZeroAddress)
           ).interface,
-          l1Provider
+          parentProvider
         )
-        const l1BridgeProxyPool = await l1BridgeProxyContract.RELAY_POOL()
-        const l1BridgeProxyChainId =
-          await l1BridgeProxyContract.RELAY_POOL_CHAIN_ID()
+        const vaultChainBridgeProxyPool =
+          await parentBridgeProxyContract.RELAY_POOL()
+        const vaultChainBridgeProxyChainId =
+          await parentBridgeProxyContract.RELAY_POOL_CHAIN_ID()
 
         // l1BridgeProxy
         if (
           !(
-            l1BridgeProxyPool === poolAddress &&
-            l1BridgeProxyChainId === parentChainId
+            vaultChainBridgeProxyPool === poolAddress &&
+            Number(vaultChainBridgeProxyChainId) === Number(parentChainId)
           )
         ) {
           throw Error(
-            `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${parentChainId})`
+            `The bridge proxy on the vault chain (${vaultChainBridgeProxyPool} - ${vaultChainBridgeProxyChainId}) does not match the pool (${poolAddress} = ${parentChainId})`
           )
         }
 
@@ -148,12 +152,12 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     } else {
       // We are deploying the BridgeProxy on an L1 chain
       parentChainId = chainId
-      l1BridgeProxy = ethers.ZeroAddress // The l1BridgeProxy is the one to be deployed!
+      parentBridgeProxy = ethers.ZeroAddress // The parentBridgeProxy is the one to be deployed!
     }
 
     // parse args for all proxies
     const defaultProxyModuleArguments = {
-      l1BridgeProxy,
+      parentBridgeProxy,
       relayPool: poolAddress,
       relayPoolChainId: parentChainId,
     }
@@ -199,7 +203,9 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
     } else if (type === 'optimism') {
       const parameters = {
         OPStackNativeBridgeProxy: {
-          ...defaultProxyModuleArguments,
+          l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
+          relayPool: defaultProxyModuleArguments.relayPool,
+          relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
         },
       }
 
@@ -251,7 +257,12 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
         ;({ address: proxyBridgeAddress } = await deployContract(
           hre,
           'ZkSyncBridgeProxy',
-          [l2SharedDefaultBridge, parentChainId, poolAddress, l1BridgeProxy],
+          [
+            l2SharedDefaultBridge,
+            parentChainId,
+            poolAddress,
+            parentBridgeProxy,
+          ],
           deploymentId
         ))
       } else {

@@ -7,7 +7,6 @@ const config: VaultNetworkConfig = {
     weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   },
   chainId: 1,
-  earliestBlock: 22000000,
   hyperlaneMailbox: '0xc005dc82818d67AF737725bD4bf75435d065D239',
   isTestnet: false,
   name: 'Ethereum',

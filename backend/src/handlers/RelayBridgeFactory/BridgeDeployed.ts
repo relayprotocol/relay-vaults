@@ -19,6 +19,7 @@ export default async function ({
       createdAt: event.block.timestamp,
       createdAtBlock: event.block.number,
       transferNonce: BigInt(0),
+      updatedAt: event.block.timestamp,
     })
     .onConflictDoNothing()
 }

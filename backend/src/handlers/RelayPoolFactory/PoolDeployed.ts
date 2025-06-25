@@ -81,6 +81,7 @@ export default async function ({
       totalAssets: BigInt(0),
       totalBridgeFees: BigInt(0),
       totalShares: BigInt(0),
+      updatedAt: event.block.timestamp,
       yieldPool: thirdPartyPool as `0x${string}`,
     })
     .onConflictDoNothing()

@@ -66,10 +66,12 @@ export const relayPool = onchainTable(
   }),
   (table) => ({
     assetIdx: index().on(table.asset),
+    createdAtIdx: index().on(table.createdAt),
     curatorIdx: index().on(table.curator),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
+    updatedAtIdx: index().on(table.updatedAt),
     yieldPoolIdx: index().on(table.yieldPool),
   })
 )
@@ -201,9 +203,11 @@ export const relayBridge = onchainTable(
   }),
   (table) => ({
     assetIdx: index().on(table.asset),
+    createdAtIdx: index().on(table.createdAt),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
+    updatedAtIdx: index().on(table.updatedAt),
   })
 )
 

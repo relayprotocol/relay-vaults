@@ -23,17 +23,17 @@
       },
       {
         "internalType": "address",
-        "name": "_yieldPool",
+        "name": "baseYieldPool",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_weth",
+        "name": "weth",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_curator",
+        "name": "curator",
         "type": "address"
       }
     ],
@@ -464,7 +464,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct OriginSettings",
+        "internalType": "struct RelayPool.OriginSettings",
         "name": "origin",
         "type": "tuple"
       },
@@ -520,7 +520,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct OriginParam",
+        "internalType": "struct RelayPool.OriginParam",
         "name": "origin",
         "type": "tuple"
       }
@@ -624,7 +624,7 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct OriginSettings",
+        "internalType": "struct RelayPool.OriginSettings",
         "name": "origin",
         "type": "tuple"
       },
@@ -874,7 +874,7 @@
             "type": "uint32"
           }
         ],
-        "internalType": "struct OriginParam",
+        "internalType": "struct RelayPool.OriginParam",
         "name": "origin",
         "type": "tuple"
       }
@@ -1578,7 +1578,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenSwapAddress",
+        "name": "newTokenSwapAddress",
         "type": "address"
       }
     ],

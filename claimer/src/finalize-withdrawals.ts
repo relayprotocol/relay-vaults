@@ -1,6 +1,7 @@
 import { RelayVaultService } from '@relay-vaults/client'
 import { gql } from 'graphql-request'
 import { finalizeWithdrawal } from './relay'
+import { logger } from './logger'
 
 const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
   query GetAllBridgeTransactionsToFinalize(
@@ -43,7 +44,7 @@ export const finalizeWithdrawals = async ({
       const bridgeTransaction = bridgeTransactions.items[i]
       await finalizeWithdrawal(bridgeTransaction)
     } catch (error) {
-      console.error(error)
+      logger.error(error)
     }
   }
 }

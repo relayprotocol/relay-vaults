@@ -9,7 +9,8 @@ const packageFolder = path.resolve('../packages/abis')
 const ignored = [
   'hardhat/console.sol:console',
   '@openzeppelin/contracts',
-  'contracts/utils',
+  'contracts/utils/tests',
+  'contracts/mocks',
 ]
 
 const forced = [

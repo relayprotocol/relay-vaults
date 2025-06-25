@@ -41,6 +41,7 @@ export const yieldPool = onchainTable(
  * - decimals: Token decimals for the asset
  * - chainId: Chain ID where the pool is deployed
  * - createdAt: Block timestamp of creation
+ * - updatedAt: Block timestamp of creation (required by Clickhouse)
  * - createdAtBlock: Block number of creation
  */
 export const relayPool = onchainTable(
@@ -60,14 +61,17 @@ export const relayPool = onchainTable(
     totalAssets: t.bigint().notNull(),
     totalBridgeFees: t.bigint().notNull(),
     totalShares: t.bigint().notNull(),
+    updatedAt: t.bigint().notNull(),
     yieldPool: t.hex().notNull(),
   }),
   (table) => ({
     assetIdx: index().on(table.asset),
+    createdAtIdx: index().on(table.createdAt),
     curatorIdx: index().on(table.curator),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
+    updatedAtIdx: index().on(table.updatedAt),
     yieldPoolIdx: index().on(table.yieldPool),
   })
 )
@@ -195,12 +199,15 @@ export const relayBridge = onchainTable(
     createdAt: t.bigint().notNull(),
     createdAtBlock: t.bigint().notNull(),
     transferNonce: t.bigint().notNull(),
+    updatedAt: t.bigint().notNull(),
   }),
   (table) => ({
     assetIdx: index().on(table.asset),
+    createdAtIdx: index().on(table.createdAt),
     pk: primaryKey({
       columns: [table.chainId, table.contractAddress],
     }),
+    updatedAtIdx: index().on(table.updatedAt),
   })
 )
 

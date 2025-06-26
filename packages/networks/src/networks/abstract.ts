@@ -25,7 +25,7 @@ const config: OriginNetworkConfig = {
   name: 'Abstract',
   parentChainId: 1,
   rpc: process.env.RPC_2741
-    ? [process.env.RPC_2741]
+    ? [process.env.RPC_2741, 'https://api.mainnet.abs.xyz']
     : ['https://api.mainnet.abs.xyz'],
   stack: 'zksync',
   withdrawalDelay: 10800,

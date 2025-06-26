@@ -23,7 +23,7 @@ const config: OriginNetworkConfig = {
   name: 'Swellchain',
   parentChainId: 1,
   rpc: process.env.RPC_1923
-    ? [process.env.RPC_1923]
+    ? [process.env.RPC_1923, 'https://swell-mainnet.alt.technology']
     : ['https://swell-mainnet.alt.technology'],
   stack: 'optimism',
 }

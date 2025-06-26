@@ -23,7 +23,7 @@ const config: OriginNetworkConfig = {
   name: 'BOB',
   parentChainId: 1,
   rpc: process.env.RPC_60808
-    ? [process.env.RPC_60808]
+    ? [process.env.RPC_60808, 'https://rpc.gobob.xyz']
     : ['https://rpc.gobob.xyz'],
   stack: 'optimism-alt',
 }

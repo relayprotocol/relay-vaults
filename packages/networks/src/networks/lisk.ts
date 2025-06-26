@@ -24,7 +24,7 @@ const config: OriginNetworkConfig = {
   name: 'Lisk',
   parentChainId: 1,
   rpc: process.env.RPC_1135
-    ? [process.env.RPC_1135]
+    ? [process.env.RPC_1135, 'https://rpc.api.lisk.com']
     : ['https://rpc.api.lisk.com'],
   stack: 'optimism-alt',
 }

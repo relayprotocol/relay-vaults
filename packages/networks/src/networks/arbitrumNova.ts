@@ -25,7 +25,7 @@ const config: OriginNetworkConfig = {
   name: 'Arbitrum Nova',
   parentChainId: 1,
   rpc: process.env.RPC_42170
-    ? [process.env.RPC_42170]
+    ? [process.env.RPC_42170, 'https://nova.arbitrum.io/rpc']
     : ['https://nova.arbitrum.io/rpc'],
   stack: 'arbitrum',
 }

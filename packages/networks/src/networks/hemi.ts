@@ -23,7 +23,7 @@ const config: OriginNetworkConfig = {
   name: 'Hemi',
   parentChainId: 1,
   rpc: process.env.RPC_43111
-    ? [process.env.RPC_43111]
+    ? [process.env.RPC_43111, 'https://rpc.hemi.network/rpc']
     : ['https://rpc.hemi.network/rpc'],
   stack: 'optimism-alt',
 }

@@ -24,7 +24,7 @@ const config: OriginNetworkConfig = {
   name: 'Zora',
   parentChainId: 1,
   rpc: process.env.RPC_7777777
-    ? [process.env.RPC_7777777]
+    ? [process.env.RPC_7777777, 'https://rpc.zora.energy']
     : ['https://rpc.zora.energy'],
   stack: 'optimism',
 }

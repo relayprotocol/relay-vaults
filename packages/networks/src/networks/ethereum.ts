@@ -11,8 +11,16 @@ const config: VaultNetworkConfig = {
   isTestnet: false,
   name: 'Ethereum',
   rpc: process.env.RPC_1
-    ? [process.env.RPC_1]
-    : ['https://mainnet.gateway.tenderly.co'],
+    ? [
+        process.env.RPC_1,
+        'https://ethereum-rpc.publicnode.com',
+        'https://cloudflare-eth.com/v1/mainnet',
+      ]
+    : [
+        'https://mainnet.gateway.tenderly.co',
+        'https://ethereum-rpc.publicnode.com',
+        'https://cloudflare-eth.com/v1/mainnet',
+      ],
   uniswapV3: {
     universalRouterAddress: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
   },

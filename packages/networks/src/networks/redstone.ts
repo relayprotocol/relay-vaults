@@ -23,7 +23,7 @@ const config: OriginNetworkConfig = {
   name: 'Redstone',
   parentChainId: 1,
   rpc: process.env.RPC_690
-    ? [process.env.RPC_690]
+    ? [process.env.RPC_690, 'https://rpc.redstonechain.com']
     : ['https://rpc.redstonechain.com'],
   stack: 'optimism-alt',
 }

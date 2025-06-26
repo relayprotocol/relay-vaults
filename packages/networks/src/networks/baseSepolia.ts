@@ -35,7 +35,7 @@ const config: OriginNetworkConfig = {
   name: 'Base Sepolia',
   parentChainId: 11155111,
   rpc: process.env.RPC_84532
-    ? [process.env.RPC_84532]
+    ? [process.env.RPC_84532, 'https://base-sepolia.gateway.tenderly.co']
     : ['https://base-sepolia.gateway.tenderly.co'],
   stack: 'optimism',
 }

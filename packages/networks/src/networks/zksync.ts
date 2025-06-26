@@ -34,7 +34,7 @@ const config: OriginNetworkConfig = {
 
   parentChainId: 1,
   rpc: process.env.RPC_324
-    ? [process.env.RPC_324]
+    ? [process.env.RPC_324, 'https://mainnet.era.zksync.io']
     : ['https://mainnet.era.zksync.io'],
   stack: 'zksync',
 }

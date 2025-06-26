@@ -36,7 +36,7 @@ const config: OriginNetworkConfig & VaultNetworkConfig = {
   name: 'Base',
   parentChainId: 1,
   rpc: process.env.RPC_8453
-    ? [process.env.RPC_8453]
+    ? [process.env.RPC_8453, 'https://gateway.tenderly.co/public/base']
     : ['https://gateway.tenderly.co/public/base'],
   stack: 'optimism',
   uniswapV3: {

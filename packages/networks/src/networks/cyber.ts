@@ -23,7 +23,7 @@ const config: OriginNetworkConfig = {
   name: 'Cyber',
   parentChainId: 1,
   rpc: process.env.RPC_7560
-    ? [process.env.RPC_7560]
+    ? [process.env.RPC_7560, 'https://cyber.rpc.thirdweb.com']
     : ['https://cyber.rpc.thirdweb.com'],
   stack: 'optimism-alt',
 }

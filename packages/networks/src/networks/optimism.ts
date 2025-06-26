@@ -36,7 +36,7 @@ const config: OriginNetworkConfig = {
   name: 'OP Mainnet',
   parentChainId: 1,
   rpc: process.env.RPC_10
-    ? [process.env.RPC_10]
+    ? [process.env.RPC_10, 'https://gateway.tenderly.co/public/optimism']
     : ['https://gateway.tenderly.co/public/optimism'],
   stack: 'optimism',
 }

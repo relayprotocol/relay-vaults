@@ -10,7 +10,7 @@ const config: VaultNetworkConfig = {
   isTestnet: false,
   name: 'Arbitrum One',
   rpc: process.env.RPC_42161
-    ? [process.env.RPC_42161]
+    ? [process.env.RPC_42161, 'https://arb1.arbitrum.io/rpc']
     : ['https://arb1.arbitrum.io/rpc'],
   uniswapV3: {
     universalRouterAddress: '0xA51afAFe0263b40EdaEf0Df8781eA9aa03E381a3',

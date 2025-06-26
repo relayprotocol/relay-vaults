@@ -23,7 +23,7 @@ const config: OriginNetworkConfig = {
   name: 'Mint',
   parentChainId: 1,
   rpc: process.env.RPC_1337
-    ? [process.env.RPC_1337]
+    ? [process.env.RPC_1337, 'https://rpc.mintchain.io']
     : ['https://rpc.mintchain.io'],
   stack: 'optimism-alt',
 }

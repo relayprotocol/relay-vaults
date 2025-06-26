@@ -89,14 +89,15 @@ ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Links bridge and proxy bridge contracts
  * - Sets initial debt limits
  */
-ponder.on(
-  'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint32 bridgeFee, uint32 coolDown) origin)',
-  OriginAdded
-)
-ponder.on(
-  'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint16 bridgeFee, uint32 coolDown) origin)',
-  OriginAdded
-)
+// ponder.on(
+//   'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint16 bridgeFee, uint32 coolDown) origin)',
+//   OriginAdded
+// )
+// ponder.on(
+//   'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint32 bridgeFee, uint32 coolDown) origin)',
+//   OriginAdded
+// )
+ponder.on('RelayPool:OriginAdded', OriginAdded)
 
 /**
  * Handles the disabling of an origin in a RelayPool
@@ -106,26 +107,28 @@ ponder.on('RelayPool:OriginDisabled', OriginDisabled)
 /**
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted
  */
-ponder.on(
-  'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 fees)',
-  LoanEmitted
-)
-ponder.on(
-  'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 fees)',
-  LoanEmitted
-)
+ponder.on('RelayPool:LoanEmitted', LoanEmitted)
+// ponder.on(
+//   'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 fees)',
+//   LoanEmitted
+// )
+// ponder.on(
+//   'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 fees)',
+//   LoanEmitted
+// )
 
 /**
  * Handles the change of the outstanding debt of a relay pool
  */
-ponder.on(
-  'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
-  OutstandingDebtChanged
-)
-ponder.on(
-  'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
-  OutstandingDebtChanged
-)
+ponder.on('RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
+// ponder.on(
+//   'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
+//   OutstandingDebtChanged
+// )
+// ponder.on(
+//   'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
+//   OutstandingDebtChanged
+// )
 
 /**
  * Handles proven withdrawals from the OP portal

@@ -1,4 +1,5 @@
 import { VaultNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: VaultNetworkConfig = {
   assets: {
@@ -9,9 +10,7 @@ const config: VaultNetworkConfig = {
   hyperlaneMailbox: '0x979Ca5202784112f4738403dBec5D0F3B9daabB9',
   isTestnet: false,
   name: 'Arbitrum One',
-  rpc: process.env.RPC_42161
-    ? [process.env.RPC_42161]
-    : ['https://arb1.arbitrum.io/rpc'],
+  rpc: createRpcConfig(42161, ['https://arb1.arbitrum.io/rpc']),
   uniswapV3: {
     universalRouterAddress: '0xA51afAFe0263b40EdaEf0Df8781eA9aa03E381a3',
   },

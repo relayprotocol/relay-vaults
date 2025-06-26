@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -34,9 +35,7 @@ const config: OriginNetworkConfig = {
   isTestnet: true,
   name: 'Base Sepolia',
   parentChainId: 11155111,
-  rpc: process.env.RPC_84532
-    ? [process.env.RPC_84532, 'https://base-sepolia.gateway.tenderly.co']
-    : ['https://base-sepolia.gateway.tenderly.co'],
+  rpc: createRpcConfig(84532, ['https://base-sepolia.gateway.tenderly.co']),
   stack: 'optimism',
 }
 

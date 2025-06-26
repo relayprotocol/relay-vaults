@@ -1,4 +1,5 @@
 import { VaultNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: VaultNetworkConfig = {
   assets: {
@@ -12,9 +13,9 @@ const config: VaultNetworkConfig = {
 
   name: 'Ethereum Sepolia',
 
-  rpc: process.env.RPC_11155111
-    ? [process.env.RPC_11155111, 'https://ethereum-sepolia-rpc.publicnode.com']
-    : ['https://ethereum-sepolia-rpc.publicnode.com'],
+  rpc: createRpcConfig(11155111, [
+    'https://ethereum-sepolia-rpc.publicnode.com',
+  ]),
   uniswapV3: {
     universalRouterAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
   },

@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -24,9 +25,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Arbitrum Nova',
   parentChainId: 1,
-  rpc: process.env.RPC_42170
-    ? [process.env.RPC_42170, 'https://nova.arbitrum.io/rpc']
-    : ['https://nova.arbitrum.io/rpc'],
+  rpc: createRpcConfig(42170, ['https://nova.arbitrum.io/rpc']),
   stack: 'arbitrum',
 }
 

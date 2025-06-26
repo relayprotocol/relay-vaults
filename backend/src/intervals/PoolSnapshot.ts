@@ -82,6 +82,7 @@ async function fetchSharePrice(
     args: [shareUnit],
     functionName: 'convertToAssets',
   })
+
   return sharePrice as bigint
 }
 
@@ -90,7 +91,6 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
   const pools = await context.db.sql
     .select()
     .from(relayPool)
-    // @ts-expect-error – context.chain.id is not typed in Ponder
     .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
@@ -173,8 +173,20 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           vaultRef = rows.length ? rows[0] : null
         }
         if (vaultRef) {
+          // Let's use the "adjusted" sharePrice (which takes into account the upcoming fees)
+          const pendingBridgeFees = await context.client.readContract({
+            abi: context.contracts.RelayPool.abi,
+            address: pool.contractAddress,
+            functionName: 'pendingBridgeFees',
+          })
+
+          const adjustedSharePrice =
+            (BigInt(totalAssets + pendingBridgeFees) *
+              BigInt(10 ** pool.decimals)) /
+            BigInt(totalShares)
+
           const vaultAPY = calculateAPY(
-            Number(vaultSharePrice),
+            Number(adjustedSharePrice),
             Number(vaultRef.sharePrice),
             Number(event.block.timestamp),
             Number(vaultRef.timestamp)

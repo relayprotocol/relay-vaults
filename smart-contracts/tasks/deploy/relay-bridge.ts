@@ -71,15 +71,6 @@ task('deploy:bridge', 'Deploy a bridge from the factory.')
       )
       const bridgeAddress = event.args.bridge
 
-      await run('deploy:verify', {
-        address: bridgeAddress,
-        constructorArguments: [
-          assetAddress,
-          proxyBridgeAddress,
-          await factoryContract.HYPERLANE_MAILBOX(),
-        ],
-      })
-
       const path = ignitionPath + `bridges/${chainId}/${bridgeAddress}/`
       await fs.promises.mkdir(path, { recursive: true })
       await fs.promises.writeFile(
@@ -94,6 +85,15 @@ task('deploy:bridge', 'Deploy a bridge from the factory.')
           2
         )
       )
+
+      await run('deploy:verify', {
+        address: bridgeAddress,
+        constructorArguments: [
+          assetAddress,
+          proxyBridgeAddress,
+          await factoryContract.HYPERLANE_MAILBOX(),
+        ],
+      })
 
       console.log(`✅ RelayBridge deployed to: ${bridgeAddress}`)
     }

@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -9,13 +10,13 @@ const config: OriginNetworkConfig = {
     arbitrum: {
       child: {
         arbSys: '0x0000000000000000000000000000000000000064',
-        routerGateway: '0x21903d3F8176b1a0c17E953Cd896610Be9fFDFa8',
+        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
       },
       parent: {
         maxBlocksWithoutProof: 500,
-        outbox: '0xD4B80C3D7240325D18E645B49e6535A3Bf95cc58',
-        rollup: '0xE7E8cCC7c381809BDC4b213CE44016300707B7Bd',
-        routerGateway: '0xC840838Bc438d73C16c2f8b22D2Ce3669963cD48',
+        outbox: '',
+        rollup: '',
+        routerGateway: '',
       },
     },
   },
@@ -24,9 +25,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Game7',
   parentChainId: 42161,
-  rpc: process.env.RPC_2187
-    ? [process.env.RPC_2187]
-    : ['https://mainnet-rpc.game7.io'],
+  rpc: createRpcConfig(2187, ['https://mainnet-rpc.game7.io']),
   stack: 'arbitrum',
 }
 

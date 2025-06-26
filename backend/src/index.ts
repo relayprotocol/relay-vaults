@@ -114,14 +114,6 @@ ponder.on('RelayPool:LoanEmitted', LoanEmitted)
  * Handles the change of the outstanding debt of a relay pool
  */
 ponder.on('RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
-// ponder.on(
-//   'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
-//   OutstandingDebtChanged
-// )
-// ponder.on(
-//   'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
-//   OutstandingDebtChanged
-// )
 
 /**
  * Handles proven withdrawals from the OP portal

@@ -89,6 +89,7 @@ ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Links bridge and proxy bridge contracts
  * - Sets initial debt limits
  */
+// Removed commented-out overload blocks for 'RelayPool:OriginAdded' to reduce clutter and improve readability.
 ponder.on('RelayPool:OriginAdded', OriginAdded)
 
 /**

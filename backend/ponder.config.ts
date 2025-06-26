@@ -15,6 +15,9 @@ import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 
 const deployedAddresses = getAddresses()
 
+// disable arbitrary networks for now
+delete deployedAddresses['42161'].RelayPoolFactory
+
 // RPC configurations
 const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
   return {

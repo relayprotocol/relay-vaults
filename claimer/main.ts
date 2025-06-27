@@ -12,10 +12,9 @@ const run = async () => {
   await claimTransactions({ vaultService })
   await checkL2Chains()
   await stop()
-  logger.info('Done!')
 }
 
-run().catch((error) => {
-  logger.error(error)
+run().catch((error: Error) => {
+  logger.error(error.message)
   process.exit(1)
 })

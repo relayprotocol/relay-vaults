@@ -9,7 +9,20 @@ export default async function ({
   event: Event<'RelayPool:OwnershipTransferred'>
   context: Context<'RelayPool:OwnershipTransferred'>
 }) {
-  const { previousOwner, newOwner } = event.args
+  const { newOwner } = event.args
+  const poolAddress = event.log.address
+
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    console.info(
+      `Skipping ownership transfer for non-curated pool ${poolAddress}`
+    )
+    return
+  }
 
   // Update the curator of the pool
   await context.db.sql

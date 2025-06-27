@@ -9,6 +9,19 @@ export default async function ({
   event: Event<'RelayPool:YieldPoolChanged'>
   context: Context<'RelayPool:YieldPoolChanged'>
 }) {
+  const poolAddress = event.log.address
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    console.info(
+      `Skipping yield pool change for non-curated pool ${poolAddress}`
+    )
+    return
+  }
+
   await context.db.sql
     .update(relayPool)
     .set({

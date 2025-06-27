@@ -33,6 +33,18 @@ export default async function ({
   // Retrieve the pool using the contract address from the event log.
   const poolAddress = event.log.address
 
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    console.info(
+      `Skipping outstanding debt change for non-curated pool ${poolAddress}`
+    )
+    return
+  }
+
   // Update the relay pool record with the new outstanding debt.
   await context.db
     .update(relayPool, {

@@ -6,12 +6,12 @@
  */
 export function createRpcConfig(
   chainId: number | string,
-  defaultUrls: string[]
+  defaultUrls: string[] = []
 ): [string, ...string[]] {
   const envList = (process.env[`RPC_${chainId}`] || '')
     .split(',')
     .map((u) => u.trim())
     .filter(Boolean)
 
-  return [...new Set([...envList, ...defaultUrls])] as [string, ...string[]]
+  return [...envList, ...defaultUrls] as [string]
 }

@@ -52,7 +52,6 @@ const traceEvent = (ponder, eventName: string, eventHandler) => {
     span.setTag('args', event.arg)
     span.setTag('log', event.log)
     span.setTag('transaction', event.transaction)
-    console.log(eventHandler)
     return eventHandler({ context, event })
   }
 

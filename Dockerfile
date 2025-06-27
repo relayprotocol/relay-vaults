@@ -43,6 +43,13 @@ ENV NODE_ENV=production
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
+# Datadog tracing configuration (can be overridden at runtime)
+ENV SERVICE_NAME=vaults-backend
+ENV DD_AGENT_URL=http://localhost:8126
+ENV DD_PROFILING_ENABLED=false
+ENV DD_RUNTIME_METRICS_ENABLED=false
+ENV DD_TRACE_SAMPLE_RATE=1.0
+
 # Expose port
 EXPOSE 3000
 

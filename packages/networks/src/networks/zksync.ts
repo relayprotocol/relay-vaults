@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -33,9 +34,7 @@ const config: OriginNetworkConfig = {
   name: 'Zksync',
 
   parentChainId: 1,
-  rpc: process.env.RPC_324
-    ? [process.env.RPC_324]
-    : ['https://mainnet.era.zksync.io'],
+  rpc: createRpcConfig(324, ['https://mainnet.era.zksync.io']),
   stack: 'zksync',
 }
 

@@ -33,7 +33,7 @@ const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
       id: Number(chainId),
       maxRequestsPerSecond: 500,
       pollingInterval: 100,
-      transport: fallback(transports, {
+      rpc: fallback(transports, {
         rank: false,
         retryCount: 3,
         retryDelay: 1000,

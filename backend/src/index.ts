@@ -15,6 +15,7 @@
  * @note This indexer assumes events are received in chronological order per chain
  */
 
+import { traceEvent } from './tracer'
 import { ponder } from 'ponder:registry'
 import Deposit from './handlers/RelayPool/Deposit'
 import Withdraw from './handlers/RelayPool/Withdraw'
@@ -44,7 +45,7 @@ import YieldPoolChanged from './handlers/RelayPool/YieldPoolChanged'
  * - Yield pool state
  * - Creates pool action record
  */
-ponder.on('RelayPool:Deposit', Deposit)
+traceEvent(ponder, 'RelayPool:Deposit', Deposit)
 
 /**
  * Handles withdrawals from the RelayPool
@@ -54,7 +55,7 @@ ponder.on('RelayPool:Deposit', Deposit)
  * - Yield pool state
  * - Creates pool action record
  */
-ponder.on('RelayPool:Withdraw', Withdraw)
+traceEvent(ponder, 'RelayPool:Withdraw', Withdraw)
 
 /**
  * Handles the deployment of a new RelayPool
@@ -63,7 +64,7 @@ ponder.on('RelayPool:Withdraw', Withdraw)
  * - Associated yield pool record
  * - Initial origin configurations
  */
-ponder.on('RelayPoolFactory:PoolDeployed', PoolDeployed)
+traceEvent(ponder, 'RelayPoolFactory:PoolDeployed', PoolDeployed)
 
 /**
  * Handles the deployment of a new RelayBridge
@@ -71,7 +72,7 @@ ponder.on('RelayPoolFactory:PoolDeployed', PoolDeployed)
  * - New bridge contract record
  * - Initializes transfer nonce tracking
  */
-ponder.on('RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
+traceEvent(ponder, 'RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
 
 /**
  * Handles the initiation of a RelayBridge transaction
@@ -80,7 +81,7 @@ ponder.on('RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
  * - Links origin and destination pools
  * - Tracks cross-chain message status
  */
-ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
+traceEvent(ponder, 'RelayBridge:BridgeInitiated', BridgeInitiated)
 
 /**
  * Handles the addition of a new origin to a RelayPool
@@ -89,11 +90,13 @@ ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Links bridge and proxy bridge contracts
  * - Sets initial debt limits
  */
-ponder.on(
+traceEvent(
+  ponder,
   'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint32 bridgeFee, uint32 coolDown) origin)',
   OriginAdded
 )
-ponder.on(
+traceEvent(
+  ponder,
   'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint16 bridgeFee, uint32 coolDown) origin)',
   OriginAdded
 )
@@ -101,16 +104,18 @@ ponder.on(
 /**
  * Handles the disabling of an origin in a RelayPool
  */
-ponder.on('RelayPool:OriginDisabled', OriginDisabled)
+traceEvent(ponder, 'RelayPool:OriginDisabled', OriginDisabled)
 
 /**
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted
  */
-ponder.on(
+traceEvent(
+  ponder,
   'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 fees)',
   LoanEmitted
 )
-ponder.on(
+traceEvent(
+  ponder,
   'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 fees)',
   LoanEmitted
 )
@@ -118,11 +123,13 @@ ponder.on(
 /**
  * Handles the change of the outstanding debt of a relay pool
  */
-ponder.on(
+traceEvent(
+  ponder,
   'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
   OutstandingDebtChanged
 )
-ponder.on(
+traceEvent(
+  ponder,
   'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
   OutstandingDebtChanged
 )
@@ -130,29 +137,33 @@ ponder.on(
 /**
  * Handles proven withdrawals from the OP portal
  */
-ponder.on('OPPortal:WithdrawalProven', WithdrawalProven)
+traceEvent(ponder, 'OPPortal:WithdrawalProven', WithdrawalProven)
 
 /**
  * Handles finalzied withdrawals from the OP portal
  */
-ponder.on('OPPortal:WithdrawalFinalized', WithdrawalFinalized)
+traceEvent(ponder, 'OPPortal:WithdrawalFinalized', WithdrawalFinalized)
 
 /**
  * Handles completed withdrawals from the Orbit Outbox
  */
-ponder.on('OrbitOutbox:OutBoxTransactionExecuted', OutBoxTransactionExecuted)
+traceEvent(
+  ponder,
+  'OrbitOutbox:OutBoxTransactionExecuted',
+  OutBoxTransactionExecuted
+)
 
 /**
  * Handles finalzied withdrawals for the ZkSync stack
  */
-ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)
+traceEvent(ponder, 'L1NativeTokenVault:BridgeMint', BridgeMint)
 
 // ============= RelayPoolTimelock Events =============
-ponder.on('RelayPool:OwnershipTransferred', OwnershipTransferred)
-ponder.on('RelayPoolTimelock:RoleGranted', RoleGranted)
-ponder.on('RelayPoolTimelock:RoleRevoked', RoleRevoked)
+traceEvent(ponder, 'RelayPool:OwnershipTransferred', OwnershipTransferred)
+traceEvent(ponder, 'RelayPoolTimelock:RoleGranted', RoleGranted)
+traceEvent(ponder, 'RelayPoolTimelock:RoleRevoked', RoleRevoked)
 
 /**
  * Handles the change of the yield pool
  */
-ponder.on('RelayPool:YieldPoolChanged', YieldPoolChanged)
+traceEvent(ponder, 'RelayPool:YieldPoolChanged', YieldPoolChanged)

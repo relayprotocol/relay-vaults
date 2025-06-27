@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -31,14 +32,11 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 10,
-  earliestBlock: 0,
   hyperlaneMailbox: '0xd4C1905BB1D26BC93DAC913e13CaCC278CdCC80D',
   isTestnet: false,
   name: 'OP Mainnet',
   parentChainId: 1,
-  rpc: process.env.RPC_10
-    ? [process.env.RPC_10]
-    : ['https://gateway.tenderly.co/public/optimism'],
+  rpc: createRpcConfig(10, ['https://gateway.tenderly.co/public/optimism']),
   stack: 'optimism',
 }
 

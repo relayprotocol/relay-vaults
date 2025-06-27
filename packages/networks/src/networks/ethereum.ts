@@ -1,4 +1,5 @@
 import { VaultNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: VaultNetworkConfig = {
   assets: {
@@ -8,13 +9,14 @@ const config: VaultNetworkConfig = {
   },
   chainId: 1,
   curator: '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963',
-  earliestBlock: 22000000,
   hyperlaneMailbox: '0xc005dc82818d67AF737725bD4bf75435d065D239',
   isTestnet: false,
   name: 'Ethereum',
-  rpc: process.env.RPC_1
-    ? [process.env.RPC_1]
-    : ['https://mainnet.gateway.tenderly.co'],
+  rpc: createRpcConfig(1, [
+    'https://mainnet.gateway.tenderly.co',
+    'https://ethereum-rpc.publicnode.com',
+    'https://cloudflare-eth.com/v1/mainnet',
+  ]),
   uniswapV3: {
     universalRouterAddress: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
   },

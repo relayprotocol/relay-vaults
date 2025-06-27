@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -18,14 +19,11 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 185,
-  earliestBlock: 14354000,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   name: 'Mint',
   parentChainId: 1,
-  rpc: process.env.RPC_1337
-    ? [process.env.RPC_1337]
-    : ['https://rpc.mintchain.io'],
+  rpc: createRpcConfig(185, ['https://rpc.mintchain.io']),
   stack: 'optimism-alt',
 }
 

@@ -5,12 +5,13 @@
   created a complete record.
 
   Additionally, we update the RelayPool record with the fees accumulated.
-  The fee is computed as (amount * bridgeFee) / 10000.
+  The fee is computed as (amount * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR.
   If the corresponding poolOrigin record is found, its bridgeFee is used to calculate the fee.
   If not found, a warning is logged.
 */
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
+import { FRACTIONAL_BPS_DENOMINATOR } from '../../constants.js'
 
 export default async function ({
   event,
@@ -62,8 +63,10 @@ export default async function ({
     return
   }
 
-  // Compute fee amount: fee = (amount * bridgeFee) / 10000
-  const fee = (BigInt(amount) * BigInt(originRecord.bridgeFee)) / 10000n
+  // Compute fee amount: fee = (amount * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR
+  const fee =
+    (BigInt(amount) * BigInt(originRecord.bridgeFee)) /
+    FRACTIONAL_BPS_DENOMINATOR
 
   // Update totalBridgeFees pool's total bridge fees
   const updatedTotalBridgeFees = BigInt(poolRecord.totalBridgeFees) + fee
@@ -73,5 +76,5 @@ export default async function ({
       chainId: context.chain.id,
       contractAddress: event.log.address,
     })
-    .set({ totalBridgeFees: updatedTotalBridgeFees.toString() })
+    .set({ totalBridgeFees: updatedTotalBridgeFees })
 }

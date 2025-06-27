@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 // https://docs.zora.co/zora-network/network#zora-network-mainnet
 const config: OriginNetworkConfig = {
@@ -18,15 +19,12 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 7777777,
-  earliestBlock: 29402000,
   hyperlaneHook: '0x18B0688990720103dB63559a3563f7E8d0f63EDb',
   hyperlaneMailbox: '0xF5da68b2577EF5C0A0D98aA2a58483a68C2f232a',
   isTestnet: false,
   name: 'Zora',
   parentChainId: 1,
-  rpc: process.env.RPC_7777777
-    ? [process.env.RPC_7777777]
-    : ['https://rpc.zora.energy'],
+  rpc: createRpcConfig(7777777, ['https://rpc.zora.energy']),
   stack: 'optimism',
 }
 

@@ -1,4 +1,5 @@
 import { VaultNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: VaultNetworkConfig = {
   assets: {
@@ -7,15 +8,14 @@ const config: VaultNetworkConfig = {
     weth: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
   },
   chainId: 11155111,
-  earliestBlock: 7900000,
   hyperlaneMailbox: '0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766',
   isTestnet: true,
 
   name: 'Ethereum Sepolia',
 
-  rpc: process.env.RPC_11155111
-    ? [process.env.RPC_11155111]
-    : ['https://ethereum-sepolia-rpc.publicnode.com'],
+  rpc: createRpcConfig(11155111, [
+    'https://ethereum-sepolia-rpc.publicnode.com',
+  ]),
   uniswapV3: {
     universalRouterAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
   },

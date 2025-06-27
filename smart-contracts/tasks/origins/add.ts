@@ -8,6 +8,15 @@ import {
 } from '../deploy/bridge-proxy'
 import { executeThruTimelock } from '../../lib/multisig'
 
+const ignitionPath = __dirname + '/../../ignition/deployments/'
+
+export const getOriginCuratorForNetwork = async (chainId: number) => {
+  const addresses = require(
+    `${ignitionPath}/OriginCurator-${chainId}/deployed_addresses.json`
+  )
+  return addresses['OriginCurator#OriginCurator']
+}
+
 task('pool:add-origin', 'Add origin for a pool')
   .addOptionalParam('pool', 'the pool address')
   .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
@@ -147,29 +156,30 @@ task('pool:add-origin', 'Add origin for a pool')
         const fractionalBpsDenominator = await pool.FRACTIONAL_BPS_DENOMINATOR()
         const bpsValue = (1 / Number(fractionalBpsDenominator)) * 10000 // Convert to basis points
         bridgeFee = await new Input({
-          default: 10,
+          default: 100000000,
           message: `What is the bridge fee, in fractional basis points (1 = ${bpsValue.toFixed(8)} bps, denominator = ${fractionalBpsDenominator})?`,
         }).run()
       }
 
-      const timelockAddress = await pool.owner()
       if (!curator) {
+        const defaultCurator =
+          (await getOriginCuratorForNetwork(Number(chainId))) || userAddress
         curator = await new Input({
-          default: userAddress,
-          message:
-            'Who should be curator for that origin? They can instantly suspend the origin. (default is you)',
+          default: defaultCurator,
+          message: `Who should be curator for that origin? They can instantly suspend the origin. (default is ${defaultCurator})`,
         }).run()
       }
 
       if (!coolDown) {
         coolDown = await new Input({
-          default: 60 * 30,
+          default: 60 * 5, // 5 minutes!
           message:
-            'What should the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)', // 30 minutes
+            'What should the shortest delay between a bridge initiation and the actual transfer from the pool? (in seconds)',
         }).run()
       }
 
       // Get the timelock that owns the pool
+      const timelockAddress = await pool.owner()
       console.log(`Pool is owned by timelock at: ${timelockAddress}`)
 
       // addOrigin parameters

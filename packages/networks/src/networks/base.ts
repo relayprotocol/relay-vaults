@@ -1,4 +1,5 @@
 import { OriginNetworkConfig, VaultNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig & VaultNetworkConfig = {
   assets: {
@@ -31,14 +32,11 @@ const config: OriginNetworkConfig & VaultNetworkConfig = {
     },
   },
   chainId: 8453,
-  earliestBlock: 0,
   hyperlaneMailbox: '0xeA87ae93Fa0019a82A727bfd3eBd1cFCa8f64f1D',
   isTestnet: false,
   name: 'Base',
   parentChainId: 1,
-  rpc: process.env.RPC_8453
-    ? [process.env.RPC_8453]
-    : ['https://gateway.tenderly.co/public/base'],
+  rpc: createRpcConfig(8453, ['https://gateway.tenderly.co/public/base']),
   stack: 'optimism',
   uniswapV3: {
     universalRouterAddress: '0x6fF5693b99212Da76ad316178A184AB56D299b43',

@@ -37,22 +37,21 @@ task('deploy:pool-factory', 'Deploy a relay vault factory')
     )
 
     const poolFactoryAddress = await relayPoolFactory.getAddress()
+    const timelockAddress = await timelockTemplate.getAddress()
 
-    console.log(`✅ relayPoolFactory deployed to: ${poolFactoryAddress}`)
+    console.log(
+      `✅ relayPoolFactory deployed to: ${poolFactoryAddress}. Timelock: ${timelockAddress}`
+    )
+    // TODO: We want to do that only if we actually deployed!
     await run('set-earliest-block')
 
     await run('deploy:verify', {
-      address: await timelockTemplate.getAddress(),
+      address: timelockAddress,
       constructorArguments: [],
     })
 
     await run('deploy:verify', {
       address: poolFactoryAddress,
-      constructorArguments: [
-        hyperlaneMailbox,
-        weth,
-        await timelockTemplate.getAddress(),
-        delay,
-      ],
+      constructorArguments: [hyperlaneMailbox, weth, timelockAddress, delay],
     })
   })

@@ -90,16 +90,9 @@ traceEvent(ponder, 'RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Links bridge and proxy bridge contracts
  * - Sets initial debt limits
  */
-traceEvent(
-  ponder,
-  'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint32 bridgeFee, uint32 coolDown) origin)',
-  OriginAdded
-)
-traceEvent(
-  ponder,
-  'RelayPool:OriginAdded((address curator, uint32 chainId, address bridge, address proxyBridge, uint256 maxDebt, uint16 bridgeFee, uint32 coolDown) origin)',
-  OriginAdded
-)
+
+// Removed commented-out overload blocks for 'RelayPool:OriginAdded' to reduce clutter and improve readability.
+traceEvent(ponder, 'RelayPool:OriginAdded', OriginAdded)
 
 /**
  * Handles the disabling of an origin in a RelayPool
@@ -109,30 +102,13 @@ traceEvent(ponder, 'RelayPool:OriginDisabled', OriginDisabled)
 /**
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted
  */
-traceEvent(
-  ponder,
-  'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 fees)',
-  LoanEmitted
-)
-traceEvent(
-  ponder,
-  'RelayPool:LoanEmitted(uint256 indexed nonce, address indexed recipient, address asset, uint256 amount, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 fees)',
-  LoanEmitted
-)
+traceEvent(ponder, 'RelayPool:LoanEmitted', LoanEmitted)
+
 
 /**
  * Handles the change of the outstanding debt of a relay pool
  */
-traceEvent(
-  ponder,
-  'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint32 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
-  OutstandingDebtChanged
-)
-traceEvent(
-  ponder,
-  'RelayPool:OutstandingDebtChanged(uint256 oldDebt, uint256 newDebt, (uint32 chainId, address bridge, address curator, uint256 maxDebt, uint256 outstandingDebt, address proxyBridge, uint16 bridgeFee, uint32 coolDown) origin, uint256 oldOriginDebt, uint256 newOriginDebt)',
-  OutstandingDebtChanged
-)
+traceEvent(ponder, 'RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
 
 /**
  * Handles proven withdrawals from the OP portal

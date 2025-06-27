@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -22,9 +23,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Hemi',
   parentChainId: 1,
-  rpc: process.env.RPC_43111
-    ? [process.env.RPC_43111]
-    : ['https://rpc.hemi.network/rpc'],
+  rpc: createRpcConfig(43111, ['https://rpc.hemi.network/rpc']),
   stack: 'optimism-alt',
 }
 

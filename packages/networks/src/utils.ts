@@ -13,5 +13,5 @@ export function createRpcConfig(
     .map((u) => u.trim())
     .filter(Boolean)
 
-  return [...envList, ...defaultUrls] as [string, ...string[]]
+  return [...envList, ...defaultUrls] as [string]
 }

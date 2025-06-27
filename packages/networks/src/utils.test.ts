@@ -3,6 +3,7 @@ import { createRpcConfig } from './utils'
 
 describe('utils/createRpcConfig', () => {
   const OLD_ENV = process.env
+  const defaultUrls = ['https://default.rpc/ethereum']
 
   beforeEach(() => {
     // Make a copy of the environment to avoid test contamination
@@ -19,10 +20,18 @@ describe('utils/createRpcConfig', () => {
   })
 
   it('should prioritize environment variables over default URLs', () => {
-    const defaultUrls = ['https://default.rpc/ethereum']
     const urls = createRpcConfig(1, defaultUrls)
     expect(urls).toEqual([
       'https://my.rpc/ethereum',
+      'https://default.rpc/ethereum',
+    ])
+  })
+  it('should handle several URLs in the environment variable', () => {
+    process.env.RPC_1 = 'https://my.rpc/ethereum,https://another.rpc/ethereum'
+    const urls = createRpcConfig(1, defaultUrls)
+    expect(urls).toEqual([
+      'https://my.rpc/ethereum',
+      'https://another.rpc/ethereum',
       'https://default.rpc/ethereum',
     ])
   })

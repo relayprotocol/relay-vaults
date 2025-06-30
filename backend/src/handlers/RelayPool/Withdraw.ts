@@ -77,11 +77,6 @@ export default async function ({
     wallet: owner,
   })
 
-  if (!user) {
-    throw new Error(
-      `User balance for ${owner} in relay pool ${event.log.address} not found`
-    )
-  }
   // Update user balance
   await context.db
     .update(userBalance, {

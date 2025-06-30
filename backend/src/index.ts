@@ -18,6 +18,7 @@
 import { ponder } from 'ponder:registry'
 import Deposit from './handlers/RelayPool/Deposit'
 import Withdraw from './handlers/RelayPool/Withdraw'
+import Transfer from './handlers/RelayPool/Transfer'
 import PoolDeployed from './handlers/RelayPoolFactory/PoolDeployed'
 import BridgeDeployed from './handlers/RelayBridgeFactory/BridgeDeployed'
 import BridgeInitiated from './handlers/RelayBridge/BridgeInitiated'
@@ -32,7 +33,6 @@ import BridgeMint from './handlers/Zksync/BridgeMint'
 import RoleGranted from './handlers/RelayPoolTimelock/RoleGranted'
 import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
 import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
-import YieldPoolChanged from './handlers/RelayPool/YieldPoolChanged'
 
 // ============= RelayPool Events =============
 
@@ -55,6 +55,12 @@ ponder.on('RelayPool:Deposit', Deposit)
  * - Creates pool action record
  */
 ponder.on('RelayPool:Withdraw', Withdraw)
+
+/**
+ * Handles direct transfer of RelayPool shares
+ * between users
+ */
+ponder.on('RelayPool:Transfer', Transfer)
 
 /**
  * Handles the deployment of a new RelayPool
@@ -89,7 +95,6 @@ ponder.on('RelayBridge:BridgeInitiated', BridgeInitiated)
  * - Links bridge and proxy bridge contracts
  * - Sets initial debt limits
  */
-// Removed commented-out overload blocks for 'RelayPool:OriginAdded' to reduce clutter and improve readability.
 ponder.on('RelayPool:OriginAdded', OriginAdded)
 
 /**
@@ -131,8 +136,3 @@ ponder.on('L1NativeTokenVault:BridgeMint', BridgeMint)
 ponder.on('RelayPool:OwnershipTransferred', OwnershipTransferred)
 ponder.on('RelayPoolTimelock:RoleGranted', RoleGranted)
 ponder.on('RelayPoolTimelock:RoleRevoked', RoleRevoked)
-
-/**
- * Handles the change of the yield pool
- */
-ponder.on('RelayPool:YieldPoolChanged', YieldPoolChanged)

@@ -20,6 +20,7 @@
   "dependencies": {
     "@relay-vaults/abis": "workspace:*",
     "@relay-vaults/addresses": "workspace:*",
+    "dd-trace": "5.56.0",
     "hono": "4.7.11",
     "ponder": "0.11.17",
     "viem": "2.31.0"

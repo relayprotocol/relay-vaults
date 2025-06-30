@@ -26,8 +26,6 @@ export default async function ({
       wallet: to,
     })
 
-    console.log({ from, to, userFrom, userTo })
-
     // Update existing user balance
     await context.db
       .update(userBalance, {
@@ -43,7 +41,6 @@ export default async function ({
 
     // if user is receiving tokens for the first time, create it
     if (!userTo) {
-      console.log('insert')
       await context.db.insert(userBalance).values({
         chainId: context.network.chainId,
         lastUpdated: timestamp,
@@ -54,7 +51,6 @@ export default async function ({
         wallet: to,
       })
     } else {
-      console.log('update')
       await context.db
         .update(userBalance, {
           chainId: context.network.chainId,

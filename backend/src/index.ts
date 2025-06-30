@@ -58,7 +58,7 @@ traceEvent(ponder, 'RelayPool:Deposit', Deposit)
  */
 traceEvent(ponder, 'RelayPool:Withdraw', Withdraw)
 
-ponder.on('RelayPool:Transfer', Transfer)
+traceEvent(ponder, 'RelayPool:Transfer', Transfer)
 
 /**
  * Handles the deployment of a new RelayPool

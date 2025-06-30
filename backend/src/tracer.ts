@@ -45,19 +45,17 @@ tracer.init({
 })
 
 const traceEvent = (ponder, eventName: string, eventHandler) => {
-  const span = tracer.startSpan(eventName)
-
   const handlerWithLog = ({ event, context }) => {
+    const span = tracer.startSpan(eventName)
     span.setTag('chain', context.chain)
     span.setTag('args', event.arg)
     span.setTag('log', event.log)
     span.setTag('transaction', event.transaction)
-    console.log(eventHandler)
+    span.finish()
     return eventHandler({ context, event })
   }
 
   ponder.on(eventName, handlerWithLog)
-  span.finish()
 }
 
 export { tracer, traceEvent }

@@ -28,7 +28,7 @@ tracer.init({
   },
 
   // Network configuration
-  url: process.env.DD_AGENT_URL || 'http://localhost:8126',
+  url: process.env.DATADOG_AGENT_URL || 'http://localhost:8126',
 })
 
 const traceEvent = (ponder, eventName: string, eventHandler) => {

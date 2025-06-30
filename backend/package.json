@@ -30,7 +30,7 @@
     "@typescript-eslint/eslint-plugin": "8.34.0",
     "@typescript-eslint/parser": "8.34.0",
     "eslint": "9.28.0",
-    "eslint-config-ponder": "0.11.19",
+    "eslint-config-ponder": "0.11.22",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.1",
     "husky": "9.1.7",

@@ -19,6 +19,7 @@ import { traceEvent } from './tracer'
 import { ponder } from 'ponder:registry'
 import Deposit from './handlers/RelayPool/Deposit'
 import Withdraw from './handlers/RelayPool/Withdraw'
+import Transfer from './handlers/RelayPool/Transfer'
 import PoolDeployed from './handlers/RelayPoolFactory/PoolDeployed'
 import BridgeDeployed from './handlers/RelayBridgeFactory/BridgeDeployed'
 import BridgeInitiated from './handlers/RelayBridge/BridgeInitiated'
@@ -56,6 +57,8 @@ traceEvent(ponder, 'RelayPool:Deposit', Deposit)
  * - Creates pool action record
  */
 traceEvent(ponder, 'RelayPool:Withdraw', Withdraw)
+
+ponder.on('RelayPool:Transfer', Transfer)
 
 /**
  * Handles the deployment of a new RelayPool

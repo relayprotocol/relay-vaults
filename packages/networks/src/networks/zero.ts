@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -24,7 +25,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Zero',
   parentChainId: 1,
-  rpc: ['https://rpc.zerion.io/v1/zero'],
+  rpc: createRpcConfig(543210, ['https://rpc.zerion.io/v1/zero']),
   stack: 'zksync',
   withdrawalDelay: 10800, // 3 hrs
 }

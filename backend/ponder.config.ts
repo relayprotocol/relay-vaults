@@ -1,5 +1,6 @@
 import { createConfig, factory } from 'ponder'
 import { ABIs } from '@relay-vaults/helpers'
+import { fallback, http } from 'viem'
 
 import {
   RelayPool,
@@ -15,15 +16,28 @@ import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 
 const deployedAddresses = getAddresses()
 
-// RPC configurations
+// disable arbitrary networks for now
+delete deployedAddresses['42161'].RelayPoolFactory
+
+// RPC configurations with fallback transport
 const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
+  const network = networks[chainId]
+
+  // Create fallback transport with all available RPC endpoints
+  const rpcEndpoints = network.rpc
+  const transports = rpcEndpoints.map((url) => http(url))
+
   return {
     ...usedChains,
-    [networks[chainId].slug!]: {
+    [network.slug!]: {
       id: Number(chainId),
       maxRequestsPerSecond: 500,
       pollingInterval: 100,
-      rpc: networks[chainId].rpc[0],
+      rpc: fallback(transports, {
+        rank: false,
+        retryCount: 3,
+        retryDelay: 1000,
+      }),
     },
   }
 }, {})

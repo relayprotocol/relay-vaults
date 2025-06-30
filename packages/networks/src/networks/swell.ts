@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -22,9 +23,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Swellchain',
   parentChainId: 1,
-  rpc: process.env.RPC_1923
-    ? [process.env.RPC_1923]
-    : ['https://swell-mainnet.alt.technology'],
+  rpc: createRpcConfig(1923, ['https://swell-mainnet.alt.technology']),
   stack: 'optimism',
 }
 

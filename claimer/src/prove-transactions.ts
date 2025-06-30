@@ -13,7 +13,7 @@ const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
   ) {
     bridgeTransactions(
       where: {
-        nativeBridgeStatus_in: $nativeBridgeStatus
+        nativeBridgeStatus: $nativeBridgeStatus
         originChainId_in: $originChainIds
         originTimestamp_lt: $originTimestamp
       }

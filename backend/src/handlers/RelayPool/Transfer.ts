@@ -1,6 +1,5 @@
-import { and, eq } from 'ponder'
 import { Context, Event } from 'ponder:registry'
-import { poolAction, relayPool, userBalance } from 'ponder:schema'
+import { userBalance } from 'ponder:schema'
 import { erc4626Abi, zeroAddress } from 'viem'
 
 export default async function ({

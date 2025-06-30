@@ -29,12 +29,15 @@ export default async function ({
     .insert(bridgeTransaction)
     .values({
       loanEmittedTxHash: event.transaction.hash,
-      nativeBridgeStatus: 'INITIATED',
+      nativeBridgeStatus: 'HANDLED',
       nonce,
       originBridgeAddress: bridge,
       originChainId: bridgeChainId,
     })
-    .onConflictDoUpdate({ loanEmittedTxHash: event.transaction.hash })
+    .onConflictDoUpdate({
+      loanEmittedTxHash: event.transaction.hash,
+      nativeBridgeStatus: 'HANDLED',
+    })
 
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
   // Retrieve the RelayPool record based on the contract address that emitted the event

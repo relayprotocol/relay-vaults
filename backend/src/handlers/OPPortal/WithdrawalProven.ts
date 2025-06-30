@@ -23,9 +23,6 @@ export default async function ({
       opProofTxHash: event.transaction.hash,
     })
     .where(
-      and(
-        eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash),
-        eq(bridgeTransaction.nativeBridgeStatus, 'INITIATED')
-      )
+      and(eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash))
     )
 }

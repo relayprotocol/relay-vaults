@@ -13,7 +13,7 @@ const GET_ALL_TRANSACTIONS_TO_PROVE = gql`
   ) {
     bridgeTransactions(
       where: {
-        nativeBridgeStatus: $nativeBridgeStatus
+        nativeBridgeStatus_in: $nativeBridgeStatus
         originChainId_in: $originChainIds
         originTimestamp_lt: $originTimestamp
       }
@@ -45,7 +45,7 @@ export const proveTransactions = async ({
   const { bridgeTransactions } = await vaultService.query(
     GET_ALL_TRANSACTIONS_TO_PROVE,
     {
-      nativeBridgeStatus: 'INITIATED',
+      nativeBridgeStatus: 'HANDLED',
       originChainIds: OpChains,
       originTimestamp: Math.floor(new Date().getTime() / 1000) - 60 * 30,
     }

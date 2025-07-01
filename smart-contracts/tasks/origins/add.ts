@@ -269,11 +269,6 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       }
 
       const origin = await pool.authorizedOrigins(l2ChainId, bridgeAddress)
-      if (origin.curator !== userAddress) {
-        throw Error(
-          `You are not the curator of this origin! (${origin.curator}), so you can't disable it`
-        )
-      }
       if (origin.maxDebt === 0n) {
         throw Error('This origin is already disabled!')
       }
@@ -287,7 +282,30 @@ task('pool:remove-origin', 'Removes an origin from a pool')
         process.exit()
       }
 
-      const tx = await pool.disableOrigin(l2ChainId, bridgeAddress)
-      console.log(`✅ Transaction sent! ${tx.hash}`)
+      if (origin.curator === userAddress) {
+        const tx = await pool.disableOrigin(l2ChainId, bridgeAddress)
+        console.log(`✅ Transaction sent! ${tx.hash}`)
+        return
+      }
+
+      // Else, let's check that maybe the curator is set?
+      const defaultCurator =
+        (await getOriginCuratorForNetwork(Number(chainId))) || userAddress
+      if (origin.curator !== defaultCurator) {
+        throw Error(
+          `You are not the curator of this origin. Please contact the curator (${origin.curator}) to disable it.`
+        )
+      }
+
+      console.log('So we have a curator and it is able to disable it!')
+      const data = pool.interface.encodeFunctionData('disableOrigin', [
+        l2ChainId,
+        bridgeAddress,
+      ])
+
+      console.log(
+        `Use the Forwarder contract at ${defaultCurator} to execute this call, from a signer on the mulitisig :`
+      )
+      console.log({ data, to: poolAddress, value: 0 })
     }
   )

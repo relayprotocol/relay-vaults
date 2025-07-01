@@ -8,14 +8,25 @@ export default async function ({
   event: Event<'RelayPool:OriginAdded'>
   context: Context<'RelayPool:OriginAdded'>
 }) {
+  // @ts-expect-error - event.args is not properly typed
   const { origin } = event.args
   const poolAddress = event.log.address
+
+  const fractionalBpsDenominator = (await context.client.readContract({
+    abi: context.contracts.RelayPool.abi,
+    address: event.log.address,
+    functionName: 'FRACTIONAL_BPS_DENOMINATOR',
+  })) as bigint
+
+  const bridgeFeeInBps = Number(
+    (BigInt(origin.bridgeFee) * 10000n) / fractionalBpsDenominator
+  )
 
   // Insert the pool origin
   await context.db
     .insert(poolOrigin)
     .values({
-      bridgeFee: origin.bridgeFee,
+      bridgeFee: bridgeFeeInBps,
       chainId: context.chain.id,
       coolDown: origin.coolDown,
       curator: origin.curator,
@@ -27,7 +38,7 @@ export default async function ({
       proxyBridge: origin.proxyBridge as `0x${string}`,
     })
     .onConflictDoUpdate({
-      bridgeFee: origin.bridgeFee,
+      bridgeFee: bridgeFeeInBps,
       coolDown: origin.coolDown,
       curator: origin.curator,
       maxDebt: origin.maxDebt,

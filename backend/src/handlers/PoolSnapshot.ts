@@ -3,6 +3,7 @@ import { Context } from 'ponder:registry'
 import { relayPool, vaultSnapshot, yieldPool } from 'ponder:schema'
 import { erc4626Abi } from 'viem'
 import type { Address } from 'viem'
+import { BPS_DIVISOR } from '../constants.js'
 
 /**
  * Helper to calculate APY from share price data.
@@ -19,7 +20,7 @@ function calculateAPY(
   const secondsPerYear = 365 * 24 * 3600
   const growthFactor = currentPrice / startingPrice
   const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
-  return Math.round(apyValue * 10000) // basis-points (2dp)
+  return Math.round(apyValue * Number(BPS_DIVISOR))
 }
 
 // Determine APY interval (seconds)

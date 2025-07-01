@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { poolOrigin } from 'ponder:schema'
+import { BPS_DIVISOR } from '../../constants.js'
 
 export default async function ({
   event,
@@ -19,7 +20,7 @@ export default async function ({
   })) as bigint
 
   const bridgeFeeInBps = Number(
-    (BigInt(origin.bridgeFee) * 10000n) / fractionalBpsDenominator
+    (BigInt(origin.bridgeFee) * BPS_DIVISOR) / fractionalBpsDenominator
   )
 
   // Insert the pool origin

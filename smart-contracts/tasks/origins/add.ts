@@ -102,7 +102,7 @@ task('pool:add-origin', 'Add origin for a pool')
         bridgeAddress
       )
       if (existingOrigin[4] > 0n) {
-        throw Error(
+        throw new Error(
           `Origin already exists with a non-zero debt for ${bridgeAddress} on ${l2ChainId}. Please disable that origin first, wait for its debt to be back to 0 and try again, or deploy a new bridge.`
         )
       }

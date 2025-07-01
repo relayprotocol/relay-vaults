@@ -1,5 +1,5 @@
 import { eq, and, desc, lte } from 'ponder'
-import { Context, ponder } from 'ponder:registry'
+import { Context } from 'ponder:registry'
 import { relayPool, vaultSnapshot, yieldPool } from 'ponder:schema'
 import { erc4626Abi } from 'viem'
 import type { Address } from 'viem'
@@ -86,7 +86,13 @@ async function fetchSharePrice(
   return sharePrice as bigint
 }
 
-ponder.on('PoolSnapshot:block', async ({ event, context }) => {
+export default async function ({
+  event,
+  context,
+}: {
+  event: Event<'RelayPool:Deposit'>
+  context: Context<'RelayPool:Deposit'>
+}) {
   // Retrieve all relay pools for the current chain
   const pools = await context.db.sql
     .select()
@@ -268,4 +274,4 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
       console.error(`Snapshot failed for pool ${pool.contractAddress}`, err)
     }
   }
-})
+}

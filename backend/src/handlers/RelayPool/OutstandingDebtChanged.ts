@@ -28,21 +28,10 @@ export default async function ({
   context: Context<'RelayPool:OutstandingDebtChanged'>
 }) {
   // Extract the new debt value from the event arguments.
-  const { newDebt, oldDebt, newOriginDebt, oldOriginDebt, origin } = event.args
+  const { newDebt, newOriginDebt, origin } = event.args
 
   // Retrieve the pool using the contract address from the event log.
   const poolAddress = event.log.address
-
-  const pool = await context.db.find(relayPool, {
-    chainId: context.chain.id,
-    contractAddress: poolAddress,
-  })
-
-  if (pool!.outstandingDebt !== oldDebt) {
-    throw new Error(
-      `Outstanding debt mismatch for pool ${poolAddress}. Event has ${oldDebt}, but we have ${pool!.outstandingDebt} in the database.`
-    )
-  }
 
   // Update the relay pool record with the new outstanding debt.
   await context.db
@@ -53,38 +42,6 @@ export default async function ({
     .set({
       outstandingDebt: newDebt,
     })
-
-  const storedOrigin = await context.db.find(poolOrigin, {
-    chainId: context.chain.id,
-    originBridge: origin.bridge,
-    originChainId: origin.chainId,
-    pool: poolAddress,
-  })
-
-  if (storedOrigin!.currentOutstandingDebt !== oldOriginDebt) {
-    // throw new Error(
-    //   `Outstanding debt mismatch for origin ${storedOrigin!.originBridge} on chain ${storedOrigin!.originChainId}. Event has ${oldOriginDebt}, but we have ${storedOrigin!.currentOutstandingDebt} in the database.`
-    // )
-  }
-
-  const originInPreviousBlock = await context.client.readContract({
-    abi: context.contracts.RelayPool.abi,
-    address: poolAddress,
-    args: [origin.chainId, origin.bridge],
-    blockNumber: event.block.number - 1n,
-    functionName: 'authorizedOrigins',
-  })
-
-  const originInNextBlock = await context.client.readContract({
-    abi: context.contracts.RelayPool.abi,
-    address: poolAddress,
-    args: [origin.chainId, origin.bridge],
-    blockNumber: event.block.number + 1n,
-    functionName: 'authorizedOrigins',
-  })
-  console.log(
-    `=> Block ${event.block.number} ${origin.chainId} new outstanding debt ${newOriginDebt} from ${oldOriginDebt}. ${originInPreviousBlock[4]} in previous block, ${originInNextBlock[4]} in next block`
-  )
 
   await context.db
     .update(poolOrigin, {

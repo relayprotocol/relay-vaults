@@ -11,6 +11,7 @@
 */
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
+import { BPS_DIVISOR } from '../../constants.js'
 
 export default async function ({
   event,
@@ -63,8 +64,8 @@ export default async function ({
     return
   }
 
-  // Compute fee as fee = (amount * bridgeFee) / 10_000
-  const fee = (BigInt(amount) * BigInt(originRecord.bridgeFee)) / 10_000n
+  // Compute fee: fee = (amount * bridgeFeeBps) / BPS_DIVISOR
+  const fee = (BigInt(amount) * BigInt(originRecord.bridgeFee)) / BPS_DIVISOR
 
   // Update totalBridgeFees pool's total bridge fees
   const updatedTotalBridgeFees = BigInt(poolRecord.totalBridgeFees) + fee

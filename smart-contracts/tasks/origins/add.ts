@@ -96,6 +96,17 @@ task('pool:add-origin', 'Add origin for a pool')
         }).run()
       }
 
+      // Check if the origin already exists
+      const existingOrigin = await pool.authorizedOrigins(
+        l2ChainId,
+        bridgeAddress
+      )
+      if (existingOrigin[4] > 0n) {
+        throw Error(
+          `Origin already exists with a non-zero debt for ${bridgeAddress} on ${l2ChainId}. Please disable that origin first, wait for its debt to be back to 0 and try again, or deploy a new bridge.`
+        )
+      }
+
       // Check that the bridge asset matches the pool?
 
       // get L2 bridge contracts settings

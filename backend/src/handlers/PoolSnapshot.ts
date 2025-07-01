@@ -90,8 +90,8 @@ export default async function ({
   event,
   context,
 }: {
-  event: Event<'RelayPool:Deposit'>
-  context: Context<'RelayPool:Deposit'>
+  event: Event<'PoolSnapshot:block'>
+  context: Context<'PoolSnapshot:block'>
 }) {
   // Retrieve all relay pools for the current chain
   const pools = await context.db.sql

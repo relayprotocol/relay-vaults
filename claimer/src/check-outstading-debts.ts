@@ -28,7 +28,6 @@ export const checkOutstandingDebts = async ({ vaultService }) => {
       (acc, origin) => acc + BigInt(origin.currentOutstandingDebt),
       BigInt(0)
     )
-    console.log({ totalOriginOutstandingDebt, outstandingDebt })
     if (totalOriginOutstandingDebt !== BigInt(outstandingDebt)) {
       logger.error('debt mismatch', {
         chainId,

@@ -35,6 +35,10 @@ import RoleGranted from './handlers/RelayPoolTimelock/RoleGranted'
 import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
 import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
 import YieldPoolChanged from './handlers/RelayPool/YieldPoolChanged'
+import PoolSnapshot from './handlers/PoolSnapshot'
+
+// ============= Block handlers  =============
+traceEvent(ponder, 'PoolSnapshot:block', PoolSnapshot)
 
 // ============= RelayPool Events =============
 
@@ -106,7 +110,6 @@ traceEvent(ponder, 'RelayPool:OriginDisabled', OriginDisabled)
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted
  */
 traceEvent(ponder, 'RelayPool:LoanEmitted', LoanEmitted)
-
 
 /**
  * Handles the change of the outstanding debt of a relay pool

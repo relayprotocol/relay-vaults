@@ -271,7 +271,10 @@ export default async function ({
         )
       }
     } catch (err) {
-      console.error(`Snapshot failed for pool ${pool.contractAddress}`, err)
+      console.error(
+        `Snapshot failed for pool ${pool.contractAddress} at block ${event.block.number}, event ID ${event.id}`,
+        err
+      )
     }
   }
 }

@@ -1,15 +1,8 @@
 import { expect } from 'chai'
-import { ethers, ignition } from 'hardhat'
-import { networks } from '@relay-vaults/networks'
-import {
-  IUSDC,
-  ERC4626,
-  RelayPool,
-  DrainableVault,
-  IWETH,
-} from '../../typechain-types'
+import { ethers } from 'hardhat'
+import { DrainableVault, IWETH } from '../../typechain-types'
 
-import { impersonate, mintUSDC } from '../utils/hardhat'
+import { impersonate } from '../utils/hardhat'
 
 describe.only('RelayBridge: drainable vault', () => {
   let drainableVault: DrainableVault
@@ -19,28 +12,19 @@ describe.only('RelayBridge: drainable vault', () => {
     const [user] = await ethers.getSigners()
     userAddress = await user.getAddress()
     const poolAddress = '0x19426e122E0988e1f6ad246Af9B6553492C6D446'
+    const drainableVaultAddress = '0x617a7cF939F4Ba469b7822a4578A15C232F43b43'
     const pool = await ethers.getContractAt('RelayPool', poolAddress)
     const wethAddress = await pool.asset()
     weth = await ethers.getContractAt('IWETH', wethAddress)
 
     // Deploy drainable vault
-    drainableVault = await ethers.deployContract('DrainableVault', [
-      wethAddress,
-      'DRAINABLE VAULT',
-      'WETH-DRAIN',
-      userAddress,
-    ])
-    const drainableVaultAddress = await drainableVault.getAddress()
-    expect(await weth.balanceOf(drainableVaultAddress)).to.equal(0n)
+    drainableVault = await ethers.getContractAt(
+      'DrainableVault',
+      drainableVaultAddress
+    )
 
     // Make a deposit to avoid inflation attack!
     const drainableDepositAmount = ethers.parseEther('0.01')
-    await weth.deposit({ value: drainableDepositAmount })
-    await weth.approve(drainableVaultAddress, ethers.MaxUint256)
-    await drainableVault.deposit(
-      drainableDepositAmount,
-      await user.getAddress()
-    )
     expect(await weth.balanceOf(drainableVaultAddress)).to.equal(
       drainableDepositAmount
     )
@@ -49,7 +33,7 @@ describe.only('RelayBridge: drainable vault', () => {
     const timelockAddress = await pool.owner()
     const signer = await impersonate(timelockAddress)
     await pool.connect(signer).updateYieldPool(
-      await drainableVault.getAddress(),
+      drainableVaultAddress,
       0, // minSharePriceFromOldPool - setting to 0 to accept any price
       ethers.MaxUint256 // maxSharePricePriceFromNewPool - setting high to accept any price
     )
@@ -71,9 +55,11 @@ describe.only('RelayBridge: drainable vault', () => {
     const wethBalanceInDrainableVault = await weth.balanceOf(
       drainableVaultAddress
     )
-    // The user does not have WETH yet
+    const ownerAddress = await drainableVault.owner()
+    const owner = await impersonate(ownerAddress)
+
     expect(await weth.balanceOf(userAddress)).to.equal(0n)
-    await drainableVault.drain(userAddress)
+    await drainableVault.connect(owner).drain(userAddress)
 
     // The user has WETH
     expect(await weth.balanceOf(userAddress)).to.equal(

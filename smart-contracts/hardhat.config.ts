@@ -74,6 +74,7 @@ if (forkUrl) {
   // check if fork is zksync
   const isZKsync = !!process.env.ZKSYNC
   networks.hardhat = {
+    chainId: 1,
     forking: {
       url: forkUrl,
     },

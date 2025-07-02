@@ -11,7 +11,7 @@
 */
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
-import { FRACTIONAL_BPS_DENOMINATOR } from '../../constants.js'
+import { BPS_DIVISOR } from '../../constants.js'
 
 export default async function ({
   event,
@@ -29,12 +29,15 @@ export default async function ({
     .insert(bridgeTransaction)
     .values({
       loanEmittedTxHash: event.transaction.hash,
-      nativeBridgeStatus: 'INITIATED',
+      nativeBridgeStatus: 'HANDLED',
       nonce,
       originBridgeAddress: bridge,
       originChainId: bridgeChainId,
     })
-    .onConflictDoUpdate({ loanEmittedTxHash: event.transaction.hash })
+    .onConflictDoUpdate({
+      loanEmittedTxHash: event.transaction.hash,
+      nativeBridgeStatus: 'HANDLED',
+    })
 
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
   // Retrieve the RelayPool record based on the contract address that emitted the event
@@ -63,10 +66,8 @@ export default async function ({
     return
   }
 
-  // Compute fee amount: fee = (amount * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR
-  const fee =
-    (BigInt(amount) * BigInt(originRecord.bridgeFee)) /
-    FRACTIONAL_BPS_DENOMINATOR
+  // Compute fee: fee = (amount * bridgeFeeBps) / BPS_DIVISOR
+  const fee = (BigInt(amount) * BigInt(originRecord.bridgeFee)) / BPS_DIVISOR
 
   // Update totalBridgeFees pool's total bridge fees
   const updatedTotalBridgeFees = BigInt(poolRecord.totalBridgeFees) + fee

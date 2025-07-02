@@ -58,34 +58,25 @@ export default async function ({
     return
   }
 
-  let isCurated = false
   // check PROPOSER_ROLE
-  try {
-    console.log({ timelock })
+  const proposerRole = (await context.client.readContract({
+    abi: TimelockControllerUpgradeable,
+    address: timelock as `0x${string}`,
+    functionName: 'PROPOSER_ROLE',
+  })) as `0x${string}`
 
-    const proposerRole = (await context.client.readContract({
-      abi: TimelockControllerUpgradeable,
-      address: timelock as `0x${string}`,
-      functionName: 'PROPOSER_ROLE',
-    })) as `0x${string}`
+  const blockNumber = await context.client.request({
+    jsonrpc: '2.0',
+    method: 'eth_blockNumber',
+  })!
 
-    const hasRole = (await context.client.readContract({
-      abi: TimelockControllerUpgradeable,
-      address: timelock as `0x${string}`,
-      args: [proposerRole, multisig],
-      functionName: 'hasRole',
-    })) as boolean
-
-    isCurated = !!hasRole
-  } catch (e) {
-    // If owner isn't a timelock or call fails, treat as not-curated
-    isCurated = false
-    console.info(
-      `Could not check hasRole on timelock ${timelock}: ${(e as Error).message}`
-    )
-  }
-  console.log({ isCurated })
-  process.exit()
+  const isCurated = (await context.client.readContract({
+    abi: TimelockControllerUpgradeable,
+    address: timelock as `0x${string}`,
+    args: [proposerRole, multisig],
+    blockNumber, // Use the current state to see if we need to index this pool.
+    functionName: 'hasRole',
+  })) as boolean
 
   // Skip indexing if we are not the curator of this pool
   if (!isCurated) {

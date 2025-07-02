@@ -32,25 +32,7 @@ if (process.env.DATADOG_AGENT_URL) {
     // Network configuration
     url: process.env.DATADOG_AGENT_URL || 'http://localhost:8126',
   })
+
+  // send winston logs to dd
+  tracer.use('winston')
 }
-
-const traceEvent = (ponder, eventName: string, eventHandler) => {
-  // use custom tracer if datadog is set
-  if (process.env.DATADOG_AGENT_URL) {
-    const handlerWithLog = ({ event, context }) => {
-      const span = tracer.startSpan(eventName)
-      span.setTag('chain', context.chain)
-      span.setTag('args', event.arg)
-      span.setTag('log', event.log)
-      span.setTag('transaction', event.transaction)
-      span.finish()
-      return eventHandler({ context, event })
-    }
-
-    ponder.on(eventName, handlerWithLog)
-  } else {
-    ponder.on(eventName, eventHandler)
-  }
-}
-
-export { tracer, traceEvent }

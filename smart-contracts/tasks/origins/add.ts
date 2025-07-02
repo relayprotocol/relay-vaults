@@ -290,7 +290,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
 
       // Else, let's check that maybe the curator is set?
       const defaultCurator =
-        (await getOriginCuratorForNetwork(Number(chainId))) || userAddress
+        (await getOriginCuratorForNetwork(Number(chainId)))
       if (origin.curator !== defaultCurator) {
         throw Error(
           `You are not the curator of this origin. Please contact the curator (${origin.curator}) to disable it.`

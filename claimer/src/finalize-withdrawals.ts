@@ -10,7 +10,7 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
     bridgeTransactions(
       where: {
         expectedFinalizationTimestamp_lt: $expectedFinalizationTimestamp
-        nativeBridgeStatus_not: "FINALIZED"
+        nativeBridgeStatus_in: ["HANDLED", "PROVEN"]
       }
     ) {
       items {

@@ -39,7 +39,7 @@ import './tracer'
 import { logEvent } from './logger'
 
 // ============= Block handlers  =============
-ponder.on('PoolSnapshot:block', PoolSnapshot)
+logEvent('PoolSnapshot:block', PoolSnapshot)
 
 // ============= RelayPool Events =============
 

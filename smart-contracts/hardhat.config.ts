@@ -29,7 +29,6 @@ import './tasks/deploy/dummy-yield-pool'
 import './tasks/utils/exportAbis'
 import './tasks/utils/zksync-contracts.ts'
 import './tasks/utils/collect-morpho.ts'
-import './tasks/deploy/drainable-vault'
 
 // get pk from shell
 const { DEPLOYER_PRIVATE_KEY } = process.env

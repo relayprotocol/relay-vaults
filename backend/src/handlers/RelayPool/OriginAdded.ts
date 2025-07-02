@@ -1,5 +1,5 @@
 import { Context, Event } from 'ponder:registry'
-import { poolOrigin } from 'ponder:schema'
+import { poolOrigin, relayPool } from 'ponder:schema'
 import { BPS_DIVISOR } from '../../constants.js'
 
 export default async function ({
@@ -12,6 +12,16 @@ export default async function ({
   // @ts-expect-error - event.args is not properly typed
   const { origin } = event.args
   const poolAddress = event.log.address
+
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    console.info(`Skipping origin added for non-curated pool ${poolAddress}`)
+    return
+  }
 
   const fractionalBpsDenominator = (await context.client.readContract({
     abi: context.contracts.RelayPool.abi,

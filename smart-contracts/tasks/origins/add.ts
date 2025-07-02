@@ -293,11 +293,10 @@ task('pool:remove-origin', 'Removes an origin from a pool')
         (await getOriginCuratorForNetwork(Number(chainId)))
       if (origin.curator !== defaultCurator) {
         throw Error(
-          `You are not the curator of this origin. Please contact the curator (${origin.curator}) to disable it.`
+          `Please contact the curator (${origin.curator}) to disable it.`
         )
       }
 
-      console.log('So we have a curator and it is able to disable it!')
       const data = pool.interface.encodeFunctionData('disableOrigin', [
         l2ChainId,
         bridgeAddress,

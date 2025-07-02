@@ -15,7 +15,6 @@
  * @note This indexer assumes events are received in chronological order per chain
  */
 
-import { traceEvent } from './tracer'
 import { ponder } from 'ponder:registry'
 import Deposit from './handlers/RelayPool/Deposit'
 import Withdraw from './handlers/RelayPool/Withdraw'
@@ -36,9 +35,11 @@ import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
 import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
 import YieldPoolChanged from './handlers/RelayPool/YieldPoolChanged'
 import PoolSnapshot from './handlers/PoolSnapshot'
+import './tracer'
+import { logEvent } from './logger'
 
 // ============= Block handlers  =============
-traceEvent(ponder, 'PoolSnapshot:block', PoolSnapshot)
+ponder.on('PoolSnapshot:block', PoolSnapshot)
 
 // ============= RelayPool Events =============
 
@@ -50,7 +51,7 @@ traceEvent(ponder, 'PoolSnapshot:block', PoolSnapshot)
  * - Yield pool state
  * - Creates pool action record
  */
-traceEvent(ponder, 'RelayPool:Deposit', Deposit)
+logEvent(ponder, 'RelayPool:Deposit', Deposit)
 
 /**
  * Handles withdrawals from the RelayPool
@@ -60,9 +61,9 @@ traceEvent(ponder, 'RelayPool:Deposit', Deposit)
  * - Yield pool state
  * - Creates pool action record
  */
-traceEvent(ponder, 'RelayPool:Withdraw', Withdraw)
+logEvent(ponder, 'RelayPool:Withdraw', Withdraw)
 
-traceEvent(ponder, 'RelayPool:Transfer', Transfer)
+logEvent(ponder, 'RelayPool:Transfer', Transfer)
 
 /**
  * Handles the deployment of a new RelayPool
@@ -71,7 +72,7 @@ traceEvent(ponder, 'RelayPool:Transfer', Transfer)
  * - Associated yield pool record
  * - Initial origin configurations
  */
-traceEvent(ponder, 'RelayPoolFactory:PoolDeployed', PoolDeployed)
+logEvent(ponder, 'RelayPoolFactory:PoolDeployed', PoolDeployed)
 
 /**
  * Handles the deployment of a new RelayBridge
@@ -79,7 +80,7 @@ traceEvent(ponder, 'RelayPoolFactory:PoolDeployed', PoolDeployed)
  * - New bridge contract record
  * - Initializes transfer nonce tracking
  */
-traceEvent(ponder, 'RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
+logEvent(ponder, 'RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
 
 /**
  * Handles the initiation of a RelayBridge transaction
@@ -88,7 +89,7 @@ traceEvent(ponder, 'RelayBridgeFactory:BridgeDeployed', BridgeDeployed)
  * - Links origin and destination pools
  * - Tracks cross-chain message status
  */
-traceEvent(ponder, 'RelayBridge:BridgeInitiated', BridgeInitiated)
+logEvent(ponder, 'RelayBridge:BridgeInitiated', BridgeInitiated)
 
 /**
  * Handles the addition of a new origin to a RelayPool
@@ -99,37 +100,37 @@ traceEvent(ponder, 'RelayBridge:BridgeInitiated', BridgeInitiated)
  */
 
 // Removed commented-out overload blocks for 'RelayPool:OriginAdded' to reduce clutter and improve readability.
-traceEvent(ponder, 'RelayPool:OriginAdded', OriginAdded)
+logEvent(ponder, 'RelayPool:OriginAdded', OriginAdded)
 
 /**
  * Handles the disabling of an origin in a RelayPool
  */
-traceEvent(ponder, 'RelayPool:OriginDisabled', OriginDisabled)
+logEvent(ponder, 'RelayPool:OriginDisabled', OriginDisabled)
 
 /**
  * Handles Hyperlane messages when they successfully reached the pool and a new loan is emitted
  */
-traceEvent(ponder, 'RelayPool:LoanEmitted', LoanEmitted)
+logEvent(ponder, 'RelayPool:LoanEmitted', LoanEmitted)
 
 /**
  * Handles the change of the outstanding debt of a relay pool
  */
-traceEvent(ponder, 'RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
+logEvent(ponder, 'RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
 
 /**
  * Handles proven withdrawals from the OP portal
  */
-traceEvent(ponder, 'OPPortal:WithdrawalProven', WithdrawalProven)
+logEvent(ponder, 'OPPortal:WithdrawalProven', WithdrawalProven)
 
 /**
  * Handles finalzied withdrawals from the OP portal
  */
-traceEvent(ponder, 'OPPortal:WithdrawalFinalized', WithdrawalFinalized)
+logEvent(ponder, 'OPPortal:WithdrawalFinalized', WithdrawalFinalized)
 
 /**
  * Handles completed withdrawals from the Orbit Outbox
  */
-traceEvent(
+logEvent(
   ponder,
   'OrbitOutbox:OutBoxTransactionExecuted',
   OutBoxTransactionExecuted
@@ -138,14 +139,14 @@ traceEvent(
 /**
  * Handles finalzied withdrawals for the ZkSync stack
  */
-traceEvent(ponder, 'L1NativeTokenVault:BridgeMint', BridgeMint)
+logEvent(ponder, 'L1NativeTokenVault:BridgeMint', BridgeMint)
 
 // ============= RelayPoolTimelock Events =============
-traceEvent(ponder, 'RelayPool:OwnershipTransferred', OwnershipTransferred)
-traceEvent(ponder, 'RelayPoolTimelock:RoleGranted', RoleGranted)
-traceEvent(ponder, 'RelayPoolTimelock:RoleRevoked', RoleRevoked)
+logEvent(ponder, 'RelayPool:OwnershipTransferred', OwnershipTransferred)
+logEvent(ponder, 'RelayPoolTimelock:RoleGranted', RoleGranted)
+logEvent(ponder, 'RelayPoolTimelock:RoleRevoked', RoleRevoked)
 
 /**
  * Handles the change of the yield pool
  */
-traceEvent(ponder, 'RelayPool:YieldPoolChanged', YieldPoolChanged)
+logEvent(ponder, 'RelayPool:YieldPoolChanged', YieldPoolChanged)

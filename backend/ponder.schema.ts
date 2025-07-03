@@ -235,7 +235,7 @@ export const relayBridge = onchainTable(
  * - hyperlaneMessageId: ID of the fast Hyperlane message
  *
  * Bridge status:
- * - nativeBridgeStatus: INITIATED, PROVEN, FINALIZED
+ * - nativeBridgeStatus: INITIATED, HANDLED, PROVEN, FINALIZED
  * - nativeBridgeFinalizedTxHash: Transaction hash of finalization
  *
  * Loan tracking:

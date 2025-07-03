@@ -367,7 +367,7 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
       proxyBridge: oPStackNativeBridgeProxy,
     })
 
-    const liquidity = ethers.parseUnits('1', 18)
+    const liquidity = ethers.parseUnits('3', 18)
     await myWeth.connect(user).approve(await relayPool.getAddress(), liquidity)
     await relayPool.connect(user).deposit(liquidity, await user.getAddress())
   })
@@ -375,7 +375,7 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
   it('should transfer the assets from the pool to the recipient as ETH', async () => {
     const [hyperlane, anotherUser] = await ethers.getSigners()
     const userAddress = await anotherUser.getAddress()
-    const amount = ethers.parseUnits('1')
+    const amount = ethers.parseUnits('0.1')
     const userBalanceBefore = await getBalance(userAddress, ethers.provider)
     const userWethBalanceBefore = await getBalance(
       userAddress,
@@ -399,5 +399,48 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
 
     expect(userBalanceAfter).to.equal(userBalanceBefore + amount)
     expect(userWethBalanceAfter).to.equal(userWethBalanceBefore)
+  })
+
+  it('should keep track of the outstanding debt', async () => {
+    const [hyperlane, anotherUser] = await ethers.getSigners()
+    const userAddress = await anotherUser.getAddress()
+    const amount = ethers.parseUnits('0.1')
+
+    const outstandingDebtBefore = await relayPool.outstandingDebt()
+    const { outstandingDebt: originOutstandingDebtBefore } =
+      await relayPool.authorizedOrigins(10, relayBridgeOptimism)
+
+    await relayPool
+      .connect(hyperlane)
+      .handle(
+        10,
+        ethers.zeroPadValue(relayBridgeOptimism, 32),
+        encodeData(101n, userAddress, amount)
+      )
+    const outstandingDebtAfter = await relayPool.outstandingDebt()
+    const { outstandingDebt: originOutstandingDebtAfter } =
+      await relayPool.authorizedOrigins(10, relayBridgeOptimism)
+
+    expect(outstandingDebtAfter).to.equal(outstandingDebtBefore + amount)
+    expect(originOutstandingDebtAfter).to.equal(
+      originOutstandingDebtBefore + amount
+    )
+
+    await relayPool
+      .connect(hyperlane)
+      .handle(
+        10,
+        ethers.zeroPadValue(relayBridgeOptimism, 32),
+        encodeData(102n, userAddress, amount)
+      )
+
+    const outstandingDebtFinal = await relayPool.outstandingDebt()
+    const { outstandingDebt: originOutstandingDebtFinal } =
+      await relayPool.authorizedOrigins(10, relayBridgeOptimism)
+
+    expect(outstandingDebtFinal).to.equal(outstandingDebtAfter + amount)
+    expect(originOutstandingDebtFinal).to.equal(
+      originOutstandingDebtAfter + amount
+    )
   })
 })

@@ -28,7 +28,7 @@ export default async function ({
   context: Context<'RelayPool:OutstandingDebtChanged'>
 }) {
   // Extract the new debt value from the event arguments.
-  const { newDebt, origin, newOriginDebt } = event.args
+  const { newDebt, newOriginDebt, origin } = event.args
 
   // Retrieve the pool using the contract address from the event log.
   const poolAddress = event.log.address

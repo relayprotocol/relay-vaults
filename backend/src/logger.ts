@@ -8,14 +8,12 @@ export const logger = createLogger({
 
 const logEvent = (ponder, eventName: string, eventHandler) => {
   const handlerWithLog = ({ event, context }) => {
-    const timestamp = event.block.timestamp
-
     logger.info({
       args: event.args,
       chain: context.chain,
       eventName,
       log: event.log,
-      timestamp,
+      timestamp: event.block.timestamp,
       transaction: event.transaction,
     })
     return eventHandler({ context, event })

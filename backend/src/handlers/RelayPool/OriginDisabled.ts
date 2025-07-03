@@ -1,5 +1,5 @@
 import { Context, Event } from 'ponder:registry'
-import { poolOrigin } from 'ponder:schema'
+import { poolOrigin, relayPool } from 'ponder:schema'
 
 export default async function ({
   event,
@@ -9,6 +9,16 @@ export default async function ({
   context: Context<'RelayPool:OriginDisabled'>
 }) {
   const poolAddress = event.log.address
+
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    console.info(`Skipping origin disabled for non-curated pool ${poolAddress}`)
+    return
+  }
 
   await context.db.delete(poolOrigin, {
     chainId: context.chain.id,

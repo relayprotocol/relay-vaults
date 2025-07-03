@@ -20,7 +20,8 @@ export default async function ({
   })
 
   if (!pool) {
-    throw new Error(`Relay pool ${event.log.address} not found`)
+    console.info(`Skipping withdraw for non-curated pool ${event.log.address}`)
+    return
   }
 
   // Fetch current state from relay pool

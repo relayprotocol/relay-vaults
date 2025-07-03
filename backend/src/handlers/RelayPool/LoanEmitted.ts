@@ -46,7 +46,9 @@ export default async function ({
     contractAddress: event.log.address,
   })
   if (!poolRecord) {
-    console.info(`RelayPool record not found for address ${event.log.address}.`)
+    console.info(
+      `Skipping loan emitted for non-curated pool ${event.log.address}`
+    )
     return
   }
 

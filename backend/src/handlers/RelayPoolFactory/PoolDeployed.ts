@@ -1,7 +1,8 @@
-import { RelayPool } from '@relay-vaults/abis'
+import { RelayPool, TimelockControllerUpgradeable } from '@relay-vaults/abis'
 import { Context, Event } from 'ponder:registry'
 import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'
+import networks from '@relay-vaults/networks'
 
 export default async function ({
   event,
@@ -13,7 +14,7 @@ export default async function ({
   context: Context<'RelayPoolFactory:PoolDeployed'>
 }) {
   // @ts-expect-error - event.args is not properly typed
-  const { pool, asset, thirdPartyPool } = event.args
+  const { pool, asset, thirdPartyPool, timelock } = event.args
 
   // Fetch the name of the third-party yield pool,
   // and the name and symbol of the relay pool.
@@ -46,6 +47,42 @@ export default async function ({
       functionName: 'decimals',
     }),
   ])
+
+  // Only index pools curated by our multisig or its timelock
+  // @ts-expect-error - context.chain.id is not properly typed in Ponder
+  const network = networks[context.chain.id]
+  const multisig = network?.curator?.toLowerCase()
+
+  if (!multisig) {
+    console.info('No curator configured. Skipping pool.')
+    return
+  }
+
+  // check PROPOSER_ROLE
+  const proposerRole = (await context.client.readContract({
+    abi: TimelockControllerUpgradeable,
+    address: timelock as `0x${string}`,
+    functionName: 'PROPOSER_ROLE',
+  })) as `0x${string}`
+
+  const blockNumber = await context.client.request({
+    jsonrpc: '2.0',
+    method: 'eth_blockNumber',
+  })!
+
+  const isCurated = (await context.client.readContract({
+    abi: TimelockControllerUpgradeable,
+    address: timelock as `0x${string}`,
+    args: [proposerRole, multisig],
+    blockNumber, // Use the current state to see if we need to index this pool.
+    functionName: 'hasRole',
+  })) as boolean
+
+  // Skip indexing if we are not the curator of this pool
+  if (!isCurated) {
+    console.info(`Pool ${pool} is not curated. Skipping.`)
+    return
+  }
 
   // Upsert yield pool using only its name.
   await context.db

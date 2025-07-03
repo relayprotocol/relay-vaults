@@ -27,7 +27,8 @@ export async function checkL2Chains() {
       const status = await checkL2Status(Number(chain.chainId))
       if (!status.isUp) {
         logger.error({
-          message: `L2 ${chain.name} ${chain.chainId} is down`,
+          chain,
+          message: 'L2 is down',
           ...status,
         })
       }

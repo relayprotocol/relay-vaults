@@ -46,6 +46,7 @@ ENV DATABASE_URL=$DATABASE_URL
 # Datadog tracing configuration (can be overridden at runtime)
 ENV SERVICE_NAME=vaults-backend
 ENV DATADOG_AGENT_URL=http://localhost:8126
+ENV PONDER_TELEMETRY_DISABLED=true
 
 # Expose port
 EXPOSE 3000

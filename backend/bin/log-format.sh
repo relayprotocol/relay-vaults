@@ -12,11 +12,13 @@ while IFS=$'\n' read -r line; do
     fi
     
     # if log already has a 'dd' field, output as is
-    if $(echo $line | jq -r '.dd' | grep -q 'true'); then
+    if $(echo $line | jq 'has("dd")'); then
         echo $line
-        continue
-    else 
-        # if no 'dd' field is present, add prefix to ponder 'service' field
+        continue    
+    fi
+
+    # if no 'dd' field is present, add prefix to ponder 'service' field
+    if $(echo $line | jq 'has("service")'); then
         service="$LOG_PREFIX"
         internal_service="$(echo $line | jq -r '.service')"
         echo $line | jq -r --arg a "$service" --arg b "$internal_service" '.service = ($a) | .internal_service = ($b) | tostring' 

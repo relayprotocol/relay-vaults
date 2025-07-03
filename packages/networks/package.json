@@ -16,6 +16,7 @@
     "start": "tsc --watch",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
+    "check-addresses": "tsx scripts/check-addresses.ts",
     "clean": "rm -rf ./dist",
     "codegen": "tsx src/generate-index.ts",
     "build": "yarn run codegen && tsup src/index.ts --dts --format esm,cjs",
@@ -35,6 +36,10 @@
     "dist"
   ],
   "dependencies": {
-    "vitest": "3.2.4"
+    "@hyperlane-xyz/registry": "18.0.0",
+    "@hyperlane-xyz/sdk": "14.2.0",
+    "@types/yargs": "17.0.33",
+    "vitest": "3.2.4",
+    "yargs": "18.0.0"
   }
 }

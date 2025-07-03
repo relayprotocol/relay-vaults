@@ -3,29 +3,29 @@ import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
-    usdc: '0x401eCb1D350407f13ba348573E5630B83638E30D',
+    usdc: '0x13D675BC5e659b11CFA331594cF35A20815dCF02',
     weth: '0xB1116517a980DA056E05Fa521d524E1AFD8D885f',
   },
   bridges: {
     arbitrum: {
       child: {
         arbSys: '0x0000000000000000000000000000000000000064',
-        routerGateway: '0x7Ca9c81d2AdD8bff46CEE9813d52bD84d94901DD',
+        routerGateway: '',
       },
       parent: {
         maxBlocksWithoutProof: 500,
-        outbox: '0xfbe537816d181888fAbE52338a5D921eE131E9Db',
-        rollup: '0x60DAdF13101C66F14C958E9141498b0C0eaE0773',
-        routerGateway: '0x8098247EE48ee54ADD4Feda2F93b3bA0d014d4c7',
+        outbox: '0x575d32f7ff0C72921645e302cb14d2757E300786',
+        rollup: '0x9A59EdF7080fdA05396373a85DdBf2cEBDB81Cd4',
+        routerGateway: '',
       },
     },
   },
-  chainId: 2187,
-  hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
+  chainId: 1996,
+  hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
-  name: 'Game7',
+  name: 'Sanko',
   parentChainId: 42161,
-  rpc: createRpcConfig(2187, ['https://mainnet-rpc.game7.io']),
+  rpc: createRpcConfig(1996, ['https://mainnet.sanko.xyz']),
   stack: 'arbitrum',
 }
 

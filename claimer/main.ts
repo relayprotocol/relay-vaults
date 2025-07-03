@@ -1,3 +1,4 @@
+import { heartbeat } from './src/tracer'
 import { start, stop } from './src/runner'
 import { proveTransactions } from './src/prove-transactions'
 import { claimTransactions } from './src/claim-withdrawals'
@@ -13,6 +14,7 @@ const run = async () => {
   await finalizeWithdrawals({ vaultService })
   await claimTransactions({ vaultService })
   await checkL2Chains()
+  await heartbeat()
   await stop()
 }
 

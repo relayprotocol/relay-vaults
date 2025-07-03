@@ -1,3 +1,4 @@
+import './src/tracer'
 import { start, stop } from './src/runner'
 import { proveTransactions } from './src/prove-transactions'
 import { claimTransactions } from './src/claim-withdrawals'

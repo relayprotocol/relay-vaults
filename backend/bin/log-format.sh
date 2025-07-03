@@ -17,7 +17,7 @@ while IFS=$'\n' read -r line; do
         continue    
     fi
 
-    # if no 'dd' field is present, add prefix to ponder 'service' field
+    # if no 'dd' field is present, replace ponder 'service' field
     if $(echo $line | jq 'has("service")'); then
         service="$LOG_PREFIX"
         internal_service="$(echo $line | jq -r '.service')"

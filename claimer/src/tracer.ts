@@ -35,3 +35,13 @@ if (process.env.DATADOG_AGENT_URL) {
 }
 
 tracer.use('winston')
+
+// simple dd metric to track if claimer is up
+const heartbeat = () => {
+  if (process.env.DATADOG_AGENT_URL) {
+    const span = tracer.startSpan('vaults-claimer.heartbeat')
+    span.finish()
+  }
+}
+
+export { heartbeat }

@@ -417,10 +417,10 @@ export class RelayVaultService {
     limit = 1
   ) {
     return this.client.sdk.GetOriginBridge({
-      chainId: poolChainId,
       limit,
       originChainId,
       poolAddress,
+      poolChainId,
     })
   }
 }

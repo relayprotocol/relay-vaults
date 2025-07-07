@@ -12,6 +12,7 @@
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
 import { BPS_DIVISOR } from '../../constants.js'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -46,7 +47,7 @@ export default async function ({
     contractAddress: event.log.address,
   })
   if (!poolRecord) {
-    console.info(
+    logger.info(
       `Skipping loan emitted for non-curated pool ${event.log.address}`
     )
     return
@@ -60,7 +61,7 @@ export default async function ({
     pool: event.log.address,
   })
   if (!originRecord) {
-    console.warn(
+    logger.warn(
       `PoolOrigin record not found for pool ${event.log.address} with originChainId ${bridgeChainId} and originBridge ${bridge}.`
     )
     return

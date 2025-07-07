@@ -310,6 +310,106 @@ describe('RelayPool: claim for native ETH', () => {
 
       expect(await relayPool.outstandingDebt()).to.equal(0)
     })
+
+    it.only('should handle concurrent claims from the same proxyBridge', async () => {
+      const [user] = await ethers.getSigners()
+
+      // Create a concurrent origin
+
+      const concurrentOrigin = {
+        bridge: relayBridgeBase,
+        bridgeFee: 10,
+        chainId: 8453,
+
+        coolDown: 0,
+
+        curator: userAddress,
+        // should not matter
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: origin.proxyBridge, // same proxy bridge as the first origin
+      }
+
+      relayPool.addOrigin(concurrentOrigin)
+
+      // Borrow from the pool so we can claim later
+      await relayPool.handle(
+        origin.chainId,
+        ethers.zeroPadValue(origin.bridge, 32),
+        encodeData(11n, userAddress, bridgedAmount)
+      )
+
+      // Send funds to the bridgeProxy (simulate successful bridging and more!)
+      await user.sendTransaction({
+        to: origin.proxyBridge,
+        value: bridgedAmount,
+      })
+
+      // Borrow from a different origin
+      await relayPool.handle(
+        concurrentOrigin.chainId,
+        ethers.zeroPadValue(concurrentOrigin.bridge, 32),
+        encodeData(12n, userAddress, bridgedAmount)
+      )
+
+      // Send funds to the bridgeProxy (simulate successful bridging and more!)
+      await user.sendTransaction({
+        to: concurrentOrigin.proxyBridge,
+        value: bridgedAmount,
+      })
+
+      // And now borrow more funds from the first origin, but they should not be claimable yet.
+      await relayPool.handle(
+        origin.chainId,
+        ethers.zeroPadValue(origin.bridge, 32),
+        encodeData(12n, userAddress, bridgedAmount)
+      )
+
+      // We had 3 bridges
+      expect(await relayPool.outstandingDebt()).to.equal(bridgedAmount * 3n)
+      // But only 2 of them are claimable
+      expect(await ethers.provider.getBalance(origin.proxyBridge)).to.equal(
+        bridgedAmount * 2n
+      )
+
+      // Check the state of the first origin (should be 2 bridges!)
+      const originStateBefore = await relayPool.authorizedOrigins(
+        origin.chainId,
+        origin.bridge
+      )
+      expect(originStateBefore.outstandingDebt).to.equal(bridgedAmount * 2n)
+
+      // Check the state of the other origin (should be a single bridge)
+      const concurrentOriginStateBefore = await relayPool.authorizedOrigins(
+        concurrentOrigin.chainId,
+        concurrentOrigin.bridge
+      )
+      expect(concurrentOriginStateBefore.outstandingDebt).to.equal(
+        bridgedAmount
+      )
+
+      // And now claim the first origin!
+      await relayPool.claim(origin.chainId, origin.bridge)
+
+      const originStateAfter = await relayPool.authorizedOrigins(
+        origin.chainId,
+        origin.bridge
+      )
+
+      // It should really be bridgedAmount, because the second bridge is still pending...
+      // But right now we are claiming the whole outstanding debt.
+      expect(originStateAfter.outstandingDebt).to.equal(0)
+
+      // And now try to claim the 2nd origin!
+      await relayPool.claim(concurrentOrigin.chainId, concurrentOrigin.bridge)
+
+      const concurrentOriginStateAfter = await relayPool.authorizedOrigins(
+        concurrentOrigin.chainId,
+        concurrentOrigin.bridge
+      )
+
+      // It should be 0, because *this* bridge has resolved, but its funds were "stolen" by the first origin
+      expect(concurrentOriginStateAfter.outstandingDebt).to.equal(bridgedAmount)
+    })
   })
 
   describe('unauthorized claims', () => {

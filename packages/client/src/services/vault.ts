@@ -401,4 +401,26 @@ export class RelayVaultService {
       nativeBridgeStatus,
     })
   }
+
+  /**
+   * Get origin bridge address for a specific pool and origin chain
+   *
+   * @param chainId - The chain ID where the pool is deployed
+   * @param poolAddress - The pool's contract address
+   * @param originChainId - The origin chain ID
+   * @returns Promise containing the origin bridge address
+   */
+  async getOriginBridge(
+    poolChainId: number,
+    poolAddress: string,
+    originChainId: number,
+    limit = 1
+  ) {
+    return this.client.sdk.GetOriginBridge({
+      limit,
+      originChainId,
+      poolAddress,
+      poolChainId,
+    })
+  }
 }

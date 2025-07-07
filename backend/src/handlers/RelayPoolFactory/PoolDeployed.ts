@@ -3,6 +3,7 @@ import { Context, Event } from 'ponder:registry'
 import { relayPool, yieldPool } from 'ponder:schema'
 import { erc20Abi } from 'viem'
 import networks from '@relay-vaults/networks'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -54,7 +55,7 @@ export default async function ({
   const multisig = network?.curator?.toLowerCase()
 
   if (!multisig) {
-    console.info('No curator configured. Skipping pool.')
+    logger.info('No curator configured. Skipping pool.')
     return
   }
 
@@ -80,7 +81,7 @@ export default async function ({
 
   // Skip indexing if we are not the curator of this pool
   if (!isCurated) {
-    console.info(`Pool ${pool} is not curated. Skipping.`)
+    logger.info(`Pool ${pool} is not curated. Skipping.`)
     return
   }
 

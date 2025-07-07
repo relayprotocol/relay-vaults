@@ -21,10 +21,12 @@ export default async function ({
     return
   }
 
-  await context.db.delete(poolOrigin, {
-    chainId: context.chain.id,
-    originBridge: event.args.bridge as `0x${string}`,
-    originChainId: event.args.chainId,
-    pool: poolAddress as `0x${string}`,
-  })
+  await context.db
+    .update(poolOrigin, {
+      chainId: context.chain.id,
+      originBridge: event.args.bridge as `0x${string}`,
+      originChainId: event.args.chainId,
+      pool: poolAddress as `0x${string}`,
+    })
+    .set({ maxDebt: 0 })
 }

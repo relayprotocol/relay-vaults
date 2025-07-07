@@ -434,7 +434,7 @@ query GetAllPoolsBridgeTransactions(
 
 # Get bridge address for a specific origin
 query GetOriginBridge(
-  $chainId: Int!
+  $poolChainId: Int!
   $poolAddress: String!
   $originChainId: Int!
   $limit: Int = 1
@@ -442,7 +442,7 @@ query GetOriginBridge(
   poolOrigins(
     where: {
       AND: [
-        { chainId: $chainId }
+        { chainId: $poolChainId }
         { pool: $poolAddress }
         { originChainId: $originChainId }
       ]

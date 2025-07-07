@@ -411,16 +411,16 @@ export class RelayVaultService {
    * @returns Promise containing the origin bridge address
    */
   async getOriginBridge(
-    chainId: number,
+    poolChainId: number,
     poolAddress: string,
     originChainId: number,
     limit = 1
   ) {
     return this.client.sdk.GetOriginBridge({
-      chainId,
       limit,
       originChainId,
       poolAddress,
+      poolChainId,
     })
   }
 }

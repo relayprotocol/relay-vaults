@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { poolOrigin, relayPool } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -16,7 +17,7 @@ export default async function ({
   })
 
   if (!pool) {
-    console.info(`Skipping origin disabled for non-curated pool ${poolAddress}`)
+    logger.info(`Skipping origin disabled for non-curated pool ${poolAddress}`)
     return
   }
 

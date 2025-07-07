@@ -4,6 +4,7 @@ import { relayPool, vaultSnapshot, yieldPool } from 'ponder:schema'
 import { erc4626Abi } from 'viem'
 import type { Address } from 'viem'
 import { BPS_DIVISOR } from '../constants.js'
+import { logger } from '../logger.js'
 
 /**
  * Helper to calculate APY from share price data.
@@ -208,7 +209,7 @@ export default async function ({
           }
         }
       } catch (e) {
-        console.error(
+        logger.error(
           `Failed to compute APY for vault ${pool.contractAddress}`,
           e
         )
@@ -266,13 +267,13 @@ export default async function ({
           }
         }
       } catch (e) {
-        console.error(
+        logger.error(
           `Failed to compute base yield APY for ${pool.yieldPool}`,
           e
         )
       }
     } catch (err) {
-      console.error(
+      logger.error(
         `Snapshot failed for pool ${pool.contractAddress} at block ${event.block.number}, event ID ${event.id}`,
         err
       )

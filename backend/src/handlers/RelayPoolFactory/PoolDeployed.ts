@@ -81,7 +81,7 @@ export default async function ({
 
   // Skip indexing if we are not the curator of this pool
   if (!isCurated) {
-    console.info(`Pool ${pool} is not curated. Skipping.`)
+    logger.info(`Pool ${pool} is not curated. Skipping.`)
     return
   }
 

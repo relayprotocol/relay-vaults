@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { poolAction, relayPool, userBalance } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -20,7 +21,7 @@ export default async function ({
   })
 
   if (!pool) {
-    console.info(`Skipping withdraw for non-curated pool ${event.log.address}`)
+    logger.info(`Skipping withdraw for non-curated pool ${event.log.address}`)
     return
   }
 

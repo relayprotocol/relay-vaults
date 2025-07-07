@@ -124,10 +124,10 @@ export default async function ({
   await context.db
     .insert(bridgeTransaction)
     .values({
+      nativeBridgeStatus: 'INITIATED',
       nonce,
       originBridgeAddress: event.log.address,
       originChainId: context.chain.id,
-      nativeBridgeStatus: 'INITIATED',
       ...values,
     })
     .onConflictDoUpdate(values)

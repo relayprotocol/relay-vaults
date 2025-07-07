@@ -17,9 +17,6 @@ export default async function ({
       nativeBridgeStatus: 'FINALIZED',
     })
     .where(
-      and(
-        eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash),
-        eq(bridgeTransaction.nativeBridgeStatus, 'PROVEN')
-      )
+      and(eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash))
     )
 }

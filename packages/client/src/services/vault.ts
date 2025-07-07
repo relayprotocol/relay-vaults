@@ -67,9 +67,10 @@ export class RelayVaultService {
       originsLimit?: number
       chainIds?: number[]
       curator?: string
+      asset?: string
     } = {}
   ) {
-    const { limit = 25, originsLimit = 10, chainIds, curator } = options
+    const { limit = 25, originsLimit = 10, chainIds, curator, asset } = options
 
     // Build the where filter
     const where: Partial<RelayPoolFilter> = {}
@@ -80,6 +81,10 @@ export class RelayVaultService {
 
     if (curator) {
       where.curator = curator
+    }
+
+    if (asset) {
+      where.asset = asset
     }
 
     const hasFilters = Object.keys(where).length > 0

@@ -11,10 +11,6 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
   .addOptionalParam('bridge', 'The Relay Bridge contract address')
   .addOptionalParam('amount', 'the amount of tokens to send')
   .addOptionalParam('recipient', 'The recipient of the funds (default to self)')
-  .addOptionalParam(
-    'destChain',
-    'the id of destination chain (default to eth mainnet)'
-  )
   .setAction(
     async (
       { bridge: bridgeAddress, amount, recipient, asset },

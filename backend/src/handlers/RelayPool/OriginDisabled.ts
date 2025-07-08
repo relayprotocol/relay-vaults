@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
-import { poolOrigin } from 'ponder:schema'
+import { poolOrigin, relayPool } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -10,10 +11,22 @@ export default async function ({
 }) {
   const poolAddress = event.log.address
 
-  await context.db.delete(poolOrigin, {
+  const pool = await context.db.find(relayPool, {
     chainId: context.chain.id,
-    originBridge: event.args.bridge as `0x${string}`,
-    originChainId: event.args.chainId,
-    pool: poolAddress as `0x${string}`,
+    contractAddress: poolAddress,
   })
+
+  if (!pool) {
+    logger.info(`Skipping origin disabled for non-curated pool ${poolAddress}`)
+    return
+  }
+
+  await context.db
+    .update(poolOrigin, {
+      chainId: context.chain.id,
+      originBridge: event.args.bridge as `0x${string}`,
+      originChainId: event.args.chainId,
+      pool: poolAddress as `0x${string}`,
+    })
+    .set({ maxDebt: 0 })
 }

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "ponder dev",
-    "start": "ponder start --schema $IMAGE_TAG",
+    "start": "ponder start --log-format json --schema $IMAGE_TAG | sh $(pwd)/bin/log-format.sh",
+    "start-http-only": "ponder serve --log-level info --log-format json --schema $IMAGE_TAG | sh $(pwd)/bin/log-format.sh",
     "db": "ponder db",
     "codegen": "ponder codegen",
     "serve": "ponder serve",
@@ -19,16 +20,18 @@
   "dependencies": {
     "@relay-vaults/abis": "workspace:*",
     "@relay-vaults/addresses": "workspace:*",
+    "dd-trace": "5.56.0",
     "hono": "4.7.11",
     "ponder": "0.11.17",
-    "viem": "2.31.0"
+    "viem": "2.31.0",
+    "winston": "3.17.0"
   },
   "devDependencies": {
     "@types/node": "22.15.32",
     "@typescript-eslint/eslint-plugin": "8.34.0",
     "@typescript-eslint/parser": "8.34.0",
     "eslint": "9.28.0",
-    "eslint-config-ponder": "0.11.19",
+    "eslint-config-ponder": "0.11.22",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.1",
     "husky": "9.1.7",

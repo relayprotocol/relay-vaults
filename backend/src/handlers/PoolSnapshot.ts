@@ -1,8 +1,10 @@
 import { eq, and, desc, lte } from 'ponder'
-import { Context, ponder } from 'ponder:registry'
+import { Context } from 'ponder:registry'
 import { relayPool, vaultSnapshot, yieldPool } from 'ponder:schema'
 import { erc4626Abi } from 'viem'
 import type { Address } from 'viem'
+import { BPS_DIVISOR } from '../constants.js'
+import { logger } from '../logger.js'
 
 /**
  * Helper to calculate APY from share price data.
@@ -19,7 +21,7 @@ function calculateAPY(
   const secondsPerYear = 365 * 24 * 3600
   const growthFactor = currentPrice / startingPrice
   const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
-  return Math.round(apyValue * 10000) // basis-points (2dp)
+  return Math.round(apyValue * Number(BPS_DIVISOR))
 }
 
 // Determine APY interval (seconds)
@@ -82,15 +84,21 @@ async function fetchSharePrice(
     args: [shareUnit],
     functionName: 'convertToAssets',
   })
+
   return sharePrice as bigint
 }
 
-ponder.on('PoolSnapshot:block', async ({ event, context }) => {
+export default async function ({
+  event,
+  context,
+}: {
+  event: Event<'PoolSnapshot:block'>
+  context: Context<'PoolSnapshot:block'>
+}) {
   // Retrieve all relay pools for the current chain
   const pools = await context.db.sql
     .select()
     .from(relayPool)
-    // @ts-expect-error – context.chain.id is not typed in Ponder
     .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
@@ -173,8 +181,20 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           vaultRef = rows.length ? rows[0] : null
         }
         if (vaultRef) {
+          // Let's use the "adjusted" sharePrice (which takes into account the upcoming fees)
+          const pendingBridgeFees = await context.client.readContract({
+            abi: context.contracts.RelayPool.abi,
+            address: pool.contractAddress,
+            functionName: 'pendingBridgeFees',
+          })
+
+          const adjustedSharePrice =
+            (BigInt(totalAssets + pendingBridgeFees) *
+              BigInt(10 ** pool.decimals)) /
+            BigInt(totalShares)
+
           const vaultAPY = calculateAPY(
-            Number(vaultSharePrice),
+            Number(adjustedSharePrice),
             Number(vaultRef.sharePrice),
             Number(event.block.timestamp),
             Number(vaultRef.timestamp)
@@ -189,7 +209,7 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           }
         }
       } catch (e) {
-        console.error(
+        logger.error(
           `Failed to compute APY for vault ${pool.contractAddress}`,
           e
         )
@@ -247,13 +267,16 @@ ponder.on('PoolSnapshot:block', async ({ event, context }) => {
           }
         }
       } catch (e) {
-        console.error(
+        logger.error(
           `Failed to compute base yield APY for ${pool.yieldPool}`,
           e
         )
       }
     } catch (err) {
-      console.error(`Snapshot failed for pool ${pool.contractAddress}`, err)
+      logger.error(
+        `Snapshot failed for pool ${pool.contractAddress} at block ${event.block.number}, event ID ${event.id}`,
+        err
+      )
     }
   }
-})
+}

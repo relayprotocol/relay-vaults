@@ -127,6 +127,7 @@ type relayPool {
   totalAssets: BigInt!
   totalBridgeFees: BigInt!
   totalShares: BigInt!
+  updatedAt: BigInt!
   yieldPool: String!
   origins(where: poolOriginFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolOriginPage
   snapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage
@@ -783,6 +784,14 @@ input relayPoolFilter {
   totalShares_lt: BigInt
   totalShares_gte: BigInt
   totalShares_lte: BigInt
+  updatedAt: BigInt
+  updatedAt_not: BigInt
+  updatedAt_in: [BigInt]
+  updatedAt_not_in: [BigInt]
+  updatedAt_gt: BigInt
+  updatedAt_lt: BigInt
+  updatedAt_gte: BigInt
+  updatedAt_lte: BigInt
   yieldPool: String
   yieldPool_not: String
   yieldPool_in: [String]
@@ -905,6 +914,7 @@ type relayBridge {
   createdAt: BigInt!
   createdAtBlock: BigInt!
   transferNonce: BigInt!
+  updatedAt: BigInt!
 }
 
 type relayBridgePage {
@@ -968,6 +978,14 @@ input relayBridgeFilter {
   transferNonce_lt: BigInt
   transferNonce_gte: BigInt
   transferNonce_lte: BigInt
+  updatedAt: BigInt
+  updatedAt_not: BigInt
+  updatedAt_in: [BigInt]
+  updatedAt_not_in: [BigInt]
+  updatedAt_gt: BigInt
+  updatedAt_lt: BigInt
+  updatedAt_gte: BigInt
+  updatedAt_lte: BigInt
 }
 
 type timelockPage {

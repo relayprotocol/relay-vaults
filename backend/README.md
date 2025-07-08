@@ -10,7 +10,7 @@ yarn install
 
 # run pg instance
 docker run -d \
-  --name relay-vaults \
+  --name relay-vaults-db \
   -e POSTGRES_USER=relay \
   -e POSTGRES_PASSWORD=relay \
   -e POSTGRES_DB=relay-vaults \
@@ -60,10 +60,11 @@ The project includes a Dockerfile for containerized deployment. To build and run
 docker build -t relay-vaults .
 
 # Run the backend
-docker run relay-vaults \
+docker run \
   -e DATABASE_URL=$DATABASE_URL \
+  -e IMAGE_TAG=$IMAGE_TAG \
   -p 3000:3000 \
   -t relay-vaults \
-  --name relay-backend
-  backend "start backend:start"
+  --name relay-vaults-backend
+  backend start
 ```

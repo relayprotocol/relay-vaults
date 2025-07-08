@@ -114,7 +114,6 @@ export default async function ({
     destinationRecipient: recipient,
     expectedFinalizationTimestamp: event.block.timestamp + delay,
     hyperlaneMessageId,
-    nativeBridgeStatus: 'INITIATED',
     opWithdrawalHash,
     originSender: sender,
     originTimestamp: event.block.timestamp,
@@ -125,6 +124,7 @@ export default async function ({
   await context.db
     .insert(bridgeTransaction)
     .values({
+      nativeBridgeStatus: 'INITIATED',
       nonce,
       originBridgeAddress: event.log.address,
       originChainId: context.chain.id,

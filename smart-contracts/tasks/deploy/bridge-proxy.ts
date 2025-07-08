@@ -230,8 +230,10 @@ task('deploy:bridge-proxy', 'Deploy a bridge proxy')
 
       const parameters = {
         ArbitrumOrbitNativeBridgeProxy: {
+          l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
+          relayPool: defaultProxyModuleArguments.relayPool,
+          relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
           routerGateway,
-          ...defaultProxyModuleArguments,
         },
       }
       // deploy ARB bridge

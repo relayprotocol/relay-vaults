@@ -431,3 +431,34 @@ query GetAllPoolsBridgeTransactions(
     totalCount
   }
 }
+
+# Get bridge address for a specific origin
+query GetOriginBridge(
+  $poolChainId: Int!
+  $poolAddress: String!
+  $originChainId: Int!
+  $limit: Int = 1
+) {
+  poolOrigins(
+    where: {
+      AND: [
+        { chainId: $poolChainId }
+        { pool: $poolAddress }
+        { originChainId: $originChainId }
+      ]
+    }
+    limit: $limit
+  ) {
+    items {
+      originBridge
+      proxyBridge
+      originChainId
+      bridgeFee
+      coolDown
+      curator
+      currentOutstandingDebt
+      maxDebt
+      chainId
+    }
+  }
+}

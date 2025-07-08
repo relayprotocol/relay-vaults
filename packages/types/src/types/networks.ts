@@ -1,4 +1,5 @@
 export interface VaultNetworkConfig extends NetworkConfig {
+  curator?: string
   uniswapV3: {
     universalRouterAddress: string
   }

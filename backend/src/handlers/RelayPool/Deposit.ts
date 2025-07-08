@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { poolAction, relayPool, userBalance } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -20,7 +21,8 @@ export default async function ({
   })
 
   if (!pool) {
-    throw new Error(`Relay pool ${event.log.address} not found`)
+    logger.info(`Skipping deposit for non-curated pool ${event.log.address}`)
+    return
   }
 
   // Fetch current state from relay pool

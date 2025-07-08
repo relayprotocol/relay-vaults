@@ -5,12 +5,14 @@
   created a complete record.
 
   Additionally, we update the RelayPool record with the fees accumulated.
-  The fee is computed as (amount * bridgeFee) / 10000.
+  The fee is computed as (amount * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR.
   If the corresponding poolOrigin record is found, its bridgeFee is used to calculate the fee.
   If not found, a warning is logged.
 */
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
+import { BPS_DIVISOR } from '../../constants.js'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -28,12 +30,15 @@ export default async function ({
     .insert(bridgeTransaction)
     .values({
       loanEmittedTxHash: event.transaction.hash,
-      nativeBridgeStatus: 'INITIATED',
+      nativeBridgeStatus: 'HANDLED',
       nonce,
       originBridgeAddress: bridge,
       originChainId: bridgeChainId,
     })
-    .onConflictDoUpdate({ loanEmittedTxHash: event.transaction.hash })
+    .onConflictDoUpdate({
+      loanEmittedTxHash: event.transaction.hash,
+      nativeBridgeStatus: 'HANDLED',
+    })
 
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
   // Retrieve the RelayPool record based on the contract address that emitted the event
@@ -42,7 +47,9 @@ export default async function ({
     contractAddress: event.log.address,
   })
   if (!poolRecord) {
-    console.warn(`RelayPool record not found for address ${event.log.address}.`)
+    logger.info(
+      `Skipping loan emitted for non-curated pool ${event.log.address}`
+    )
     return
   }
 
@@ -54,14 +61,14 @@ export default async function ({
     pool: event.log.address,
   })
   if (!originRecord) {
-    console.warn(
+    logger.warn(
       `PoolOrigin record not found for pool ${event.log.address} with originChainId ${bridgeChainId} and originBridge ${bridge}.`
     )
     return
   }
 
-  // Compute fee amount: fee = (amount * bridgeFee) / 10000
-  const fee = (BigInt(amount) * BigInt(originRecord.bridgeFee)) / 10000n
+  // Compute fee: fee = (amount * bridgeFeeBps) / BPS_DIVISOR
+  const fee = (BigInt(amount) * BigInt(originRecord.bridgeFee)) / BPS_DIVISOR
 
   // Update totalBridgeFees pool's total bridge fees
   const updatedTotalBridgeFees = BigInt(poolRecord.totalBridgeFees) + fee
@@ -71,5 +78,5 @@ export default async function ({
       chainId: context.chain.id,
       contractAddress: event.log.address,
     })
-    .set({ totalBridgeFees: updatedTotalBridgeFees.toString() })
+    .set({ totalBridgeFees: updatedTotalBridgeFees })
 }

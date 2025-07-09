@@ -15,7 +15,6 @@ import { getProvider } from '@relay-vaults/helpers'
 const ignitionPath = __dirname + '/../../ignition/deployments'
 
 export const getPoolsForNetwork = async (chainId: number) => {
-  console.log(`${ignitionPath}/pools/${chainId}`)
   const pools = await fs.promises.readdir(`${ignitionPath}/pools/${chainId}`)
   return pools.map((address) => {
     return {
@@ -117,12 +116,15 @@ task(
         relayPoolChainId: poolChainId, // default
       }
 
-      if (Number(chainId) !== Number(poolChainId)) {
+      const onOriginChain = Number(chainId) !== Number(poolChainId)
+
+      if (onOriginChain) {
         // We need to get the l1BridgeProxy
         const parentDeploymentId = `BridgeProxy-${originChainId}-${poolAddress}-${type}-${poolChainId}`
+        console.log(parentDeploymentId)
         try {
           const deploymentData = require(
-            ignitionPath + `${parentDeploymentId}/deployed_addresses.json`
+            ignitionPath + `/${parentDeploymentId}/deployed_addresses.json`
           )
           defaultProxyModuleArguments.parentBridgeProxy =
             Object.values(deploymentData)[0]
@@ -130,7 +132,7 @@ task(
           console.error(
             'Please make sure you deploy the proxyBridge on the pool chain first!'
           )
-          process.exit(1)
+          throw error
         }
       }
 
@@ -174,8 +176,31 @@ task(
         constructorArguments = []
         console.log(`✅ OPStack bridge deployed at: ${proxyBridgeAddress}`)
       } else if (type === 'arbitrum') {
-        console.error('Missing implementation for Arbitrum!')
-        process.exit(1)
+        const routerGateway = onOriginChain
+          ? originNetworkConfig.bridges.arbitrum!.child.routerGateway
+          : originNetworkConfig.bridges.arbitrum!.parent.routerGateway
+
+        const parameters = {
+          ArbitrumOrbitNativeBridgeProxy: {
+            l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
+            relayPool: defaultProxyModuleArguments.relayPool,
+            relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
+            routerGateway,
+          },
+        }
+        constructorArguments = [routerGateway]
+        ;({ bridge: proxyBridge } = await ignition.deploy(
+          ArbitrumOrbitNativeBridgeProxyModule,
+          {
+            deploymentId,
+            parameters,
+          }
+        ))
+        proxyBridgeAddress = await proxyBridge.getAddress()
+
+        console.log(
+          `✅ Arbitrum Orbit bridge deployed at: ${proxyBridgeAddress}`
+        )
       } else if (type === 'zksync') {
         console.error('Missing implementation for Zksync!')
         process.exit(1)

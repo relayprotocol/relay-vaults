@@ -3,8 +3,8 @@ import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
-    usdc: '',
-    weth: '',
+    usdc: '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6',
+    weth: '0xf037540e51D71b2D2B1120e8432bA49F29EDFBD0',
   },
   bridges: {
     arbitrum: {

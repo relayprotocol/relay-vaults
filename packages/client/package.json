@@ -2,15 +2,14 @@
   "name": "@relay-vaults/client",
   "description": "Client library for interacting with the Relay Protocol API",
   "version": "0.1.5",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "type": "module",
+  "main": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
     }
   },
   "files": [
@@ -18,8 +17,8 @@
     "src"
   ],
   "scripts": {
-    "build": "yarn generate-types && tsup src/index.ts --dts --format esm,cjs",
-    "dev": "yarn generate-types && tsup src/index.ts --watch --dts --format esm,cjs",
+    "build": "yarn generate-types && tsup src/index.ts --dts --format esm",
+    "dev": "yarn generate-types && tsup src/index.ts --watch --dts --format esm",
     "clean": "rm -rf dist src/generated",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",

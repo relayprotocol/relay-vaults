@@ -1,7 +1,9 @@
 {
   "extends": "@relay-vaults/tsconfig",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "moduleResolution": "bundler",
+    "module": "ESNext"
   },
   "exclude": ["dist", "bin"]
 }

@@ -42,7 +42,7 @@ export const getBridgesForNetwork = async (chainId: number) => {
 
 task(
   'deploy:bridge-proxy',
-  'Deploy a bridge proxy contract pair. The network param is the destination network where the pool contract is already deployed'
+  'Deploy a bridge proxy contract pair. The hardhat network should be the network on which you want to deploy a proxyBridge contract. I can either be the pool\'s network or the origin network.'
 )
   .addOptionalParam('type', 'the type of bridge to deploy')
   .addOptionalParam(

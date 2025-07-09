@@ -67,9 +67,10 @@ export class RelayVaultService {
       originsLimit?: number
       chainIds?: number[]
       curator?: string
+      asset?: string
     } = {}
   ) {
-    const { limit = 25, originsLimit = 10, chainIds, curator } = options
+    const { limit = 25, originsLimit = 10, chainIds, curator, asset } = options
 
     // Build the where filter
     const where: Partial<RelayPoolFilter> = {}
@@ -80,6 +81,10 @@ export class RelayVaultService {
 
     if (curator) {
       where.curator = curator
+    }
+
+    if (asset) {
+      where.asset = asset
     }
 
     const hasFilters = Object.keys(where).length > 0
@@ -399,6 +404,28 @@ export class RelayVaultService {
     return this.client.sdk.GetAllBridgeTransactionsByType({
       limit,
       nativeBridgeStatus,
+    })
+  }
+
+  /**
+   * Get origin bridge address for a specific pool and origin chain
+   *
+   * @param chainId - The chain ID where the pool is deployed
+   * @param poolAddress - The pool's contract address
+   * @param originChainId - The origin chain ID
+   * @returns Promise containing the origin bridge address
+   */
+  async getOriginBridge(
+    poolChainId: number,
+    poolAddress: string,
+    originChainId: number,
+    limit = 1
+  ) {
+    return this.client.sdk.GetOriginBridge({
+      limit,
+      originChainId,
+      poolAddress,
+      poolChainId,
     })
   }
 }

@@ -12,9 +12,10 @@ import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyMod
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 import { getProvider } from '@relay-vaults/helpers'
 
-const ignitionPath = __dirname + '/../../ignition/deployments/'
+const ignitionPath = __dirname + '/../../ignition/deployments'
 
 export const getPoolsForNetwork = async (chainId: number) => {
+  console.log(`${ignitionPath}/pools/${chainId}`)
   const pools = await fs.promises.readdir(`${ignitionPath}/pools/${chainId}`)
   return pools.map((address) => {
     return {

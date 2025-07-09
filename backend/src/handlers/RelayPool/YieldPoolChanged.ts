@@ -1,6 +1,7 @@
 import { eq, and } from 'ponder'
 import { Context, Event } from 'ponder:registry'
 import { relayPool } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -16,7 +17,7 @@ export default async function ({
   })
 
   if (!pool) {
-    console.info(
+    logger.info(
       `Skipping yield pool change for non-curated pool ${poolAddress}`
     )
     return

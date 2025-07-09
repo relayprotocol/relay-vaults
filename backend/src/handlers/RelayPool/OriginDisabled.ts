@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { poolOrigin, relayPool } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -16,14 +17,16 @@ export default async function ({
   })
 
   if (!pool) {
-    console.info(`Skipping origin disabled for non-curated pool ${poolAddress}`)
+    logger.info(`Skipping origin disabled for non-curated pool ${poolAddress}`)
     return
   }
 
-  await context.db.delete(poolOrigin, {
-    chainId: context.chain.id,
-    originBridge: event.args.bridge as `0x${string}`,
-    originChainId: event.args.chainId,
-    pool: poolAddress as `0x${string}`,
-  })
+  await context.db
+    .update(poolOrigin, {
+      chainId: context.chain.id,
+      originBridge: event.args.bridge as `0x${string}`,
+      originChainId: event.args.chainId,
+      pool: poolAddress as `0x${string}`,
+    })
+    .set({ maxDebt: 0 })
 }

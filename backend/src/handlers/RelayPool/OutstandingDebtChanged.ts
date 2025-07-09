@@ -19,6 +19,7 @@
 
 import { Context, Event } from 'ponder:registry'
 import { relayPool, poolOrigin } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -39,7 +40,7 @@ export default async function ({
   })
 
   if (!pool) {
-    console.info(
+    logger.info(
       `Skipping outstanding debt change for non-curated pool ${poolAddress}`
     )
     return

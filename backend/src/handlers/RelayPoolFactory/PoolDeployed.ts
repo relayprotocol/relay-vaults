@@ -1,7 +1,7 @@
 import { RelayPool, TimelockControllerUpgradeable } from '@relay-vaults/abis'
 import { Context, Event } from 'ponder:registry'
 import { relayPool, yieldPool } from 'ponder:schema'
-import { erc20Abi } from 'viem'
+import { erc20Abi, hexToBigInt } from 'viem'
 import networks from '@relay-vaults/networks'
 import { logger } from '../../logger.js'
 
@@ -66,10 +66,12 @@ export default async function ({
     functionName: 'PROPOSER_ROLE',
   })) as `0x${string}`
 
-  const blockNumber = await context.client.request({
-    jsonrpc: '2.0',
-    method: 'eth_blockNumber',
-  })!
+  const blockNumber = hexToBigInt(
+    await context.client.request({
+      jsonrpc: '2.0',
+      method: 'eth_blockNumber',
+    })!
+  )
 
   const isCurated = (await context.client.readContract({
     abi: TimelockControllerUpgradeable,
@@ -81,7 +83,12 @@ export default async function ({
 
   // Skip indexing if we are not the curator of this pool
   if (!isCurated) {
-    logger.info(`Pool ${pool} is not curated. Skipping.`)
+    logger.info(`Pool ${pool} is not curated. Skipping.`, {
+      blockNumber,
+      multisig,
+      proposerRole,
+      timelock,
+    })
     process.exit(0)
     return
   }

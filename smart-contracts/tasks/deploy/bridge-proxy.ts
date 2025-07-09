@@ -42,7 +42,7 @@ export const getBridgesForNetwork = async (chainId: number) => {
 
 task(
   'deploy:bridge-proxy',
-  'Deploy a bridge proxy contract pair. The hardhat network should be the network on which you want to deploy a proxyBridge contract. I can either be the pool\'s network or the origin network.'
+  "Deploy a bridge proxy contract pair. The hardhat network should be the network on which you want to deploy a proxyBridge contract. I can either be the pool's network or the origin network."
 )
   .addOptionalParam('type', 'the type of bridge to deploy')
   .addOptionalParam(
@@ -111,9 +111,9 @@ task(
 
       // parse args for all proxies
       const defaultProxyModuleArguments = {
+        parentBridgeProxy: ethers.ZeroAddress,
         relayPool: poolAddress,
-        relayPoolChainId: poolChainId,
-        parentBridgeProxy: ethers.ZeroAddress, // default
+        relayPoolChainId: poolChainId, // default
       }
 
       if (Number(chainId) !== Number(poolChainId)) {
@@ -127,7 +127,7 @@ task(
             Object.values(deploymentData)[0]
         } catch (error) {
           console.error(
-            `Please make sure you deploy the proxyBridge on the pool chain first!`
+            'Please make sure you deploy the proxyBridge on the pool chain first!'
           )
           process.exit(1)
         }
@@ -149,7 +149,7 @@ task(
       const deploymentId = `BridgeProxy-${originChainId}-${poolAddress}-${type}-${chainId}`
 
       if (type === 'cctp') {
-        console.error(`Missing implementation for CCTP!`)
+        console.error('Missing implementation for CCTP!')
         process.exit(1)
       } else if (type === 'optimism') {
         // Do we have a parent bridge proxy?
@@ -173,10 +173,10 @@ task(
         constructorArguments = []
         console.log(`✅ OPStack bridge deployed at: ${proxyBridgeAddress}`)
       } else if (type === 'arbitrum') {
-        console.error(`Missing implementation for Arbitrum!`)
+        console.error('Missing implementation for Arbitrum!')
         process.exit(1)
       } else if (type === 'zksync') {
-        console.error(`Missing implementation for Zksync!`)
+        console.error('Missing implementation for Zksync!')
         process.exit(1)
       }
 

@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config'
 import { networks } from '@relay-vaults/networks'
-import { type BaseContract } from 'ethers'
+import { getAddress, type BaseContract } from 'ethers'
 import { Select } from 'enquirer'
 import fs from 'fs'
 
@@ -18,7 +18,7 @@ export const getPoolsForNetwork = async (chainId: number) => {
   const pools = await fs.promises.readdir(`${ignitionPath}/pools/${chainId}`)
   return pools.map((address) => {
     return {
-      address: address,
+      address: getAddress(address),
       params: require(
         `${ignitionPath}/pools/${chainId}/${address}/params.json`
       ),

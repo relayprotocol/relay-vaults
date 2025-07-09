@@ -89,7 +89,6 @@ export default async function ({
       proposerRole,
       timelock,
     })
-    process.exit(0)
     return
   }
 

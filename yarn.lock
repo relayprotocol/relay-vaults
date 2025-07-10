@@ -4850,6 +4850,7 @@ __metadata:
     prettier: "npm:3.5.3"
     typescript: "npm:5.8.3"
     viem: "npm:2.31.0"
+    vitest: "npm:3.2.4"
     winston: "npm:3.17.0"
   languageName: unknown
   linkType: soft

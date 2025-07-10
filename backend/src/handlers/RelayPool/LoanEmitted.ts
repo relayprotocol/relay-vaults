@@ -13,6 +13,7 @@ import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
 import { BPS_DIVISOR } from '../../constants.js'
 import { logger } from '../../logger.js'
+import { chainIdFromDomainId } from '../../utils/hyperlane.js'
 
 export default async function ({
   event,
@@ -22,8 +23,9 @@ export default async function ({
   context: Context<'RelayPool:LoanEmitted'>
 }) {
   const { nonce, origin, amount } = event.args
-  const { bridge, chainId: bridgeChainId } = origin
+  const { bridge, chainId: domainId } = origin
 
+  const originChainId = chainIdFromDomainId(domainId)
   // Update the corresponding bridgeTransaction record with loanEmittedTxHash
   // We use upsert (insert with onConflictDoUpdate) here because the record may not exist yet if the L2 indexing is slower.
   await context.db
@@ -33,7 +35,7 @@ export default async function ({
       nativeBridgeStatus: 'HANDLED',
       nonce,
       originBridgeAddress: bridge,
-      originChainId: bridgeChainId,
+      originChainId,
     })
     .onConflictDoUpdate({
       loanEmittedTxHash: event.transaction.hash,
@@ -57,12 +59,12 @@ export default async function ({
   const originRecord = await context.db.find(poolOrigin, {
     chainId: poolRecord.chainId,
     originBridge: bridge,
-    originChainId: bridgeChainId,
+    originChainId,
     pool: event.log.address,
   })
   if (!originRecord) {
     logger.warn(
-      `PoolOrigin record not found for pool ${event.log.address} with originChainId ${bridgeChainId} and originBridge ${bridge}.`
+      `PoolOrigin record not found for pool ${event.log.address} with originChainId ${originChainId} and originBridge ${bridge}.`
     )
     return
   }

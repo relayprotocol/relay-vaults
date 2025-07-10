@@ -28,7 +28,7 @@ export default async function ({
     abi: context.contracts.RelayPool.abi,
     address: poolAddress,
     functionName: 'authorizedOrigins',
-    args: [event.args.chainId, event.args.bridge],
+    args: [originChainId, event.args.bridge],
   })
 
   await context.db

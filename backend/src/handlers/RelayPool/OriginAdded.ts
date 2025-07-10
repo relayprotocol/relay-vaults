@@ -2,6 +2,7 @@ import { Context, Event } from 'ponder:registry'
 import { poolOrigin, relayPool } from 'ponder:schema'
 import { BPS_DIVISOR } from '../../constants.js'
 import { logger } from '../../logger.js'
+import { chainIdFromDomainId } from '../../utils/hyperlane.js'
 
 export default async function ({
   event,
@@ -14,6 +15,7 @@ export default async function ({
   const { origin } = event.args
   const poolAddress = event.log.address
 
+  const originChainId = chainIdFromDomainId(origin.chainId)
   const pool = await context.db.find(relayPool, {
     chainId: context.chain.id,
     contractAddress: poolAddress,
@@ -45,7 +47,7 @@ export default async function ({
       currentOutstandingDebt: BigInt(0),
       maxDebt: origin.maxDebt,
       originBridge: origin.bridge as `0x${string}`,
-      originChainId: origin.chainId,
+      originChainId,
       pool: poolAddress as `0x${string}`,
       proxyBridge: origin.proxyBridge as `0x${string}`,
     })

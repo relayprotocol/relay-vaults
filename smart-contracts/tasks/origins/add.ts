@@ -96,9 +96,11 @@ task('pool:add-origin', 'Add origin for a pool')
         }).run()
       }
 
+      const hyperlaneDomainId = 1000012617
+
       // Check if the origin already exists
       const existingOrigin = await pool.authorizedOrigins(
-        l2ChainId,
+        hyperlaneDomainId,
         bridgeAddress
       )
       if (existingOrigin[4] > 0n) {
@@ -197,7 +199,7 @@ task('pool:add-origin', 'Add origin for a pool')
       const addOriginParams = {
         bridge: bridgeAddress,
         bridgeFee,
-        chainId: l2ChainId,
+        chainId: hyperlaneDomainId,
         coolDown,
         curator,
         maxDebt,

@@ -202,6 +202,7 @@ task(
 
     if (!poolAddress) {
       const pools = await getPoolsForNetwork(Number(chainId))
+      console.log(pools)
       poolAddress = await new Select({
         choices: pools.map((pool) => {
           return {

@@ -121,6 +121,7 @@ task(
       if (onOriginChain) {
         // We need to get the l1BridgeProxy
         const parentDeploymentId = `BridgeProxy-${originChainId}-${poolAddress}-${type}-${poolChainId}`
+        console.log(parentDeploymentId)
         try {
           const deploymentData = require(
             ignitionPath + `/${parentDeploymentId}/deployed_addresses.json`

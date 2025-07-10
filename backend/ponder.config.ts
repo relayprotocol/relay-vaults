@@ -280,7 +280,7 @@ export default createConfig({
   blocks: {
     PoolSnapshot: {
       chain: vaultSnapshotChains,
-      interval: 25,
+      interval: 2500,
     },
   },
   chains: usedChains,

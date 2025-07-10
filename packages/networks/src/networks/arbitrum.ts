@@ -7,6 +7,8 @@ const config: VaultNetworkConfig = {
     weth: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
   },
   chainId: 42161,
+  curator: '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963',
+
   hyperlaneMailbox: '0x979Ca5202784112f4738403dBec5D0F3B9daabB9',
   isTestnet: false,
   name: 'Arbitrum One',

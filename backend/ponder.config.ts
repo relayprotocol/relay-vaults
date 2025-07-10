@@ -16,9 +16,6 @@ import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 
 const deployedAddresses = getAddresses()
 
-// disable arbitrary networks for now
-delete deployedAddresses['42161'].RelayPoolFactory
-
 // RPC configurations with fallback transport
 const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
   const network = networks[chainId]
@@ -283,7 +280,7 @@ export default createConfig({
   blocks: {
     PoolSnapshot: {
       chain: vaultSnapshotChains,
-      interval: 25,
+      interval: 2500,
     },
   },
   chains: usedChains,

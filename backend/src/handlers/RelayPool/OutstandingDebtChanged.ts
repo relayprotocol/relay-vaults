@@ -20,6 +20,7 @@
 import { Context, Event } from 'ponder:registry'
 import { relayPool, poolOrigin } from 'ponder:schema'
 import { logger } from '../../logger.js'
+import { chainIdFromDomainId } from '../../utils/hyperlane.js'
 
 export default async function ({
   event,
@@ -30,6 +31,8 @@ export default async function ({
 }) {
   // Extract the new debt value from the event arguments.
   const { newDebt, newOriginDebt, origin } = event.args
+
+  const originChainId = chainIdFromDomainId(origin.chainId) // Convert from domainId to string
 
   // Retrieve the pool using the contract address from the event log.
   const poolAddress = event.log.address
@@ -60,7 +63,7 @@ export default async function ({
     .update(poolOrigin, {
       chainId: context.chain.id,
       originBridge: origin.bridge,
-      originChainId: origin.chainId,
+      originChainId,
       pool: poolAddress,
     })
     .set({

@@ -4839,7 +4839,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:8.34.0"
     dd-trace: "npm:5.56.0"
     eslint: "npm:9.28.0"
-    eslint-config-ponder: "npm:0.11.22"
+    eslint-config-ponder: "npm:0.11.26"
     eslint-config-prettier: "npm:10.1.5"
     eslint-plugin-prettier: "npm:5.4.1"
     hono: "npm:4.7.11"
@@ -4850,6 +4850,7 @@ __metadata:
     prettier: "npm:3.5.3"
     typescript: "npm:5.8.3"
     viem: "npm:2.31.0"
+    vitest: "npm:3.2.4"
     winston: "npm:3.17.0"
   languageName: unknown
   linkType: soft
@@ -4892,6 +4893,7 @@ __metadata:
     graphql-tag: "npm:2.12.6"
     tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
+    vite: "npm:5.4.19"
   languageName: unknown
   linkType: soft
 
@@ -9752,14 +9754,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-ponder@npm:0.11.22":
-  version: 0.11.22
-  resolution: "eslint-config-ponder@npm:0.11.22"
+"eslint-config-ponder@npm:0.11.26":
+  version: 0.11.26
+  resolution: "eslint-config-ponder@npm:0.11.26"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^6.3.0
     "@typescript-eslint/parser": ^6.3.0
     eslint: ">= 3"
-  checksum: 10/a877e2c43ac544bf8a84656f4a9197dfff3b821400432589307043109061b86c7d79f52663c787e908d5ea82cbc34962a300fa0eca6d9f98c89f0d9a376ec195
+  checksum: 10/dcf8a99f22280dc8c6d8ce60c7958a5ea6fcec22e13e0e01248fa46081d46e5956f6df1b0565ed336013380e66afb7e264f5ecfd850b34fd892e1de44e4a361b
   languageName: node
   linkType: hard
 
@@ -17291,6 +17293,49 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10/27186e5b907484ed17a9cb803bb2127995a1659e1da9eab36bcd7bfac5d11ed41f7136d9913cc27a8c8c49c3fee5c791dee135c5d37653ddfa0153b69dc3f930
+  languageName: node
+  linkType: hard
+
+"vite@npm:5.4.19":
+  version: 5.4.19
+  resolution: "vite@npm:5.4.19"
+  dependencies:
+    esbuild: "npm:^0.21.3"
+    fsevents: "npm:~2.3.3"
+    postcss: "npm:^8.4.43"
+    rollup: "npm:^4.20.0"
+  peerDependencies:
+    "@types/node": ^18.0.0 || >=20.0.0
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    sass-embedded: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.4.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    sass-embedded:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: 10/27900c87ec6f84967ba12bd4a24c2b9182c3ddad278a13a1c7736ccc4ac7e325f3fbdc11836e2906857140cc89c55121cb0746d4100046e797e21e1e7570d9c4
   languageName: node
   linkType: hard
 

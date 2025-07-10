@@ -10,7 +10,7 @@
     "db": "ponder db",
     "codegen": "ponder codegen",
     "serve": "ponder serve",
-    "test": "echo 'No tests'; exit 0",
+    "test": "vitest",
     "lint": "eslint \"src/**/*.{js,ts,json}\" \"*.{js,ts,json}\" --fix",
     "lint:check": "eslint \"src/**/*.{js,ts}\" \"*.{js,ts}\"",
     "typecheck": "tsc",
@@ -24,6 +24,7 @@
     "hono": "4.7.11",
     "ponder": "0.11.17",
     "viem": "2.31.0",
+    "vitest": "3.2.4",
     "winston": "3.17.0"
   },
   "devDependencies": {
@@ -31,7 +32,7 @@
     "@typescript-eslint/eslint-plugin": "8.34.0",
     "@typescript-eslint/parser": "8.34.0",
     "eslint": "9.28.0",
-    "eslint-config-ponder": "0.11.22",
+    "eslint-config-ponder": "0.11.26",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.1",
     "husky": "9.1.7",

@@ -10,14 +10,14 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
 
   IInbox public immutable INBOX =
     IInbox(0x0000000000000000000000000000000000000064);
-  IL2GatewayRouter public immutable ROUTER;
+  IL1GatewayRouter public immutable ROUTER;
 
   constructor(
     address l1GatewayRouter,
     uint256 relayPoolChainId,
     address relayPool,
-    address l1BridgeProxy
-  ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
+    address l2BridgeProxy
+  ) BridgeProxy(relayPoolChainId, relayPool, l2BridgeProxy) {
     ROUTER = IL1GatewayRouter(l1GatewayRouter);
   }
 
@@ -29,17 +29,27 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     bytes calldata /* extraData */
   ) external payable override {
     if (l1Currency == address(0)) {
-      INBOX.depositEth{value: amount}(L1_BRIDGE_PROXY);
+      // simple deposit wont work as it deposits to an alias by default
+      // we have to create a retryable ticket to deposit to the L1 bridge proxy
+      INBOX.createRetryableTicket(
+        L1_BRIDGE_PROXY, // to
+        amount, // l2CallValue
+        1000000, // maxSubmissionCost
+        address(this), // excessFeeRefundAddress
+        address(this), // callValueRefundAddress (receives msg.value on l2)
+        1000000, // gasLimit
+        1000000, // maxFeePerGas
+        '' // data
+      );
     } else {
       ROUTER.outboundTransferCustomRefund(
         l1Currency,
-        address(this), // for refunding excess gas on L2 (will be an arb alias)
+        L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY,
         amount,
         1000000, // Max gas deducted from user's L2 balance to cover L2 execution
         1000000, // Gas price for L2 execution
-        abi.encode(asset, amount), // Extra data
-        ""
+        '' // Extra data
       );
     }
   }

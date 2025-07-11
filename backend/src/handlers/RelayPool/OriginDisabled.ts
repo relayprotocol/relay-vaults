@@ -23,18 +23,6 @@ export default async function ({
   }
   const originChainId = chainIdFromDomainId(event.args.chainId) // Convert from domainId
 
-  let maxDebt = 0n
-  if (originChainId !== context.chain.id) {
-    // Get the actual maxDebt from the contract
-    const origin = await context.client.readContract({
-      abi: context.contracts.RelayPool.abi,
-      address: poolAddress,
-      args: [originChainId, event.args.bridge],
-      functionName: 'authorizedOrigins',
-    })
-    maxDebt = origin.maxDebt
-  }
-
   await context.db
     .update(poolOrigin, {
       chainId: context.chain.id,
@@ -42,5 +30,5 @@ export default async function ({
       originChainId,
       pool: poolAddress as `0x${string}`,
     })
-    .set({ maxDebt })
+    .set({ maxDebt: 0 })
 }

@@ -1,6 +1,6 @@
 import { createConfig, factory } from 'ponder'
 import { ABIs } from '@relay-vaults/helpers'
-import { fallback, http } from 'viem'
+import { http } from 'viem'
 
 import {
   RelayPool,
@@ -18,30 +18,19 @@ const deployedAddresses = getAddresses()
 
 // Importing the RelayBridgeFactory ABI to use in the config
 // RPC configurations with fallback transport
-const usedChains = Object.keys(networks).reduce(
-  (usedChains, chainId: string) => {
-    const network = networks[chainId]
+const chains = Object.keys(networks).reduce((chains, chainId: string) => {
+  const network = networks[chainId]
 
-    // Create fallback transport with all available RPC endpoints
-    const rpcEndpoints = network.rpc
-    const transports = rpcEndpoints.map((url) => http(url))
-
-    return {
-      ...usedChains,
-      [network.slug!]: {
-        id: Number(chainId),
-        maxRequestsPerSecond: 500,
-        pollingInterval: 100,
-        rpc: fallback(transports, {
-          rank: false,
-          retryCount: 3,
-          retryDelay: 1000,
-        }),
-      },
-    }
-  },
-  {}
-)
+  return {
+    ...chains,
+    [network.slug!]: {
+      id: Number(chainId),
+      maxRequestsPerSecond: 500,
+      pollingInterval: 100,
+      rpc: http(network.rpc[0]),
+    },
+  }
+}, {})
 
 // VaultSnapshot chains
 const vaultSnapshotChains = Object.keys(networks)
@@ -292,7 +281,7 @@ export default createConfig({
       interval: process.env.ENV === 'development' ? 10000 : 100,
     },
   },
-  chains: usedChains,
+  chains,
   contracts: {
     L1NativeTokenVault: {
       abi: ABIs.L1NativeTokenVault as Abi,

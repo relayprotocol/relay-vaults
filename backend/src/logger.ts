@@ -10,12 +10,11 @@ const logEvent = (ponder, eventName: string, eventHandler) => {
   const handlerWithLog = ({ event, context }) => {
     logger.info(eventName, {
       args: event.args,
-      blockNumber: event.transaction.blockNumber,
       chain: context.chain,
       eventName,
       log: event.log,
       timestamp: event.block.timestamp,
-      transactionHash: event.transaction.hash,
+      transactionHash: event.transaction ? event.transaction?.hash : null,
     })
     return eventHandler({ context, event })
   }

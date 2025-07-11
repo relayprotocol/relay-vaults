@@ -289,7 +289,7 @@ export default createConfig({
   blocks: {
     PoolSnapshot: {
       chain: vaultSnapshotChains,
-      interval: 10000,
+      interval: process.env.ENV === 'development' ? 10000 : 100,
     },
   },
   chains: usedChains,

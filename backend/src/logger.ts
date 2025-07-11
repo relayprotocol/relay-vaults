@@ -8,7 +8,7 @@ export const logger = createLogger({
 
 const logEvent = (ponder, eventName: string, eventHandler) => {
   const handlerWithLog = ({ event, context }) => {
-    logger.info({
+    logger.info(eventName, {
       args: event.args,
       chain: context.chain,
       eventName,

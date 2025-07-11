@@ -6,6 +6,10 @@ export const logger = createLogger({
   transports: [new transports.Console()],
 })
 
+// log all used RPCs
+const rpcUrls = Object.keys(process.env).filter((k) => k.startsWith('RPC_'))
+logger.info('RPCs', Object.fromEntries(rpcUrls.map((k) => [k, process.env[k]])))
+
 const logEvent = (ponder, eventName: string, eventHandler) => {
   const handlerWithLog = ({ event, context }) => {
     logger.info(eventName, {

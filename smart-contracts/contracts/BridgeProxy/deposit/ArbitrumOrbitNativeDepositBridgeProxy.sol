@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BridgeProxy} from "./BridgeProxy.sol";
-import {IL1GatewayRouter} from "../interfaces/arb/IArbL1GatewayRouter.sol";
-import {IArbSys} from "../interfaces/arb/IArbSys.sol";
+import {BridgeProxy} from "../BridgeProxy.sol";
+import {IL1GatewayRouter} from "../../interfaces/arb/IArbL1GatewayRouter.sol";
+import {IInbox} from "../../interfaces/arb/IInbox.sol";
 
 contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
   error AssetMismatch(address expected, address actual);

@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 
 export interface Addresses {
-  [chainId: number]: {
+  [chainId: string]: {
     RelayBridgeFactory?: `0x${string}`
     RelayPoolFactory?: `0x${string}`
     RelayPoolNativeGateway?: `0x${string}`

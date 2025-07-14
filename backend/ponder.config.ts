@@ -1,6 +1,6 @@
 import { createConfig, factory } from 'ponder'
 import { ABIs } from '@relay-vaults/helpers'
-import { fallback, http } from 'viem'
+import { http } from 'viem'
 
 import {
   RelayPool,
@@ -17,24 +17,16 @@ import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 const deployedAddresses = getAddresses()
 
 // RPC configurations with fallback transport
-const usedChains = Object.keys(networks).reduce((usedChains, chainId) => {
+const chains = Object.keys(networks).reduce((chains, chainId: string) => {
   const network = networks[chainId]
 
-  // Create fallback transport with all available RPC endpoints
-  const rpcEndpoints = network.rpc
-  const transports = rpcEndpoints.map((url) => http(url))
-
   return {
-    ...usedChains,
+    ...chains,
     [network.slug!]: {
       id: Number(chainId),
       maxRequestsPerSecond: 500,
       pollingInterval: 100,
-      rpc: fallback(transports, {
-        rank: false,
-        retryCount: 3,
-        retryDelay: 1000,
-      }),
+      rpc: http(network.rpc[0]),
     },
   }
 }, {})
@@ -56,10 +48,10 @@ const vaultSnapshotChains = Object.keys(networks)
 
 // RelayBridge chains
 const relayBridgeChains = Object.keys(networks)
-  .filter((chainId) => {
+  .filter((chainId: string) => {
     return (networks[chainId] as OriginNetworkConfig).parentChainId
   })
-  .reduce((relayBridgeChains, chainId) => {
+  .reduce((relayBridgeChains, chainId: string) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
     if (!addresses?.RelayBridgeFactory) {
@@ -175,7 +167,7 @@ const relayPoolTimelockChains = Object.keys(networks)
 
 interface OPPortalChains {
   [key: string]: {
-    address: string[]
+    address: `0x${string}`[]
     startBlock: number
   }
 }
@@ -191,22 +183,27 @@ const oPPortalChains: OPPortalChains = Object.keys(networks)
     const l1Network = networks[l2Network.parentChainId] as VaultNetworkConfig
 
     const parent = l2Network.bridges.optimism?.parent
-
     if (!oPPortalChains[l1Network.slug!]) {
       oPPortalChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock || 'latest',
+        startBlock: l1Network.earliestBlock || 0,
       }
     }
-    if (!oPPortalChains[l1Network.slug!].address.includes(parent.portalProxy)) {
-      oPPortalChains[l1Network.slug!].address.push(parent.portalProxy)
+    if (
+      !oPPortalChains[l1Network.slug!].address.includes(
+        parent!.portalProxy as `0x${string}`
+      )
+    ) {
+      oPPortalChains[l1Network.slug!].address.push(
+        parent!.portalProxy as `0x${string}`
+      )
     }
     return oPPortalChains
   }, {} as OPPortalChains)
 
 interface OrbitOutboxChains {
   [key: string]: {
-    address: string[]
+    address: `0x${string}`[]
     startBlock: number
   }
 }
@@ -223,16 +220,16 @@ const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
     if (!orbitOutboxChains[l1Network.slug!]) {
       orbitOutboxChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock || 'latest',
+        startBlock: l1Network.earliestBlock || 0,
       }
     }
     if (
       !orbitOutboxChains[l1Network.slug!].address.includes(
-        l2Network.bridges.arbitrum!.parent.outbox
+        l2Network.bridges.arbitrum!.parent.outbox as `0x${string}`
       )
     ) {
       orbitOutboxChains[l1Network.slug!].address.push(
-        l2Network.bridges.arbitrum!.parent.outbox
+        l2Network.bridges.arbitrum!.parent.outbox as `0x${string}`
       )
     }
     return orbitOutboxChains
@@ -240,7 +237,7 @@ const orbitOutboxChains: OrbitOutboxChains = Object.keys(networks)
 
 interface zkSyncChains {
   [key: string]: {
-    address: string[]
+    address: `0x${string}`[]
     startBlock: number
   }
 }
@@ -261,16 +258,16 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
     if (!zkSyncChains[l1Network.slug!]) {
       zkSyncChains[l1Network.slug!] = {
         address: [],
-        startBlock: l1Network.earliestBlock || 'latest',
+        startBlock: l1Network.earliestBlock || 0,
       }
     }
     if (
       !zkSyncChains[l1Network.slug!].address.includes(
-        l2Network.bridges.zksync!.parent.nativeTokenVault
+        l2Network.bridges.zksync!.parent.nativeTokenVault as `0x${string}`
       )
     ) {
       zkSyncChains[l1Network.slug!].address.push(
-        l2Network.bridges.zksync!.parent.nativeTokenVault
+        l2Network.bridges.zksync!.parent.nativeTokenVault as `0x${string}`
       )
     }
     return zkSyncChains
@@ -280,23 +277,23 @@ export default createConfig({
   blocks: {
     PoolSnapshot: {
       chain: vaultSnapshotChains,
-      interval: 2500,
+      interval: process.env.ENV === 'development' ? 10000 : 100,
     },
   },
-  chains: usedChains,
+  chains,
   contracts: {
     L1NativeTokenVault: {
-      abi: ABIs.L1NativeTokenVault,
+      abi: ABIs.L1NativeTokenVault as Abi,
       chain: zkSyncChains,
     },
 
     OPPortal: {
-      abi: ABIs.Portal2,
+      abi: ABIs.Portal2 as Abi,
       chain: oPPortalChains,
     },
 
     OrbitOutbox: {
-      abi: ABIs.Outbox,
+      abi: ABIs.Outbox as Abi,
       chain: orbitOutboxChains,
     },
 

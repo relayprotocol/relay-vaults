@@ -20,7 +20,7 @@ export const getOriginCuratorForNetwork = async (chainId: number) => {
 task('pool:add-origin', 'Add origin for a pool')
   .addOptionalParam('pool', 'the pool address')
   .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
-  .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
+  .addOptionalParam('originChainId', 'the chain id of the origin network')
   .addOptionalParam('proxyBridge', 'the origin proxyBridge (on this L1)')
   .addOptionalParam('maxDebt', 'the maximum debt coming from the origin')
   .addOptionalParam(
@@ -33,7 +33,7 @@ task('pool:add-origin', 'Add origin for a pool')
     async (
       {
         pool: poolAddress,
-        l2ChainId,
+        originChainId,
         bridge: bridgeAddress,
         proxyBridge,
         maxDebt,
@@ -68,22 +68,22 @@ task('pool:add-origin', 'Add origin for a pool')
 
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
-      if (!l2ChainId) {
-        // We need to select the L2 chain!
-        const possibleL2s = Object.values(networks).filter(
+      if (!originChainId) {
+        // We need to select the origin chain!
+        const possibleOrigins = Object.values(networks).filter(
           (n) => (n as OriginNetworkConfig).parentChainId == chainId
         )
-        const l2chainName = await new Select({
-          choices: possibleL2s.map((network) => network.name),
+        const originChainName = await new Select({
+          choices: possibleOrigins.map((network) => network.name),
           message: 'On what network is this origin?',
         }).run()
-        l2ChainId = possibleL2s.find(
-          (network) => network.name === l2chainName
+        originChainId = possibleOrigins.find(
+          (network) => network.name === originChainName
         )?.chainId
       }
 
       if (!bridgeAddress) {
-        const bridges = await getBridgesForNetwork(Number(l2ChainId))
+        const bridges = await getBridgesForNetwork(Number(originChainId))
         bridgeAddress = await new Select({
           choices: bridges.map((bridge) => {
             return {
@@ -96,21 +96,25 @@ task('pool:add-origin', 'Add origin for a pool')
         }).run()
       }
 
+      // Get the domainId instea of the originChainId
+
+      console.log(originChainId)
+
       // Check if the origin already exists
       const existingOrigin = await pool.authorizedOrigins(
-        l2ChainId,
+        domainId,
         bridgeAddress
       )
       if (existingOrigin[4] > 0n) {
         throw new Error(
-          `Origin already exists with a non-zero debt for ${bridgeAddress} on ${l2ChainId}. Please disable that origin first, wait for its debt to be back to 0 and try again, or deploy a new bridge.`
+          `Origin already exists with a non-zero debt for ${bridgeAddress} on ${originChainId} (domainId: ${domainId}). Please disable that origin first, wait for its debt to be back to 0 and try again, or deploy a new bridge.`
         )
       }
 
       // Check that the bridge asset matches the pool?
 
       // get L2 bridge contracts settings
-      const l2Network = networks[l2ChainId.toString()]
+      const l2Network = networks[originChainId.toString()]
       const l2provider = new ethers.JsonRpcProvider(l2Network.rpc[0])
 
       // Create contract instances with the L2 provider (read-only)
@@ -140,7 +144,7 @@ task('pool:add-origin', 'Add origin for a pool')
         (await l2BridgeProxy.RELAY_POOL()) !== poolAddress
       ) {
         throw Error(
-          `Wrong bridge config on L2 chain (${l2ChainId}): ${bridgeAddress}`
+          `Wrong bridge config on L2 chain (${originChainId}): ${bridgeAddress}`
         )
       }
 
@@ -197,7 +201,7 @@ task('pool:add-origin', 'Add origin for a pool')
       const addOriginParams = {
         bridge: bridgeAddress,
         bridgeFee,
-        chainId: l2ChainId,
+        chainId: domainId,
         coolDown,
         curator,
         maxDebt,
@@ -220,10 +224,10 @@ task('pool:add-origin', 'Add origin for a pool')
 task('pool:remove-origin', 'Removes an origin from a pool')
   .addOptionalParam('pool', 'the pool address')
   .addOptionalParam('bridge', 'the address of the bridge contract on the L2')
-  .addOptionalParam('l2ChainId', 'the chain id of the L2 network')
+  .addOptionalParam('originChainId', 'the chain id of the L2 network')
   .setAction(
     async (
-      { pool: poolAddress, l2ChainId, bridge: bridgeAddress },
+      { pool: poolAddress, originChainId, bridge: bridgeAddress },
       { ethers }
     ) => {
       const [user] = await ethers.getSigners()
@@ -251,7 +255,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
 
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
-      if (!l2ChainId) {
+      if (!originChainId) {
         // We need to select the L2 chain!
         const possibleL2s = Object.values(networks).filter(
           (n) => (n as OriginNetworkConfig).parentChainId == chainId
@@ -260,13 +264,13 @@ task('pool:remove-origin', 'Removes an origin from a pool')
           choices: possibleL2s.map((network) => network.name),
           message: 'On what network is this origin?',
         }).run()
-        l2ChainId = possibleL2s.find(
+        originChainId = possibleL2s.find(
           (network) => network.name === l2chainName
         )?.chainId
       }
 
       if (!bridgeAddress) {
-        const bridges = await getBridgesForNetwork(Number(l2ChainId))
+        const bridges = await getBridgesForNetwork(Number(originChainId))
         bridgeAddress = await new Select({
           choices: bridges.map((bridge) => {
             return {
@@ -279,13 +283,13 @@ task('pool:remove-origin', 'Removes an origin from a pool')
         }).run()
       }
 
-      const origin = await pool.authorizedOrigins(l2ChainId, bridgeAddress)
+      const origin = await pool.authorizedOrigins(originChainId, bridgeAddress)
       if (origin.maxDebt === 0n) {
         throw Error('This origin is already disabled!')
       }
 
       const confirm = await new Confirm({
-        message: `Are you sure you want to disable ${bridgeAddress} on ${l2ChainId} .`,
+        message: `Are you sure you want to disable ${bridgeAddress} on ${originChainId} .`,
         name: 'confirm',
       }).run()
 
@@ -294,7 +298,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       }
 
       if (origin.curator === userAddress) {
-        const tx = await pool.disableOrigin(l2ChainId, bridgeAddress)
+        const tx = await pool.disableOrigin(originChainId, bridgeAddress)
         console.log(`✅ Transaction sent! ${tx.hash}`)
         return
       }
@@ -308,7 +312,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       }
 
       const data = pool.interface.encodeFunctionData('disableOrigin', [
-        l2ChainId,
+        originChainId,
         bridgeAddress,
       ])
 

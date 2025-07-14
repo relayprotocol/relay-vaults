@@ -19,6 +19,7 @@
   "dependencies": {
     "@bgd-labs/aave-address-book": "4.22.3",
     "ethers": "6.14.3",
+    "vitest": "3.2.4",
     "zksync-ethers": "6.17.0"
   },
   "scripts": {
@@ -26,6 +27,7 @@
     "clean": "rm -rf dist",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
+    "test": "vitest",
     "build": "yarn build:index && yarn build:copy-abis && yarn build:ts",
     "build:ts": "tsup src/index.ts --dts --format esm,cjs",
     "build:copy-abis": "cp -r src/abis dist/src/abis",

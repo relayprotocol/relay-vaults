@@ -97,7 +97,7 @@ task('pool:add-origin', 'Add origin for a pool')
         }).run()
       }
 
-      // Get the domainId instea of the originChainId
+      // Get the domainId instead of the originChainId
       const domainId = domainIdForChainId(Number(originChainId))
 
       // Check if the origin already exists

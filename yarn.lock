@@ -4839,7 +4839,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:8.34.0"
     dd-trace: "npm:5.56.0"
     eslint: "npm:9.28.0"
-    eslint-config-ponder: "npm:0.11.26"
+    eslint-config-ponder: "npm:0.11.27"
     eslint-config-prettier: "npm:10.1.5"
     eslint-plugin-prettier: "npm:5.4.1"
     hono: "npm:4.7.11"
@@ -9754,14 +9754,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-ponder@npm:0.11.26":
-  version: 0.11.26
-  resolution: "eslint-config-ponder@npm:0.11.26"
+"eslint-config-ponder@npm:0.11.27":
+  version: 0.11.27
+  resolution: "eslint-config-ponder@npm:0.11.27"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^6.3.0
     "@typescript-eslint/parser": ^6.3.0
     eslint: ">= 3"
-  checksum: 10/dcf8a99f22280dc8c6d8ce60c7958a5ea6fcec22e13e0e01248fa46081d46e5956f6df1b0565ed336013380e66afb7e264f5ecfd850b34fd892e1de44e4a361b
+  checksum: 10/44cb0bef8aa77cb8d573a6eaa3c615f7f8c7ccf5339d1ab1bf388435fb1b8657a5425d3d77772a06cf6fae2484d37fa1b3596dec718a219161693b3978e10f58
   languageName: node
   linkType: hard
 

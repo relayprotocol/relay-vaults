@@ -256,16 +256,16 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
       if (!originChainId) {
-        // We need to select the L2 chain!
-        const possibleL2s = Object.values(networks).filter(
-          (n) => (n as OriginNetworkConfig).parentChainId == chainId
+        const possibleOriginNetworks = Object.values(networks).filter(
+          (n) =>
+            Number((n as OriginNetworkConfig).parentChainId) == Number(chainId)
         )
-        const l2chainName = await new Select({
-          choices: possibleL2s.map((network) => network.name),
+        const originChainName = await new Select({
+          choices: possibleOriginNetworks.map((network) => network.name),
           message: 'On what network is this origin?',
         }).run()
-        originChainId = possibleL2s.find(
-          (network) => network.name === l2chainName
+        originChainId = possibleOriginNetworks.find(
+          (network) => network.name === originChainName
         )?.chainId
       }
 
@@ -283,13 +283,15 @@ task('pool:remove-origin', 'Removes an origin from a pool')
         }).run()
       }
 
-      const origin = await pool.authorizedOrigins(originChainId, bridgeAddress)
+      const domainId = domainIdForChainId(Number(originChainId))
+
+      const origin = await pool.authorizedOrigins(domainId, bridgeAddress)
       if (origin.maxDebt === 0n) {
         throw Error('This origin is already disabled!')
       }
 
       const confirm = await new Confirm({
-        message: `Are you sure you want to disable ${bridgeAddress} on ${originChainId} .`,
+        message: `Are you sure you want to disable ${bridgeAddress} on ${originChainId} (DomainId: ${domainId})?`,
         name: 'confirm',
       }).run()
 
@@ -298,7 +300,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       }
 
       if (origin.curator === userAddress) {
-        const tx = await pool.disableOrigin(originChainId, bridgeAddress)
+        const tx = await pool.disableOrigin(domainId, bridgeAddress)
         console.log(`✅ Transaction sent! ${tx.hash}`)
         return
       }
@@ -312,7 +314,7 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       }
 
       const data = pool.interface.encodeFunctionData('disableOrigin', [
-        originChainId,
+        domainId,
         bridgeAddress,
       ])
 

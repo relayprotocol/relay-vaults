@@ -6987,6 +6987,7 @@ __metadata:
     fs-extra: "npm:11.3.0"
     tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
+    vitest: "npm:3.2.4"
     zksync-ethers: "npm:6.17.0"
   languageName: unknown
   linkType: soft

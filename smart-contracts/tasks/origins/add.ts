@@ -114,8 +114,8 @@ task('pool:add-origin', 'Add origin for a pool')
       // Check that the bridge asset matches the pool?
 
       // get L2 bridge contracts settings
-      const l2Network = networks[originChainId.toString()]
-      const l2provider = new ethers.JsonRpcProvider(l2Network.rpc[0])
+      const originNetwork = networks[originChainId.toString()]
+      const l2provider = new ethers.JsonRpcProvider(originNetwork.rpc[0])
 
       // Create contract instances with the L2 provider (read-only)
       const relayBridgeInterface = (

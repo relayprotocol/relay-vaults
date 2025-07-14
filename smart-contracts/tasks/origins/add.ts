@@ -7,6 +7,7 @@ import {
   getBridgesForNetwork,
 } from '../deploy/bridge-proxy'
 import { executeThruTimelock } from '../../lib/multisig'
+import { domainIdForChainId } from '@relay-vaults/helpers'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 
@@ -97,8 +98,7 @@ task('pool:add-origin', 'Add origin for a pool')
       }
 
       // Get the domainId instea of the originChainId
-
-      console.log(originChainId)
+      const domainId = domainIdForChainId(Number(originChainId))
 
       // Check if the origin already exists
       const existingOrigin = await pool.authorizedOrigins(

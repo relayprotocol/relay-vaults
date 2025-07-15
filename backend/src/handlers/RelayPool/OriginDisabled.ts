@@ -1,7 +1,7 @@
 import { Context, Event } from 'ponder:registry'
 import { poolOrigin, relayPool } from 'ponder:schema'
 import { logger } from '../../logger.js'
-import { chainIdFromDomainId } from '../../utils/hyperlane.js'
+import { chainIdFromDomainId } from '@relay-vaults/helpers'
 
 export default async function ({
   event,

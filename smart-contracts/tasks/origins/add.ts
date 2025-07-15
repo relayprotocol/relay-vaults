@@ -171,7 +171,7 @@ task('pool:add-origin', 'Add origin for a pool')
         const fractionalBpsDenominator = await pool.FRACTIONAL_BPS_DENOMINATOR()
         const bpsValue = (1 / Number(fractionalBpsDenominator)) * 10000 // Convert to basis points
         bridgeFee = await new Input({
-          default: 100000000,
+          default: 50000000,
           message: `What is the bridge fee, in fractional basis points (1 = ${bpsValue.toFixed(8)} bps, denominator = ${fractionalBpsDenominator})?`,
         }).run()
       }

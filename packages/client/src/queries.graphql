@@ -435,8 +435,8 @@ query GetAllPoolsBridgeTransactions(
 # Get bridge address for a specific origin
 query GetOriginBridge(
   $poolChainId: Int!
-  $currencyAddress: String!
   $originChainId: Int!
+  $currencyAddress: String!
   $poolLimit: Int
   $originLimit: Int
 ) {
@@ -447,6 +447,8 @@ query GetOriginBridge(
   ) {
     items {
       contractAddress
+      totalAssets
+      outstandingDebt
       origins(
         where: { AND: [{ originChainId: $originChainId }, { maxDebt_gt: "0" }] }
         limit: $originLimit

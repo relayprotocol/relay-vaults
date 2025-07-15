@@ -435,6 +435,19 @@ export class RelayVaultService {
       poolLimit,
     })
 
+    // filter only pool that have available liquidity
+    if (res.data.relayPools) {
+      res.data.relayPools.items = (res.data.relayPools?.items ?? []).filter(
+        (pool: any) => {
+          console.log(pool)
+          return (
+            amount < BigInt(pool.totalAssets) - BigInt(pool.outstandingDebt)
+          )
+        }
+      )
+    }
+
+    // for remaining pools, filter origin that have enough available debt
     const pools = res.data.relayPools?.items ?? []
     for (const pool of pools) {
       if (pool.origins?.items) {

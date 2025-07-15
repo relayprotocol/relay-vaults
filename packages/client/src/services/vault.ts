@@ -417,15 +417,30 @@ export class RelayVaultService {
    */
   async getOriginBridge(
     poolChainId: number,
-    poolAddress: string,
     originChainId: number,
-    limit = 1
+    currencyAddress: string,
+    amount: bigint,
+    limit: number = 1
   ) {
-    return this.client.sdk.GetOriginBridge({
-      limit,
+    const res = await this.client.sdk.GetOriginBridge({
+      currencyAddress,
+      limit: 10,
       originChainId,
-      poolAddress,
-      poolChainId,
+      poolChainId, // over-fetch to allow filtering
     })
+
+    const pool = res.data.relayPools?.items?.[0]
+    if (pool) {
+      pool.origins.items = (pool.origins.items ?? [])
+        .filter((origin) => {
+          return (
+            BigInt(origin.maxDebt) >
+            amount + BigInt(origin.currentOutstandingDebt)
+          )
+        })
+        .slice(0, limit)
+    }
+
+    return res
   }
 }

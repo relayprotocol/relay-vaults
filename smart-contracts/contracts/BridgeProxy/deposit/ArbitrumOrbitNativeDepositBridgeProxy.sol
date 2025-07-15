@@ -39,7 +39,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         address(this), // callValueRefundAddress (receives msg.value on l2)
         1000000, // gasLimit
         1000000, // maxFeePerGas
-        '' // data
+        "" // data
       );
     } else {
       ROUTER.outboundTransferCustomRefund(
@@ -49,7 +49,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         amount,
         1000000, // Max gas deducted from user's L2 balance to cover L2 execution
         1000000, // Gas price for L2 execution
-        '' // Extra data
+        "" // Extra data
       );
     }
   }

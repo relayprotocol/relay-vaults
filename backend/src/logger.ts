@@ -13,6 +13,7 @@ const logEvent = (ponder, eventName: string, eventHandler) => {
       chain: context.chain,
       eventName,
       log: event.log,
+      msg: eventName,
       timestamp: event.block.timestamp,
       transactionHash: event.transaction ? event.transaction?.hash : null,
     })

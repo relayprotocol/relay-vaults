@@ -20,7 +20,7 @@
 import { Context, Event } from 'ponder:registry'
 import { relayPool, poolOrigin } from 'ponder:schema'
 import { logger } from '../../logger.js'
-import { chainIdFromDomainId } from '../../utils/hyperlane.js'
+import { chainIdFromDomainId } from '@relay-vaults/helpers'
 
 export default async function ({
   event,

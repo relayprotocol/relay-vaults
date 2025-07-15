@@ -437,18 +437,19 @@ query GetOriginBridge(
   $poolChainId: Int!
   $currencyAddress: String!
   $originChainId: Int!
-  $limit: Int = 1
+  $poolLimit: Int
+  $originLimit: Int
 ) {
   # First find a pool for the currency/chain pair
   relayPools(
     where: { AND: [{ chainId: $poolChainId }, { asset: $currencyAddress }] }
-    limit: 1
+    limit: $poolLimit
   ) {
     items {
       contractAddress
       origins(
         where: { AND: [{ originChainId: $originChainId }, { maxDebt_gt: "0" }] }
-        limit: $limit
+        limit: $originLimit
       ) {
         items {
           originBridge

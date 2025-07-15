@@ -408,11 +408,14 @@ export class RelayVaultService {
   }
 
   /**
-   * Get origin bridge address for a specific pool and origin chain
+   * Get origin bridge address with sufficient available debt
+   * for a specific pool and origin chain
    *
    * @param chainId - The chain ID where the pool is deployed
    * @param poolAddress - The pool's contract address
    * @param originChainId - The origin chain ID
+   * @param amount the required amount of additional debt
+   *
    * @returns Promise containing the origin bridge address
    */
   async getOriginBridge(

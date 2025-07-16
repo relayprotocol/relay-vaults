@@ -8,17 +8,18 @@ import {IInbox} from "../../interfaces/arb/IInbox.sol";
 contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
   error AssetMismatch(address expected, address actual);
 
-  IInbox public immutable INBOX =
-    IInbox(0x0000000000000000000000000000000000000064);
+  IInbox public immutable INBOX;
   IL1GatewayRouter public immutable ROUTER;
 
   constructor(
     address l1GatewayRouter,
+    address inbox,
     uint256 relayPoolChainId,
     address relayPool,
     address l2BridgeProxy
   ) BridgeProxy(relayPoolChainId, relayPool, l2BridgeProxy) {
     ROUTER = IL1GatewayRouter(l1GatewayRouter);
+    INBOX = IInbox(inbox);
   }
 
   function bridge(
@@ -31,7 +32,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default
       // we have to create a retryable ticket to deposit to the L1 bridge proxy
-      INBOX.createRetryableTicket(
+      INBOX.createRetryableTicket{ value: msg.value }(
         L1_BRIDGE_PROXY, // to
         amount, // l2CallValue
         1000000, // maxSubmissionCost

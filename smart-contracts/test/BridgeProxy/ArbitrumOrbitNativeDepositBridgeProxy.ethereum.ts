@@ -51,7 +51,7 @@ const estimateTicketCost = async (
 
   // 1. Estimate gasLimit for the retryable ticket
   const [signer] = await ethers.getSigners()
-  const gasLimit = await nodeInterface.estimateRetryableTicket(
+  const gasLimit = await nodeInterface.estimateRetryableTicket.estimateGas(
     await signer.getAddress(), // from,
     amount + ethers.parseEther('1'), // senderDeposit, // can be a dummy value (e.g., l2CallValue + 1 ether)
     await bridge.L1_BRIDGE_PROXY(), // to
@@ -133,7 +133,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         '0x', // empty extraData
       ]
 
-      const gasEstimate = await estimateTicketCost(params)
+      const gasEstimate = await estimateTicketCost(bridge, amount, '')
       console.log(gasEstimate)
 
       // Send message to the bridge

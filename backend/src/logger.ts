@@ -1,8 +1,6 @@
 import { createLogger, format, transports } from 'winston'
 
 const SERVICE_NAME = process.env.SERVICE_NAME || 'vaults-backend'
-const ENVIRONMENT =
-  process.env.ENVIRONMENT || process.env.NODE_ENV || 'development'
 
 export const logger = createLogger({
   format: format.json(),
@@ -13,17 +11,18 @@ export const logger = createLogger({
 const logEvent = (ponder, eventName: string, eventHandler) => {
   const handlerWithLog = ({ event, context }) => {
     logger.info(eventName, {
-      args: event.args,
-      chain: context.chain,
-      env: ENVIRONMENT,
-      environment: ENVIRONMENT,
-      eventName,
-      log: event.log,
+      meta: {
+        args: event.args,
+        blockTimestamp: event.block.timestamp,
+        chain: context.chain,
+        eventName,
+        rawLog: event.log,
+        transactionHash: event.transaction ? event.transaction?.hash : null,
+      },
       msg: eventName,
       service: SERVICE_NAME,
-      timestamp: event.block.timestamp,
-      transactionHash: event.transaction ? event.transaction?.hash : null,
-      version: process.env.IMAGE_TAG || 'unknown',
+      time: new Date().getTime(),
+      // version: process.env.IMAGE_TAG || 'unknown',
     })
     return eventHandler({ context, event })
   }

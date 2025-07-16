@@ -46,5 +46,5 @@ interface IInbox {
     function calculateRetryableSubmissionFee(
       uint256 dataLength,
       uint256 baseFee
-    ) external view returns (uint256)
+    ) external view returns (uint256);
 }

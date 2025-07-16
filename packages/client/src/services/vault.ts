@@ -439,7 +439,6 @@ export class RelayVaultService {
     if (res.data.relayPools) {
       res.data.relayPools.items = (res.data.relayPools?.items ?? []).filter(
         (pool: any) => {
-          console.log(pool)
           return (
             amount < BigInt(pool.totalAssets) - BigInt(pool.outstandingDebt)
           )

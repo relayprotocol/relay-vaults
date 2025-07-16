@@ -445,6 +445,7 @@ query GetOriginBridge(
         { chainId: $poolChainId }
         { pool: $poolAddress }
         { originChainId: $originChainId }
+        { maxDebt_gt: "0" }
       ]
     }
     limit: $limit

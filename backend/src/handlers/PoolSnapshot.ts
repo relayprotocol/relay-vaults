@@ -27,6 +27,9 @@ function calculateAPY(
 // Determine APY interval (seconds)
 const APY_INTERVAL_SEC = 7 * 24 * 3600 // 7-day window; for all-time, set to 0
 
+// Minimum interval (in seconds) between snapshots for the same vault
+const MIN_SNAPSHOT_INTERVAL_SEC = 10 * 60 // 10 minutes
+
 type SnapshotRefFilters = {
   vaultAddress?: Address
   yieldPoolAddress: Address
@@ -102,9 +105,40 @@ export default async function ({
     .where(eq(relayPool.chainId, context.chain.id))
     .execute()
 
-  if (pools.length === 0) return // nothing to do
+  if (pools.length === 0) return
 
   for (const pool of pools) {
+    // Skip if recent snapshot exists (within MIN_SNAPSHOT_INTERVAL_SEC)
+    try {
+      const [latestSnapshot] = await context.db.sql
+        .select()
+        .from(vaultSnapshot)
+        .where(
+          and(
+            eq(vaultSnapshot.vault, pool.contractAddress),
+            eq(vaultSnapshot.chainId, pool.chainId)
+          )
+        )
+        .orderBy(desc(vaultSnapshot.timestamp))
+        .limit(1)
+        .execute()
+
+      if (
+        latestSnapshot &&
+        Number(event.block.timestamp) - Number(latestSnapshot.timestamp) <
+          MIN_SNAPSHOT_INTERVAL_SEC
+      ) {
+        logger.debug('Skipping snapshot — interval not reached', {
+          chainId: pool.chainId,
+          lastSnapshotTimestamp: latestSnapshot.timestamp.toString(),
+          poolAddress: pool.contractAddress,
+        })
+        continue
+      }
+    } catch (e) {
+      logger.error('Failed to fetch latest snapshot, proceeding anyway', e)
+    }
+
     try {
       // 1. Get live data from the vault contract and share prices
       const [totalAssets, totalShares, vaultSharePrice, yieldSharePrice] =

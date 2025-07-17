@@ -62,7 +62,8 @@ const estimateTicketCost = async (
   )
 
   // 2. Get current L2 gas price
-  const maxFeePerGas = await destProvider.getGasPrice()
+  const blockDest = await destProvider.getBlock('latest')
+  const maxFeePerGas = blockDest!.baseFeePerGas
 
   // 3. Estimate the submission fee for calldata size
   const callDataSize = hexDataLength(data)
@@ -74,7 +75,7 @@ const estimateTicketCost = async (
   )
 
   // 4. Compute deposit (sum of all costs, plus l2CallValue)
-  const deposit = gasLimit * maxFeePerGas + maxSubmissionCost + amount
+  const deposit = gasLimit * maxFeePerGas! + maxSubmissionCost + amount
 
   // 5. Return all values as an object (in BN/BigInt/string as needed)
   return {
@@ -133,7 +134,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         '0x', // empty extraData
       ]
 
-      const gasEstimate = await estimateTicketCost(bridge, amount, '')
+      const gasEstimate = await estimateTicketCost(bridge, amount, '0x')
       console.log(gasEstimate)
 
       // Send message to the bridge

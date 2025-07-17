@@ -31,15 +31,18 @@ export default async function ({
   await context.db
     .insert(bridgeTransaction)
     .values({
+      createdAt: BigInt(Math.floor(Date.now() / 1000)),
       loanEmittedTxHash: event.transaction.hash,
       nativeBridgeStatus: 'HANDLED',
       nonce,
       originBridgeAddress: bridge,
       originChainId,
+      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
     })
     .onConflictDoUpdate({
       loanEmittedTxHash: event.transaction.hash,
       nativeBridgeStatus: 'HANDLED',
+      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
     })
 
   // Update the RelayPool's totalBridgeFees field with the fee amount calculated
@@ -80,5 +83,8 @@ export default async function ({
       chainId: context.chain.id,
       contractAddress: event.log.address,
     })
-    .set({ totalBridgeFees: updatedTotalBridgeFees })
+    .set({
+      totalBridgeFees: updatedTotalBridgeFees,
+      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+    })
 }

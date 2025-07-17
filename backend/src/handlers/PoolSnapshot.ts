@@ -166,6 +166,7 @@ export default async function ({
         .set({
           totalAssets: BigInt(totalAssets as string),
           totalShares: BigInt(totalShares as string),
+          updatedAt: BigInt(Math.floor(Date.now() / 1000)),
         })
 
       const snapshot = {
@@ -181,6 +182,8 @@ export default async function ({
           ...snapshot,
           blockNumber: event.block.number,
           chainId: pool.chainId,
+          createdAt: BigInt(Math.floor(Date.now() / 1000)),
+          updatedAt: BigInt(Math.floor(Date.now() / 1000)),
           vault: pool.contractAddress,
         })
         .onConflictDoUpdate(snapshot)
@@ -291,12 +294,15 @@ export default async function ({
                 asset: pool.asset,
                 chainId: pool.chainId,
                 contractAddress: pool.yieldPool,
+                createdAt: BigInt(Math.floor(Date.now() / 1000)),
                 lastUpdated: event.block.timestamp,
                 name: 'Unknown',
+                updatedAt: BigInt(Math.floor(Date.now() / 1000)),
               })
               .onConflictDoUpdate({
                 apy: baseAPY,
                 lastUpdated: event.block.timestamp,
+                updatedAt: BigInt(Math.floor(Date.now() / 1000)),
               })
           }
         }

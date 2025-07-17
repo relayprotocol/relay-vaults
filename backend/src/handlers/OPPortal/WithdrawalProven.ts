@@ -21,6 +21,7 @@ export default async function ({
       expectedFinalizationTimestamp: event.block.timestamp + delay,
       nativeBridgeStatus: 'PROVEN',
       opProofTxHash: event.transaction.hash,
+      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
     })
     .where(
       and(eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash))

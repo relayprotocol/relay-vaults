@@ -43,6 +43,7 @@ export default async function ({
       bridgeFee: bridgeFeeInBps,
       chainId: context.chain.id,
       coolDown: origin.coolDown,
+      createdAt: BigInt(Math.floor(Date.now() / 1000)),
       curator: origin.curator,
       currentOutstandingDebt: BigInt(0),
       maxDebt: origin.maxDebt,
@@ -50,11 +51,13 @@ export default async function ({
       originChainId,
       pool: poolAddress as `0x${string}`,
       proxyBridge: origin.proxyBridge as `0x${string}`,
+      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
     })
     .onConflictDoUpdate({
       bridgeFee: bridgeFeeInBps,
       coolDown: origin.coolDown,
       curator: origin.curator,
       maxDebt: origin.maxDebt,
+      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
     })
 }

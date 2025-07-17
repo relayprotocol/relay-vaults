@@ -36,7 +36,9 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
       // simple deposit wont work as it deposits to an alias by default
       // we have to create a retryable ticket to deposit to the L1 bridge proxy
       INBOX.createRetryableTicket{ value: msg.value }(
-        L1_BRIDGE_PROXY, // to
+        // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy  
+        // on the vault chain - it is not necessarily on an L1
+        L1_BRIDGE_PROXY, // to 
         amount, // l2CallValue
         maxSubmissionCost, // maxSubmissionCost
         address(this), // excessFeeRefundAddress
@@ -55,6 +57,8 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
 
       ROUTER.outboundTransferCustomRefund{ value: msg.value }(
         l1Currency, // L1 erc20 address
+        // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy  
+        // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY, // receives token on L2
         amount, // token amount

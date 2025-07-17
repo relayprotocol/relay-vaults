@@ -30,13 +30,12 @@ task('deploy:bridge', 'Deploy a bridge from the factory.')
 
       if (!proxyBridgeAddress) {
         proxyBridgeAddress = await new Input({
-          message:
-            'Please enter a proxy bridge address on this network or type enter to deploy a new one:',
+          message: 'Please enter a proxy bridge address on this network:',
           name: 'proxyBridgeAddress',
         }).run()
         // Err, we need to deploy one here!
         if (!proxyBridgeAddress) {
-          proxyBridgeAddress = await run('deploy:bridge-proxy', {})
+          throw new Error('Proxy bridge address is required.')
         }
       }
 

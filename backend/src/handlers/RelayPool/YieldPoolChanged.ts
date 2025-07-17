@@ -26,7 +26,7 @@ export default async function ({
   await context.db.sql
     .update(relayPool)
     .set({
-      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+      updatedAt: new Date(),
       yieldPool: event.args.newPool as `0x${string}`,
     })
     .where(

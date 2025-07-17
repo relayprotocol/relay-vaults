@@ -57,7 +57,7 @@ export default async function ({
     })
     .set({
       outstandingDebt: newDebt,
-      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+      updatedAt: new Date(),
     })
 
   await context.db
@@ -69,6 +69,6 @@ export default async function ({
     })
     .set({
       currentOutstandingDebt: newOriginDebt,
-      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+      updatedAt: new Date(),
     })
 }

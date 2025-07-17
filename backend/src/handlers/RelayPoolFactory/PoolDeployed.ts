@@ -100,15 +100,15 @@ export default async function ({
       // @ts-expect-error - context.chain.id is not properly typed in Ponder
       chainId: context.chain.id,
       contractAddress: thirdPartyPool as `0x${string}`,
-      createdAt: BigInt(Math.floor(Date.now() / 1000)),
+      createdAt: new Date(),
       lastUpdated: BigInt(event.block.timestamp),
       name: yieldName,
-      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+      updatedAt: new Date(),
     })
     .onConflictDoUpdate({
       lastUpdated: BigInt(event.block.timestamp),
       name: yieldName,
-      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+      updatedAt: new Date(),
     })
 
   // Create relay pool with its own name and symbol fetched from the relay pool contract.
@@ -119,7 +119,7 @@ export default async function ({
       // @ts-expect-error - context.chain.id is not properly typed in Ponder
       chainId: context.chain.id,
       contractAddress: pool as `0x${string}`,
-      createdAt: BigInt(Math.floor(Date.now() / 1000)),
+      createdAt: new Date(),
       createdAtBlock: event.block.number,
       curator: owner as `0x${string}`,
       decimals: decimals as number,
@@ -129,7 +129,7 @@ export default async function ({
       totalAssets: BigInt(0),
       totalBridgeFees: BigInt(0),
       totalShares: BigInt(0),
-      updatedAt: BigInt(Math.floor(Date.now() / 1000)),
+      updatedAt: new Date(),
       yieldPool: thirdPartyPool as `0x${string}`,
     })
     .onConflictDoNothing()

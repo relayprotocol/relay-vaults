@@ -1,5 +1,5 @@
 import { index, onchainTable, primaryKey, relations } from 'ponder'
-
+import { sql } from 'drizzle-orm'
 /**
  * Track yield pools
  * - apy: Annual Percentage Yield in basis points
@@ -15,10 +15,10 @@ export const yieldPool = onchainTable(
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     lastUpdated: t.bigint().notNull(),
     name: t.text().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
   }),
   (table) => ({
     assetIdx: index().on(table.asset),
@@ -53,7 +53,7 @@ export const relayPool = onchainTable(
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     createdAtBlock: t.bigint().notNull(),
     curator: t.hex().notNull(),
     decimals: t.integer().notNull().default(18),
@@ -63,7 +63,7 @@ export const relayPool = onchainTable(
     totalAssets: t.bigint().notNull(),
     totalBridgeFees: t.bigint().notNull(),
     totalShares: t.bigint().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
     yieldPool: t.hex().notNull(),
   }),
   (table) => ({
@@ -84,7 +84,7 @@ export const poolOrigin = onchainTable(
     bridgeFee: t.integer().notNull(),
     chainId: t.integer().notNull(),
     coolDown: t.integer().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     curator: t.hex().notNull(),
     currentOutstandingDebt: t.bigint().notNull(),
     maxDebt: t.bigint().notNull(),
@@ -92,7 +92,7 @@ export const poolOrigin = onchainTable(
     originChainId: t.integer().notNull(),
     pool: t.hex().notNull(),
     proxyBridge: t.hex().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
   }),
   (table) => ({
     originIdx: index().on(table.originChainId, table.originBridge),
@@ -136,13 +136,13 @@ export const poolAction = onchainTable(
     assets: t.bigint().notNull(),
     blockNumber: t.bigint().notNull(),
     chainId: t.integer().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     relayPool: t.hex().notNull(),
     shares: t.bigint().notNull(),
     timestamp: t.bigint().notNull(),
     transactionHash: t.hex().notNull(),
     type: t.text().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
     user: t.hex().notNull(),
   }),
   (table) => ({
@@ -162,13 +162,13 @@ export const userBalance = onchainTable(
   'user_balance',
   (t) => ({
     chainId: t.integer().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     lastUpdated: t.bigint().notNull(),
     relayPool: t.hex().notNull(),
     shareBalance: t.bigint().notNull(),
     totalDeposited: t.bigint().notNull(),
     totalWithdrawn: t.bigint().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
     wallet: t.hex().notNull(),
   }),
   (table) => ({
@@ -204,10 +204,10 @@ export const relayBridge = onchainTable(
     asset: t.hex().notNull(),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     createdAtBlock: t.bigint().notNull(),
     transferNonce: t.bigint().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
   }),
   (table) => ({
     assetIdx: index().on(table.asset),
@@ -269,7 +269,7 @@ export const bridgeTransaction = onchainTable(
     amount: t.bigint(),
     arbTransactionIndex: t.bigint(),
     asset: t.hex(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     destinationPoolAddress: t.hex(),
     destinationPoolChainId: t.integer(),
     destinationRecipient: t.hex(),
@@ -287,7 +287,7 @@ export const bridgeTransaction = onchainTable(
     originSender: t.hex(),
     originTimestamp: t.bigint(),
     originTxHash: t.hex(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
     zksyncWithdrawalHash: t.hex(),
   }),
   (table) => ({
@@ -323,10 +323,10 @@ export const vaultSnapshot = onchainTable(
   (t) => ({
     blockNumber: t.bigint().notNull(),
     chainId: t.integer().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     sharePrice: t.numeric().notNull(),
     timestamp: t.bigint().notNull(),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
     vault: t.hex().notNull(),
     yieldPool: t.hex().notNull(),
     yieldPoolSharePrice: t.numeric().notNull(),
@@ -383,10 +383,10 @@ export const timelock = onchainTable(
     cancellers: t.text().array().notNull().default([]),
     chainId: t.integer().notNull(),
     contractAddress: t.hex().notNull(),
-    createdAt: t.bigint().notNull(),
+    createdAt: t.timestamp().notNull(),
     executors: t.text().array().notNull().default([]),
     proposers: t.text().array().notNull().default([]),
-    updatedAt: t.bigint().notNull(),
+    updatedAt: t.timestamp().notNull(),
   }),
   (table) => ({
     pk: primaryKey({

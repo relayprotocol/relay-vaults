@@ -50,6 +50,7 @@ export default async function ({
       .set({
         totalAssets: relayTotalAssets,
         totalShares: relayTotalShares,
+        updatedAt: new Date(),
       }),
 
     // Record pool action
@@ -59,6 +60,7 @@ export default async function ({
         assets,
         blockNumber,
         chainId: context.chain.id,
+        createdAt: new Date(),
         owner: event.log.address,
         receiver: event.log.address,
         relayPool: event.log.address,
@@ -66,6 +68,7 @@ export default async function ({
         timestamp,
         transactionHash,
         type: 'DEPOSIT',
+        updatedAt: new Date(),
         user: owner,
       })
       .onConflictDoNothing(),
@@ -75,16 +78,19 @@ export default async function ({
     .insert(userBalance)
     .values({
       chainId: context.chain.id,
+      createdAt: new Date(),
       lastUpdated: timestamp,
       relayPool: event.log.address,
       shareBalance: shares,
       totalDeposited: assets,
       totalWithdrawn: 0n,
+      updatedAt: new Date(),
       wallet: owner,
     })
     .onConflictDoUpdate((row) => ({
       lastUpdated: timestamp,
       shareBalance: row.shareBalance + shares,
       totalDeposited: row.totalDeposited + assets,
+      updatedAt: new Date(),
     }))
 }

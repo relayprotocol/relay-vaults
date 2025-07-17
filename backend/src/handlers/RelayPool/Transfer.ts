@@ -40,6 +40,7 @@ export default async function ({
       lastUpdated: timestamp,
       shareBalance: user.shareBalance - shares,
       totalWithdrawn: user.totalWithdrawn + assets,
+      updatedAt: new Date(),
     })
 
   // Increase the share balance of the recipient
@@ -47,16 +48,19 @@ export default async function ({
     .insert(userBalance)
     .values({
       chainId: context.network.chainId,
+      createdAt: new Date(),
       lastUpdated: timestamp,
       relayPool: event.log.address,
       shareBalance: shares,
       totalDeposited: assets,
       totalWithdrawn: 0n,
+      updatedAt: new Date(),
       wallet: to,
     })
     .onConflictDoUpdate((row) => ({
       lastUpdated: timestamp,
       shareBalance: row.shareBalance + shares,
       totalDeposited: row.totalDeposited + assets,
+      updatedAt: new Date(),
     }))
 }

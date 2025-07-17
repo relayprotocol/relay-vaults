@@ -408,24 +408,59 @@ export class RelayVaultService {
   }
 
   /**
-   * Get origin bridge address for a specific pool and origin chain
+   * Get origin bridge address with sufficient available debt
+   * for a specific pool and origin chain
    *
    * @param chainId - The chain ID where the pool is deployed
    * @param poolAddress - The pool's contract address
    * @param originChainId - The origin chain ID
+   * @param amount the required amount of additional debt
+   *
    * @returns Promise containing the origin bridge address
    */
   async getOriginBridge(
     poolChainId: number,
-    poolAddress: string,
     originChainId: number,
-    limit = 1
+    currencyAddress: string,
+    amount: bigint,
+    poolLimit: number = 100,
+    originLimit: number = 100
   ) {
-    return this.client.sdk.GetOriginBridge({
-      limit,
+    const res = await this.client.sdk.GetOriginBridge({
+      currencyAddress,
       originChainId,
-      poolAddress,
+      originLimit,
       poolChainId,
+      // over-fetch to allow filtering
+      poolLimit,
     })
+
+    // filter only pool that have available liquidity
+    if (res.data.relayPools) {
+      res.data.relayPools.items = (res.data.relayPools?.items ?? []).filter(
+        (pool: any) => {
+          return (
+            amount < BigInt(pool.totalAssets) - BigInt(pool.outstandingDebt)
+          )
+        }
+      )
+    }
+
+    // for remaining pools, filter origin that have enough available debt
+    const pools = res.data.relayPools?.items ?? []
+    for (const pool of pools) {
+      if (pool.origins?.items) {
+        pool.origins.items = (pool.origins.items ?? [])
+          .filter((origin: any) => {
+            return (
+              BigInt(origin.maxDebt) >
+              amount + BigInt(origin.currentOutstandingDebt)
+            )
+          })
+          .slice(0, originLimit)
+      }
+    }
+
+    return res
   }
 }

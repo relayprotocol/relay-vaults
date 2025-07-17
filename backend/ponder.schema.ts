@@ -1,5 +1,5 @@
 import { index, onchainTable, primaryKey, relations } from 'ponder'
-import { sql } from 'drizzle-orm'
+
 /**
  * Track yield pools
  * - apy: Annual Percentage Yield in basis points

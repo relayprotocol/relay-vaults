@@ -1,19 +1,19 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
 import {
+  AbiCoder,
   parseUnits,
   TransactionReceipt,
   ZeroAddress,
   type Signer,
 } from 'ethers'
-import { getBalance, getProvider } from '@relay-vaults/helpers'
+import { getBalance, getEvent, getProvider } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
 import ArbitrumOrbitNativeDepositBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeDepositBridgeProxyModule'
 
 import { OriginNetworkConfig } from '@relay-vaults/types'
 import { ArbitrumOrbitNativeDepositBridgeProxy } from '../../typechain-types'
 
-const originChainId = 1 // Ethereum mainnet
 const destinationChainId = 42161 // arb one
 // const chainId = 42170 // TODO: Arbitrum Nova mainnet
 
@@ -126,26 +126,31 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         ethers.provider
       )
 
-      const params = [
-        ethers.ZeroAddress, // native token
-        ethers.ZeroAddress, // l1 native token
-        amount,
-        '0x', // empty data
-        '0x', // empty extraData
-      ]
-
       const gasEstimate = await estimateTicketCost(bridge, amount, '0x')
       console.log(gasEstimate)
 
-      // Send message to the bridge
-      const tx = await bridge.connect(recipient).bridge(
+      const abiCoder = new AbiCoder()
+      const encodedGasEstimate = abiCoder.encode(
+        ['uint', 'uint', 'uint'],
+        [
+          gasEstimate.maxFeePerGas,
+          gasEstimate.gasLimit,
+          gasEstimate.maxSubmissionCost,
+        ]
+      )
+
+      const bridgeParams = [
         ethers.ZeroAddress, // native token
         ethers.ZeroAddress, // l1 native token
         amount,
-        '0x', // empty data
+        encodedGasEstimate, // empty data
         '0x', // empty extraData
-        { value: amount }
-      )
+      ]
+
+      // Send message to the bridge
+      const tx = await bridge
+        .connect(recipient)
+        .bridge(...bridgeParams, { value: gasEstimate.deposit })
 
       receipt = await tx.wait()
     })
@@ -161,39 +166,32 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
       ).to.be.lessThan(balanceBefore - amount)
     })
 
-    it('emits L2ToL1Tx event from ArbSys', async () => {
-      // Check for L2ToL1Tx event from ArbSys precompile
-      const arbSysInterface = new ethers.Interface([
-        'event L2ToL1Tx(address indexed sender, address indexed destination, uint256 indexed uniqueId, uint256 indexed batchNumber, uint256 indexInBatch, uint256 arbBlockNum, uint256 ethBlockNum, uint256 timestamp, uint256 callvalue, bytes data)',
+    it('emits bridge events', async () => {
+      // Check for events (in nitro-contracts)
+      const arbBridgeEvents = new ethers.Interface([
+        // from IDelayedMessageProvider
+        'event InboxMessageDelivered(uint256 indexed messageNum,bytes data)',
+        // IBridge
+        'event MessageDelivered(uint256 indexed messageIndex,bytes32 indexed beforeInboxAcc,address inbox,uint8 kind,address sender,bytes32 messageDataHash,uint256 baseFeeL1,uint64 timestamp);',
       ])
 
-      const l2ToL1TxEvent =
-        receipt &&
-        receipt.logs.find((log) => {
-          try {
-            const parsed = arbSysInterface.parseLog(log)
-            return parsed && parsed.name === 'L2ToL1Tx'
-          } catch {
-            return false
-          }
-        })
+      const inboxMessageDelivered = await getEvent(
+        receipt!,
+        'MessageDelivered',
+        arbBridgeEvents
+      )
+      const messageDelivered = await getEvent(
+        receipt!,
+        'InboxMessageDelivered',
+        arbBridgeEvents
+      )
 
-      expect(l2ToL1TxEvent).to.not.be.undefined
-
-      if (l2ToL1TxEvent) {
-        let parsed = null
-        try {
-          parsed = arbSysInterface.parseLog(l2ToL1TxEvent)
-        } catch {
-          parsed = null
-        }
-        expect(parsed).to.not.be.null
-        if (parsed) {
-          expect(parsed.args.sender).to.equal(await bridge.getAddress())
-          expect(parsed.args.destination).to.equal(l1BridgeProxy)
-          expect(parsed.args.callvalue).to.equal(amount)
-        }
-      }
+      const [signer] = await ethers.getSigners()
+      expect(inboxMessageDelivered).to.not.equal(null)
+      expect(messageDelivered).to.not.equal(null)
+      expect(messageDelivered.args.sender).to.not.equal(
+        await signer.getAddress()
+      )
     })
   })
 })

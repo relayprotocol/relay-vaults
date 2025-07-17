@@ -16,6 +16,8 @@ export default async function ({
     .values({
       chainId: context.chain.id,
       contractAddress: event.log.address as `0x${string}`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
     .onConflictDoNothing()
 
@@ -43,13 +45,14 @@ export default async function ({
   })
 
   if (rolesByHash[event.args.role] === 'CANCELLER_ROLE') {
-    // Get all the cancellers, concat that one and update!
+    // Get all the cancellers, remove that one and update!
     const cancellersSet = new Set(t.cancellers)
     cancellersSet.delete(event.args.account)
     await context.db.sql
       .update(timelock)
       .set({
         cancellers: Array.from(cancellersSet),
+        updatedAt: new Date(),
       })
       .where(
         and(
@@ -64,6 +67,7 @@ export default async function ({
       .update(timelock)
       .set({
         executors: Array.from(executorsSet),
+        updatedAt: new Date(),
       })
       .where(
         and(
@@ -78,6 +82,7 @@ export default async function ({
       .update(timelock)
       .set({
         proposers: Array.from(proposersSet),
+        updatedAt: new Date(),
       })
       .where(
         and(

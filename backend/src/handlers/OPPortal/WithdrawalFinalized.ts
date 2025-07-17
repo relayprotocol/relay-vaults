@@ -15,6 +15,7 @@ export default async function ({
       finalizationTimestamp: event.block.timestamp,
       nativeBridgeFinalizedTxHash: event.transaction.hash,
       nativeBridgeStatus: 'FINALIZED',
+      updatedAt: new Date(),
     })
     .where(eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash))
 }

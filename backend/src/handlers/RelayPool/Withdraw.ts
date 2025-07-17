@@ -50,6 +50,7 @@ export default async function ({
       .set({
         totalAssets: relayTotalAssets,
         totalShares: relayTotalShares,
+        updatedAt: new Date(),
       }),
 
     // Record pool action
@@ -59,14 +60,13 @@ export default async function ({
         assets,
         blockNumber,
         chainId: context.chain.id,
-        id: `${transactionHash}-${event.log.logIndex}`,
-        owner,
-        receiver,
+        createdAt: new Date(),
         relayPool: event.log.address,
         shares,
         timestamp,
         transactionHash,
         type: 'WITHDRAW',
+        updatedAt: new Date(),
         user: owner,
       })
       .onConflictDoNothing(),
@@ -90,5 +90,6 @@ export default async function ({
       lastUpdated: timestamp,
       shareBalance: user.shareBalance - shares,
       totalWithdrawn: user.totalWithdrawn + assets,
+      updatedAt: new Date(),
     })
 }

@@ -16,10 +16,10 @@ export default async function ({
       asset: asset as `0x${string}`,
       chainId: context.chain.id,
       contractAddress: bridge as `0x${string}`,
-      createdAt: event.block.timestamp,
+      createdAt: new Date(),
       createdAtBlock: event.block.number,
       transferNonce: BigInt(0),
-      updatedAt: event.block.timestamp,
+      updatedAt: new Date(),
     })
     .onConflictDoNothing()
 }

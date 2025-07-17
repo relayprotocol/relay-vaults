@@ -30,4 +30,7 @@ interface IL1GatewayRouter {
         bytes calldata _data
     ) external payable returns (bytes memory);
 
+
+    function calculateL2TokenAddress(address l1ERC20) external view returns (address);
+
 }

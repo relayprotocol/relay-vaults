@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {BridgeProxy} from "../BridgeProxy.sol";
 import {IL1GatewayRouter} from "../../interfaces/arb/IArbL1GatewayRouter.sol";
 import {IInbox} from "../../interfaces/arb/IInbox.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
   error AssetMismatch(address expected, address actual);
@@ -45,14 +46,21 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         "" // data
       );
     } else {
-      ROUTER.outboundTransferCustomRefund(
-        l1Currency,
+      address l2token = ROUTER.calculateL2TokenAddress(l1Currency);
+      if (l2token != asset) {
+        revert AssetMismatch(l2token, asset);
+      }
+
+      IERC20(l1Currency).approve(address(0xB2535b988dcE19f9D71dfB22dB6da744aCac21bf), amount);
+
+      ROUTER.outboundTransferCustomRefund{ value: msg.value }(
+        l1Currency, // L1 erc20 address
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
-        L1_BRIDGE_PROXY,
-        amount,
+        L1_BRIDGE_PROXY, // receives token on L2
+        amount, // token amount
         gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
-        maxFeePerGas, // Gas price for L2 execution
-        "" // Extra data
+        maxFeePerGas, // Gas price bid for L2 execution
+        abi.encode(maxSubmissionCost, bytes("")) // Extra data,
       );
     }
   }

@@ -4515,12 +4515,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts-upgradeable@npm:5.3.0":
-  version: 5.3.0
-  resolution: "@openzeppelin/contracts-upgradeable@npm:5.3.0"
+"@openzeppelin/contracts-upgradeable@npm:5.4.0":
+  version: 5.4.0
+  resolution: "@openzeppelin/contracts-upgradeable@npm:5.4.0"
   peerDependencies:
-    "@openzeppelin/contracts": 5.3.0
-  checksum: 10/048eb2862aa23dba6f548ba5332e1ec9282c1dd6e73125156c1d918f5e7f48b8a0e0f405d0f7e4e74794d2cea3dd9e7901a146ac315a325730dcd38f99c2a3d9
+    "@openzeppelin/contracts": 5.4.0
+  checksum: 10/7480b67aeef88d3f99578ad53c60b459dad24b21db7805bf20fbcf1be228f9eb9d12066ee0323193e658cdb0c67aa14993b890723efd6b1a501ff2ddd4e8bf16
   languageName: node
   linkType: hard
 
@@ -4981,7 +4981,7 @@ __metadata:
     "@nomicfoundation/hardhat-toolbox": "npm:6.0.0"
     "@nomicfoundation/hardhat-verify": "npm:2.0.12"
     "@openzeppelin/contracts": "npm:5.3.0"
-    "@openzeppelin/contracts-upgradeable": "npm:5.3.0"
+    "@openzeppelin/contracts-upgradeable": "npm:5.4.0"
     "@relay-vaults/helpers": "workspace:*"
     "@safe-global/api-kit": "npm:3.0.2"
     "@safe-global/protocol-kit": "npm:6.0.5"

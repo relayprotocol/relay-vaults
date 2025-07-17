@@ -31,7 +31,6 @@ while IFS=$'\n' read -r line; do
         continue    
     fi
 
-    echo $line
     # if no 'dd' field is present, replace ponder 'service' field
     if $(echo $line | jq 'has("service")'); then
         service="$LOG_PREFIX"

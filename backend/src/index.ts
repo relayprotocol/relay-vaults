@@ -35,7 +35,6 @@ import RoleRevoked from './handlers/RelayPoolTimelock/RoleRevoked'
 import OwnershipTransferred from './handlers/RelayPool/OwnershipTransferred'
 import YieldPoolChanged from './handlers/RelayPool/YieldPoolChanged'
 import PoolSnapshot from './handlers/PoolSnapshot'
-import './tracer'
 import { logEvent } from './logger'
 
 // ============= Block handlers  =============

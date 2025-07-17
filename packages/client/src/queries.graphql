@@ -435,31 +435,36 @@ query GetAllPoolsBridgeTransactions(
 # Get bridge address for a specific origin
 query GetOriginBridge(
   $poolChainId: Int!
-  $poolAddress: String!
   $originChainId: Int!
-  $limit: Int = 1
+  $currencyAddress: String!
+  $poolLimit: Int
+  $originLimit: Int
 ) {
-  poolOrigins(
-    where: {
-      AND: [
-        { chainId: $poolChainId }
-        { pool: $poolAddress }
-        { originChainId: $originChainId }
-        { maxDebt_gt: "0" }
-      ]
-    }
-    limit: $limit
+  # First find a pool for the currency/chain pair
+  relayPools(
+    where: { AND: [{ chainId: $poolChainId }, { asset: $currencyAddress }] }
+    limit: $poolLimit
   ) {
     items {
-      originBridge
-      proxyBridge
-      originChainId
-      bridgeFee
-      coolDown
-      curator
-      currentOutstandingDebt
-      maxDebt
-      chainId
+      contractAddress
+      totalAssets
+      outstandingDebt
+      origins(
+        where: { AND: [{ originChainId: $originChainId }, { maxDebt_gt: "0" }] }
+        limit: $originLimit
+      ) {
+        items {
+          originBridge
+          proxyBridge
+          originChainId
+          bridgeFee
+          coolDown
+          curator
+          currentOutstandingDebt
+          maxDebt
+          chainId
+        }
+      }
     }
   }
 }

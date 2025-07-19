@@ -3,9 +3,10 @@ import { bridgeTransaction } from 'ponder:schema'
 import { ABIs } from '@relay-vaults/helpers'
 import { BridgeProxy } from '@relay-vaults/abis'
 import networks from '@relay-vaults/networks'
-import { decodeEventLog } from 'viem'
+import { decodeEventLog, TransactionReceipt } from 'viem'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 import { SEVEN_DAYS } from '../../constants'
+import { logError } from '../../logger.js'
 
 export default async function ({
   event,
@@ -22,9 +23,16 @@ export default async function ({
   let opWithdrawalHash
   let arbTransactionIndex
   let zksyncWithdrawalHash
-  const receipt = await context.client.getTransactionReceipt({
-    hash: event.transaction.hash,
-  })
+
+  let receipt: TransactionReceipt
+  try {
+    receipt = await context.client.getTransactionReceipt({
+      hash: event.transaction.hash,
+    })
+  } catch (error) {
+    logError(error)
+    return
+  }
 
   for (const log of receipt.logs) {
     if (

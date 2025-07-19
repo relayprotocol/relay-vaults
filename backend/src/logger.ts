@@ -27,15 +27,7 @@ const logEvent = (ponder, eventName: string, eventHandler) => {
     return eventHandler({ context, event })
   }
 
-  try {
-    ponder.on(eventName, handlerWithLog)
-  } catch (error: any) {
-    logger.error(error.shortMessage, {
-      ...error,
-      service: SERVICE_NAME,
-      time: new Date().getTime(),
-    })
-  }
+  ponder.on(eventName, handlerWithLog)
 }
 
 export { logEvent }

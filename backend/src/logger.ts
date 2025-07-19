@@ -8,6 +8,13 @@ export const logger = createLogger({
   transports: [new transports.Console()],
 })
 
+const logError = (error) => {
+  logger.error(error{
+    ...error,
+    service: SERVICE_NAME,
+    time: new Date().getTime(),
+  })
+}
 const logEvent = (ponder, eventName: string, eventHandler) => {
   const handlerWithLog = ({ event, context }) => {
     logger.info(eventName, {
@@ -27,7 +34,18 @@ const logEvent = (ponder, eventName: string, eventHandler) => {
     return eventHandler({ context, event })
   }
 
-  ponder.on(eventName, handlerWithLog)
+  try {
+    ponder.on(eventName, handlerWithLog)
+  } catch (error: any) {
+    logger.error(
+      error.shortMessage, {
+      ...error,
+      service: SERVICE_NAME,
+      time: new Date().getTime(),
+    })
+  }
+
+  
 }
 
 export { logEvent }

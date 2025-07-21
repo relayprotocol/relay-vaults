@@ -158,8 +158,8 @@ export default async function ({
         ])
 
       // 2. Compute APY values
-      let calculatedVaultAPY = 0
-      let calculatedYieldPoolAPY = 0
+      let vaultAPY: number | null = null
+      let baseAPY: number | null = null
 
       // Calculate vault APY
       try {
@@ -203,15 +203,12 @@ export default async function ({
               BigInt(10 ** pool.decimals)) /
             BigInt(totalShares)
 
-          const vaultAPY = calculateAPY(
+          vaultAPY = calculateAPY(
             Number(adjustedSharePrice),
             Number(vaultRef.sharePrice),
             Number(event.block.timestamp),
             Number(vaultRef.timestamp)
           )
-          if (vaultAPY !== null) {
-            calculatedVaultAPY = vaultAPY
-          }
         }
       } catch (e) {
         logger.error(
@@ -248,15 +245,12 @@ export default async function ({
           yieldRef = rows.length ? rows[0] : null
         }
         if (yieldRef) {
-          const baseAPY = calculateAPY(
+          baseAPY = calculateAPY(
             Number(yieldSharePrice),
             Number(yieldRef.yieldPoolSharePrice ?? yieldRef.price),
             Number(event.block.timestamp),
             Number(yieldRef.timestamp)
           )
-          if (baseAPY !== null) {
-            calculatedYieldPoolAPY = baseAPY
-          }
         }
       } catch (e) {
         logger.error(
@@ -272,19 +266,19 @@ export default async function ({
           contractAddress: pool.contractAddress,
         })
         .set({
-          apy: calculatedVaultAPY,
-          totalAssets: BigInt(totalAssets as unknown as string),
-          totalShares: BigInt(totalShares as unknown as string),
+          apy: vaultAPY ?? 0,
+          totalAssets: BigInt(totalAssets as string),
+          totalShares: BigInt(totalShares as string),
           updatedAt: new Date(),
         })
 
-      // 4. Insert vault snapshot
+      // 4. Insert vault snapshot with APY values
       const snapshot = {
         sharePrice: vaultSharePrice.toString(),
         timestamp: event.block.timestamp,
-        vaultApy: calculatedVaultAPY,
+        vaultApy: vaultAPY ?? 0,
         yieldPool: pool.yieldPool,
-        yieldPoolApy: calculatedYieldPoolAPY,
+        yieldPoolApy: baseAPY ?? 0,
         yieldPoolSharePrice: yieldSharePrice.toString(),
       }
 
@@ -301,11 +295,11 @@ export default async function ({
         .onConflictDoUpdate(snapshot)
 
       // 5. Update yield pool APY
-      if (calculatedYieldPoolAPY !== 0) {
+      if (baseAPY !== null) {
         await context.db
           .insert(yieldPool)
           .values({
-            apy: calculatedYieldPoolAPY,
+            apy: baseAPY,
             asset: pool.asset,
             chainId: pool.chainId,
             contractAddress: pool.yieldPool,
@@ -315,7 +309,7 @@ export default async function ({
             updatedAt: new Date(),
           })
           .onConflictDoUpdate({
-            apy: calculatedYieldPoolAPY,
+            apy: baseAPY,
             lastUpdated: event.block.timestamp,
             updatedAt: new Date(),
           })

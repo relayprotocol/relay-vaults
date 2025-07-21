@@ -2,185 +2,185 @@
 // ABOUTME: Contains smart contract interface definitions and function signatures
 export const IL2SharedBridge = [
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "l1Sender",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'l1Sender',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "l2Receiver",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'l2Receiver',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "l2Token",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'l2Token',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
     ],
-    "name": "FinalizeDeposit",
-    "type": "event"
+    name: 'FinalizeDeposit',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "l2Sender",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'l2Sender',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "l1Receiver",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'l1Receiver',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "l2Token",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: 'l2Token',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
     ],
-    "name": "WithdrawalInitiated",
-    "type": "event"
+    name: 'WithdrawalInitiated',
+    type: 'event',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_l1Sender",
-        "type": "address"
+        internalType: 'address',
+        name: '_l1Sender',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "_l2Receiver",
-        "type": "address"
+        internalType: 'address',
+        name: '_l2Receiver',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "_l1Token",
-        "type": "address"
+        internalType: 'address',
+        name: '_l1Token',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
       },
       {
-        "internalType": "bytes",
-        "name": "_data",
-        "type": "bytes"
-      }
+        internalType: 'bytes',
+        name: '_data',
+        type: 'bytes',
+      },
     ],
-    "name": "finalizeDeposit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'finalizeDeposit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "l1Bridge",
-    "outputs": [
+    inputs: [],
+    name: 'l1Bridge',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "l1SharedBridge",
-    "outputs": [
+    inputs: [],
+    name: 'l1SharedBridge',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_l2Token",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '_l2Token',
+        type: 'address',
+      },
     ],
-    "name": "l1TokenAddress",
-    "outputs": [
+    name: 'l1TokenAddress',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_l1Token",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '_l1Token',
+        type: 'address',
+      },
     ],
-    "name": "l2TokenAddress",
-    "outputs": [
+    name: 'l2TokenAddress',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_l1Receiver",
-        "type": "address"
+        internalType: 'address',
+        name: '_l1Receiver',
+        type: 'address',
       },
       {
-        "internalType": "address",
-        "name": "_l2Token",
-        "type": "address"
+        internalType: 'address',
+        name: '_l2Token',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
+      },
     ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const;
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const

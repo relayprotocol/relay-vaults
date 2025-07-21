@@ -2,116 +2,112 @@
 // ABOUTME: Contains smart contract interface definitions and function signatures
 export const L1Messenger = [
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_bytecodeHash",
-        "type": "bytes32"
-      }
+        indexed: false,
+        internalType: 'bytes32',
+        name: '_bytecodeHash',
+        type: 'bytes32',
+      },
     ],
-    "name": "BytecodeL1PublicationRequested",
-    "type": "event"
+    name: 'BytecodeL1PublicationRequested',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_sender",
-        "type": "address"
+        indexed: true,
+        internalType: 'address',
+        name: '_sender',
+        type: 'address',
       },
       {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "_hash",
-        "type": "bytes32"
+        indexed: true,
+        internalType: 'bytes32',
+        name: '_hash',
+        type: 'bytes32',
       },
       {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "_message",
-        "type": "bytes"
-      }
+        indexed: false,
+        internalType: 'bytes',
+        name: '_message',
+        type: 'bytes',
+      },
     ],
-    "name": "L1MessageSent",
-    "type": "event"
+    name: 'L1MessageSent',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "components": [
-          { "internalType": "uint8", "name": "l2ShardId", "type": "uint8" },
-          { "internalType": "bool", "name": "isService", "type": "bool" },
+        components: [
+          { internalType: 'uint8', name: 'l2ShardId', type: 'uint8' },
+          { internalType: 'bool', name: 'isService', type: 'bool' },
           {
-            "internalType": "uint16",
-            "name": "txNumberInBlock",
-            "type": "uint16"
+            internalType: 'uint16',
+            name: 'txNumberInBlock',
+            type: 'uint16',
           },
-          { "internalType": "address", "name": "sender", "type": "address" },
-          { "internalType": "bytes32", "name": "key", "type": "bytes32" },
-          { "internalType": "bytes32", "name": "value", "type": "bytes32" }
+          { internalType: 'address', name: 'sender', type: 'address' },
+          { internalType: 'bytes32', name: 'key', type: 'bytes32' },
+          { internalType: 'bytes32', name: 'value', type: 'bytes32' },
         ],
-        "indexed": false,
-        "internalType": "structL2ToL1Log",
-        "name": "_l2log",
-        "type": "tuple"
-      }
+        indexed: false,
+        internalType: 'structL2ToL1Log',
+        name: '_l2log',
+        type: 'tuple',
+      },
     ],
-    "name": "L2ToL1LogSent",
-    "type": "event"
+    name: 'L2ToL1LogSent',
+    type: 'event',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "bytes",
-        "name": "_totalL2ToL1PubdataAndStateDiffs",
-        "type": "bytes"
-      }
+        internalType: 'bytes',
+        name: '_totalL2ToL1PubdataAndStateDiffs',
+        type: 'bytes',
+      },
     ],
-    "name": "publishPubdataAndClearState",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'publishPubdataAndClearState',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
-      { "internalType": "bytes32", "name": "_bytecodeHash", "type": "bytes32" }
+    inputs: [
+      { internalType: 'bytes32', name: '_bytecodeHash', type: 'bytes32' },
     ],
-    "name": "requestBytecodeL1Publication",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'requestBytecodeL1Publication',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
-      { "internalType": "bool", "name": "_isService", "type": "bool" },
-      { "internalType": "bytes32", "name": "_key", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "_value", "type": "bytes32" }
+    inputs: [
+      { internalType: 'bool', name: '_isService', type: 'bool' },
+      { internalType: 'bytes32', name: '_key', type: 'bytes32' },
+      { internalType: 'bytes32', name: '_value', type: 'bytes32' },
     ],
-    "name": "sendL2ToL1Log",
-    "outputs": [
+    name: 'sendL2ToL1Log',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "logIdInMerkleTree",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: 'logIdInMerkleTree',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
-      { "internalType": "bytes", "name": "_message", "type": "bytes" }
-    ],
-    "name": "sendToL1",
-    "outputs": [
-      { "internalType": "bytes32", "name": "hash", "type": "bytes32" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const;
+    inputs: [{ internalType: 'bytes', name: '_message', type: 'bytes' }],
+    name: 'sendToL1',
+    outputs: [{ internalType: 'bytes32', name: 'hash', type: 'bytes32' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const

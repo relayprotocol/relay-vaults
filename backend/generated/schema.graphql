@@ -567,7 +567,9 @@ type vaultSnapshot {
   timestamp: BigInt!
   updatedAt: String!
   vault: String!
+  vaultApy: Int!
   yieldPool: String!
+  yieldPoolApy: Int!
   yieldPoolSharePrice: String!
   pool: relayPool
 }
@@ -639,6 +641,14 @@ input vaultSnapshotFilter {
   vault_ends_with: String
   vault_not_starts_with: String
   vault_not_ends_with: String
+  vaultApy: Int
+  vaultApy_not: Int
+  vaultApy_in: [Int]
+  vaultApy_not_in: [Int]
+  vaultApy_gt: Int
+  vaultApy_lt: Int
+  vaultApy_gte: Int
+  vaultApy_lte: Int
   yieldPool: String
   yieldPool_not: String
   yieldPool_in: [String]
@@ -649,6 +659,14 @@ input vaultSnapshotFilter {
   yieldPool_ends_with: String
   yieldPool_not_starts_with: String
   yieldPool_not_ends_with: String
+  yieldPoolApy: Int
+  yieldPoolApy_not: Int
+  yieldPoolApy_in: [Int]
+  yieldPoolApy_not_in: [Int]
+  yieldPoolApy_gt: Int
+  yieldPoolApy_lt: Int
+  yieldPoolApy_gte: Int
+  yieldPoolApy_lte: Int
   yieldPoolSharePrice: String
   yieldPoolSharePrice_not: String
   yieldPoolSharePrice_in: [String]

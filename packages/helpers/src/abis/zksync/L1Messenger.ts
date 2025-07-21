@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const L1Messenger = [
   {
     "anonymous": false,
     "inputs": [
@@ -112,4 +114,4 @@
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+] as const;

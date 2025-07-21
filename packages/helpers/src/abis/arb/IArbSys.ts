@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const IArbSys = [
   {
     "inputs": [
       {
@@ -368,4 +370,4 @@
     "stateMutability": "payable",
     "type": "function"
   }
-]
+] as const;

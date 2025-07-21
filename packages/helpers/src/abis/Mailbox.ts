@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const Mailbox = [
   {
     "inputs": [
       { "internalType": "uint32", "name": "_localDomain", "type": "uint32" }
@@ -479,4 +481,4 @@
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+] as const;

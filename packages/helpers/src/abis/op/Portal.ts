@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const Portal = [
   { "stateMutability": "nonpayable", "type": "constructor", "inputs": [] },
   {
     "type": "event",
@@ -366,4 +368,4 @@
     "outputs": [{ "name": "", "internalType": "string", "type": "string" }]
   },
   { "stateMutability": "payable", "type": "receive" }
-]
+] as const;

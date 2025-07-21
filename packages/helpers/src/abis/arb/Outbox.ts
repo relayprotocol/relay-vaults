@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const Outbox = [
   {
     "inputs": [],
     "name": "AlreadyInit",
@@ -534,4 +536,4 @@
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+] as const;

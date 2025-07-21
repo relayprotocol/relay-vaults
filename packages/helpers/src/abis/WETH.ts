@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const WETH = [
   {
     "constant": true,
     "inputs": [],
@@ -150,4 +152,4 @@
     "name": "Withdrawal",
     "type": "event"
   }
-]
+] as const;

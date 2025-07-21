@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const ERC20 = [
   {
     "constant": true,
     "inputs": [],
@@ -219,4 +221,4 @@
     "name": "Transfer",
     "type": "event"
   }
-]
+] as const;

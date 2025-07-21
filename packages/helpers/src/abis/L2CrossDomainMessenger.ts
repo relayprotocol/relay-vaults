@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const L2CrossDomainMessenger = [
   {
     "inputs": [
       {
@@ -252,4 +254,4 @@
     "stateMutability": "view",
     "type": "function"
   }
-]
+] as const;

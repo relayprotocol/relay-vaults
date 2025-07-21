@@ -1,4 +1,6 @@
-[
+// ABOUTME: ABI JSON converted to TypeScript format
+// ABOUTME: Contains smart contract interface definitions and function signatures
+export const L1StandardBridge = [
   { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
     "anonymous": false,
@@ -572,4 +574,4 @@
     "type": "function"
   },
   { "stateMutability": "payable", "type": "receive" }
-]
+] as const;

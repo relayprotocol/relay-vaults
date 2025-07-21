@@ -14,6 +14,7 @@ import INodeInterface from './arb/INodeInterface.json'
 import Outbox from './arb/Outbox.json'
 import RollupMainnet from './arb/RollupMainnet.json'
 import RollupSepolia from './arb/RollupSepolia.json'
+import BlastPortal from './op/BlastPortal.json'
 import L1StandardBridge from './op/L1StandardBridge.json'
 import Portal from './op/Portal.json'
 import Portal2 from './op/Portal2.json'
@@ -36,6 +37,7 @@ export { INodeInterface }
 export { Outbox }
 export { RollupMainnet }
 export { RollupSepolia }
+export { BlastPortal }
 export { L1StandardBridge }
 export { Portal }
 export { Portal2 }

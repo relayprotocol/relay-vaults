@@ -1,4 +1,4 @@
-import { createConfig, factory } from 'ponder'
+import { createConfig, factory, mergeAbis } from 'ponder'
 import { ABIs } from '@relay-vaults/helpers'
 import { http } from 'viem'
 
@@ -289,7 +289,7 @@ export default createConfig({
     },
 
     OPPortal: {
-      abi: ABIs.Portal2 as Abi,
+      abi: mergeAbis([ABIs.Portal2, ABIs.BlastPortal]) as Abi,
       chain: oPPortalChains,
     },
 

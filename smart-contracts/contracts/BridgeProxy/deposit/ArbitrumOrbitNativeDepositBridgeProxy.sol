@@ -6,6 +6,13 @@ import {IL1GatewayRouter} from "../../interfaces/arb/IArbL1GatewayRouter.sol";
 import {IInbox} from "../../interfaces/arb/IInbox.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+/**
+ * @title ArbitrumOrbitNativeDepositBridgeProxy
+ * This contract is used to deposit native and ERC20 tokens from an L1 origin chain to an Arbitrum destination chain.
+ * For native token, it creates a retryable ticket to the L2 bridge proxy.
+ * For ERC20 token, it creates an outbound transfer to deposit to the L2 bridge proxy.
+ * @notice The L1_BRIDGE_PROXY is the address of the destination bridge proxy on the vault chain - it is not necessarily on an L1.
+ */
 contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
   error AssetMismatch(address expected, address actual);
 

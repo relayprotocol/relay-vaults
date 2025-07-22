@@ -29,14 +29,12 @@ export async function checkArbitrumStatus(
     filterNodeConfirmed.concat(filterAssertionConfirmed),
   ] as TopicFilter
 
-  console.log(filter)
   // look back in blocks
   const events = await contract.queryFilter(
     filter,
     -chain.bridges.arbitrum!.parent.maxBlocksWithoutProof!
   )
 
-  console.log(events)
   if (events.length === 0) {
     return {
       error: 'No new rollup nodes found',

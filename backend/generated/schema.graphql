@@ -43,8 +43,10 @@ type yieldPool {
   asset: String!
   chainId: Int!
   contractAddress: String!
+  createdAt: String!
   lastUpdated: BigInt!
   name: String!
+  updatedAt: String!
 }
 
 type yieldPoolPage {
@@ -92,6 +94,16 @@ input yieldPoolFilter {
   contractAddress_ends_with: String
   contractAddress_not_starts_with: String
   contractAddress_not_ends_with: String
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   lastUpdated: BigInt
   lastUpdated_not: BigInt
   lastUpdated_in: [BigInt]
@@ -110,6 +122,16 @@ input yieldPoolFilter {
   name_ends_with: String
   name_not_starts_with: String
   name_not_ends_with: String
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
 }
 
 type relayPool {
@@ -117,7 +139,7 @@ type relayPool {
   asset: String!
   chainId: Int!
   contractAddress: String!
-  createdAt: BigInt!
+  createdAt: String!
   createdAtBlock: BigInt!
   curator: timelock
   decimals: Int!
@@ -127,7 +149,7 @@ type relayPool {
   totalAssets: BigInt!
   totalBridgeFees: BigInt!
   totalShares: BigInt!
-  updatedAt: BigInt!
+  updatedAt: String!
   yieldPool: String!
   origins(where: poolOriginFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): poolOriginPage
   snapshots(where: vaultSnapshotFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): vaultSnapshotPage
@@ -138,8 +160,10 @@ type timelock {
   cancellers: [String!]!
   chainId: Int!
   contractAddress: String!
+  createdAt: String!
   executors: [String!]!
   proposers: [String!]!
+  updatedAt: String!
 }
 
 type poolOriginPage {
@@ -152,6 +176,7 @@ type poolOrigin {
   bridgeFee: Int!
   chainId: Int!
   coolDown: Int!
+  createdAt: String!
   curator: String!
   currentOutstandingDebt: BigInt!
   maxDebt: BigInt!
@@ -159,6 +184,7 @@ type poolOrigin {
   originChainId: Int!
   pool: relayPool
   proxyBridge: String!
+  updatedAt: String!
   transactions(where: bridgeTransactionFilter, orderBy: String, orderDirection: String, before: String, after: String, limit: Int): bridgeTransactionPage
 }
 
@@ -172,6 +198,7 @@ type bridgeTransaction {
   amount: BigInt
   arbTransactionIndex: BigInt
   asset: String
+  createdAt: String!
   destinationPoolAddress: String
   destinationPoolChainId: Int
   destinationRecipient: String
@@ -189,6 +216,7 @@ type bridgeTransaction {
   originSender: String
   originTimestamp: BigInt
   originTxHash: String
+  updatedAt: String!
   zksyncWithdrawalHash: String
   origin: poolOrigin
 }
@@ -222,6 +250,16 @@ input bridgeTransactionFilter {
   asset_ends_with: String
   asset_not_starts_with: String
   asset_not_ends_with: String
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   destinationPoolAddress: String
   destinationPoolAddress_not: String
   destinationPoolAddress_in: [String]
@@ -380,6 +418,16 @@ input bridgeTransactionFilter {
   originTxHash_ends_with: String
   originTxHash_not_starts_with: String
   originTxHash_not_ends_with: String
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
   zksyncWithdrawalHash: String
   zksyncWithdrawalHash_not: String
   zksyncWithdrawalHash_in: [String]
@@ -419,6 +467,16 @@ input poolOriginFilter {
   coolDown_lt: Int
   coolDown_gte: Int
   coolDown_lte: Int
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   curator: String
   curator_not: String
   curator_in: [String]
@@ -483,6 +541,16 @@ input poolOriginFilter {
   proxyBridge_ends_with: String
   proxyBridge_not_starts_with: String
   proxyBridge_not_ends_with: String
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
 }
 
 type vaultSnapshotPage {
@@ -494,10 +562,14 @@ type vaultSnapshotPage {
 type vaultSnapshot {
   blockNumber: BigInt!
   chainId: Int!
+  createdAt: String!
   sharePrice: String!
   timestamp: BigInt!
+  updatedAt: String!
   vault: String!
+  vaultApy: Int!
   yieldPool: String!
+  yieldPoolApy: Int!
   yieldPoolSharePrice: String!
   pool: relayPool
 }
@@ -521,6 +593,16 @@ input vaultSnapshotFilter {
   chainId_lt: Int
   chainId_gte: Int
   chainId_lte: Int
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   sharePrice: String
   sharePrice_not: String
   sharePrice_in: [String]
@@ -539,6 +621,16 @@ input vaultSnapshotFilter {
   timestamp_lt: BigInt
   timestamp_gte: BigInt
   timestamp_lte: BigInt
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
   vault: String
   vault_not: String
   vault_in: [String]
@@ -549,6 +641,14 @@ input vaultSnapshotFilter {
   vault_ends_with: String
   vault_not_starts_with: String
   vault_not_ends_with: String
+  vaultApy: Int
+  vaultApy_not: Int
+  vaultApy_in: [Int]
+  vaultApy_not_in: [Int]
+  vaultApy_gt: Int
+  vaultApy_lt: Int
+  vaultApy_gte: Int
+  vaultApy_lte: Int
   yieldPool: String
   yieldPool_not: String
   yieldPool_in: [String]
@@ -559,6 +659,14 @@ input vaultSnapshotFilter {
   yieldPool_ends_with: String
   yieldPool_not_starts_with: String
   yieldPool_not_ends_with: String
+  yieldPoolApy: Int
+  yieldPoolApy_not: Int
+  yieldPoolApy_in: [Int]
+  yieldPoolApy_not_in: [Int]
+  yieldPoolApy_gt: Int
+  yieldPoolApy_lt: Int
+  yieldPoolApy_gte: Int
+  yieldPoolApy_lte: Int
   yieldPoolSharePrice: String
   yieldPoolSharePrice_not: String
   yieldPoolSharePrice_in: [String]
@@ -579,11 +687,13 @@ type userBalancePage {
 
 type userBalance {
   chainId: Int!
+  createdAt: String!
   lastUpdated: BigInt!
   relayPool: String!
   shareBalance: BigInt!
   totalDeposited: BigInt!
   totalWithdrawn: BigInt!
+  updatedAt: String!
   wallet: String!
   pool: relayPool
 }
@@ -599,6 +709,16 @@ input userBalanceFilter {
   chainId_lt: Int
   chainId_gte: Int
   chainId_lte: Int
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   lastUpdated: BigInt
   lastUpdated_not: BigInt
   lastUpdated_in: [BigInt]
@@ -641,6 +761,16 @@ input userBalanceFilter {
   totalWithdrawn_lt: BigInt
   totalWithdrawn_gte: BigInt
   totalWithdrawn_lte: BigInt
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
   wallet: String
   wallet_not: String
   wallet_in: [String]
@@ -698,14 +828,16 @@ input relayPoolFilter {
   contractAddress_ends_with: String
   contractAddress_not_starts_with: String
   contractAddress_not_ends_with: String
-  createdAt: BigInt
-  createdAt_not: BigInt
-  createdAt_in: [BigInt]
-  createdAt_not_in: [BigInt]
-  createdAt_gt: BigInt
-  createdAt_lt: BigInt
-  createdAt_gte: BigInt
-  createdAt_lte: BigInt
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   createdAtBlock: BigInt
   createdAtBlock_not: BigInt
   createdAtBlock_in: [BigInt]
@@ -784,14 +916,16 @@ input relayPoolFilter {
   totalShares_lt: BigInt
   totalShares_gte: BigInt
   totalShares_lte: BigInt
-  updatedAt: BigInt
-  updatedAt_not: BigInt
-  updatedAt_in: [BigInt]
-  updatedAt_not_in: [BigInt]
-  updatedAt_gt: BigInt
-  updatedAt_lt: BigInt
-  updatedAt_gte: BigInt
-  updatedAt_lte: BigInt
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
   yieldPool: String
   yieldPool_not: String
   yieldPool_in: [String]
@@ -808,11 +942,13 @@ type poolAction {
   assets: BigInt!
   blockNumber: BigInt!
   chainId: Int!
+  createdAt: String!
   relayPool: String!
   shares: BigInt!
   timestamp: BigInt!
   transactionHash: String!
   type: String!
+  updatedAt: String!
   user: String!
 }
 
@@ -849,6 +985,16 @@ input poolActionFilter {
   chainId_lt: Int
   chainId_gte: Int
   chainId_lte: Int
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   relayPool: String
   relayPool_not: String
   relayPool_in: [String]
@@ -895,6 +1041,16 @@ input poolActionFilter {
   type_ends_with: String
   type_not_starts_with: String
   type_not_ends_with: String
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
   user: String
   user_not: String
   user_in: [String]
@@ -911,10 +1067,10 @@ type relayBridge {
   asset: String!
   chainId: Int!
   contractAddress: String!
-  createdAt: BigInt!
+  createdAt: String!
   createdAtBlock: BigInt!
   transferNonce: BigInt!
-  updatedAt: BigInt!
+  updatedAt: String!
 }
 
 type relayBridgePage {
@@ -954,14 +1110,16 @@ input relayBridgeFilter {
   contractAddress_ends_with: String
   contractAddress_not_starts_with: String
   contractAddress_not_ends_with: String
-  createdAt: BigInt
-  createdAt_not: BigInt
-  createdAt_in: [BigInt]
-  createdAt_not_in: [BigInt]
-  createdAt_gt: BigInt
-  createdAt_lt: BigInt
-  createdAt_gte: BigInt
-  createdAt_lte: BigInt
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   createdAtBlock: BigInt
   createdAtBlock_not: BigInt
   createdAtBlock_in: [BigInt]
@@ -978,14 +1136,16 @@ input relayBridgeFilter {
   transferNonce_lt: BigInt
   transferNonce_gte: BigInt
   transferNonce_lte: BigInt
-  updatedAt: BigInt
-  updatedAt_not: BigInt
-  updatedAt_in: [BigInt]
-  updatedAt_not_in: [BigInt]
-  updatedAt_gt: BigInt
-  updatedAt_lt: BigInt
-  updatedAt_gte: BigInt
-  updatedAt_lte: BigInt
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
 }
 
 type timelockPage {
@@ -1019,6 +1179,16 @@ input timelockFilter {
   contractAddress_ends_with: String
   contractAddress_not_starts_with: String
   contractAddress_not_ends_with: String
+  createdAt: String
+  createdAt_not: String
+  createdAt_in: [String]
+  createdAt_not_in: [String]
+  createdAt_contains: String
+  createdAt_not_contains: String
+  createdAt_starts_with: String
+  createdAt_ends_with: String
+  createdAt_not_starts_with: String
+  createdAt_not_ends_with: String
   executors: [String]
   executors_not: [String]
   executors_has: String
@@ -1027,4 +1197,14 @@ input timelockFilter {
   proposers_not: [String]
   proposers_has: String
   proposers_not_has: String
+  updatedAt: String
+  updatedAt_not: String
+  updatedAt_in: [String]
+  updatedAt_not_in: [String]
+  updatedAt_contains: String
+  updatedAt_not_contains: String
+  updatedAt_starts_with: String
+  updatedAt_ends_with: String
+  updatedAt_not_starts_with: String
+  updatedAt_not_ends_with: String
 }

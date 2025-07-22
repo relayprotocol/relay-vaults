@@ -30,6 +30,7 @@ export default async function ({
     .update(relayPool)
     .set({
       curator: newOwner as `0x${string}`,
+      updatedAt: new Date(),
     })
     .where(
       and(
@@ -44,6 +45,8 @@ export default async function ({
     .values({
       chainId: context.chain.id,
       contractAddress: newOwner as `0x${string}`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
     .onConflictDoNothing()
 

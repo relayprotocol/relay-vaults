@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "ponder dev",
-    "start": "ponder start --log-format json --log-level warn --schema $IMAGE_TAG | sh $(pwd)/bin/log-format.sh",
+    "start": "ponder start --log-format json --log-level warn --views-schema=vaults-view --schema $IMAGE_TAG | sh $(pwd)/bin/log-format.sh",
     "start-http-only": "ponder serve --log-level info --log-format json --schema $IMAGE_TAG | sh $(pwd)/bin/log-format.sh",
     "db": "ponder db",
     "codegen": "ponder codegen",

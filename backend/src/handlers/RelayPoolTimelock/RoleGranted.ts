@@ -16,6 +16,8 @@ export default async function ({
     .values({
       chainId: context.chain.id,
       contractAddress: event.log.address as `0x${string}`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
     .onConflictDoNothing()
 
@@ -50,6 +52,7 @@ export default async function ({
         cancellers: Array.from(
           new Set(t.cancellers.concat(event.args.account))
         ),
+        updatedAt: new Date(),
       })
       .where(
         and(
@@ -62,6 +65,7 @@ export default async function ({
       .update(timelock)
       .set({
         executors: Array.from(new Set(t.executors.concat(event.args.account))),
+        updatedAt: new Date(),
       })
       .where(
         and(
@@ -74,6 +78,7 @@ export default async function ({
       .update(timelock)
       .set({
         proposers: Array.from(new Set(t.proposers.concat(event.args.account))),
+        updatedAt: new Date(),
       })
       .where(
         and(

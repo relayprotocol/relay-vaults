@@ -463,4 +463,55 @@ export class RelayVaultService {
 
     return res
   }
+
+  /**
+   * Get vault snapshots within a specific time interval
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @param options - Query options
+   * @param options.days - Number of days back from now to fetch snapshots (default: 7)
+   * @param options.timestampFrom - Custom start timestamp (overrides days parameter)
+   * @param options.timestampTo - Custom end timestamp (default: current time)
+   * @param options.limit - Maximum number of snapshots to fetch (default: 1000)
+   * @param options.orderBy - Field to order by (default: "timestamp")
+   * @param options.orderDirection - Order direction (default: "asc" for chronological)
+   * @returns Promise containing vault snapshots with APY data and timestamps
+   */
+  async getVaultSnapshots(
+    vaultAddress: string,
+    chainId: number,
+    options: {
+      days?: number
+      timestampFrom?: string | number
+      timestampTo?: string | number
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+    } = {}
+  ) {
+    const {
+      days = 7,
+      timestampFrom,
+      timestampTo = Math.floor(Date.now() / 1000),
+      limit = 1000,
+      orderBy = 'timestamp',
+      orderDirection = 'asc',
+    } = options
+
+    // Calculate timestampFrom if not provided
+    const calculatedTimestampFrom = timestampFrom
+      ? timestampFrom.toString()
+      : (Number(timestampTo) - days * 24 * 60 * 60).toString()
+
+    return this.client.sdk.GetVaultSnapshots({
+      chainId,
+      limit,
+      orderBy,
+      orderDirection,
+      timestampFrom: calculatedTimestampFrom,
+      timestampTo: timestampTo.toString(),
+      vaultAddress,
+    })
+  }
 }

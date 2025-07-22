@@ -30,7 +30,6 @@ jobs:
               owner: 'relayprotocol',
               repo: 'relay-vaults',
             })
-            console.log(release.tag_name)
             return release.tag_name
 
       - name: Set up Docker Buildx

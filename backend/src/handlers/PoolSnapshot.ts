@@ -10,17 +10,29 @@ import { logger } from '../logger.js'
  * Helper to calculate APY from share price data.
  */
 function calculateAPY(
-  currentPrice: number,
-  startingPrice: number,
+  currentPriceStr: string,
+  startingPriceStr: string,
   currentTimestamp: number,
-  startingTimestamp: number
+  startingTimestamp: number,
+  decimals: number
 ): number | null {
-  if (startingPrice <= 0 || currentPrice === startingPrice) return null
+  const currentPrice = BigInt(currentPriceStr)
+  const startingPrice = BigInt(startingPriceStr)
+
+  if (startingPrice <= 0n || currentPrice === startingPrice) return null
   const deltaTime = currentTimestamp - startingTimestamp
   if (deltaTime <= 0) return null
+
+  const PRECISION = BigInt(10) ** BigInt(decimals)
+  const growthFactor = (currentPrice * PRECISION) / startingPrice
+
   const secondsPerYear = 365 * 24 * 3600
-  const growthFactor = currentPrice / startingPrice
-  const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
+  const exponent = secondsPerYear / deltaTime
+
+  // Convert to number only for final Math.pow calculation
+  const growthFactorNum = Number(growthFactor) / Number(PRECISION)
+  const apyValue = Math.pow(growthFactorNum, exponent) - 1
+
   return Math.round(apyValue * Number(BPS_DIVISOR))
 }
 
@@ -204,10 +216,11 @@ export default async function ({
             BigInt(totalShares)
 
           vaultAPY = calculateAPY(
-            Number(adjustedSharePrice),
-            Number(vaultRef.sharePrice),
+            adjustedSharePrice.toString(),
+            vaultRef.sharePrice,
             Number(event.block.timestamp),
-            Number(vaultRef.timestamp)
+            Number(vaultRef.timestamp),
+            pool.decimals
           )
         }
       } catch (e) {
@@ -223,6 +236,7 @@ export default async function ({
           context.db,
           {
             chainId: pool.chainId,
+            vaultAddress: pool.contractAddress,
             yieldPoolAddress: pool.yieldPool,
           },
           Number(event.block.timestamp),
@@ -232,6 +246,7 @@ export default async function ({
         // Fallback to oldest available snapshot if no interval match found
         if (!yieldRef) {
           const baseWhere = and(
+            eq(vaultSnapshot.vault, pool.contractAddress),
             eq(vaultSnapshot.yieldPool, pool.yieldPool),
             eq(vaultSnapshot.chainId, pool.chainId)
           )
@@ -246,10 +261,11 @@ export default async function ({
         }
         if (yieldRef) {
           baseAPY = calculateAPY(
-            Number(yieldSharePrice),
-            Number(yieldRef.yieldPoolSharePrice ?? yieldRef.price),
+            yieldSharePrice.toString(),
+            yieldRef.yieldPoolSharePrice || '0',
             Number(event.block.timestamp),
-            Number(yieldRef.timestamp)
+            Number(yieldRef.timestamp),
+            pool.decimals
           )
         }
       } catch (e) {

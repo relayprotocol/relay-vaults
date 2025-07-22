@@ -432,6 +432,48 @@ query GetAllPoolsBridgeTransactions(
   }
 }
 
+# Get vault snapshots for a specific time range
+query GetVaultSnapshots(
+  $vaultAddress: String!
+  $chainId: Int!
+  $timestampFrom: BigInt!
+  $timestampTo: BigInt!
+  $limit: Int
+  $orderBy: String
+  $orderDirection: String
+) {
+  vaultSnapshots(
+    where: {
+      vault: $vaultAddress
+      chainId: $chainId
+      timestamp_gte: $timestampFrom
+      timestamp_lte: $timestampTo
+    }
+    limit: $limit
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    items {
+      timestamp
+      vaultApy
+      yieldPoolApy
+      sharePrice
+      yieldPoolSharePrice
+      blockNumber
+      chainId
+      vault
+      yieldPool
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
 # Get bridge address for a specific origin
 query GetOriginBridge(
   $poolChainId: Int!

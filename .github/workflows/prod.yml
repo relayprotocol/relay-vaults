@@ -36,7 +36,7 @@ jobs:
             type=raw,value=latest
             type=raw,value=${{ github.ref_name }}-${{ github.sha }}
             type=raw,value=${{ steps.get-latest-release.outputs.tag }}
-            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ github.sha }}
             type=sha
 
       - name: Set up Docker Buildx

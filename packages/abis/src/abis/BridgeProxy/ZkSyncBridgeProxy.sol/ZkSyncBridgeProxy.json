@@ -181,6 +181,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
     ],
     "name": "bridge",

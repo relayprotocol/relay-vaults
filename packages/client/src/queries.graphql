@@ -431,3 +431,82 @@ query GetAllPoolsBridgeTransactions(
     totalCount
   }
 }
+
+# Get vault snapshots for a specific time range
+query GetVaultSnapshots(
+  $vaultAddress: String!
+  $chainId: Int!
+  $timestampFrom: BigInt!
+  $timestampTo: BigInt!
+  $limit: Int
+  $orderBy: String
+  $orderDirection: String
+) {
+  vaultSnapshots(
+    where: {
+      vault: $vaultAddress
+      chainId: $chainId
+      timestamp_gte: $timestampFrom
+      timestamp_lte: $timestampTo
+    }
+    limit: $limit
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    items {
+      timestamp
+      vaultApy
+      yieldPoolApy
+      sharePrice
+      yieldPoolSharePrice
+      blockNumber
+      chainId
+      vault
+      yieldPool
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# Get bridge address for a specific origin
+query GetOriginBridge(
+  $poolChainId: Int!
+  $originChainId: Int!
+  $currencyAddress: String!
+  $poolLimit: Int
+  $originLimit: Int
+) {
+  # First find a pool for the currency/chain pair
+  relayPools(
+    where: { AND: [{ chainId: $poolChainId }, { asset: $currencyAddress }] }
+    limit: $poolLimit
+  ) {
+    items {
+      contractAddress
+      totalAssets
+      outstandingDebt
+      origins(
+        where: { AND: [{ originChainId: $originChainId }, { maxDebt_gt: "0" }] }
+        limit: $originLimit
+      ) {
+        items {
+          originBridge
+          proxyBridge
+          originChainId
+          bridgeFee
+          coolDown
+          curator
+          currentOutstandingDebt
+          maxDebt
+          chainId
+        }
+      }
+    }
+  }
+}

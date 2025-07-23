@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -18,12 +19,11 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 1868,
-  earliestBlock: 5241889,
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
   name: 'Soneium',
   parentChainId: 1,
-  rpc: ['https://rpc.soneium.org'],
+  rpc: createRpcConfig(1868, ['https://rpc.soneium.org']),
   stack: 'optimism',
 }
 

@@ -1,6 +1,7 @@
 {
   "name": "@relay-vaults/types",
   "version": "0.0.1",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "Relay Protocol shared types",
@@ -27,7 +28,7 @@
   },
   "devDependencies": {
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
-    "eslint": "9.28.0",
+    "eslint": "9.31.0",
     "typescript": "5.8.3"
   }
 }

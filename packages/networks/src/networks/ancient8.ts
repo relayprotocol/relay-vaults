@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -6,7 +7,7 @@ const config: OriginNetworkConfig = {
     weth: '0x4200000000000000000000000000000000000006',
   },
   bridges: {
-    optimismAlt: {
+    optimism: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
@@ -18,12 +19,11 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 888888888,
-  earliestBlock: 19096500,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   name: 'Ancient8',
   parentChainId: 1,
-  rpc: ['https://rpc.ancient8.gg'],
+  rpc: createRpcConfig(888888888, ['https://rpc.ancient8.gg']),
   stack: 'optimism-alt',
 }
 

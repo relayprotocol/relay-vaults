@@ -11,10 +11,6 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
   .addOptionalParam('bridge', 'The Relay Bridge contract address')
   .addOptionalParam('amount', 'the amount of tokens to send')
   .addOptionalParam('recipient', 'The recipient of the funds (default to self)')
-  .addOptionalParam(
-    'destChain',
-    'the id of destination chain (default to eth mainnet)'
-  )
   .setAction(
     async (
       { bridge: bridgeAddress, amount, recipient, asset },
@@ -91,9 +87,15 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       }
 
       if (!amount) {
+        const fullBalance = await getBalance(
+          userAddress,
+          assetAddress,
+          rawEthers.provider
+        )
+
         const amountInDecimals = await new Input({
           default: '0.1',
-          message: 'How much do you want to bridge?',
+          message: `How much do you want to bridge (full balance ${rawEthers.formatUnits(fullBalance, decimals)})?`,
           name: 'amount',
         }).run()
         amount = rawEthers.parseUnits(amountInDecimals, decimals)
@@ -140,18 +142,18 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       if (l1BridgeProxyAddress !== origin.proxyBridge) {
         throw Error(
-          `The L1 bridge proxy (${l1BridgeProxyAddress}) does not match the origin (${origin.proxyBridge})`
+          `The bridge proxy on the pool's chain (${l1BridgeProxyAddress}) does not match the origin (${origin.proxyBridge})`
         )
       }
 
       if (
         !(
           l1BridgeProxyPool === poolAddress &&
-          l1BridgeProxyChainId === poolChainId
+          Number(l1BridgeProxyChainId) === Number(poolChainId)
         )
       ) {
         throw Error(
-          `The L1 bridge proxy (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} = ${poolChainId})`
+          `The bridge proxy on the pool's chain (${l1BridgeProxyPool} - ${l1BridgeProxyChainId}) does not match the pool (${poolAddress} - ${poolChainId})`
         )
       }
 
@@ -192,6 +194,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         amount,
         Math.floor(new Date().getTime() / 1000) - Number(origin.coolDown) - 60, // 1 minute before
       ])
+
       const handleTx = await pool.handle.populateTransaction(
         chainId,
         rawEthers.zeroPadValue(bridgeAddress, 32),
@@ -231,7 +234,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         throw Error('Not implemented yet')
       }
 
-      const tx = await bridge.bridge(amount, recipient, l1Asset, l1Gas, {
+      const tx = await bridge.bridge(amount, recipient, l1Asset, l1Gas, '0x', {
         value,
       })
 

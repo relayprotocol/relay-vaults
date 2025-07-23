@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -12,6 +13,7 @@ const config: OriginNetworkConfig = {
         routerGateway: '0x21903d3F8176b1a0c17E953Cd896610Be9fFDFa8',
       },
       parent: {
+        inbox: '0xc4448b71118c9071Bcb9734A0EAc55D18A153949',
         maxBlocksWithoutProof: 500,
         outbox: '0xD4B80C3D7240325D18E645B49e6535A3Bf95cc58',
         rollup: '0xE7E8cCC7c381809BDC4b213CE44016300707B7Bd',
@@ -20,14 +22,11 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 42170,
-  earliestBlock: 83282400,
   hyperlaneMailbox: '0x3a867fCfFeC2B790970eeBDC9023E75B0a172aa7',
   isTestnet: false,
   name: 'Arbitrum Nova',
   parentChainId: 1,
-  rpc: process.env.RPC_42170
-    ? [process.env.RPC_42170]
-    : ['https://nova.arbitrum.io/rpc'],
+  rpc: createRpcConfig(42170, ['https://nova.arbitrum.io/rpc']),
   stack: 'arbitrum',
 }
 

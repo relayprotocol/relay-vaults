@@ -16,11 +16,16 @@ RUN yarn install
 # Build all packages
 RUN yarn build
 
+#
 # Production stage
+#
 FROM node:22.16.0-alpine3.21 AS runner
 
 # Set working directory
 WORKDIR /app
+
+# Add jq for json log parsing
+RUN apk add --no-cache jq
 
 # Enable corepack and set yarn version
 RUN corepack enable && corepack prepare yarn@4.6.0 --activate
@@ -34,10 +39,14 @@ RUN yarn install --mode=skip-build
 # Set environment variables
 ENV NODE_ENV=production
 
-
 # Add specific ARGs and persist them into ENV
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
+
+# Datadog tracing configuration (can be overridden at runtime)
+ENV SERVICE_NAME=vaults-backend
+ENV DATADOG_AGENT_URL=http://localhost:8126
+ENV PONDER_TELEMETRY_DISABLED=true
 
 # Expose port
 EXPOSE 3000

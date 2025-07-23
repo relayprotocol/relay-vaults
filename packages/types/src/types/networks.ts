@@ -1,31 +1,29 @@
 export interface VaultNetworkConfig extends NetworkConfig {
+  curator?: string
   uniswapV3: {
     universalRouterAddress: string
   }
+}
+
+type optimismBedrockParent = {
+  portalProxy: string
+  gameFactory: string
+  maxTimeWithoutProof: number // duration before a OP bedrock chain is deemed halted/inactive
+}
+
+type optimismLegacyParent = {
+  outputOracle: string
+  portalProxy: string
+  maxBlocksWithoutProof: number // number of blocks before a chain is deemed halted/inactive
 }
 
 export interface OriginNetworkConfig extends NetworkConfig {
   parentChainId: number
   stack: 'optimism' | 'optimism-alt' | 'arbitrum' | 'zksync' | 'zkevm'
   withdrawalDelay?: number // withdrawal delay in seconds
-
   bridges: {
     optimism?: {
-      parent: {
-        portalProxy: string
-        gameFactory: string
-        maxTimeWithoutProof: number // duration before a OP bedrock chain is deemed halted/inactive
-      }
-      child: {
-        messagePasser: string
-      }
-    }
-    optimismAlt?: {
-      parent: {
-        outputOracle: string
-        portalProxy: string
-        maxBlocksWithoutProof: number // number of blocks before a chain is deemed halted/inactive
-      }
+      parent: optimismBedrockParent | optimismLegacyParent
       child: {
         messagePasser: string
       }
@@ -35,6 +33,7 @@ export interface OriginNetworkConfig extends NetworkConfig {
         outbox: string
         rollup: string
         routerGateway: string
+        inbox: string
         maxBlocksWithoutProof: number // number of L1 blocks before a chain is deemed halted/inactive
       }
       child: {

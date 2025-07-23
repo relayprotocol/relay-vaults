@@ -3,9 +3,10 @@ import { bridgeTransaction } from 'ponder:schema'
 import { ABIs } from '@relay-vaults/helpers'
 import { BridgeProxy } from '@relay-vaults/abis'
 import networks from '@relay-vaults/networks'
-import { decodeEventLog } from 'viem'
+import { decodeEventLog, TransactionReceipt } from 'viem'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 import { SEVEN_DAYS } from '../../constants'
+import { logError } from '../../logger.js'
 
 export default async function ({
   event,
@@ -22,9 +23,16 @@ export default async function ({
   let opWithdrawalHash
   let arbTransactionIndex
   let zksyncWithdrawalHash
-  const receipt = await context.client.getTransactionReceipt({
-    hash: event.transaction.hash,
-  })
+
+  let receipt: TransactionReceipt
+  try {
+    receipt = await context.client.getTransactionReceipt({
+      hash: event.transaction.hash,
+    })
+  } catch (error) {
+    logError(error)
+    return
+  }
 
   for (const log of receipt.logs) {
     if (
@@ -45,21 +53,6 @@ export default async function ({
       networkConfig.bridges.optimism?.child.messagePasser &&
       log.address.toLowerCase() ===
         networkConfig.bridges.optimism?.child.messagePasser.toLowerCase()
-    ) {
-      const decodedEvent = decodeEventLog({
-        abi: ABIs.L2ToL1MessagePasser,
-        data: log.data,
-        topics: log.topics,
-      })
-
-      if (decodedEvent.eventName === 'MessagePassed') {
-        opWithdrawalHash = decodedEvent.args.withdrawalHash
-      }
-    } else if (
-      // OP Alt event
-      networkConfig.bridges.optimismAlt?.child.messagePasser &&
-      log.address.toLowerCase() ===
-        networkConfig.bridges.optimismAlt?.child.messagePasser.toLowerCase()
     ) {
       const decodedEvent = decodeEventLog({
         abi: ABIs.L2ToL1MessagePasser,
@@ -129,7 +122,6 @@ export default async function ({
     destinationRecipient: recipient,
     expectedFinalizationTimestamp: event.block.timestamp + delay,
     hyperlaneMessageId,
-    nativeBridgeStatus: 'INITIATED',
     opWithdrawalHash,
     originSender: sender,
     originTimestamp: event.block.timestamp,
@@ -140,9 +132,12 @@ export default async function ({
   await context.db
     .insert(bridgeTransaction)
     .values({
+      createdAt: new Date(),
+      nativeBridgeStatus: 'INITIATED',
       nonce,
       originBridgeAddress: event.log.address,
       originChainId: context.chain.id,
+      updatedAt: new Date(),
       ...values,
     })
     .onConflictDoUpdate(values)

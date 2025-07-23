@@ -198,7 +198,6 @@ task(
   .addOptionalParam('role', 'The role')
   .addParam('recipient', 'The address of the new owner')
   .setAction(async ({ pool: poolAddress, recipient, role }, { ethers }) => {
-    const [user] = await ethers.getSigners()
     const { chainId } = await ethers.provider.getNetwork()
 
     if (!poolAddress) {

@@ -19,6 +19,8 @@
 
 import { Context, Event } from 'ponder:registry'
 import { relayPool, poolOrigin } from 'ponder:schema'
+import { logger } from '../../logger.js'
+import { chainIdFromDomainId } from '@relay-vaults/helpers'
 
 export default async function ({
   event,
@@ -28,10 +30,24 @@ export default async function ({
   context: Context<'RelayPool:OutstandingDebtChanged'>
 }) {
   // Extract the new debt value from the event arguments.
-  const { newDebt, origin, newOriginDebt } = event.args
+  const { newDebt, newOriginDebt, origin } = event.args
+
+  const originChainId = chainIdFromDomainId(origin.chainId) // Convert from domainId to string
 
   // Retrieve the pool using the contract address from the event log.
   const poolAddress = event.log.address
+
+  const pool = await context.db.find(relayPool, {
+    chainId: context.chain.id,
+    contractAddress: poolAddress,
+  })
+
+  if (!pool) {
+    logger.info(
+      `Skipping outstanding debt change for non-curated pool ${poolAddress}`
+    )
+    return
+  }
 
   // Update the relay pool record with the new outstanding debt.
   await context.db
@@ -41,16 +57,18 @@ export default async function ({
     })
     .set({
       outstandingDebt: newDebt,
+      updatedAt: new Date(),
     })
 
   await context.db
     .update(poolOrigin, {
       chainId: context.chain.id,
       originBridge: origin.bridge,
-      originChainId: origin.chainId,
+      originChainId,
       pool: poolAddress,
     })
     .set({
       currentOutstandingDebt: newOriginDebt,
+      updatedAt: new Date(),
     })
 }

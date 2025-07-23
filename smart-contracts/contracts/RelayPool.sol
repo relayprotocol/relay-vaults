@@ -362,12 +362,13 @@ contract RelayPool is ERC4626, Ownable {
   /// @dev Only callable by owner, typically a timelock contract
   /// @param origin The origin parameters including chain ID, addresses, and limits
   function addOrigin(OriginParam memory origin) public onlyOwner {
+    OriginSettings memory oldOrigin = authorizedOrigins[origin.chainId][origin.bridge];
     authorizedOrigins[origin.chainId][origin.bridge] = OriginSettings({
       chainId: origin.chainId,
       bridge: origin.bridge,
       curator: origin.curator, // We can't use msg.sender here, because we recommend msg.sender to be a timelock and this address should be able to disable an origin quickly!
       maxDebt: origin.maxDebt,
-      outstandingDebt: 0,
+      outstandingDebt: oldOrigin.outstandingDebt,
       proxyBridge: origin.proxyBridge,
       bridgeFee: origin.bridgeFee,
       coolDown: origin.coolDown

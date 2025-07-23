@@ -1,7 +1,15 @@
 import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
-import '@matterlabs/hardhat-zksync'
+
+// the  '@matterlabs/hardhat-zksync' is not compatible with hardhat 2.26.1
+// and will throw "Error HH209 : Redefinition of task verify:etherscan failed" when used
+// so we import libs individually
+import '@matterlabs/hardhat-zksync-deploy'
+import '@matterlabs/hardhat-zksync-solc'
+import '@matterlabs/hardhat-zksync-node'
+import '@matterlabs/hardhat-zksync-ethers'
+
 import { networks as nets } from '@relay-vaults/networks'
 import registry from '@hyperlane-xyz/registry'
 import 'solidity-docgen'
@@ -84,7 +92,7 @@ if (forkUrl) {
 const etherscan = {
   apiKey: {
     abstract: 'UU3TIIASIBJ6GZ5NIHG2T5QDY2PVUGTCMI',
-    arbitrumOne: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
+    arbitrum: 'KXH3DFHJP9T71ZZXVHKB33IMFKISQ5NIN1',
     arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
     avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
     base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
@@ -97,6 +105,7 @@ const etherscan = {
     optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
     polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
     polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
+    rari: 'default-api-key',
     sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     swellchain: 'default-api-key',
     xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
@@ -171,6 +180,7 @@ const config: HardhatUserConfig = {
       // contracts/RelayBridge.sol:189:5
       suppressedErrors: ['sendtransfer'],
     },
+    version: '1.5.15',
   },
   zksyncAnvil: {
     version: '0.6.1',

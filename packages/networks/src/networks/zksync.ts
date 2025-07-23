@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -26,8 +27,6 @@ const config: OriginNetworkConfig = {
 
   chainId: 324,
 
-  earliestBlock: 0,
-
   hyperlaneMailbox: '0xf44AdA86a1f765A938d404699B8070Dd47bD2431',
 
   isTestnet: false,
@@ -35,9 +34,7 @@ const config: OriginNetworkConfig = {
   name: 'Zksync',
 
   parentChainId: 1,
-  rpc: process.env.RPC_324
-    ? [process.env.RPC_324]
-    : ['https://mainnet.era.zksync.io'],
+  rpc: createRpcConfig(324, ['https://mainnet.era.zksync.io']),
   stack: 'zksync',
 }
 

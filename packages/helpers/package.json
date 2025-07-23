@@ -1,6 +1,7 @@
 {
   "name": "@relay-vaults/helpers",
   "version": "1.0.0",
+  "private": true,
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -16,15 +17,17 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@bgd-labs/aave-address-book": "4.22.3",
-    "ethers": "6.14.3",
-    "zksync-ethers": "6.17.0"
+    "@bgd-labs/aave-address-book": "4.25.1",
+    "ethers": "6.15.0",
+    "vitest": "3.2.4",
+    "zksync-ethers": "6.19.0"
   },
   "scripts": {
     "start": "tsc --watch",
     "clean": "rm -rf dist",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
+    "test": "vitest",
     "build": "yarn build:index && yarn build:copy-abis && yarn build:ts",
     "build:ts": "tsup src/index.ts --dts --format esm,cjs",
     "build:copy-abis": "cp -r src/abis dist/src/abis",
@@ -36,7 +39,7 @@
     "@types/copyfiles": "2",
     "@types/fs-extra": "11",
     "copyfiles": "2.4.1",
-    "eslint": "9.28.0",
+    "eslint": "9.31.0",
     "fs-extra": "11.3.0",
     "tsup": "8.5.0",
     "typescript": "5.8.3"

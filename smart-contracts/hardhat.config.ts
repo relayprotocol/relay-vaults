@@ -2,7 +2,9 @@ import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
 
-// the  '@matterlabs/hardhat-zksync' is not compatible
+// the  '@matterlabs/hardhat-zksync' is not compatible with hardhat 2.26.1
+// and will throw "Error HH209 : Redefinition of task verify:etherscan failed" when used
+// so we import libs individually
 import '@matterlabs/hardhat-zksync-deploy'
 import '@matterlabs/hardhat-zksync-solc'
 import '@matterlabs/hardhat-zksync-node'

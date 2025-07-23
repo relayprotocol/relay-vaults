@@ -1,7 +1,13 @@
 import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-toolbox'
 import '@nomicfoundation/hardhat-ignition-ethers'
-import '@matterlabs/hardhat-zksync'
+
+// the  '@matterlabs/hardhat-zksync' is not compatible
+import '@matterlabs/hardhat-zksync-deploy'
+import '@matterlabs/hardhat-zksync-solc'
+import '@matterlabs/hardhat-zksync-node'
+import '@matterlabs/hardhat-zksync-ethers'
+
 import { networks as nets } from '@relay-vaults/networks'
 import registry from '@hyperlane-xyz/registry'
 import 'solidity-docgen'
@@ -172,6 +178,7 @@ const config: HardhatUserConfig = {
       // contracts/RelayBridge.sol:189:5
       suppressedErrors: ['sendtransfer'],
     },
+    version: '1.5.15',
   },
   zksyncAnvil: {
     version: '0.6.1',

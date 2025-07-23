@@ -4052,10 +4052,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts@npm:5.3.0":
-  version: 5.3.0
-  resolution: "@openzeppelin/contracts@npm:5.3.0"
-  checksum: 10/d1b379a56eb443b6ba2caee51f38bd3e2d5be2d3b2c935a083ed3311c106aa3903d7cadd05457999b24175bb80cc405dd6c70297c9825b15471b38051021fd88
+"@openzeppelin/contracts@npm:5.4.0":
+  version: 5.4.0
+  resolution: "@openzeppelin/contracts@npm:5.4.0"
+  checksum: 10/4f7f926ebd98279ba8223cae5d2cd38e0806e60e3e3a615c9d739ffab870ffab7a1e85f47092faa123c0f26d1699ca15252adea8bcdcaf360b21781acc93b218
   languageName: node
   linkType: hard
 
@@ -4392,7 +4392,7 @@ __metadata:
     "@nomicfoundation/hardhat-toolbox": "npm:6.1.0"
     "@nomicfoundation/hardhat-verify": "npm:2.0.12"
     "@nomicfoundation/ignition-core": "npm:0.15.13"
-    "@openzeppelin/contracts": "npm:5.3.0"
+    "@openzeppelin/contracts": "npm:5.4.0"
     "@openzeppelin/contracts-upgradeable": "npm:5.4.0"
     "@relay-vaults/helpers": "workspace:*"
     "@safe-global/api-kit": "npm:3.0.2"

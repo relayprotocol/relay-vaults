@@ -1,7 +1,7 @@
 {
   "name": "@relay-vaults/client",
   "description": "Client library for interacting with the Relay Protocol API",
-  "version": "0.1.2",
+  "version": "0.1.9",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -18,8 +18,8 @@
     "src"
   ],
   "scripts": {
-    "build": "yarn generate-types && tsup src/index.ts --dts --format esm,cjs",
-    "dev": "yarn generate-types && tsup src/index.ts --watch --dts --format esm,cjs",
+    "build": "yarn generate-types && vite build && tsc -p tsconfig.build.json",
+    "dev": "yarn generate-types && vite build --watch",
     "clean": "rm -rf dist src/generated",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
@@ -39,9 +39,10 @@
     "@relay-vaults/eslint-config": "workspace:^",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "@types/node": "22.15.32",
-    "eslint": "9.28.0",
+    "@types/node": "24.1.0",
+    "eslint": "9.31.0",
     "tsup": "8.5.0",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vite": "7.0.5"
   }
 }

@@ -49,7 +49,8 @@ task(
       })
       .catch(async (e) => {
         process.stdout.write('.')
-        if (attempts >= 50) {
+        console.log(e)
+        if (attempts >= 10) {
           console.error(e)
           throw e
         }

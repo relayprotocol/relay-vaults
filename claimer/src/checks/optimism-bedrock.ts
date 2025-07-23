@@ -28,8 +28,7 @@ async function getGame(l1ChainId: number, disputeGameFactoryAddress: string) {
 }
 
 export async function checkOptimismBedrockStatus(
-  chain: OriginNetworkConfig,
-  maxTimeWithoutProof = 3600 * 3
+  chain: OriginNetworkConfig
 ): Promise<L2Status> {
   const disputeGameFactoryAddress = chain.bridges?.optimism?.parent?.gameFactory
 

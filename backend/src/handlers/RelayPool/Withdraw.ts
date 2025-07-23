@@ -1,5 +1,6 @@
 import { Context, Event } from 'ponder:registry'
 import { poolAction, relayPool, userBalance } from 'ponder:schema'
+import { logger } from '../../logger.js'
 
 export default async function ({
   event,
@@ -20,7 +21,8 @@ export default async function ({
   })
 
   if (!pool) {
-    throw new Error(`Relay pool ${event.log.address} not found`)
+    logger.info(`Skipping withdraw for non-curated pool ${event.log.address}`)
+    return
   }
 
   // Fetch current state from relay pool
@@ -48,6 +50,7 @@ export default async function ({
       .set({
         totalAssets: relayTotalAssets,
         totalShares: relayTotalShares,
+        updatedAt: new Date(),
       }),
 
     // Record pool action
@@ -57,14 +60,13 @@ export default async function ({
         assets,
         blockNumber,
         chainId: context.chain.id,
-        id: `${transactionHash}-${event.log.logIndex}`,
-        owner,
-        receiver,
+        createdAt: new Date(),
         relayPool: event.log.address,
         shares,
         timestamp,
         transactionHash,
         type: 'WITHDRAW',
+        updatedAt: new Date(),
         user: owner,
       })
       .onConflictDoNothing(),
@@ -88,5 +90,6 @@ export default async function ({
       lastUpdated: timestamp,
       shareBalance: user.shareBalance - shares,
       totalWithdrawn: user.totalWithdrawn + assets,
+      updatedAt: new Date(),
     })
 }

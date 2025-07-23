@@ -3,6 +3,7 @@ import {
   AaveV3Ethereum,
   AaveV3Sepolia,
   AaveV3Optimism,
+  AaveV3Arbitrum,
 } from '@bgd-labs/aave-address-book' // import specific pool
 import { getProvider } from './provider'
 
@@ -13,11 +14,13 @@ export const getAaveStataFactoryAddress = async (chainId: bigint) => {
       return AaveV3Ethereum.LEGACY_STATIC_A_TOKEN_FACTORY
     case '10':
       return AaveV3Optimism.LEGACY_STATIC_A_TOKEN_FACTORY
+    case '42161':
+      return AaveV3Arbitrum.LEGACY_STATIC_A_TOKEN_FACTORY
     case '11155111':
       return AaveV3Sepolia.LEGACY_STATIC_A_TOKEN_FACTORY
     default:
       // TODO: implement addresses switch for all networks
-      throw Error('Missing Stata AAve Pool Factory')
+      throw Error(`Missing Stata AAve Pool Factory for chainId ${chainId}`)
   }
 }
 

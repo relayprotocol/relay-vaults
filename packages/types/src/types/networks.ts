@@ -1,4 +1,5 @@
 export interface VaultNetworkConfig extends NetworkConfig {
+  curator?: string
   uniswapV3: {
     universalRouterAddress: string
   }
@@ -32,6 +33,7 @@ export interface OriginNetworkConfig extends NetworkConfig {
         outbox: string
         rollup: string
         routerGateway: string
+        inbox: string
         maxBlocksWithoutProof: number // number of L1 blocks before a chain is deemed halted/inactive
       }
       child: {

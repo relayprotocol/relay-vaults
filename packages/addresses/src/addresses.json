@@ -35,6 +35,15 @@
   "42170": {
     "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
   },
+  "43111": {
+    "RelayBridgeFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4"
+  },
+  "60808": {
+    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
+  },
+  "81457": {
+    "RelayBridgeFactory": "0x8be9aBBd00C92eae366eD7DB10BD600c79F3C3ee"
+  },
   "7777777": {
     "RelayBridgeFactory": "0x679436B2c2A71d9317a9aC652d06CA2b958B6Cd4"
   },
@@ -43,5 +52,8 @@
   },
   "888888888": {
     "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
+  },
+  "1380012617": {
+    "RelayBridgeFactory": "0x5F36eDb2f100bADa046eB1310175a675DE54aA42"
   }
 }

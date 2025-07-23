@@ -133,22 +133,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "currency",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "l1Asset",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "txParams",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "extraData",
         "type": "bytes"
       }
     ],

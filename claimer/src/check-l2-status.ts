@@ -5,6 +5,7 @@ import { checkOptimismBedrockStatus } from './checks/optimism-bedrock'
 import { checkOptimismStatus } from './checks/optimism'
 import { checkArbitrumStatus } from './checks/arbitrum'
 import { checkZkSyncStatus } from './checks/zksync'
+import { logger } from './logger'
 
 // get all L2/L3 chains
 export async function getL2s() {
@@ -25,32 +26,14 @@ export async function checkL2Chains() {
     try {
       const status = await checkL2Status(Number(chain.chainId))
       if (!status.isUp) {
-        console.log(`\nL2 ${chain.name} ${chain.chainId} is down:`)
-        console.log('------------------')
-        console.log(`Chain is up: ${status.isUp}`)
-
-        if (status.lastProofBlock) {
-          console.log(`Last proof block: ${status.lastProofBlock}`)
-        }
-
-        if (status.lastProofTimestamp) {
-          console.log(
-            `Last proof timestamp: ${new Date(status.lastProofTimestamp * 1000).toISOString()}`
-          )
-        }
-
-        if (status.timeSinceLastProof) {
-          console.log(
-            `Time since last proof: ${status.timeSinceLastProof} seconds`
-          )
-        }
-
-        if (status.error) {
-          console.log(`Error: ${status.error}`)
-        }
+        logger.error({
+          chain,
+          message: 'L2 is down',
+          ...status,
+        })
       }
     } catch (error) {
-      console.log(error)
+      logger.error(error)
     }
   }
 }

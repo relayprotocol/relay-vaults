@@ -67,9 +67,10 @@ export class RelayVaultService {
       originsLimit?: number
       chainIds?: number[]
       curator?: string
+      asset?: string
     } = {}
   ) {
-    const { limit = 25, originsLimit = 10, chainIds, curator } = options
+    const { limit = 25, originsLimit = 10, chainIds, curator, asset } = options
 
     // Build the where filter
     const where: Partial<RelayPoolFilter> = {}
@@ -80,6 +81,10 @@ export class RelayVaultService {
 
     if (curator) {
       where.curator = curator
+    }
+
+    if (asset) {
+      where.asset = asset
     }
 
     const hasFilters = Object.keys(where).length > 0
@@ -399,6 +404,114 @@ export class RelayVaultService {
     return this.client.sdk.GetAllBridgeTransactionsByType({
       limit,
       nativeBridgeStatus,
+    })
+  }
+
+  /**
+   * Get origin bridge address with sufficient available debt
+   * for a specific pool and origin chain
+   *
+   * @param chainId - The chain ID where the pool is deployed
+   * @param poolAddress - The pool's contract address
+   * @param originChainId - The origin chain ID
+   * @param amount the required amount of additional debt
+   *
+   * @returns Promise containing the origin bridge address
+   */
+  async getOriginBridge(
+    poolChainId: number,
+    originChainId: number,
+    currencyAddress: string,
+    amount: bigint,
+    poolLimit: number = 100,
+    originLimit: number = 100
+  ) {
+    const res = await this.client.sdk.GetOriginBridge({
+      currencyAddress,
+      originChainId,
+      originLimit,
+      poolChainId,
+      // over-fetch to allow filtering
+      poolLimit,
+    })
+
+    // filter only pool that have available liquidity
+    if (res.data.relayPools) {
+      res.data.relayPools.items = (res.data.relayPools?.items ?? []).filter(
+        (pool: any) => {
+          return (
+            amount < BigInt(pool.totalAssets) - BigInt(pool.outstandingDebt)
+          )
+        }
+      )
+    }
+
+    // for remaining pools, filter origin that have enough available debt
+    const pools = res.data.relayPools?.items ?? []
+    for (const pool of pools) {
+      if (pool.origins?.items) {
+        pool.origins.items = (pool.origins.items ?? [])
+          .filter((origin: any) => {
+            return (
+              BigInt(origin.maxDebt) >
+              amount + BigInt(origin.currentOutstandingDebt)
+            )
+          })
+          .slice(0, originLimit)
+      }
+    }
+
+    return res
+  }
+
+  /**
+   * Get vault snapshots within a specific time interval
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @param options - Query options
+   * @param options.days - Number of days back from now to fetch snapshots (default: 7)
+   * @param options.timestampFrom - Custom start timestamp (overrides days parameter)
+   * @param options.timestampTo - Custom end timestamp (default: current time)
+   * @param options.limit - Maximum number of snapshots to fetch (default: 1000)
+   * @param options.orderBy - Field to order by (default: "timestamp")
+   * @param options.orderDirection - Order direction (default: "asc" for chronological)
+   * @returns Promise containing vault snapshots with APY data and timestamps
+   */
+  async getVaultSnapshots(
+    vaultAddress: string,
+    chainId: number,
+    options: {
+      days?: number
+      timestampFrom?: string | number
+      timestampTo?: string | number
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+    } = {}
+  ) {
+    const {
+      days = 7,
+      timestampFrom,
+      timestampTo = Math.floor(Date.now() / 1000),
+      limit = 1000,
+      orderBy = 'timestamp',
+      orderDirection = 'asc',
+    } = options
+
+    // Calculate timestampFrom if not provided
+    const calculatedTimestampFrom = timestampFrom
+      ? timestampFrom.toString()
+      : (Number(timestampTo) - days * 24 * 60 * 60).toString()
+
+    return this.client.sdk.GetVaultSnapshots({
+      chainId,
+      limit,
+      orderBy,
+      orderDirection,
+      timestampFrom: calculatedTimestampFrom,
+      timestampTo: timestampTo.toString(),
+      vaultAddress,
     })
   }
 }

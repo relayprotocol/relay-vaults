@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 const config: OriginNetworkConfig = {
   assets: {
@@ -13,7 +14,7 @@ const config: OriginNetworkConfig = {
       },
       parent: {
         diamondProxy: '0xdbD849acC6bA61F461CB8A41BBaeE2D673CA02d9',
-        maxBlocksWithoutProof: 1500,
+        maxBlocksWithoutProof: 2500,
         nativeTokenVault: '0xbeD1EB542f9a5aA6419Ff3deb921A372681111f6',
         sharedDefaultBridge: '0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB',
       },
@@ -24,7 +25,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Zero',
   parentChainId: 1,
-  rpc: ['https://rpc.zerion.io/v1/zero'],
+  rpc: createRpcConfig(543210, ['https://rpc.zerion.io/v1/zero']),
   stack: 'zksync',
   withdrawalDelay: 10800, // 3 hrs
 }

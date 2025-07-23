@@ -1,4 +1,5 @@
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { createRpcConfig } from '../utils'
 
 // https://docs.zora.co/zora-network/network#zora-network-mainnet
 const config: OriginNetworkConfig = {
@@ -23,9 +24,7 @@ const config: OriginNetworkConfig = {
   isTestnet: false,
   name: 'Zora',
   parentChainId: 1,
-  rpc: process.env.RPC_7777777
-    ? [process.env.RPC_7777777]
-    : ['https://rpc.zora.energy'],
+  rpc: createRpcConfig(7777777, ['https://rpc.zora.energy']),
   stack: 'optimism',
 }
 

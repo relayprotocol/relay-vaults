@@ -10,7 +10,7 @@
       "require": "./dist/index.js"
     }
   },
-  "version": "1.2.0",
+  "version": "1.4.0",
   "license": "MIT",
   "scripts": {
     "start": "tsc --watch",
@@ -18,19 +18,23 @@
     "lint": "eslint",
     "clean": "rm -rf ./dist",
     "codegen": "tsx src/generate-index.ts",
-    "build": "yarn run codegen && tsup src/index.ts --dts --format esm,cjs"
+    "build": "yarn run codegen && tsup src/index.ts --dts --format esm,cjs",
+    "test": "vitest"
   },
   "devDependencies": {
     "@relay-vaults/eslint-config": "workspace:^",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "eslint": "9.28.0",
+    "eslint": "9.31.0",
     "fs-extra": "11.3.0",
     "tsup": "8.5.0",
-    "tsx": "4.19.4",
+    "tsx": "4.20.3",
     "typescript": "5.8.3"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "vitest": "3.2.4"
+  }
 }

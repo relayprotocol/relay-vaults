@@ -5069,6 +5069,7 @@ __metadata:
     typechain: "npm:8.3.2"
     typescript: "npm:5.8.3"
     typescript-eslint: "npm:8.34.0"
+    zksync-ethers: "npm:6.15.0"
   languageName: unknown
   linkType: soft
 
@@ -18413,6 +18414,15 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10/f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"zksync-ethers@npm:6.15.0":
+  version: 6.15.0
+  resolution: "zksync-ethers@npm:6.15.0"
+  peerDependencies:
+    ethers: ^6.7.1
+  checksum: 10/6e56c8a7306841b76ce1168fdc9601813d74f21c576af7db6166d21bead42d6313b15ee85c1c4edb93bdb7c0a618936065acec268c0093a86e377cfab0bbceb1
   languageName: node
   linkType: hard
 

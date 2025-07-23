@@ -10,17 +10,29 @@ import { logger } from '../logger.js'
  * Helper to calculate APY from share price data.
  */
 function calculateAPY(
-  currentPrice: number,
-  startingPrice: number,
+  currentPriceStr: string,
+  startingPriceStr: string,
   currentTimestamp: number,
-  startingTimestamp: number
+  startingTimestamp: number,
+  decimals: number
 ): number | null {
-  if (startingPrice <= 0 || currentPrice === startingPrice) return null
+  const currentPrice = BigInt(currentPriceStr)
+  const startingPrice = BigInt(startingPriceStr)
+
+  if (startingPrice <= 0n || currentPrice === startingPrice) return null
   const deltaTime = currentTimestamp - startingTimestamp
   if (deltaTime <= 0) return null
+
+  const PRECISION = BigInt(10) ** BigInt(decimals)
+  const growthFactor = (currentPrice * PRECISION) / startingPrice
+
   const secondsPerYear = 365 * 24 * 3600
-  const growthFactor = currentPrice / startingPrice
-  const apyValue = Math.pow(growthFactor, secondsPerYear / deltaTime) - 1
+  const exponent = secondsPerYear / deltaTime
+
+  // Convert to number only for final Math.pow calculation
+  const growthFactorNum = Number(growthFactor) / Number(PRECISION)
+  const apyValue = Math.pow(growthFactorNum, exponent) - 1
+
   return Math.round(apyValue * Number(BPS_DIVISOR))
 }
 
@@ -157,38 +169,11 @@ export default async function ({
           fetchSharePrice(context, pool.yieldPool, pool.decimals),
         ])
 
-      // 2. Update relay_pool table with fresh metrics and insert vault snapshot
-      await context.db
-        .update(relayPool, {
-          chainId: pool.chainId,
-          contractAddress: pool.contractAddress,
-        })
-        .set({
-          totalAssets: BigInt(totalAssets as string),
-          totalShares: BigInt(totalShares as string),
-          updatedAt: new Date(),
-        })
+      // 2. Compute APY values
+      let vaultAPY: number | null = null
+      let baseAPY: number | null = null
 
-      const snapshot = {
-        sharePrice: vaultSharePrice.toString(),
-        timestamp: event.block.timestamp,
-        yieldPool: pool.yieldPool,
-        yieldPoolSharePrice: yieldSharePrice.toString(),
-      }
-
-      await context.db
-        .insert(vaultSnapshot)
-        .values({
-          ...snapshot,
-          blockNumber: event.block.number,
-          chainId: pool.chainId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          vault: pool.contractAddress,
-        })
-        .onConflictDoUpdate(snapshot)
-
-      // 4. Compute vault APY
+      // Calculate vault APY
       try {
         let vaultRef = await fetchReferenceSnapshot(
           context.db,
@@ -230,20 +215,13 @@ export default async function ({
               BigInt(10 ** pool.decimals)) /
             BigInt(totalShares)
 
-          const vaultAPY = calculateAPY(
-            Number(adjustedSharePrice),
-            Number(vaultRef.sharePrice),
+          vaultAPY = calculateAPY(
+            adjustedSharePrice.toString(),
+            vaultRef.sharePrice,
             Number(event.block.timestamp),
-            Number(vaultRef.timestamp)
+            Number(vaultRef.timestamp),
+            pool.decimals
           )
-          if (vaultAPY !== null) {
-            await context.db
-              .update(relayPool, {
-                chainId: pool.chainId,
-                contractAddress: pool.contractAddress,
-              })
-              .set({ apy: vaultAPY })
-          }
         }
       } catch (e) {
         logger.error(
@@ -252,12 +230,13 @@ export default async function ({
         )
       }
 
-      // 5. Compute base yield-pool APY
+      // Compute yield pool APY
       try {
         let yieldRef = await fetchReferenceSnapshot(
           context.db,
           {
             chainId: pool.chainId,
+            vaultAddress: pool.contractAddress,
             yieldPoolAddress: pool.yieldPool,
           },
           Number(event.block.timestamp),
@@ -267,6 +246,7 @@ export default async function ({
         // Fallback to oldest available snapshot if no interval match found
         if (!yieldRef) {
           const baseWhere = and(
+            eq(vaultSnapshot.vault, pool.contractAddress),
             eq(vaultSnapshot.yieldPool, pool.yieldPool),
             eq(vaultSnapshot.chainId, pool.chainId)
           )
@@ -280,37 +260,75 @@ export default async function ({
           yieldRef = rows.length ? rows[0] : null
         }
         if (yieldRef) {
-          const baseAPY = calculateAPY(
-            Number(yieldSharePrice),
-            Number(yieldRef.yieldPoolSharePrice ?? yieldRef.price),
+          baseAPY = calculateAPY(
+            yieldSharePrice.toString(),
+            yieldRef.yieldPoolSharePrice || '0',
             Number(event.block.timestamp),
-            Number(yieldRef.timestamp)
+            Number(yieldRef.timestamp),
+            pool.decimals
           )
-          if (baseAPY !== null) {
-            await context.db
-              .insert(yieldPool)
-              .values({
-                apy: baseAPY,
-                asset: pool.asset,
-                chainId: pool.chainId,
-                contractAddress: pool.yieldPool,
-                createdAt: new Date(),
-                lastUpdated: event.block.timestamp,
-                name: 'Unknown',
-                updatedAt: new Date(),
-              })
-              .onConflictDoUpdate({
-                apy: baseAPY,
-                lastUpdated: event.block.timestamp,
-                updatedAt: new Date(),
-              })
-          }
         }
       } catch (e) {
         logger.error(
           `Failed to compute base yield APY for ${pool.yieldPool}`,
           e
         )
+      }
+
+      // 3. Update relay_pool table
+      await context.db
+        .update(relayPool, {
+          chainId: pool.chainId,
+          contractAddress: pool.contractAddress,
+        })
+        .set({
+          apy: vaultAPY ?? 0,
+          totalAssets: BigInt(totalAssets as string),
+          totalShares: BigInt(totalShares as string),
+          updatedAt: new Date(),
+        })
+
+      // 4. Insert vault snapshot with APY values
+      const snapshot = {
+        sharePrice: vaultSharePrice.toString(),
+        timestamp: event.block.timestamp,
+        vaultApy: vaultAPY ?? 0,
+        yieldPool: pool.yieldPool,
+        yieldPoolApy: baseAPY ?? 0,
+        yieldPoolSharePrice: yieldSharePrice.toString(),
+      }
+
+      await context.db
+        .insert(vaultSnapshot)
+        .values({
+          ...snapshot,
+          blockNumber: event.block.number,
+          chainId: pool.chainId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          vault: pool.contractAddress,
+        })
+        .onConflictDoUpdate(snapshot)
+
+      // 5. Update yield pool APY
+      if (baseAPY !== null) {
+        await context.db
+          .insert(yieldPool)
+          .values({
+            apy: baseAPY,
+            asset: pool.asset,
+            chainId: pool.chainId,
+            contractAddress: pool.yieldPool,
+            createdAt: new Date(),
+            lastUpdated: event.block.timestamp,
+            name: 'Unknown',
+            updatedAt: new Date(),
+          })
+          .onConflictDoUpdate({
+            apy: baseAPY,
+            lastUpdated: event.block.timestamp,
+            updatedAt: new Date(),
+          })
       }
     } catch (err) {
       logger.error(

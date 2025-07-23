@@ -317,6 +317,8 @@ export const bridgeTransaction = onchainTable(
  * - blockNumber: Block number when the snapshot was taken
  * - timestamp: Block timestamp when the snapshot was taken
  * - sharePrice: Share price at snapshot time, computed via convertToAssets(1e18)
+ * - vaultApy: Annual Percentage Yield for the vault in basis points
+ * - yieldPoolApy: Annual Percentage Yield for the underlying yield pool in basis points
  */
 export const vaultSnapshot = onchainTable(
   'vaultSnapshot',
@@ -328,14 +330,18 @@ export const vaultSnapshot = onchainTable(
     timestamp: t.bigint().notNull(),
     updatedAt: t.timestamp().notNull(),
     vault: t.hex().notNull(),
+    vaultApy: t.integer().notNull().default(0),
     yieldPool: t.hex().notNull(),
+    yieldPoolApy: t.integer().notNull().default(0),
     yieldPoolSharePrice: t.numeric().notNull(),
   }),
   (table) => ({
     pk: primaryKey({
       columns: [table.chainId, table.blockNumber, table.vault],
     }),
+    timestampIdx: index().on(table.timestamp),
     vaultChainIdx: index().on(table.vault, table.chainId),
+    vaultTimestampIdx: index().on(table.vault, table.chainId, table.timestamp),
     yieldPoolIdx: index().on(table.yieldPool),
   })
 )

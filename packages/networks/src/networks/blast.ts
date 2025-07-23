@@ -24,7 +24,7 @@ const config: OriginNetworkConfig = {
   name: 'Blast',
   parentChainId: 1,
   rpc: createRpcConfig(81457, ['https://rpc.blast.io']),
-  stack: 'optimism',
+  stack: 'optimism-alt',
 }
 
 export default config

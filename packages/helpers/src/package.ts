@@ -16,14 +16,14 @@ export const parseExports = async (folderName: string, destFolder: string) => {
 
   const exportsList = files!
     .flat(Infinity)
-    .filter((f: string) => f.includes('.json'))
+    .filter((f: string) => f.includes('.ts') && !f.includes('index.ts'))
     .map((f: string) => {
       // make sure all path exists
       fs.pathExistsSync(path.resolve(f))
       // get contractName
       const contractName = path.parse(f).name
 
-      const exportPath = `./${path.relative(destFolder, f)}`
+      const exportPath = `./${path.relative(destFolder, f).replace('.ts', '')}`
       return {
         contractName,
         exportPath,
@@ -43,7 +43,7 @@ export const createIndexFile = async (
   const abiFiles = await parseExports(srcFolder, destFolder)
 
   abiFiles.forEach(({ contractName, exportPath }) =>
-    fileContent.push(`import ${contractName} from '${exportPath}'`)
+    fileContent.push(`import { ${contractName} } from '${exportPath}'`)
   )
   fileContent.push('\n// exports')
 

@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 15
     if: github.repository == 'relayprotocol/relay-vaults'
     outputs:
-      latest-release: ${{ steps.get-latest-release.outputs.result }}
+      latest-release: ${{ steps.get-latest-release.outputs.tag }}
     permissions:
       contents: read
       packages: write
@@ -23,14 +23,21 @@ jobs:
 
       - name: Get latest release
         id: get-latest-release
-        uses: actions/github-script@v7
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          script: |
-            const { data: release } = await github.rest.repos.getLatestRelease({
-              owner: 'relayprotocol',
-              repo: 'relay-vaults',
-            })
-            return release.tag_name
+          # Docker image to use as base name for tags
+          images: |
+            ghcr.io/relayprotocol/relay-vaults
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ github.ref_name }}-${{ github.sha }}
+            type=raw,value=${{ steps.get-latest-release.outputs.tag }}
+            type=raw,value=${{ github.ref_name }}
+            type=sha
 
       - name: Set up Docker Buildx
         id: buildx
@@ -47,11 +54,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: |
-            ghcr.io/relayprotocol/relay-vaults:latest
-            ghcr.io/relayprotocol/relay-vaults:${{ steps.get-latest-release.outputs.result }}
-            ghcr.io/relayprotocol/relay-vaults:${{ github.sha }}
-            ghcr.io/relayprotocol/relay-vaults:${{ github.ref_name }}-${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             TAG=${{ github.ref_name }}
 

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { getProvider } from './provider'
-import ERC20_ABI from './abis/ERC20.json'
+import { ERC20 } from './abis/ERC20'
 
 export async function getBalance(
   account: string,
@@ -30,7 +30,7 @@ export async function getBalance(
     balance = await provider.getBalance(account)
   } else {
     // erc20 balance
-    const token = new ethers.Contract(tokenAddress, ERC20_ABI, provider)
+    const token = new ethers.Contract(tokenAddress, ERC20, provider)
     balance = await token.balanceOf(account)
   }
   return balance

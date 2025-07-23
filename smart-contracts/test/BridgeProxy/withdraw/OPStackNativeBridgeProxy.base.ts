@@ -1,9 +1,9 @@
 import { ethers, ignition } from 'hardhat'
 import { ABIs } from '@relay-vaults/helpers'
 import { expect } from 'chai'
-import { stealERC20 } from '../utils/hardhat'
+import { stealERC20 } from '../../utils/hardhat'
 import { networks } from '@relay-vaults/networks'
-import OPStackNativeBridgeProxyModule from '../../ignition/modules/OPStackNativeBridgeProxyModule'
+import OPStackNativeBridgeProxyModule from '../../../ignition/modules/OPStackNativeBridgeProxyModule'
 
 import { AbiCoder, Log } from 'ethers'
 import { OriginNetworkConfig } from '@relay-vaults/types'

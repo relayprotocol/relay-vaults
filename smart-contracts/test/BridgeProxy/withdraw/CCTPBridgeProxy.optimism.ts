@@ -1,13 +1,13 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
 import { parseUnits, TransactionReceipt, type Signer } from 'ethers'
-import { mintUSDC } from '../utils/hardhat'
+import { mintUSDC } from '../../utils/hardhat'
 import { getBalance, getEvent } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
-import { reverts } from '../utils/errors'
+import { reverts } from '../../utils/errors'
 
-import { CCTPBridgeProxy } from '../../typechain-types'
-import CCTPBridgeProxyModule from '../../ignition/modules/CCTPBridgeProxyModule'
+import { CCTPBridgeProxy } from '../../../typechain-types'
+import CCTPBridgeProxyModule from '../../../ignition/modules/CCTPBridgeProxyModule'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 
 const chainId = 10

@@ -35,17 +35,18 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     address l1Currency, //l1 token
     uint256 amount,
     bytes calldata gasParams,
-    bytes calldata  extraData
+    bytes calldata extraData
   ) external payable override {
-    (uint256 maxFeePerGas, uint256 gasLimit, uint256 maxSubmissionCost) = abi.decode(gasParams, (uint256, uint256, uint256));
+    (uint256 maxFeePerGas, uint256 gasLimit, uint256 maxSubmissionCost) = abi
+      .decode(gasParams, (uint256, uint256, uint256));
 
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default
       // we have to create a retryable ticket to deposit to the L1 bridge proxy
-      INBOX.createRetryableTicket{ value: msg.value }(
-        // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy  
+      INBOX.createRetryableTicket{value: msg.value}(
+        // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
-        L1_BRIDGE_PROXY, // to 
+        L1_BRIDGE_PROXY, // to
         amount, // l2CallValue
         maxSubmissionCost, // maxSubmissionCost
         address(this), // excessFeeRefundAddress
@@ -60,11 +61,14 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         revert AssetMismatch(l2token, asset);
       }
 
-      IERC20(l1Currency).approve(address(0xB2535b988dcE19f9D71dfB22dB6da744aCac21bf), amount);
+      IERC20(l1Currency).approve(
+        address(0xB2535b988dcE19f9D71dfB22dB6da744aCac21bf),
+        amount
+      );
 
-      ROUTER.outboundTransferCustomRefund{ value: msg.value }(
+      ROUTER.outboundTransferCustomRefund{value: msg.value}(
         l1Currency, // L1 erc20 address
-        // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy  
+        // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY, // receives token on L2

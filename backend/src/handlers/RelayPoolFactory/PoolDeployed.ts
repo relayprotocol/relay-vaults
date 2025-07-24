@@ -55,7 +55,9 @@ export default async function ({
   const multisig = network?.curator?.toLowerCase()
 
   if (!multisig) {
-    logger.info('No curator configured. Skipping pool.')
+    logger.info('No curator configured. Skipping pool.', {
+      chainId: context.chain.id,
+    })
     return
   }
 

@@ -3,6 +3,7 @@ import { gql } from 'graphql-request'
 import { finalizeWithdrawal } from './relay'
 import { logger } from './logger'
 
+// The solver needs opProofTxHash in some cases (Blast)
 const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
   query GetAllBridgeTransactionsToFinalize(
     $expectedFinalizationTimestamp: BigInt!
@@ -20,6 +21,7 @@ const GET_ALL_TRANSACTIONS_TO_FINALIZE = gql`
         amount
         originTxHash
         originTimestamp
+        opProofTxHash
       }
     }
   }

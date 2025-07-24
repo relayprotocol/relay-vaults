@@ -95,11 +95,8 @@ const relayBridgeFactoryChains = Object.keys(networks)
   }, {})
 
 // RelayPoolFactory
-const relayPoolFactoryChains = Object.keys(networks)
-  .filter((chainId) => {
-    return !(networks[chainId] as OriginNetworkConfig).parentChainId
-  })
-  .reduce((relayPoolFactoryChains, chainId) => {
+const relayPoolFactoryChains = Object.keys(networks).reduce(
+  (relayPoolFactoryChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
 
@@ -114,13 +111,12 @@ const relayPoolFactoryChains = Object.keys(networks)
         startBlock: network.earliestBlock || 'latest',
       },
     }
-  }, {})
+  },
+  {}
+)
 
-const relayPoolChains = Object.keys(networks)
-  .filter((chainId) => {
-    return !(networks[chainId] as OriginNetworkConfig).parentChainId
-  })
-  .reduce((relayPoolChains, chainId) => {
+const relayPoolChains = Object.keys(networks).reduce(
+  (relayPoolChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
     if (!addresses?.RelayPoolFactory) {
@@ -139,7 +135,9 @@ const relayPoolChains = Object.keys(networks)
         startBlock: network.earliestBlock || 'latest',
       },
     }
-  }, {})
+  },
+  {}
+)
 
 const relayPoolTimelockChains = Object.keys(networks)
   .filter((chainId) => {

@@ -117,8 +117,8 @@ const etherscan = {
       chainId: 543210,
       network: 'zero',
       urls: {
-        apiURL: 'https://explorer.zero.network/api',
-        browserURL: 'https://explorer.zero.network',
+        apiURL: 'https://zero-network.calderaexplorer.xyz/api',
+        browserURL: 'https://zero-network.calderaexplorer.xyz',
       },
     },
   ],

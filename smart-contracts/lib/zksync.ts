@@ -63,18 +63,18 @@ export const verifyContract = async ({
       (q) => q.split(':')[1] === contract
     )
     try {
+      tries++
       await run('verify:verify', {
         address,
         constructorArguments: deployArgs,
         contract: fullyQualifiedName,
       })
-      tries++
     } catch (error) {
+      console.log(error)
       if (tries >= 5) {
         console.log(
           `FAIL: Verification failed for contract at ${address} with args : ${deployArgs.toString()} after 5 tries.`
         )
-        console.log(error)
         return
       } else {
         console.log(

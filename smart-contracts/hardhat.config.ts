@@ -9,6 +9,7 @@ import '@matterlabs/hardhat-zksync-deploy'
 import '@matterlabs/hardhat-zksync-solc'
 import '@matterlabs/hardhat-zksync-node'
 import '@matterlabs/hardhat-zksync-ethers'
+import '@matterlabs/hardhat-zksync-verify'
 
 import { networks as nets } from '@relay-vaults/networks'
 import registry from '@hyperlane-xyz/registry'

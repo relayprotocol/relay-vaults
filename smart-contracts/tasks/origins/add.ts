@@ -8,6 +8,7 @@ import {
 } from '../deploy/bridge-proxy'
 import { executeThruTimelock } from '../../lib/multisig'
 import { domainIdForChainId } from '@relay-vaults/helpers'
+import * as zksyncEthers from 'zksync-ethers'
 
 const ignitionPath = __dirname + '/../../ignition/deployments/'
 
@@ -115,6 +116,8 @@ task('pool:add-origin', 'Add origin for a pool')
 
       // get L2 bridge contracts settings
       const originNetwork = networks[originChainId.toString()]
+      // const ethers = originNetwork.stack === 'zksync' ? zksyncEthers : ethers
+
       const l2provider = new ethers.JsonRpcProvider(originNetwork.rpc[0])
 
       // Create contract instances with the L2 provider (read-only)

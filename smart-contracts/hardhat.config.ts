@@ -9,6 +9,7 @@ import '@matterlabs/hardhat-zksync-deploy'
 import '@matterlabs/hardhat-zksync-solc'
 import '@matterlabs/hardhat-zksync-node'
 import '@matterlabs/hardhat-zksync-ethers'
+import '@matterlabs/hardhat-zksync-verify'
 
 import { networks as nets } from '@relay-vaults/networks'
 import registry from '@hyperlane-xyz/registry'
@@ -117,8 +118,8 @@ const etherscan = {
       chainId: 543210,
       network: 'zero',
       urls: {
-        apiURL: 'https://explorer.zero.network/api',
-        browserURL: 'https://explorer.zero.network',
+        apiURL: 'https://zero-network.calderaexplorer.xyz/api',
+        browserURL: 'https://zero-network.calderaexplorer.xyz',
       },
     },
   ],

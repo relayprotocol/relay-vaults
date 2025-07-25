@@ -223,8 +223,6 @@ task(
           ],
           deploymentId
         ))
-        // ZkSyncBridgeProxyModule,
-        // parameters.ZkSyncBridgeProxy
         proxyBridgeAddress = await proxyBridge.getAddress()
       } else {
         ;({ bridge: proxyBridge } = await ignition.deploy(

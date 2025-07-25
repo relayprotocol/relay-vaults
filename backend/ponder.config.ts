@@ -32,27 +32,9 @@ const chains = Object.keys(networks).reduce((chains, chainId: string) => {
   }
 }, {})
 
-// VaultSnapshot chains
-const vaultSnapshotChains = Object.keys(networks)
-  .filter((chainId) => {
-    return !(networks[chainId] as OriginNetworkConfig).parentChainId
-  })
-  .reduce((vaultSnapshotChains, chainId) => {
-    const network = networks[chainId]
-    return {
-      ...vaultSnapshotChains,
-      [network.slug!]: {
-        startBlock: network.earliestBlock || 'latest',
-      },
-    }
-  }, {})
-
 // RelayBridge chains
-const relayBridgeChains = Object.keys(networks)
-  .filter((chainId: string) => {
-    return (networks[chainId] as OriginNetworkConfig).parentChainId
-  })
-  .reduce((relayBridgeChains, chainId: string) => {
+const relayBridgeChains = Object.keys(networks).reduce(
+  (relayBridgeChains, chainId: string) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
     if (!addresses?.RelayBridgeFactory) {
@@ -71,14 +53,13 @@ const relayBridgeChains = Object.keys(networks)
       },
       ...relayBridgeChains,
     }
-  }, {})
+  },
+  {}
+)
 
 // RelayBridgeFactory
-const relayBridgeFactoryChains = Object.keys(networks)
-  .filter((chainId) => {
-    return (networks[chainId] as OriginNetworkConfig).parentChainId
-  })
-  .reduce((relayBridgeFactoryChains, chainId) => {
+const relayBridgeFactoryChains = Object.keys(networks).reduce(
+  (relayBridgeFactoryChains, chainId) => {
     const network = networks[chainId]
     const addresses = deployedAddresses[chainId]
 
@@ -92,7 +73,9 @@ const relayBridgeFactoryChains = Object.keys(networks)
       },
       ...relayBridgeFactoryChains,
     }
-  }, {})
+  },
+  {}
+)
 
 // RelayPoolFactory
 const relayPoolFactoryChains = Object.keys(networks).reduce(
@@ -275,7 +258,7 @@ const zkSyncChains: zkSyncChains = Object.keys(networks)
 export default createConfig({
   blocks: {
     PoolSnapshot: {
-      chain: vaultSnapshotChains,
+      chain: relayPoolChains,
       interval: process.env.ENV === 'development' ? 10000 : 100,
     },
   },

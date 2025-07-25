@@ -10,7 +10,7 @@ import ArbitrumOrbitNativeBridgeProxyModule from '../../ignition/modules/Arbitru
 import { deployContract } from '../../lib/zksync'
 import ZkSyncBridgeProxyModule from '../../ignition/modules/ZkSyncBridgeProxyModule'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
-import { getProvider } from '@relay-vaults/helpers'
+import ArbitrumOrbitNativeDepositBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeDepositBridgeProxyModule'
 
 const ignitionPath = __dirname + '/../../ignition/deployments'
 
@@ -238,6 +238,39 @@ task(
       }
 
       console.log(`✅ Zksync bridge deployed at: ${proxyBridgeAddress}`)
+    } else if (type === 'arbitrumDeposit') {
+      const routerGateway = onOriginChain
+        ? originNetworkConfig.bridges.arbitrumDeposit!.child.routerGateway
+        : originNetworkConfig.bridges.arbitrumDeposit!.parent.routerGateway
+
+      const parameters = {
+        ArbitrumOrbitNativeDepositBridgeProxy: {
+          inbox: originNetworkConfig.bridges.arbitrumDeposit!.child.inbox,
+          l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
+          relayPool: defaultProxyModuleArguments.relayPool,
+          relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
+          routerGateway,
+        },
+      }
+      constructorArguments = [
+        routerGateway,
+        originNetworkConfig.bridges.arbitrumDeposit!.child.inbox,
+      ]
+      ;({ bridge: proxyBridge } = await ignition.deploy(
+        ArbitrumOrbitNativeDepositBridgeProxyModule,
+        {
+          deploymentId,
+          parameters,
+        }
+      ))
+      proxyBridgeAddress = await proxyBridge.getAddress()
+
+      console.log(
+        `✅ Arbitrum Orbit Deposit bridge deployed at: ${proxyBridgeAddress}`
+      )
+    } else {
+      console.error(`💣 Unknown bridge type: ${type}`)
+      process.exit(1)
     }
 
     // verify!

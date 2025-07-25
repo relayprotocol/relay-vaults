@@ -49,10 +49,6 @@ task('pool:add-origin', 'Add origin for a pool')
       const { chainId } = await ethers.provider.getNetwork()
       const network = networks[chainId.toString()] as OriginNetworkConfig
 
-      if (network.parentChainId) {
-        throw Error('Origins can only be added on L1')
-      }
-
       if (!poolAddress) {
         const pools = await getPoolsForNetwork(Number(chainId))
         poolAddress = await new Select({
@@ -71,14 +67,11 @@ task('pool:add-origin', 'Add origin for a pool')
 
       if (!originChainId) {
         // We need to select the origin chain!
-        const possibleOrigins = Object.values(networks).filter(
-          (n) => (n as OriginNetworkConfig).parentChainId == chainId
-        )
         const originChainName = await new Select({
-          choices: possibleOrigins.map((network) => network.name),
+          choices: Object.values(networks).map((network) => network.name),
           message: 'On what network is this origin?',
         }).run()
-        originChainId = possibleOrigins.find(
+        originChainId = Object.values(networks).find(
           (network) => network.name === originChainName
         )?.chainId
       }
@@ -236,10 +229,6 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       const { chainId } = await ethers.provider.getNetwork()
       const network = networks[chainId.toString()] as OriginNetworkConfig
 
-      if (network.parentChainId) {
-        throw Error('Origins can only be added on L1')
-      }
-
       if (!poolAddress) {
         const pools = await getPoolsForNetwork(Number(chainId))
         poolAddress = await new Select({
@@ -257,15 +246,11 @@ task('pool:remove-origin', 'Removes an origin from a pool')
       const pool = await ethers.getContractAt('RelayPool', poolAddress)
 
       if (!originChainId) {
-        const possibleOriginNetworks = Object.values(networks).filter(
-          (n) =>
-            Number((n as OriginNetworkConfig).parentChainId) == Number(chainId)
-        )
         const originChainName = await new Select({
-          choices: possibleOriginNetworks.map((network) => network.name),
+          choices: Object.values(networks).map((network) => network.name),
           message: 'On what network is this origin?',
         }).run()
-        originChainId = possibleOriginNetworks.find(
+        originChainId = Object.values(networks).find(
           (network) => network.name === originChainName
         )?.chainId
       }

@@ -9,11 +9,11 @@ import {
 } from 'ethers'
 import { getBalance, getEvent, getProvider } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
-import ArbitrumOrbitNativeDepositBridgeProxyModule from '../../ignition/modules/ArbitrumOrbitNativeDepositBridgeProxyModule'
+import ArbitrumOrbitNativeDepositBridgeProxyModule from '../../../ignition/modules/ArbitrumOrbitNativeDepositBridgeProxyModule'
 
 import { OriginNetworkConfig } from '@relay-vaults/types'
-import { ArbitrumOrbitNativeDepositBridgeProxy } from '../../typechain-types'
-import { stealERC20 } from '../utils/hardhat'
+import { ArbitrumOrbitNativeDepositBridgeProxy } from '../../../typechain-types'
+import { stealERC20 } from '../../utils/hardhat'
 
 const originChainId = 1
 const destinationChainId = 42161 // arb one

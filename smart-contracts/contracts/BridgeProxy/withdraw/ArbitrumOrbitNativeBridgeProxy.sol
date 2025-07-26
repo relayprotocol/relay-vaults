@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 // https://docs.arbitrum.io/build-decentralized-apps/token-bridging/token-bridge-erc20
 
-import {BridgeProxy} from "./BridgeProxy.sol";
-import {IL2GatewayRouter} from "../interfaces/arb/IArbL2GatewayRouter.sol";
-import {IArbSys} from "../interfaces/arb/IArbSys.sol";
+import {BridgeProxy} from "../BridgeProxy.sol";
+import {IL2GatewayRouter} from "../../interfaces/arb/IArbL2GatewayRouter.sol";
+import {IArbSys} from "../../interfaces/arb/IArbSys.sol";
 
 /// @title ArbitrumOrbitNativeBridgeProxy
 /// @author Relay Protocol

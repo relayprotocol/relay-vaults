@@ -28,6 +28,15 @@ export interface OriginNetworkConfig extends NetworkConfig {
         messagePasser: string
       }
     }
+    arbitrumDeposit?: {
+      child: {
+        inbox: string
+        routerGateway: string
+      }
+      parent: {
+        routerGateway: string
+      }
+    }
     arbitrum?: {
       parent: {
         outbox: string

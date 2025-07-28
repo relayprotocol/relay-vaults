@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import networks from '@relay-vaults/networks'
-import { INodeInterface, IInbox } from '@relay-vaults/abis'
 import { OriginNetworkConfig } from '@relay-vaults/types'
+import { INodeInterface, IInbox } from './abis'
 
 function hexDataLength(hexString: string) {
   if (hexString.startsWith('0x')) hexString = hexString.slice(2)

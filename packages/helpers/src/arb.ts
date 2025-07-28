@@ -64,7 +64,7 @@ export const estimateNativeBridgeTicketCost = async ({
   from: string
   bridgeAddress: string
   amount: bigint
-  data: string
+  data?: string
 }) => {
   const destProvider = await getProvider(destinationChainId)
 

@@ -17,7 +17,6 @@ export const parseExports = async (
   isJSON = false
 ) => {
   const files = await walk(path.resolve('src', folderName))
-  // console.log(files)
 
   const exportsList = files!
     .flat(Infinity)
@@ -65,10 +64,6 @@ export const createIndexFile = async ({
   fileContent.push("// Refer to 'yarn build:index' for more\n")
 
   const abiFiles = await parseExports(srcFolder, destFolder, isJSON)
-
-  // console.log(versioned)
-  // console.log(abiFiles)
-
   abiFiles.forEach(({ contractName, exportPath }) =>
     versioned.includes(contractName)
       ? fileContent.push(`import { ${contractName} } from './versions'`)

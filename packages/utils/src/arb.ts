@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import networks from '@relay-vaults/networks'
-import { INodeInterface } from '@relay-vaults/abis'
+import { INodeInterface, IInbox } from '@relay-vaults/abis'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 
 function hexDataLength(hexString: string) {
@@ -37,7 +37,7 @@ export const estimateRetryableFee = async (
     networks[destinationChainId.toString()] as OriginNetworkConfig
   ).bridges.arbitrum!.parent
 
-  const inboxContract = new ethers.Contract('IInbox', inboxAddress, srcProvider)
+  const inboxContract = new ethers.Contract(inboxAddress, IInbox, srcProvider)
   const maxSubmissionCost = await inboxContract.calculateRetryableSubmissionFee(
     callDataSize,
     parentBaseFee

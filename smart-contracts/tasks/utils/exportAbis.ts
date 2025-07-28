@@ -54,9 +54,11 @@ task('export:abis', 'Export ABIs to a node package').setAction(
     )
 
     // create repo files
-    await createIndexFile(
-      path.resolve(packageFolder, 'src', 'abis'),
-      path.resolve(packageFolder, 'src')
-    )
+    await createIndexFile({
+      destFolder: path.resolve(packageFolder, 'src'),
+      isJSON: true,
+      srcFolder: path.resolve(packageFolder, 'src', 'abis'),
+      versioned: ['RelayPool'], // uses archived version
+    })
   }
 )

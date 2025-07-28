@@ -4,10 +4,10 @@ import { createIndexFile } from '../src/package'
 
 const main = async () => {
   console.log('Building ABIs index...')
-  await createIndexFile(
-    'abis', // src
-    path.resolve('src', 'abis') // dest
-  )
+  await createIndexFile({
+    destFolder: path.resolve('src', 'abis'),
+    srcFolder: 'abis',
+  })
 }
 
 main()

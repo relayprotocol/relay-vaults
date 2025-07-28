@@ -4232,7 +4232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@relay-vaults/abis@workspace:*, @relay-vaults/abis@workspace:^, @relay-vaults/abis@workspace:packages/abis":
+"@relay-vaults/abis@workspace:*, @relay-vaults/abis@workspace:packages/abis":
   version: 0.0.0-use.local
   resolution: "@relay-vaults/abis@workspace:packages/abis"
   dependencies:
@@ -4420,7 +4420,6 @@ __metadata:
     "@openzeppelin/contracts": "npm:5.4.0"
     "@openzeppelin/contracts-upgradeable": "npm:5.4.0"
     "@relay-vaults/helpers": "workspace:*"
-    "@relay-vaults/utils": "workspace:*"
     "@safe-global/api-kit": "npm:3.0.2"
     "@safe-global/protocol-kit": "npm:6.0.5"
     "@safe-global/types-kit": "npm:2.0.1"
@@ -4473,20 +4472,6 @@ __metadata:
   dependencies:
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     eslint: "npm:9.31.0"
-    typescript: "npm:5.8.3"
-  languageName: unknown
-  linkType: soft
-
-"@relay-vaults/utils@workspace:*, @relay-vaults/utils@workspace:packages/utils":
-  version: 0.0.0-use.local
-  resolution: "@relay-vaults/utils@workspace:packages/utils"
-  dependencies:
-    "@relay-vaults/abis": "workspace:^"
-    "@relay-vaults/networks": "workspace:^"
-    "@relay-vaults/tsconfig": "workspace:^"
-    eslint: "npm:9.31.0"
-    ethers: "npm:6.15.0"
-    tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
   languageName: unknown
   linkType: soft

@@ -510,3 +510,25 @@ query GetOriginBridge(
     }
   }
 }
+
+# Get the oldest vault snapshot for a specific vault
+query GetOldestVaultSnapshot($vaultAddress: String!, $chainId: Int!) {
+  vaultSnapshots(
+    where: { vault: $vaultAddress, chainId: $chainId }
+    limit: 1
+    orderBy: "timestamp"
+    orderDirection: "asc"
+  ) {
+    items {
+      timestamp
+      vaultApy
+      yieldPoolApy
+      sharePrice
+      yieldPoolSharePrice
+      blockNumber
+      chainId
+      vault
+      yieldPool
+    }
+  }
+}

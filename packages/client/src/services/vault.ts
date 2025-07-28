@@ -514,4 +514,18 @@ export class RelayVaultService {
       vaultAddress,
     })
   }
+
+  /**
+   * Get the oldest vault snapshot for a specific vault
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @returns Promise containing the oldest vault snapshot data
+   */
+  async getOldestVaultSnapshot(vaultAddress: string, chainId: number) {
+    return this.client.sdk.GetOldestVaultSnapshot({
+      chainId,
+      vaultAddress,
+    })
+  }
 }

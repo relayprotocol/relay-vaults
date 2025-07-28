@@ -37,8 +37,8 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     bytes calldata gasParams,
     bytes calldata extraData
   ) external payable override {
-    (uint256 maxFeePerGas, uint256 gasLimit, uint256 maxSubmissionCost) = abi
-      .decode(gasParams, (uint256, uint256, uint256));
+    (uint256 maxFeePerGas, uint256 gasLimit, uint256 maxSubmissionCost, bytes memory moreData) = abi
+      .decode(extraData, (uint256, uint256, uint256));
 
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default
@@ -53,7 +53,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         address(this), // callValueRefundAddress (receives msg.value on l2)
         gasLimit, // gasLimit
         maxFeePerGas, // maxFeePerGas
-        extraData // data
+        moreData // data
       );
     } else {
       address l2token = ROUTER.calculateL2TokenAddress(l1Currency);
@@ -75,7 +75,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         amount, // token amount
         gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
         maxFeePerGas, // Gas price bid for L2 execution
-        abi.encode(maxSubmissionCost, extraData) // Extra data,
+        abi.encode(maxSubmissionCost, moreData) // Extra data,
       );
     }
   }

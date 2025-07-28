@@ -1,7 +1,0 @@
-{
-  "extends": "@relay-vaults/tsconfig",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "exclude": ["dist"]
-}

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BridgeProxy} from "./BridgeProxy.sol";
-import {IL2SharedBridge} from "../interfaces/zksync/IL2SharedBridge.sol";
-import {IBaseToken} from "../interfaces/zksync/IBaseToken.sol";
+import {BridgeProxy} from "../BridgeProxy.sol";
+import {IL2SharedBridge} from "../../interfaces/zksync/IL2SharedBridge.sol";
+import {IBaseToken} from "../../interfaces/zksync/IBaseToken.sol";
 
 /// @title ZkSyncBridgeProxy
 /// @author Relay Protocol

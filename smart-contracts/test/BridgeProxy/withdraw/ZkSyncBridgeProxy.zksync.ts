@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { parseUnits, TransactionReceipt, type Signer } from 'ethers'
 import { getBalance, getEvent } from '@relay-vaults/helpers'
 import { networks } from '@relay-vaults/networks'
-import { ZkSyncBridgeProxy } from '../../typechain-types'
+import { ZkSyncBridgeProxy } from '../../../typechain-types'
 
 import { OriginNetworkConfig } from '@relay-vaults/types'
 

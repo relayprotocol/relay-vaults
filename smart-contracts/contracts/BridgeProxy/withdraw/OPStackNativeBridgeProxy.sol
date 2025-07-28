@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BridgeProxy} from "./BridgeProxy.sol";
-import {L2StandardBridge} from "../interfaces/L2StandardBridge.sol";
-import {IOptimismMintableERC20} from "../interfaces/IOptimismMintableERC20.sol";
+import {BridgeProxy} from "../BridgeProxy.sol";
+import {L2StandardBridge} from "../../interfaces/L2StandardBridge.sol";
+import {IOptimismMintableERC20} from "../../interfaces/IOptimismMintableERC20.sol";
 
 /// @title OPStackNativeBridgeProxy
 /// @author Relay Protocol

@@ -38,7 +38,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     bytes calldata extraData
   ) external payable override {
     (uint256 maxFeePerGas, uint256 gasLimit, uint256 maxSubmissionCost, bytes memory moreData) = abi
-      .decode(extraData, (uint256, uint256, uint256));
+      .decode(extraData, (uint256, uint256, uint256, bytes));
 
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default

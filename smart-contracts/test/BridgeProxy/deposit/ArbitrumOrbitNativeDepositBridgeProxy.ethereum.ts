@@ -134,7 +134,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
     bridge = result.bridge
   })
 
-  describe.only('sending ERC20', () => {
+  describe('sending ERC20', () => {
     let balanceBefore: bigint
     const amount = parseUnits('0.1', 18)
     let receipt: TransactionReceipt | null
@@ -173,8 +173,8 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
 
       const abiCoder = new AbiCoder()
       const encodedGasEstimate = abiCoder.encode(
-        ['uint', 'uint', 'uint'],
-        [maxFeePerGas, gasLimit, maxSubmissionCost]
+        ['uint', 'uint', 'uint', 'bytes'],
+        [maxFeePerGas, gasLimit, maxSubmissionCost, '0x']
       )
       // send tx
       const gatewayRouter = await ethers.getContractAt(
@@ -188,8 +188,8 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         udtArbAddress, // L2 token
         UDT_ETHEREUM, // l1 token
         amount,
-        encodedGasEstimate, // empty data
-        '0x', // empty extraData
+        '0x', // empty hyperlane gas data
+        encodedGasEstimate, // extraData
         {
           value: deposit,
         }
@@ -258,11 +258,12 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
 
       const abiCoder = new AbiCoder()
       const encodedGasEstimate = abiCoder.encode(
-        ['uint', 'uint', 'uint'],
+        ['uint', 'uint', 'uint', 'bytes'],
         [
           gasEstimate.maxFeePerGas,
           gasEstimate.gasLimit,
           gasEstimate.maxSubmissionCost,
+          '0x',
         ]
       )
 
@@ -270,8 +271,8 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         ethers.ZeroAddress, // native token
         ethers.ZeroAddress, // l1 native token
         amount,
-        encodedGasEstimate, // empty data
-        '0x', // empty extraData
+        '0x', // empty hyperlane gas data
+        encodedGasEstimate, // use extraData
       ]
 
       // Send message to the bridge
@@ -299,7 +300,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         // from IDelayedMessageProvider
         'event InboxMessageDelivered(uint256 indexed messageNum,bytes data)',
         // IBridge
-        'event MessageDelivered(uint256 indexed messageIndex,bytes32 indexed beforeInboxAcc,address inbox,uint8 kind,address sender,bytes32 messageDataHash,uint256 baseFeeL1,uint64 timestamp);',
+        'event MessageDelivered(uint256 indexed messageIndex,bytes32 indexed beforeInboxAcc,address inbox,uint8 kind,address sender,bytes32 messageDataHash,uint256 baseFeeL1,uint64 timestamp)',
       ])
 
       const inboxMessageDelivered = await getEvent(

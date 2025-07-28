@@ -1,12 +1,13 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
 import { AbiCoder, parseUnits, TransactionReceipt, type Signer } from 'ethers'
-import { getBalance, getEvent } from '@relay-vaults/helpers'
-import { networks } from '@relay-vaults/networks'
 import {
+  getBalance,
+  getEvent,
   estimateRetryableFee,
   estimateNativeBridgeTicketCost,
-} from '@relay-vaults/utils'
+} from '@relay-vaults/helpers'
+import { networks } from '@relay-vaults/networks'
 import ArbitrumOrbitNativeDepositBridgeProxyModule from '../../../ignition/modules/ArbitrumOrbitNativeDepositBridgeProxyModule'
 
 import { OriginNetworkConfig } from '@relay-vaults/types'
@@ -55,7 +56,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
     bridge = result.bridge
   })
 
-  describe.only('sending ERC20', () => {
+  describe('sending ERC20', () => {
     let balanceBefore: bigint
     const amount = parseUnits('0.1', 18)
     let receipt: TransactionReceipt | null
@@ -225,7 +226,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         // from IDelayedMessageProvider
         'event InboxMessageDelivered(uint256 indexed messageNum,bytes data)',
         // IBridge
-        'event MessageDelivered(uint256 indexed messageIndex,bytes32 indexed beforeInboxAcc,address inbox,uint8 kind,address sender,bytes32 messageDataHash,uint256 baseFeeL1,uint64 timestamp);',
+        'event MessageDelivered(uint256 indexed messageIndex,bytes32 indexed beforeInboxAcc,address inbox,uint8 kind,address sender,bytes32 messageDataHash,uint256 baseFeeL1,uint64 timestamp)',
       ])
 
       const inboxMessageDelivered = await getEvent(

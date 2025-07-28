@@ -23,7 +23,6 @@
     "clean": "rm -rf dist",
     "lint:fix": "yarn lint --fix",
     "lint": "eslint",
-    "test": "vitest",
     "build": "tsup src/index.ts --dts --format esm,cjs"
   },
   "devDependencies": {
@@ -32,7 +31,6 @@
     "@relay-vaults/tsconfig": "workspace:^",
     "eslint": "9.31.0",
     "tsup": "8.5.0",
-    "typescript": "5.8.3",
-    "vitest": "3.2.4"
+    "typescript": "5.8.3"
   }
 }

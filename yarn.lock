@@ -4488,7 +4488,6 @@ __metadata:
     ethers: "npm:6.15.0"
     tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
-    vitest: "npm:3.2.4"
   languageName: unknown
   linkType: soft
 

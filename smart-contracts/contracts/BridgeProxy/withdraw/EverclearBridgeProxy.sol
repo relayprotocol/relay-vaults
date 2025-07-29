@@ -19,7 +19,16 @@ contract EverclearBridgeProxy is BridgeProxy {
     destinationDomainId = _destinationDomainId;
   }
 
-    function bridge(
+  function getFeeParams(bytes calldata extraData) public view returns (IFeeAdapter.FeeParams memory) {
+    (uint256 fee, uint256 deadline, bytes memory sig) = abi.decode(extraData, (uint256, uint256, bytes));
+    return IFeeAdapter.FeeParams({
+      fee: fee,
+      deadline: deadline,
+      sig: sig
+    });
+  }
+
+  function bridge(
     address currency,
     address l1Asset,
     uint256 amount,
@@ -28,12 +37,7 @@ contract EverclearBridgeProxy is BridgeProxy {
   ) external payable override {
 
     // decode fees and sig from extraData
-    (uint256 fee, uint256 deadline, bytes memory sig) = abi.decode(extraData, (uint256, uint256, bytes));
-    IFeeAdapter.FeeParams memory feeParams = IFeeAdapter.FeeParams({
-      fee: fee,
-      deadline: deadline,
-      sig: sig 
-    });
+    IFeeAdapter.FeeParams memory feeParams = getFeeParams(extraData);
 
     // parse destination domains
     uint32[] memory destinations = new uint32[](1);

@@ -76,12 +76,8 @@ export interface OriginNetworkConfig extends NetworkConfig {
     }
     everclear?: {
       domainId: number
-      parent: {
-        spoke: string
-      }
-      child: {
-        feeAdapter: string
-      }
+      spoke: string
+      feeAdapter: string
     }
   }
 }

@@ -21,13 +21,9 @@ const config: OriginNetworkConfig & VaultNetworkConfig = {
       },
     },
     everclear: {
-      child: {
-        feeAdapter: '0x15a7cA97D1ed168fB34a4055CEFa2E2f9Bdb6C75',
-      },
       domainId: 8453,
-      parent: {
-        spoke: '0xa05A3380889115bf313f1Db9d5f335157Be4D816',
-      },
+      feeAdapter: '0x15a7cA97D1ed168fB34a4055CEFa2E2f9Bdb6C75',
+      spoke: '0xa05A3380889115bf313f1Db9d5f335157Be4D816',
     },
     optimism: {
       child: {

@@ -553,7 +553,6 @@ export class RelayVaultService {
   ) {
     const { limit = 30, excludeZeroMaxDebt = false } = options
 
-    // Build the where filter
     const where = excludeZeroMaxDebt ? { maxDebt_gt: '0' } : null
 
     return this.client.sdk.GetAllVaultOrigins({

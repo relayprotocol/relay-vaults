@@ -532,3 +532,25 @@ query GetOldestVaultSnapshot($vaultAddress: String!, $chainId: Int!) {
     }
   }
 }
+
+# Get all origins for a specific vault
+query GetAllVaultOrigins($poolAddress: String!, $chainId: Float!, $limit: Int, $where: poolOriginFilter) {
+  relayPool(contractAddress: $poolAddress, chainId: $chainId) {
+    contractAddress
+    chainId
+    origins(limit: $limit, where: $where) {
+      totalCount
+      items {
+        bridgeFee
+        chainId
+        coolDown
+        curator
+        currentOutstandingDebt
+        maxDebt
+        originBridge
+        originChainId
+        proxyBridge
+      }
+    }
+  }
+}

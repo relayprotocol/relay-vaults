@@ -24,7 +24,7 @@ export default async function ({
   })
 
   const user = await context.db.find(userBalance, {
-    chainId: context.network.chainId,
+    chainId: context.chain.id,
     relayPool: event.log.address,
     wallet: event.args.from,
   })
@@ -32,14 +32,14 @@ export default async function ({
   // Decrease the share balance of the sender
   await context.db
     .update(userBalance, {
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       relayPool: event.log.address,
       wallet: event.args.from,
     })
     .set({
       lastUpdated: timestamp,
-      shareBalance: user.shareBalance - shares,
-      totalWithdrawn: user.totalWithdrawn + assets,
+      shareBalance: user!.shareBalance - shares,
+      totalWithdrawn: user!.totalWithdrawn + assets,
       updatedAt: new Date(),
     })
 
@@ -47,7 +47,7 @@ export default async function ({
   await context.db
     .insert(userBalance)
     .values({
-      chainId: context.network.chainId,
+      chainId: context.chain.id,
       createdAt: new Date(),
       lastUpdated: timestamp,
       relayPool: event.log.address,

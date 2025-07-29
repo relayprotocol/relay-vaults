@@ -1,7 +1,7 @@
 {
   "name": "@relay-vaults/client",
   "description": "Client library for interacting with the Relay Protocol API",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -43,6 +43,6 @@
     "eslint": "9.31.0",
     "tsup": "8.5.0",
     "typescript": "5.8.3",
-    "vite": "7.0.5"
+    "vite": "7.0.6"
   }
 }

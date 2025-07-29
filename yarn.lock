@@ -4272,7 +4272,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:8.38.0"
     dd-trace: "npm:5.60.0"
     eslint: "npm:9.31.0"
-    eslint-config-ponder: "npm:0.11.35"
+    eslint-config-ponder: "npm:0.11.38"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.3"
     hono: "npm:4.8.5"
@@ -4326,7 +4326,7 @@ __metadata:
     graphql-tag: "npm:2.12.6"
     tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
-    vite: "npm:7.0.5"
+    vite: "npm:7.0.6"
   languageName: unknown
   linkType: soft
 
@@ -8734,14 +8734,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-ponder@npm:0.11.35":
-  version: 0.11.35
-  resolution: "eslint-config-ponder@npm:0.11.35"
+"eslint-config-ponder@npm:0.11.38":
+  version: 0.11.38
+  resolution: "eslint-config-ponder@npm:0.11.38"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^6.3.0
     "@typescript-eslint/parser": ^6.3.0
     eslint: ">= 3"
-  checksum: 10/a2b7722176d7cc447e1c5ce51dda00ded5d3b5f63ff17dbd535de2f2a916e8ca46032516069f04818c2eea78ebeb2343a173409cdb6b8d914859d8a38e48df47
+  checksum: 10/d8d0f91ccce520ad2a8b6975cb143dd3750c9c2c0ad36a2ab5b402bb4a063e8d314c345a79f6e6a0259b11ba67388df87da7e5538c34cf5cf7ee88baf52e7d63
   languageName: node
   linkType: hard
 
@@ -13124,6 +13124,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picomatch@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "picomatch@npm:4.0.3"
+  checksum: 10/57b99055f40b16798f2802916d9c17e9744e620a0db136554af01d19598b96e45e2f00014c91d1b8b13874b80caa8c295b3d589a3f72373ec4aaf54baa5962d5
+  languageName: node
+  linkType: hard
+
 "pidtree@npm:^0.6.0":
   version: 0.6.0
   resolution: "pidtree@npm:0.6.0"
@@ -16413,14 +16420,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:7.0.5":
-  version: 7.0.5
-  resolution: "vite@npm:7.0.5"
+"vite@npm:7.0.6":
+  version: 7.0.6
+  resolution: "vite@npm:7.0.6"
   dependencies:
     esbuild: "npm:^0.25.0"
     fdir: "npm:^6.4.6"
     fsevents: "npm:~2.3.3"
-    picomatch: "npm:^4.0.2"
+    picomatch: "npm:^4.0.3"
     postcss: "npm:^8.5.6"
     rollup: "npm:^4.40.0"
     tinyglobby: "npm:^0.2.14"
@@ -16464,7 +16471,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/7429198ee4a62badb20691356425b5b98fe87be82108748c3b3661487868fdc647c3fbb2bb1fe1803aea8e72f1a6494815fc53bf6c329b61c6784f5f2273e9eb
+  checksum: 10/729ddefd6710b0b5aa38a62a537f3dc28577edaf57958c815a1964f1e348a1c7cb17ce8f708675668d7e80d95fb62f7c433b718fe12d80dd8a756ccec519bc2a
   languageName: node
   linkType: hard
 

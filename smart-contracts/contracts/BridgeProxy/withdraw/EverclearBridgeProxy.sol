@@ -8,6 +8,8 @@ contract EverclearBridgeProxy is BridgeProxy {
   address public immutable feeAdapter;
   uint32 public immutable destinationDomainId;
 
+  error NativeBridgeNotAllowed();
+
   constructor(
     uint256 relayPoolChainId,
     address relayPool,
@@ -36,6 +38,11 @@ contract EverclearBridgeProxy is BridgeProxy {
     bytes calldata extraData
   ) external payable override {
 
+    // everclear does not support native bridging
+    if (l1Asset == address(0) || currency == address(0)) {
+      revert NativeBridgeNotAllowed();
+    }
+
     // decode fees and sig from extraData
     IFeeAdapter.FeeParams memory feeParams = getFeeParams(extraData);
 
@@ -43,10 +50,11 @@ contract EverclearBridgeProxy is BridgeProxy {
     uint32[] memory destinations = new uint32[](1);
     destinations[0] = destinationDomainId;
 
+
     // create intent
     IFeeAdapter(feeAdapter).newIntent(
       destinations, // destinations
-      address(0), // receiver
+      L1_BRIDGE_PROXY, // receiver
       currency, // inputAsset
       l1Asset, // outputAsset
       amount, // amount

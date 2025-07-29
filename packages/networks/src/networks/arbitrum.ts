@@ -20,6 +20,15 @@ const config: VaultNetworkConfig & OriginNetworkConfig = {
         routerGateway: '0xC840838Bc438d73C16c2f8b22D2Ce3669963cD48',
       },
     },
+    everclear: {
+      child: {
+        feeAdapter: '0x15a7cA97D1ed168fB34a4055CEFa2E2f9Bdb6C75',
+      },
+      domainId: 421614,
+      parent: {
+        spoke: '0xa05A3380889115bf313f1Db9d5f335157Be4D816',
+      },
+    },
   },
   chainId: 42161,
   curator: '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963',

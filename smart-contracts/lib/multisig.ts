@@ -174,12 +174,13 @@ const submitTxToSafe = async (
     safeAddress,
     signer: process.env.DEPLOYER_PRIVATE_KEY,
   })
-  const nonce = await safe.getNonce()
+  const currentNonce = await safe.getNonce()
+  const nextNonce = currentNonce + 1
 
   // Create a Safe transaction
   const scheduleTansactionFromSafe = await safe.createTransaction({
     options: {
-      nonce: nonce + nonceOffset,
+      nonce: nextNonce,
     },
     transactions: [
       {

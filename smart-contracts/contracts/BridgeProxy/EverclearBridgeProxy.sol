@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {BridgeProxy} from "../BridgeProxy.sol";
-import {IFeeAdapter} from "../../interfaces/everclear/IFeeAdapter.sol";
+import {BridgeProxy} from "./BridgeProxy.sol";
+import {IEverclearSpoke} from "../interfaces/everclear/IEverclearSpoke.sol";
 
 contract EverclearBridgeProxy is BridgeProxy {
-  address public immutable feeAdapter;
-  uint32 public immutable destinationDomainId;
+  address public immutable EVERCLEAR_SPOKE;
+  uint32 public immutable DESTINATION_DOMAIN_ID;
 
   error NativeBridgeNotAllowed();
 
@@ -14,21 +14,14 @@ contract EverclearBridgeProxy is BridgeProxy {
     uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy,
-    address _feeAdapter,
+    address _everclearSpoke,
     uint32 _destinationDomainId
   ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
-    feeAdapter = _feeAdapter;
-    destinationDomainId = _destinationDomainId;
+    EVERCLEAR_SPOKE = _everclearSpoke;
+    DESTINATION_DOMAIN_ID = _destinationDomainId;
   }
 
-  function getFeeParams(bytes calldata extraData) public view returns (IFeeAdapter.FeeParams memory) {
-    (uint256 fee, uint256 deadline, bytes memory sig) = abi.decode(extraData, (uint256, uint256, bytes));
-    return IFeeAdapter.FeeParams({
-      fee: fee,
-      deadline: deadline,
-      sig: sig
-    });
-  }
+
 
   function bridge(
     address currency,
@@ -43,25 +36,21 @@ contract EverclearBridgeProxy is BridgeProxy {
       revert NativeBridgeNotAllowed();
     }
 
-    // decode fees and sig from extraData
-    IFeeAdapter.FeeParams memory feeParams = getFeeParams(extraData);
-
     // parse destination domains
     uint32[] memory destinations = new uint32[](1);
-    destinations[0] = destinationDomainId;
+    destinations[0] = DESTINATION_DOMAIN_ID;
 
 
     // create intent
-    IFeeAdapter(feeAdapter).newIntent(
-      destinations, // destinations
+    IEverclearSpoke(EVERCLEAR_SPOKE).newIntent(
+      destinations, // destinations 
       L1_BRIDGE_PROXY, // receiver
       currency, // inputAsset
       l1Asset, // outputAsset
       amount, // amount
-      0, // maxFee
+      500, // maxFee
       0, // ttl
-      data, // data
-      feeParams // feeParams
+      data // data
     );
   }
 

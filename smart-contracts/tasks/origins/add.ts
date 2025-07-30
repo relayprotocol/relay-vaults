@@ -68,7 +68,9 @@ task('pool:add-origin', 'Add origin for a pool')
       if (!originChainId) {
         // We need to select the origin chain!
         const originChainName = await new Select({
-          choices: Object.values(networks).map((network) => network.name),
+          choices: Object.values(networks)
+            .map((network) => network.name)
+            .sort(),
           message: 'On what network is this origin?',
         }).run()
         originChainId = Object.values(networks).find(

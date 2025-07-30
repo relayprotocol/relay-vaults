@@ -34,16 +34,17 @@ describe('EverclearBridgeProxy (withdraw)', function () {
 
     const { domainId: destinationDomainId } =
       destinationNetwork.bridges.everclear!
-    const { spoke } = originNetwork.bridges.everclear!
+    const { feeAdapter } = originNetwork.bridges.everclear!
 
+    console.log({ destinationDomainId })
     // deploy using ignition
     const parameters = {
       EverclearBridgeProxy: {
         destinationDomainId,
+        feeAdapter,
         l1BridgeProxy,
         relayPool,
         relayPoolChainId: destinationChainId,
-        spoke,
       },
     }
 
@@ -66,16 +67,44 @@ describe('EverclearBridgeProxy (withdraw)', function () {
         BigInt(originChainId)
       )
 
-      // Create mock fee parameters for Everclear
-      const fee = 500
-      const ttl = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+      // Wrap some ether
+      const weth = await ethers.getContractAt('IWETH', originWeth, recipient)
+      await weth.deposit({ value: amount })
+      await weth.approve(await bridge.getAddress(), amount)
+
+      // intent params
+      const maxFee = 500
+      const ttl = 0
       const moreData = '0x'
 
+      // fee params
+      const fee = parseUnits('0.001', 18) // 0.001 ETH fee
+      const deadline = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+
       const abiCoder = new AbiCoder()
-      const encodedExtraData = abiCoder.encode(
-        ['uint24', 'uint48', 'bytes'],
-        [fee, ttl, moreData]
+
+      // sign payload
+      const payload = abiCoder.encode(
+        [
+          fee.toString(), // _tokenFee
+          0, // ethFee
+          originWeth, // origin asset
+          deadline.toString(), // dedaline
+        ],
+        ['uint', 'uint', 'address', 'uint']
       )
+
+      console.log(payload)
+
+      const mockSignature = '0x' + '00'.repeat(65) // Mock signature
+
+      // encode tuple
+      const encodedExtraData = abiCoder.encode(
+        ['uint24', 'uint48', 'tuple(uint256,uint256,bytes)', 'bytes'],
+        [maxFee, ttl, [fee, deadline, mockSignature], moreData]
+      )
+
+      console.log(encodedExtraData)
 
       // Send message to the bridge
       const tx = await bridge.connect(recipient).bridge(

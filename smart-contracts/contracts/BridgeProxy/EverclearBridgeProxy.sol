@@ -22,6 +22,11 @@ contract EverclearBridgeProxy is BridgeProxy {
   }
 
 
+function getIntentParams(bytes calldata extraData) public view returns (uint24, uint48, bytes memory) {
+    (uint24 maxFee, uint48 ttl, bytes memory moreData) = abi.decode(extraData, (uint24, uint48, bytes));
+    return (maxFee, ttl, moreData);
+  }
+
 
   function bridge(
     address currency,
@@ -40,6 +45,8 @@ contract EverclearBridgeProxy is BridgeProxy {
     uint32[] memory destinations = new uint32[](1);
     destinations[0] = DESTINATION_DOMAIN_ID;
 
+    // unpack intent params from extraData
+    (uint24 maxFee, uint48 ttl, bytes memory moreData) = getIntentParams(extraData);
 
     // create intent
     IEverclearSpoke(EVERCLEAR_SPOKE).newIntent(
@@ -48,9 +55,9 @@ contract EverclearBridgeProxy is BridgeProxy {
       currency, // inputAsset
       l1Asset, // outputAsset
       amount, // amount
-      500, // maxFee
-      0, // ttl
-      data // data
+      maxFee, // maxFee
+      ttl, // ttl
+      moreData // data
     );
   }
 

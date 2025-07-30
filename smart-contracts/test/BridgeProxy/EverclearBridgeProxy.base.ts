@@ -2,7 +2,7 @@ import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
 import { AbiCoder, parseUnits, TransactionReceipt, type Signer } from 'ethers'
 import { getBalance } from '@relay-vaults/helpers'
-import EverclearBridgeProxyModule from '../../../ignition/modules/EverclearBridgeProxyModule'
+import EverclearBridgeProxyModule from '../../ignition/modules/EverclearBridgeProxyModule'
 import networks from '@relay-vaults/networks'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 
@@ -34,16 +34,16 @@ describe('EverclearBridgeProxy (withdraw)', function () {
 
     const { domainId: destinationDomainId } =
       destinationNetwork.bridges.everclear!
-    const { feeAdapter } = originNetwork.bridges.everclear!
+    const { spoke } = originNetwork.bridges.everclear!
 
     // deploy using ignition
     const parameters = {
       EverclearBridgeProxy: {
         destinationDomainId,
-        feeAdapter,
         l1BridgeProxy,
         relayPool,
         relayPoolChainId: destinationChainId,
+        spoke,
       },
     }
 
@@ -67,14 +67,14 @@ describe('EverclearBridgeProxy (withdraw)', function () {
       )
 
       // Create mock fee parameters for Everclear
-      const fee = parseUnits('0.001', 18) // 0.001 ETH fee
-      const deadline = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-      const mockSignature = '0x' + '00'.repeat(65) // Mock signature
+      const fee = 500
+      const ttl = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+      const moreData = '0x'
 
       const abiCoder = new AbiCoder()
       const encodedExtraData = abiCoder.encode(
-        ['uint256', 'uint256', 'bytes'],
-        [fee, deadline, mockSignature]
+        ['uint24', 'uint48', 'bytes'],
+        [fee, ttl, moreData]
       )
 
       // Send message to the bridge

@@ -75,7 +75,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         amount, // token amount
         gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
         maxFeePerGas, // Gas price bid for L2 execution
-        abi.encode(maxSubmissionCost, moreData) // Extra data,
+        abi.encode(maxSubmissionCost, moreData)
       );
     }
   }

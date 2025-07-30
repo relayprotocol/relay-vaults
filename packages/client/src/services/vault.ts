@@ -1,7 +1,11 @@
 import { RelayClient } from '../client'
 import type { DocumentNode } from 'graphql'
 import type { Variables } from 'graphql-request'
-import { RelayPoolFilter, YieldPoolFilter } from '../generated/graphql'
+import {
+  RelayPoolFilter,
+  YieldPoolFilter,
+  PoolOriginFilter,
+} from '../generated/graphql'
 
 /**
  * RelayVaultService provides a high-level interface for interacting with Relay Protocol vaults
@@ -526,6 +530,36 @@ export class RelayVaultService {
     return this.client.sdk.GetOldestVaultSnapshot({
       chainId,
       vaultAddress,
+    })
+  }
+
+  /**
+   * Get all origins for a specific vault with configurable limit and filtering
+   *
+   * @param poolAddress - The pool's contract address
+   * @param chainId - The chain ID where the pool is deployed
+   * @param options - Query options
+   * @param options.limit - Maximum number of origins to fetch (default: 30)
+   * @param options.excludeZeroMaxDebt - Whether to exclude origins with maxDebt <= 0 (default: false)
+   * @returns Promise containing vault origins
+   */
+  async getAllVaultOrigins(
+    poolAddress: string,
+    chainId: number,
+    options: {
+      limit?: number
+      excludeZeroMaxDebt?: boolean
+    } = {}
+  ) {
+    const { limit = 30, excludeZeroMaxDebt = false } = options
+
+    const where = excludeZeroMaxDebt ? { maxDebt_gt: '0' } : null
+
+    return this.client.sdk.GetAllVaultOrigins({
+      chainId,
+      limit,
+      poolAddress,
+      where: where as PoolOriginFilter,
     })
   }
 }

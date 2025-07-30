@@ -33,6 +33,7 @@ const config: VaultNetworkConfig & OriginNetworkConfig = {
   name: 'Arbitrum One',
   parentChainId: 1,
   rpc: createRpcConfig(42161, ['https://arb1.arbitrum.io/rpc']),
+  stack: 'arbitrum',
   uniswapV3: {
     universalRouterAddress: '0xA51afAFe0263b40EdaEf0Df8781eA9aa03E381a3',
   },

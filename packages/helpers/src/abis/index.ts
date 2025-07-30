@@ -10,6 +10,7 @@ import { L2ToL1MessagePasser } from './L2ToL1MessagePasser'
 import { Mailbox } from './Mailbox'
 import { WETH } from './WETH'
 import { IArbSys } from './arb/IArbSys'
+import { IInbox } from './arb/IInbox'
 import { INodeInterface } from './arb/INodeInterface'
 import { Outbox } from './arb/Outbox'
 import { RollupMainnet } from './arb/RollupMainnet'
@@ -33,6 +34,7 @@ export { L2ToL1MessagePasser }
 export { Mailbox }
 export { WETH }
 export { IArbSys }
+export { IInbox }
 export { INodeInterface }
 export { Outbox }
 export { RollupMainnet }

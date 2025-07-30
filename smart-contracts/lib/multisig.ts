@@ -180,7 +180,7 @@ const submitTxToSafe = async (
   // Create a Safe transaction
   const scheduleTansactionFromSafe = await safe.createTransaction({
     options: {
-      nonce: nextNonce,
+      nonce: nextNonce + nonceOffset,
     },
     transactions: [
       {

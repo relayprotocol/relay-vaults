@@ -43,7 +43,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default
       // we have to create a retryable ticket to deposit to the L1 bridge proxy
-      INBOX.createRetryableTicket{value: msg.value}(
+      INBOX.createRetryableTicket{value: amount}(
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // to

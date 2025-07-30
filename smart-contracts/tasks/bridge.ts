@@ -249,14 +249,16 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         })
         const abiCoder = new AbiCoder()
         const encodedGasEstimate = abiCoder.encode(
-          ['uint', 'uint', 'uint'],
+          ['uint', 'uint', 'uint', 'bytes'],
           [
             gasEstimate.maxFeePerGas,
             gasEstimate.gasLimit,
-            gasEstimate.maxSubmissionCost,
+            gasEstimate.maxSubmissionCost * 5n,
+            '0x',
           ]
         )
         data = encodedGasEstimate
+        console.log({ amount, gasEstimate, value })
       }
 
       const tx = await bridge.bridge.populateTransaction(

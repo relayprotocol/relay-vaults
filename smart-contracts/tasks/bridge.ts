@@ -212,7 +212,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         (l1Gas * 11n) / 10n // add 10%
       )
 
-      const value =
+      let value =
         assetAddress === rawEthers.ZeroAddress
           ? BigInt(amount) + hyperlaneFee
           : hyperlaneFee
@@ -261,7 +261,9 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
           ]
         )
         data = encodedGasEstimate
-        console.log({ amount, gasEstimate, value })
+
+        // value should account for the cost of Arb retryable ticket
+        value = gasEstimate.deposit + hyperlaneFee
       }
 
       const tx = await bridge.bridge.populateTransaction(

@@ -16,29 +16,18 @@ export interface NewIntentParams {
 
 export interface NewIntentResponse {
   to: string
-  from: string
-  nonce: string
-  gasLimit: string
-  gasPrice: string
   data: string
   value: string
   chainId: number
-  type: number
-  accessList: Array<{
-    address: string
-    storageKeys: string[]
-  }>
-  maxPriorityFeePerGas: string
-  maxFeePerGas: string
-  customData: Record<string, unknown>
-  ccipReadEnabled: boolean
 }
+
+const EVERCLEAR_API_URL = 'https://api.everclear.org/intents'
 
 // Using everclear API to generate TransactionRequest for a newIntent
 export async function getNewEverclearIntent(
   params: NewIntentParams
 ): Promise<NewIntentResponse> {
-  const response = await fetch('https://api.testnet.everclear.org/intents', {
+  const response = await fetch(EVERCLEAR_API_URL, {
     body: JSON.stringify(params),
     headers: {
       'Content-Type': 'application/json',

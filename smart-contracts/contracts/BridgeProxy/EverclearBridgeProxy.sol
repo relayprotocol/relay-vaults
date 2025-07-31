@@ -8,19 +8,18 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract EverclearBridgeProxy is BridgeProxy {
   address public immutable FEE_ADAPTER;
-  uint32 public immutable DESTINATION_DOMAIN_ID;
 
   error NativeBridgeNotAllowed();
+  error InvalidFeeAdapter(address to);
+  error IntentCreationFailed();
 
   constructor(
     uint256 relayPoolChainId,
     address relayPool,
     address l1BridgeProxy,
-    address feeAdapter,
-    uint32 destinationDomainId
+    address feeAdapter
   ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     FEE_ADAPTER = feeAdapter;
-    DESTINATION_DOMAIN_ID = destinationDomainId;
   }
 
 
@@ -33,9 +32,9 @@ contract EverclearBridgeProxy is BridgeProxy {
       });
     }
   
-  function getIntentParams(bytes calldata extraData) public view returns (uint24, uint48, IFeeAdapter.FeeParams memory, bytes memory) {
-    (uint24 maxFee, uint48 ttl, IFeeAdapter.FeeParams memory feeParams, bytes memory moreData) = abi.decode(extraData, (uint24, uint48, IFeeAdapter.FeeParams, bytes));
-    return (maxFee, ttl, feeParams, moreData);
+  function getIntentTxRequest(bytes calldata extraData) public view returns (address, uint256, bytes memory) {
+    (address to, uint256 value, bytes memory data) = abi.decode(extraData, (address, uint256, bytes));
+    return (to, value, data);
   }
 
 
@@ -43,7 +42,7 @@ contract EverclearBridgeProxy is BridgeProxy {
     address currency,
     address l1Asset,
     uint256 amount,
-    bytes calldata data,
+    bytes calldata /*data*/,
     bytes calldata extraData
   ) external payable override {
 
@@ -51,49 +50,19 @@ contract EverclearBridgeProxy is BridgeProxy {
     if (l1Asset == address(0) || currency == address(0)) {
       revert NativeBridgeNotAllowed();
     }
+    
+    (address to, uint256 value, bytes memory data) = getIntentTxRequest(extraData);
+    if(to != FEE_ADAPTER) {
+      revert InvalidFeeAdapter(to);
+    }
 
     // get tokens
     IERC20(currency).transferFrom(msg.sender, address(this), amount);
     IERC20(currency).approve(FEE_ADAPTER, amount);
     
-    // parse destination domains
-    uint32[] memory destinations = new uint32[](1);
-    destinations[0] = DESTINATION_DOMAIN_ID;
-
-    // unpack intent params from extraData
-    (
-      uint24 maxFee, 
-      uint48 ttl, 
-      IFeeAdapter.FeeParams memory feeParams, 
-      bytes memory moreData
-    ) = getIntentParams(extraData);
-
-    console.log("destinations.length", destinations.length);
-    console.log("destinations[0]", destinations[0]);
-    console.log("DESTINATION_DOMAIN_ID", DESTINATION_DOMAIN_ID);
-    console.log("currency", currency);
-    console.log("l1Asset", l1Asset);
-    console.log("amount", amount);
-    console.log("L1_BRIDGE_PROXY", L1_BRIDGE_PROXY);
-    console.log("maxFee", maxFee);
-    console.log("ttl", ttl);
-    console.logBytes(moreData);
-    console.log("feeParams.fee", feeParams.fee);
-    console.log("feeParams.deadline", feeParams.deadline);
-    console.logBytes(feeParams.sig);
-
     // create intent
-    IFeeAdapter(FEE_ADAPTER).newIntent(
-      destinations, // destinations 
-      L1_BRIDGE_PROXY, // receiver
-      currency, // inputAsset
-      l1Asset, // outputAsset
-      amount, // amount
-      maxFee, // maxFee
-      ttl, // ttl
-      moreData, // data
-      feeParams // feeParams
-    );
+    (bool success, ) = FEE_ADAPTER.call{ value:value}(data);
+    if (!success) revert IntentCreationFailed();
   }
 
   /// @notice Receives native ETH for bridging operations

@@ -249,11 +249,14 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         })
         const abiCoder = new AbiCoder()
         const encodedGasEstimate = abiCoder.encode(
-          ['uint', 'uint', 'uint', 'bytes'],
+          ['tuple(uint,uint,uint,uint)', 'bytes'],
           [
-            gasEstimate.maxFeePerGas,
-            gasEstimate.gasLimit,
-            gasEstimate.maxSubmissionCost * 5n,
+            [
+              gasEstimate.maxFeePerGas,
+              gasEstimate.gasLimit,
+              gasEstimate.maxSubmissionCost,
+              gasEstimate.deposit,
+            ],
             '0x',
           ]
         )

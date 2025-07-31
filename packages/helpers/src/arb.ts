@@ -37,11 +37,11 @@ export const estimateRetryableFee = async (
   } else {
     callDataSize = hexDataLength(data)
   }
-  // 2. Get current L2 gas price
+  // get current L2 gas price
   const blockDest = await destProvider.getBlock('latest')
   const maxFeePerGas = blockDest!.baseFeePerGas
 
-  // 3. Estimate the submission fee for calldata size
+  // estimate the submission fee for calldata size
   const block = await srcProvider.getBlock('latest')
   const parentBaseFee = block!.baseFeePerGas!
 
@@ -53,7 +53,8 @@ export const estimateRetryableFee = async (
   const inboxContract = new ethers.Contract(inboxAddress, IInbox, srcProvider)
   const maxSubmissionCost = await inboxContract.calculateRetryableSubmissionFee(
     callDataSize,
-    // increase based on @arb/sdk
+    // 300% increase based on @arb/sdk
+    // https://github.com/OffchainLabs/arbitrum-sdk/blob/main/packages/sdk/src/lib/message/ParentToChildMessageGasEstimator.ts
     parentBaseFee + parentBaseFee * 3n
   )
 

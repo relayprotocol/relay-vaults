@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import {BridgeProxy} from "./BridgeProxy.sol";
-import {IFeeAdapter} from "../interfaces/everclear/IFeeAdapter.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract EverclearBridgeProxy is BridgeProxy {
@@ -20,16 +19,6 @@ contract EverclearBridgeProxy is BridgeProxy {
   ) BridgeProxy(relayPoolChainId, relayPool, l1BridgeProxy) {
     FEE_ADAPTER = feeAdapter;
   }
-
-
-  function getFeeParams(bytes calldata extraData) public view returns (IFeeAdapter.FeeParams memory) {
-      (uint256 fee, uint256 deadline, bytes memory sig) = abi.decode(extraData, (uint256, uint256, bytes));
-      return IFeeAdapter.FeeParams({
-        fee: fee,
-        deadline: deadline,
-        sig: sig
-      });
-    }
   
   function getIntentTxRequest(bytes calldata extraData) public view returns (address, uint256, bytes memory) {
     (address to, uint256 value, bytes memory data) = abi.decode(extraData, (address, uint256, bytes));

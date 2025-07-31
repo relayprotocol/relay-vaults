@@ -1,10 +1,18 @@
 import { ethers, ignition } from 'hardhat'
 import { expect } from 'chai'
-import { AbiCoder, parseUnits, TransactionReceipt, type Signer } from 'ethers'
-import { getBalance } from '@relay-vaults/helpers'
+import {
+  AbiCoder,
+  parseUnits,
+  TransactionReceipt,
+  ZeroAddress,
+  type Signer,
+} from 'ethers'
+import { getBalance, getEvent } from '@relay-vaults/helpers'
 import EverclearBridgeProxyModule from '../../ignition/modules/EverclearBridgeProxyModule'
 import networks from '@relay-vaults/networks'
 import { OriginNetworkConfig } from '@relay-vaults/types'
+
+import { getNewEverclearIntent } from '@relay-vaults/helpers'
 
 const destinationChainId = 1 // Ethereum
 const originChainId = 8453 // Base
@@ -17,6 +25,7 @@ describe('EverclearBridgeProxy (withdraw)', function () {
   let recipient: Signer
   let originWeth: string
   let destWeth: string
+  let feeAdapter: string
 
   before(async () => {
     ;[, recipient] = await ethers.getSigners()
@@ -34,9 +43,8 @@ describe('EverclearBridgeProxy (withdraw)', function () {
 
     const { domainId: destinationDomainId } =
       destinationNetwork.bridges.everclear!
-    const { feeAdapter } = originNetwork.bridges.everclear!
+    ;({ feeAdapter } = originNetwork.bridges.everclear!)
 
-    console.log({ destinationDomainId })
     // deploy using ignition
     const parameters = {
       EverclearBridgeProxy: {
@@ -54,57 +62,43 @@ describe('EverclearBridgeProxy (withdraw)', function () {
     bridge = result.bridge
   })
 
-  describe('sending native token (ETH)', () => {
+  describe('sending wrapped token (WETH)', () => {
     let balanceBefore: bigint
     const amount = parseUnits('0.1', 18)
     let receipt: TransactionReceipt | null
 
     before(async () => {
-      // Get initial balance
-      balanceBefore = await getBalance(
-        await recipient.getAddress(),
-        ethers.ZeroAddress,
-        BigInt(originChainId)
-      )
-
       // Wrap some ether
       const weth = await ethers.getContractAt('IWETH', originWeth, recipient)
       await weth.deposit({ value: amount })
       await weth.approve(await bridge.getAddress(), amount)
 
-      // intent params
-      const maxFee = 500
-      const ttl = 0
-      const moreData = '0x'
-
-      // fee params
-      const fee = parseUnits('0.001', 18) // 0.001 ETH fee
-      const deadline = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-
-      const abiCoder = new AbiCoder()
-
-      // sign payload
-      const payload = abiCoder.encode(
-        [
-          fee.toString(), // _tokenFee
-          0, // ethFee
-          originWeth, // origin asset
-          deadline.toString(), // dedaline
-        ],
-        ['uint', 'uint', 'address', 'uint']
+      // Get initial balance
+      balanceBefore = await getBalance(
+        await recipient.getAddress(),
+        originWeth,
+        BigInt(originChainId)
       )
 
-      console.log(payload)
+      const intentParams = {
+        amount,
+        callData: '0x',
+        destinations: [destinationChainId.toString()],
+        inputAsset: originWeth,
+        maxFee: 500n,
+        origin: originChainId.toString(),
+        to: await bridge.L1_BRIDGE_PROXY(),
+      }
 
-      const mockSignature = '0x' + '00'.repeat(65) // Mock signature
+      // get intent from API
+      const everclearIntent = await getNewEverclearIntent(intentParams)
 
       // encode tuple
-      const encodedExtraData = abiCoder.encode(
-        ['uint24', 'uint48', 'tuple(uint256,uint256,bytes)', 'bytes'],
-        [maxFee, ttl, [fee, deadline, mockSignature], moreData]
+      const abiCoder = new AbiCoder()
+      const extraData = abiCoder.encode(
+        ['address', 'uint', 'bytes'],
+        [everclearIntent.to, everclearIntent.value, everclearIntent.data]
       )
-
-      console.log(encodedExtraData)
 
       // Send message to the bridge
       const tx = await bridge.connect(recipient).bridge(
@@ -112,35 +106,40 @@ describe('EverclearBridgeProxy (withdraw)', function () {
         destWeth, // l1Asset
         amount,
         '0x', // empty data for gasParams
-        encodedExtraData, // extraData with everclear fee params
+        extraData, // extraData with everclear fee params
         { value: amount }
       )
 
       receipt = await tx.wait()
     })
 
-    it('reduces the ETH balance', async () => {
+    it('has correct bridge configuration', async () => {
+      expect(await bridge.FEE_ADAPTER()).to.equal(feeAdapter)
+      expect(await bridge.L1_BRIDGE_PROXY()).to.equal(l1BridgeProxy)
+    })
+
+    it('reduces the WETH balance', async () => {
       const balanceAfter = await getBalance(
         await recipient.getAddress(),
-        ethers.ZeroAddress,
+        originWeth,
         BigInt(originChainId)
       )
 
       // Balance should be less than before (amount + gas costs)
-      expect(balanceAfter).to.be.lessThan(balanceBefore - amount)
+      expect(balanceAfter).to.equal(balanceBefore - amount)
     })
 
     it('emits intent creation events', async () => {
-      // The actual event would come from the feeAdapter contract
-      // For now, just verify the transaction was successful
-      expect(receipt).to.not.equal(null)
-      expect(receipt!.status).to.equal(1)
-    })
-
-    it('has correct bridge configuration', async () => {
-      expect(await bridge.feeAdapter()).to.equal(feeAdapter)
-      expect(await bridge.destinationDomainId()).to.equal(destinationDomainId)
-      expect(await bridge.L1_BRIDGE_PROXY()).to.equal(l1BridgeProxy)
+      const { interface: IFeeAdapter } = await ethers.getContractAt(
+        'IFeeAdapter',
+        ZeroAddress
+      )
+      const { event } = await getEvent(
+        receipt!,
+        'IntentWithFeesAdded',
+        IFeeAdapter
+      )
+      expect(event._initiator).to.not.equal(await recipient.getAddress())
     })
   })
 })

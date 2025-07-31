@@ -77,7 +77,7 @@ describe('EverclearBridgeProxy (withdraw)', function () {
       balanceBefore = await getBalance(
         await recipient.getAddress(),
         originWeth,
-        BigInt(originChainId)
+        ethers.provider
       )
 
       const intentParams = {
@@ -122,10 +122,8 @@ describe('EverclearBridgeProxy (withdraw)', function () {
       const balanceAfter = await getBalance(
         await recipient.getAddress(),
         originWeth,
-        BigInt(originChainId)
+        ethers.provider
       )
-
-      // Balance should be less than before (amount + gas costs)
       expect(balanceAfter).to.equal(balanceBefore - amount)
     })
 

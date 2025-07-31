@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import {BridgeProxy} from "./BridgeProxy.sol";
 import {IFeeAdapter} from "../interfaces/everclear/IFeeAdapter.sol";
-import {console} from "hardhat/console.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract EverclearBridgeProxy is BridgeProxy {

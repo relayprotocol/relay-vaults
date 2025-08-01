@@ -20,6 +20,11 @@ const config: OriginNetworkConfig & VaultNetworkConfig = {
         transmitter: '0x0a992d191DEeC32aFe36203Ad87D7d289a738F81',
       },
     },
+    everclear: {
+      domainId: 8453,
+      feeAdapter: '0x15a7cA97D1ed168fB34a4055CEFa2E2f9Bdb6C75',
+      spoke: '0xa05A3380889115bf313f1Db9d5f335157Be4D816',
+    },
     optimism: {
       child: {
         messagePasser: '0x4200000000000000000000000000000000000016',

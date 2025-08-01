@@ -74,6 +74,11 @@ export interface OriginNetworkConfig extends NetworkConfig {
         sharedDefaultBridge: string
       }
     }
+    everclear?: {
+      domainId: number
+      spoke: string
+      feeAdapter: string
+    }
   }
 }
 

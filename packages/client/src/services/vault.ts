@@ -520,6 +520,138 @@ export class RelayVaultService {
   }
 
   /**
+   * Get vault snapshots with intelligent aggregation for chart display
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @param options - Query options
+   * @param options.timeRange - Predefined time range ('7d', '30d', '90d', '1y') or custom days number
+   * @param options.timestampFrom - Custom start timestamp (overrides timeRange)
+   * @param options.timestampTo - Custom end timestamp (default: current time)
+   * @param options.targetHour - Hour of day for daily aggregation (0-23, default: 6 for 6am UTC)
+   * @param options.maxPoints - Maximum data points to return (default: based on timeRange)
+   * @returns Promise containing optimally sampled vault snapshots for chart display
+   */
+  async getVaultSnapshotAggregatedData(
+    vaultAddress: string,
+    chainId: number,
+    options: {
+      timeRange?: '7d' | '30d' | '90d' | '1y' | number
+      timestampFrom?: string | number
+      timestampTo?: string | number
+      targetHour?: number
+      maxPoints?: number
+    } = {}
+  ) {
+    const {
+      timeRange = '7d',
+      timestampFrom,
+      timestampTo = Math.floor(Date.now() / 1000),
+      targetHour = 6,
+      maxPoints,
+    } = options
+
+    // Convert timeRange to days
+    let days: number
+    if (typeof timeRange === 'number') {
+      days = timeRange
+    } else {
+      const timeRangeMap = { '1y': 365, '30d': 30, '7d': 7, '90d': 90 }
+      days = timeRangeMap[timeRange]
+    }
+
+    // Calculate start timestamp
+    const startTimestamp = timestampFrom
+      ? Number(timestampFrom)
+      : Number(timestampTo) - days * 24 * 60 * 60
+
+    // Determine strategy based on time range
+    if (days <= 7) {
+      // For 7 days or less, use all snapshots (every 10 minutes)
+      return this.getVaultSnapshots(vaultAddress, chainId, {
+        limit: maxPoints || 1000,
+        orderBy: 'timestamp',
+        orderDirection: 'asc',
+        timestampFrom: startTimestamp,
+        timestampTo,
+      })
+    } else {
+      // For longer periods, use daily sampling at target hour
+      const results = []
+      const startDate = new Date(startTimestamp * 1000)
+      const endDate = new Date(Number(timestampTo) * 1000)
+
+      // Get UTC dates for each day
+      const currentDate = new Date(startDate)
+      currentDate.setUTCHours(targetHour, 0, 0, 0) // Set to target hour UTC
+
+      // If start time is after target hour, move to next day
+      if (currentDate <= startDate) {
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+      }
+
+      const targetTimestamps: number[] = []
+      const maxDays = maxPoints || days
+
+      // Generate target timestamps for each day at target hour
+      while (currentDate <= endDate && targetTimestamps.length < maxDays) {
+        targetTimestamps.push(Math.floor(currentDate.getTime() / 1000))
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+      }
+
+      for (const targetTimestamp of targetTimestamps) {
+        try {
+          const windowStart = targetTimestamp - 3 * 60 * 60
+          const windowEnd = targetTimestamp + 3 * 60 * 60
+
+          const response = await this.client.sdk.GetVaultSnapshots({
+            chainId,
+            limit: 20,
+            orderBy: 'timestamp',
+            orderDirection: 'asc',
+            timestampFrom: windowStart.toString(),
+            timestampTo: windowEnd.toString(),
+            vaultAddress,
+          })
+
+          if (response.data?.vaultSnapshots?.items?.length > 0) {
+            const snapshots = response.data.vaultSnapshots.items
+            let closestSnapshot = snapshots[0]
+            let minDiff = Math.abs(
+              Number(snapshots[0].timestamp) - targetTimestamp
+            )
+
+            for (const snapshot of snapshots) {
+              const diff = Math.abs(
+                Number(snapshot.timestamp) - targetTimestamp
+              )
+              if (diff < minDiff) {
+                minDiff = diff
+                closestSnapshot = snapshot
+              }
+            }
+
+            results.push(closestSnapshot)
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to fetch snapshot for timestamp ${targetTimestamp}:`,
+            error
+          )
+        }
+      }
+
+      return {
+        data: {
+          vaultSnapshots: {
+            items: results,
+          },
+        },
+      }
+    }
+  }
+
+  /**
    * Get the oldest vault snapshot for a specific vault
    *
    * @param vaultAddress - The vault's contract address

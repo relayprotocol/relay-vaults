@@ -551,7 +551,6 @@ export class RelayVaultService {
       maxPoints,
     } = options
 
-    // Convert timeRange to days
     let days: number
     if (typeof timeRange === 'number') {
       days = timeRange
@@ -560,14 +559,12 @@ export class RelayVaultService {
       days = timeRangeMap[timeRange]
     }
 
-    // Calculate start timestamp
     const startTimestamp = timestampFrom
       ? Number(timestampFrom)
       : Number(timestampTo) - days * 24 * 60 * 60
 
     // Determine strategy based on time range
     if (days <= 7) {
-      // For 7 days or less, use all snapshots (every 10 minutes)
       return this.getVaultSnapshots(vaultAddress, chainId, {
         limit: maxPoints || 1000,
         orderBy: 'timestamp',
@@ -576,16 +573,13 @@ export class RelayVaultService {
         timestampTo,
       })
     } else {
-      // For longer periods, use daily sampling at target hour
-      const results = []
       const startDate = new Date(startTimestamp * 1000)
       const endDate = new Date(Number(timestampTo) * 1000)
 
       // Get UTC dates for each day
       const currentDate = new Date(startDate)
-      currentDate.setUTCHours(targetHour, 0, 0, 0) // Set to target hour UTC
+      currentDate.setUTCHours(targetHour, 0, 0, 0)
 
-      // If start time is after target hour, move to next day
       if (currentDate <= startDate) {
         currentDate.setUTCDate(currentDate.getUTCDate() + 1)
       }
@@ -593,58 +587,113 @@ export class RelayVaultService {
       const targetTimestamps: number[] = []
       const maxDays = maxPoints || days
 
-      // Generate target timestamps for each day at target hour
       while (currentDate <= endDate && targetTimestamps.length < maxDays) {
         targetTimestamps.push(Math.floor(currentDate.getTime() / 1000))
         currentDate.setUTCDate(currentDate.getUTCDate() + 1)
       }
 
-      for (const targetTimestamp of targetTimestamps) {
-        try {
-          const windowStart = targetTimestamp - 3 * 60 * 60
-          const windowEnd = targetTimestamp + 3 * 60 * 60
+      const BATCH_SIZE = 6
+      const finalResults: any[] = []
 
-          const response = await this.client.sdk.GetVaultSnapshots({
-            chainId,
-            limit: 20,
-            orderBy: 'timestamp',
-            orderDirection: 'asc',
-            timestampFrom: windowStart.toString(),
-            timestampTo: windowEnd.toString(),
-            vaultAddress,
-          })
+      for (
+        let batchStart = 0;
+        batchStart < targetTimestamps.length;
+        batchStart += BATCH_SIZE
+      ) {
+        const batchEnd = Math.min(
+          batchStart + BATCH_SIZE,
+          targetTimestamps.length
+        )
+        const batchTimestamps = targetTimestamps.slice(batchStart, batchEnd)
 
-          if (response.data?.vaultSnapshots?.items?.length > 0) {
-            const snapshots = response.data.vaultSnapshots.items
-            let closestSnapshot = snapshots[0]
-            let minDiff = Math.abs(
-              Number(snapshots[0].timestamp) - targetTimestamp
-            )
+        // Create parallel API calls for current batch
+        const batchPromises = batchTimestamps.map(
+          async (targetTimestamp, batchIndex) => {
+            const globalIndex = batchStart + batchIndex
+            try {
+              const windowStart = targetTimestamp - 3 * 60 * 60
+              const windowEnd = targetTimestamp + 3 * 60 * 60
 
-            for (const snapshot of snapshots) {
-              const diff = Math.abs(
-                Number(snapshot.timestamp) - targetTimestamp
+              const response = await this.client.sdk.GetVaultSnapshots({
+                chainId,
+                limit: 20,
+                orderBy: 'timestamp',
+                orderDirection: 'asc',
+                timestampFrom: windowStart.toString(),
+                timestampTo: windowEnd.toString(),
+                vaultAddress,
+              })
+
+              if (response.data?.vaultSnapshots?.items?.length > 0) {
+                const snapshots = response.data.vaultSnapshots.items
+                let closestSnapshot = snapshots[0]
+                let minDiff = Math.abs(
+                  Number(snapshots[0].timestamp) - targetTimestamp
+                )
+
+                for (const snapshot of snapshots) {
+                  const diff = Math.abs(
+                    Number(snapshot.timestamp) - targetTimestamp
+                  )
+                  if (diff < minDiff) {
+                    minDiff = diff
+                    closestSnapshot = snapshot
+                  }
+                }
+
+                return {
+                  index: globalIndex,
+                  snapshot: closestSnapshot,
+                  targetTimestamp,
+                }
+              }
+              return { index: globalIndex, snapshot: null, targetTimestamp }
+            } catch (error) {
+              console.warn(
+                `Failed to fetch snapshot for timestamp ${targetTimestamp}:`,
+                error
               )
-              if (diff < minDiff) {
-                minDiff = diff
-                closestSnapshot = snapshot
+              return {
+                error,
+                index: globalIndex,
+                snapshot: null,
+                targetTimestamp,
               }
             }
-
-            results.push(closestSnapshot)
           }
-        } catch (error) {
-          console.warn(
-            `Failed to fetch snapshot for timestamp ${targetTimestamp}:`,
-            error
-          )
+        )
+
+        // Execute current batch in parallel
+        const batchResults = await Promise.allSettled(batchPromises)
+
+        // Process batch results and maintain order
+        const batchSnapshots: Array<{ index: number; snapshot: any }> = []
+        batchResults.forEach((result) => {
+          if (
+            result.status === 'fulfilled' &&
+            result.value &&
+            result.value.snapshot
+          ) {
+            batchSnapshots.push({
+              index: result.value.index,
+              snapshot: result.value.snapshot,
+            })
+          }
+        })
+
+        // Sort by index to maintain chronological order within batch
+        batchSnapshots.sort((a, b) => a.index - b.index)
+        finalResults.push(...batchSnapshots.map((item) => item.snapshot))
+
+        if (batchEnd < targetTimestamps.length) {
+          await new Promise((resolve) => setTimeout(resolve, 100))
         }
       }
 
       return {
         data: {
           vaultSnapshots: {
-            items: results,
+            items: finalResults,
           },
         },
       }

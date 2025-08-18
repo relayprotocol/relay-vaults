@@ -658,13 +658,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bgd-labs/aave-address-book@npm:4.22.3":
-  version: 4.22.3
-  resolution: "@bgd-labs/aave-address-book@npm:4.22.3"
-  checksum: 10/2c87ec0610005d070e20fedcb185541511f399ed065df63db4333f29a8e606a7872c0dbaf74984f1e8b5029115a67d8a47ef5f2d8d246956cb00cfac070d02f6
-  languageName: node
-  linkType: hard
-
 "@bgd-labs/aave-address-book@npm:4.25.1":
   version: 4.25.1
   resolution: "@bgd-labs/aave-address-book@npm:4.25.1"
@@ -4464,7 +4457,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-vaults/smart-contracts@workspace:smart-contracts"
   dependencies:
-    "@bgd-labs/aave-address-book": "npm:4.22.3"
     "@eslint/js": "npm:9.28.0"
     "@eth-optimism/contracts-bedrock": "npm:0.17.3"
     "@hyperlane-xyz/registry": "npm:13.16.1"

@@ -4498,7 +4498,7 @@ __metadata:
     ethers: "npm:6.15.0"
     fs-extra: "npm:11.3.1"
     globals: "npm:16.2.0"
-    hardhat: "npm:2.26.1"
+    hardhat: "npm:2.26.3"
     hardhat-gas-reporter: "npm:2.3.0"
     husky: "npm:9.1.7"
     pinst: "npm:3.0.0"
@@ -10299,9 +10299,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hardhat@npm:2.26.1":
-  version: 2.26.1
-  resolution: "hardhat@npm:2.26.1"
+"hardhat@npm:2.26.3":
+  version: 2.26.3
+  resolution: "hardhat@npm:2.26.3"
   dependencies:
     "@ethereumjs/util": "npm:^9.1.0"
     "@ethersproject/abi": "npm:^5.1.2"
@@ -10352,7 +10352,7 @@ __metadata:
       optional: true
   bin:
     hardhat: internal/cli/bootstrap.js
-  checksum: 10/3ae797b6f1c15a9d244f432159b0af34a539028b2cbd5038621229b51f0f914d0d97ff98bb22c950d4924ece23ff10117020e3b905b8efa55423ebaacb685024
+  checksum: 10/77fabed0a9f5a5871bd071cd1eae3ce120ee878370a0d58e1a762fd49d01b68385b955c111d4a55147b1540333712ef36796fd5ee142e504aad17e2b2f746d6d
   languageName: node
   linkType: hard
 

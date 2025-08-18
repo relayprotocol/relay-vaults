@@ -19,7 +19,7 @@ const deployedAddresses = getAddresses()
 
 const getConnectionString = async () => {
   const databaseUrl = new URL(process.env.DATABASE_URL!)
-  if (!databaseUrl.password) {
+  if (databaseUrl.password === undefined || databaseUrl.password === '') {
     databaseUrl.password = await getIamToken({
       hostname: databaseUrl.hostname,
       port: Number(databaseUrl.port),

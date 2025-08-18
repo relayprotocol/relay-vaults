@@ -14,7 +14,7 @@
     "@relay-vaults/networks": "workspace:*",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "@types/node": "24.1.0",
+    "@types/node": "24.3.0",
     "eslint": "9.31.0",
     "typescript": "5.8.3"
   },

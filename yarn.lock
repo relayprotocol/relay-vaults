@@ -4518,7 +4518,7 @@ __metadata:
     "@types/chai": "npm:5.2.2"
     "@types/fs-extra": "npm:11.0.4"
     "@types/mocha": "npm:10.0.10"
-    "@types/node": "npm:22.15.32"
+    "@types/node": "npm:22.17.2"
     "@types/semver": "npm:7"
     "@uniswap/v3-periphery": "npm:1.4.4"
     chai: "npm:4.5.0"
@@ -5760,12 +5760,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.15.32":
-  version: 22.15.32
-  resolution: "@types/node@npm:22.15.32"
+"@types/node@npm:22.17.2":
+  version: 22.17.2
+  resolution: "@types/node@npm:22.17.2"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10/10b4c106d0c512a1d35ec08142bd7fb5cf2e1df93fc5627b3c69dd843dec4be07a47f1fa7ede232ad84762d75a372ea35028b79ee1e753b6f2adecd0b2cb2f71
+  checksum: 10/b830746c65e014d7d47102ab2f24ec74bdb60156b9b75af42e75d81375f211904347125c00543b5fd7119223b3157726bc9814619205571c0a0afd6ce3c43abb
   languageName: node
   linkType: hard
 

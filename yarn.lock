@@ -91,6 +91,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/code-frame@npm:^7.27.1":
+  version: 7.27.1
+  resolution: "@babel/code-frame@npm:7.27.1"
+  dependencies:
+    "@babel/helper-validator-identifier": "npm:^7.27.1"
+    js-tokens: "npm:^4.0.0"
+    picocolors: "npm:^1.1.1"
+  checksum: 10/721b8a6e360a1fa0f1c9fe7351ae6c874828e119183688b533c477aa378f1010f37cc9afbfc4722c686d1f5cdd00da02eab4ba7278a0c504fa0d7a321dcd4fdf
+  languageName: node
+  linkType: hard
+
 "@babel/compat-data@npm:^7.20.5, @babel/compat-data@npm:^7.26.5":
   version: 7.26.8
   resolution: "@babel/compat-data@npm:7.26.8"
@@ -256,6 +267,13 @@ __metadata:
   version: 7.25.9
   resolution: "@babel/helper-validator-identifier@npm:7.25.9"
   checksum: 10/3f9b649be0c2fd457fa1957b694b4e69532a668866b8a0d81eabfa34ba16dbf3107b39e0e7144c55c3c652bf773ec816af8df4a61273a2bb4eb3145ca9cf478e
+  languageName: node
+  linkType: hard
+
+"@babel/helper-validator-identifier@npm:^7.27.1":
+  version: 7.27.1
+  resolution: "@babel/helper-validator-identifier@npm:7.27.1"
+  checksum: 10/75041904d21bdc0cd3b07a8ac90b11d64cd3c881e89cb936fa80edd734bf23c35e6bd1312611e8574c4eab1f3af0f63e8a5894f4699e9cfdf70c06fcf4252320
   languageName: node
   linkType: hard
 
@@ -2701,6 +2719,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@humanwhocodes/momoa@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@humanwhocodes/momoa@npm:2.0.4"
+  checksum: 10/d3c0601bc0c2ac77bd5804053a6e85698a0dfaec956d538483da79e9ad7467ffa79210293a22249fc9354ffe30e640af0bd386f864b2cd15ea8a48b534620e44
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/retry@npm:^0.3.0":
   version: 0.3.1
   resolution: "@humanwhocodes/retry@npm:0.3.1"
@@ -4490,7 +4515,7 @@ __metadata:
     pinst: "npm:3.0.0"
     prettier: "npm:3.5.3"
     prettier-plugin-solidity: "npm:2.0.0"
-    solhint: "npm:5.1.0"
+    solhint: "npm:5.2.0"
     solidity-coverage: "npm:0.8.16"
     solidity-docgen: "npm:0.6.0-beta.36"
     solmate: "npm:6.8.0"
@@ -6332,6 +6357,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ajv-errors@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "ajv-errors@npm:1.0.1"
+  peerDependencies:
+    ajv: ">=5.0.0"
+  checksum: 10/7d8907f7ff3df7cb5b224ddd95c43ebd3d8bac3fd74fe942d644adc68ed3f67d5bb971b897ab8d21607a1ecf6071a987024b96439e040c9fd45625a9b87da1bb
+  languageName: node
+  linkType: hard
+
 "ajv-formats@npm:^2.1.1":
   version: 2.1.1
   resolution: "ajv-formats@npm:2.1.1"
@@ -6725,6 +6759,21 @@ __metadata:
   dependencies:
     tweetnacl: "npm:^0.14.3"
   checksum: 10/13a4cde058250dbf1fa77a4f1b9a07d32ae2e3b9e28e88a0c7a1827835bc3482f3e478c4a0cfd4da6ff0c46dae07da1061123a995372b32cc563d9975f975404
+  languageName: node
+  linkType: hard
+
+"better-ajv-errors@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "better-ajv-errors@npm:2.0.2"
+  dependencies:
+    "@babel/code-frame": "npm:^7.27.1"
+    "@humanwhocodes/momoa": "npm:^2.0.4"
+    chalk: "npm:^4.1.2"
+    jsonpointer: "npm:^5.0.1"
+    leven: "npm:^3.1.0 < 4"
+  peerDependencies:
+    ajv: 4.11.8 - 8
+  checksum: 10/89617aebb5c6f4cf618f525ab0711b4a865d20cccdd4d8d81364686d87a0ada7e97af092bd1d466d4b1d487a8e60accf0a541b91d7d903504d7a1643a5d993e5
   languageName: node
   linkType: hard
 
@@ -9722,7 +9771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.1":
+"fs-extra@npm:11.3.1, fs-extra@npm:^11.1.0":
   version: 11.3.1
   resolution: "fs-extra@npm:11.3.1"
   dependencies:
@@ -11368,6 +11417,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsonpointer@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "jsonpointer@npm:5.0.1"
+  checksum: 10/0b40f712900ad0c846681ea2db23b6684b9d5eedf55807b4708c656f5894b63507d0e28ae10aa1bddbea551241035afe62b6df0800fc94c2e2806a7f3adecd7c
+  languageName: node
+  linkType: hard
+
 "jsonschema@npm:^1.2.4, jsonschema@npm:^1.4.1":
   version: 1.5.0
   resolution: "jsonschema@npm:1.5.0"
@@ -11444,6 +11500,13 @@ __metadata:
   dependencies:
     package-json: "npm:^8.1.0"
   checksum: 10/1f0deba00d5a34394cce4463c938811f51bbb539b131674f4bb2062c63f2cc3b80bccd56ecade3bd5932d04a34cf0a5a8a2ccc4ec9e5e6b285a9a7b3e27d0d66
+  languageName: node
+  linkType: hard
+
+"leven@npm:^3.1.0 < 4":
+  version: 3.1.0
+  resolution: "leven@npm:3.1.0"
+  checksum: 10/638401d534585261b6003db9d99afd244dfe82d75ddb6db5c0df412842d5ab30b2ef18de471aaec70fe69a46f17b4ae3c7f01d8a4e6580ef7adb9f4273ad1e55
   languageName: node
   linkType: hard
 
@@ -14831,18 +14894,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solhint@npm:5.1.0":
-  version: 5.1.0
-  resolution: "solhint@npm:5.1.0"
+"solhint@npm:5.2.0":
+  version: 5.2.0
+  resolution: "solhint@npm:5.2.0"
   dependencies:
     "@solidity-parser/parser": "npm:^0.20.0"
     ajv: "npm:^6.12.6"
+    ajv-errors: "npm:^1.0.1"
     antlr4: "npm:^4.13.1-patch-1"
     ast-parents: "npm:^0.0.1"
+    better-ajv-errors: "npm:^2.0.2"
     chalk: "npm:^4.1.2"
     commander: "npm:^10.0.0"
     cosmiconfig: "npm:^8.0.0"
     fast-diff: "npm:^1.2.0"
+    fs-extra: "npm:^11.1.0"
     glob: "npm:^8.0.3"
     ignore: "npm:^5.2.4"
     js-yaml: "npm:^4.1.0"
@@ -14859,7 +14925,7 @@ __metadata:
       optional: true
   bin:
     solhint: solhint.js
-  checksum: 10/f2cae41687cbeb5589c72f35350949a560c68d6f851626fbb34bb0606c364dc52fd554125e7d1e071753e20341953a188edd94c23e8529be20bba9f00bfbc5c8
+  checksum: 10/ccccfe72390989fe4e4827e9635ef41605f966a1efb835bb9c231b5e4b9edcd0ccd60602668aba3365c385e89f8ca383e32570cf1148f7a81e8bb44d69b5ddf7
   languageName: node
   linkType: hard
 

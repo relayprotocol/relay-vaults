@@ -55,7 +55,7 @@
     "@types/node": "22.17.2",
     "@types/semver": "7",
     "@uniswap/v3-periphery": "1.4.4",
-    "chai": "4.5.0",
+    "chai": "5.3.1",
     "enquirer": "2.4.1",
     "eslint": "9.28.0",
     "eslint-config-prettier": "10.1.8",

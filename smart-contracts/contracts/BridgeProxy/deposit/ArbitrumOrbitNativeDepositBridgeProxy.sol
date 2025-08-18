@@ -30,6 +30,13 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     INBOX = IInbox(inbox);
   }
 
+    struct GasEstimate {
+      uint256 maxFeePerGas;
+      uint256 gasLimit;
+      uint256 maxSubmissionCost;
+      uint256 deposit;
+    }
+
   function bridge(
     address asset, //l2 token
     address l1Currency, //l1 token
@@ -37,22 +44,21 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     bytes calldata gasParams,
     bytes calldata extraData
   ) external payable override {
-    (uint256 maxFeePerGas, uint256 gasLimit, uint256 maxSubmissionCost) = abi
-      .decode(gasParams, (uint256, uint256, uint256));
-
+    (GasEstimate memory gasEstimate, bytes memory moreData) = abi.decode(extraData, (GasEstimate, bytes));
+    
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default
       // we have to create a retryable ticket to deposit to the L1 bridge proxy
-      INBOX.createRetryableTicket{value: msg.value}(
+      INBOX.createRetryableTicket{value: gasEstimate.deposit}(
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // to
         amount, // l2CallValue
-        maxSubmissionCost, // maxSubmissionCost
+        gasEstimate.maxSubmissionCost, // maxSubmissionCost
         address(this), // excessFeeRefundAddress
         address(this), // callValueRefundAddress (receives msg.value on l2)
-        gasLimit, // gasLimit
-        maxFeePerGas, // maxFeePerGas
+        gasEstimate.gasLimit, // gasLimit
+        gasEstimate.maxFeePerGas, // maxFeePerGas
         extraData // data
       );
     } else {
@@ -66,16 +72,16 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         amount
       );
 
-      ROUTER.outboundTransferCustomRefund{value: msg.value}(
+      ROUTER.outboundTransferCustomRefund{value: gasEstimate.deposit}(
         l1Currency, // L1 erc20 address
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY, // receives token on L2
         amount, // token amount
-        gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
-        maxFeePerGas, // Gas price bid for L2 execution
-        abi.encode(maxSubmissionCost, extraData) // Extra data,
+        gasEstimate.gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
+        gasEstimate.maxFeePerGas, // Gas price bid for L2 execution
+        abi.encode(gasEstimate.maxSubmissionCost, moreData)
       );
     }
   }

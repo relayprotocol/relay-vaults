@@ -23,14 +23,27 @@ export const estimateRetryableFee = async (
   const srcProvider = await getProvider(originChainId)
   const destProvider = await getProvider(destinationChainId)
 
-  // 2. Get current L2 gas price
+  let callDataSize
+  if (!data || data === '0x') {
+    // from https://github.com/OffchainLabs/arbitrum-token-bridge/blob/master/packages/arb-token-bridge-ui/src/util/TokenDepositUtils.ts
+    // Values set by looking at a couple of L1 gateways
+    // hex data length for transfer
+    // L1 LPT Gateway: 324
+    // L1 DAI Gateway: 324
+    // L1 Standard Gateway (APE): 740
+    // L1 Custom Gateway (USDT): 324
+    // L1 WETH Gateway: 324
+    callDataSize = 1_000n
+  } else {
+    callDataSize = hexDataLength(data)
+  }
+  // get current L2 gas price
   const blockDest = await destProvider.getBlock('latest')
   const maxFeePerGas = blockDest!.baseFeePerGas
 
-  // 3. Estimate the submission fee for calldata size
-  const callDataSize = hexDataLength(data)
+  // estimate the submission fee for calldata size
   const block = await srcProvider.getBlock('latest')
-  const parentBaseFee = block!.baseFeePerGas
+  const parentBaseFee = block!.baseFeePerGas!
 
   // get submission cost
   const { inbox: inboxAddress } = (
@@ -40,7 +53,9 @@ export const estimateRetryableFee = async (
   const inboxContract = new ethers.Contract(inboxAddress, IInbox, srcProvider)
   const maxSubmissionCost = await inboxContract.calculateRetryableSubmissionFee(
     callDataSize,
-    parentBaseFee
+    // 300% increase based on @arb/sdk
+    // https://github.com/OffchainLabs/arbitrum-sdk/blob/main/packages/sdk/src/lib/message/ParentToChildMessageGasEstimator.ts
+    parentBaseFee + parentBaseFee * 3n
   )
 
   return {
@@ -93,10 +108,9 @@ export const estimateNativeBridgeTicketCost = async ({
     data
   )
 
-  // 4. Compute deposit (sum of all costs, plus l2CallValue)
+  // compute deposit (sum of all costs, plus l2CallValue)
   const deposit = gasLimit * maxFeePerGas! + maxSubmissionCost + amount
 
-  // 5. Return all values as an object (in BN/BigInt/string as needed)
   return {
     deposit,
     gasLimit,

@@ -57,12 +57,14 @@ task(
     if (!poolChainId) {
       // We need to get a network from the networks!
       poolChainId = await new Select({
-        choices: Object.values(networks).map((network) => {
-          return {
-            message: network.name,
-            value: network.chainId.toString(),
-          }
-        }),
+        choices: Object.values(networks)
+          .sort((a, b) => (a.name < b.name ? -1 : 1))
+          .map((network) => {
+            return {
+              message: network.name,
+              value: network.chainId.toString(),
+            }
+          }),
         message: 'Please, select the pool network:',
       }).run()
     }
@@ -72,12 +74,14 @@ task(
     if (!originChainId) {
       // We need to get a network from the networks!
       originChainId = await new Select({
-        choices: Object.values(networks).map((network) => {
-          return {
-            message: network.name,
-            value: network.chainId.toString(),
-          }
-        }),
+        choices: Object.values(networks)
+          .sort((a, b) => (a.name < b.name ? -1 : 1))
+          .map((network) => {
+            return {
+              message: network.name,
+              value: network.chainId.toString(),
+            }
+          }),
         message: 'Please, select the origin network:',
       }).run()
     }

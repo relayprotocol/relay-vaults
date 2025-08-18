@@ -29,9 +29,13 @@ const UDT_WHALE = '0x3154Cf16ccdb4C6d922629664174b904d80F2C35'
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
+const amount = parseUnits('0.1', 18)
+
 describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
   let bridge: any
   let recipient: Signer
+  let gasEstimate: any
+  let extraData: string
 
   before(async () => {
     ;[, recipient] = await ethers.getSigners()
@@ -54,6 +58,30 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
       }
     )
     bridge = result.bridge
+
+    const [signer] = await ethers.getSigners()
+    gasEstimate = await estimateNativeBridgeTicketCost({
+      amount,
+      bridgeAddress: await bridge.getAddress(),
+      destProxyBridgeAddress: await bridge.L1_BRIDGE_PROXY(),
+      destinationChainId: BigInt(destinationChainId),
+      from: await signer.getAddress(),
+      originChainId: BigInt(originChainId),
+    })
+
+    const abiCoder = new AbiCoder()
+    extraData = abiCoder.encode(
+      ['tuple(uint,uint,uint,uint)', 'bytes'],
+      [
+        [
+          gasEstimate.maxFeePerGas,
+          gasEstimate.gasLimit,
+          gasEstimate.maxSubmissionCost,
+          gasEstimate.deposit,
+        ],
+        '0x',
+      ]
+    )
   })
 
   describe('sending ERC20', () => {
@@ -80,25 +108,6 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
       // make sure stealing pays
       expect(balanceBefore).to.equal(amount)
 
-      // TODO: clarify how to calculate / simualte this calldata
-      // and compute gaslimit
-      const gasLimit = 6000000n
-      const calldataLength = 1652
-      const fakeCalldata = Array(calldataLength).fill(0).join('')
-
-      const { maxFeePerGas, maxSubmissionCost } = await estimateRetryableFee(
-        originChainId,
-        destinationChainId,
-        fakeCalldata
-      )
-
-      const deposit = gasLimit * maxFeePerGas! + maxSubmissionCost
-
-      const abiCoder = new AbiCoder()
-      const encodedGasEstimate = abiCoder.encode(
-        ['uint', 'uint', 'uint'],
-        [maxFeePerGas, gasLimit, maxSubmissionCost]
-      )
       // send tx
       const gatewayRouter = await ethers.getContractAt(
         'IL1GatewayRouter',
@@ -111,10 +120,10 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         udtArbAddress, // L2 token
         UDT_ETHEREUM, // l1 token
         amount,
-        encodedGasEstimate, // empty data
-        '0x', // empty extraData
+        '0x', // empty hyperlane gas data
+        extraData, // extraData
         {
-          value: deposit,
+          value: gasEstimate.deposit,
         }
       )
 
@@ -162,7 +171,6 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
 
   describe('sending native token (ETH)', () => {
     let balanceBefore: bigint
-    const amount = parseUnits('0.1', 18)
     let receipt: TransactionReceipt | null
 
     before(async () => {
@@ -173,32 +181,12 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         ethers.provider
       )
 
-      const [signer] = await ethers.getSigners()
-      const gasEstimate = await estimateNativeBridgeTicketCost({
-        amount,
-        bridgeAddress: await bridge.getAddress(),
-        destProxyBridgeAddress: await bridge.L1_BRIDGE_PROXY(),
-        destinationChainId: BigInt(destinationChainId),
-        from: await signer.getAddress(),
-        originChainId: BigInt(originChainId),
-      })
-
-      const abiCoder = new AbiCoder()
-      const encodedGasEstimate = abiCoder.encode(
-        ['uint', 'uint', 'uint'],
-        [
-          gasEstimate.maxFeePerGas,
-          gasEstimate.gasLimit,
-          gasEstimate.maxSubmissionCost,
-        ]
-      )
-
       const bridgeParams = [
         ethers.ZeroAddress, // native token
         ethers.ZeroAddress, // l1 native token
         amount,
-        encodedGasEstimate, // empty data
-        '0x', // empty extraData
+        '0x', // empty hyperlane gas data
+        extraData, // use extraData to pass gas params
       ]
 
       // Send message to the bridge

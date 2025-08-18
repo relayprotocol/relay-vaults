@@ -4457,7 +4457,7 @@ __metadata:
     chai: "npm:4.5.0"
     enquirer: "npm:2.4.1"
     eslint: "npm:9.28.0"
-    eslint-config-prettier: "npm:10.1.5"
+    eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-evm-address-to-checksummed: "npm:0.0.6"
     eslint-plugin-json: "npm:4.0.1"
     eslint-plugin-mocha: "npm:11.1.0"
@@ -8765,17 +8765,6 @@ __metadata:
     "@typescript-eslint/parser": ^6.3.0
     eslint: ">= 3"
   checksum: 10/d8d0f91ccce520ad2a8b6975cb143dd3750c9c2c0ad36a2ab5b402bb4a063e8d314c345a79f6e6a0259b11ba67388df87da7e5538c34cf5cf7ee88baf52e7d63
-  languageName: node
-  linkType: hard
-
-"eslint-config-prettier@npm:10.1.5":
-  version: 10.1.5
-  resolution: "eslint-config-prettier@npm:10.1.5"
-  peerDependencies:
-    eslint: ">=7.0.0"
-  bin:
-    eslint-config-prettier: bin/cli.js
-  checksum: 10/bc192e703e595c886c33703ebb9a8381a18179ce2ec14a24f671cb675a96b8ba1b4a862c5763680e1c918131007759afb3c874788c7d61706740147ae77f249a
   languageName: node
   linkType: hard
 

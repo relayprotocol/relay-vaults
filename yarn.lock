@@ -3348,16 +3348,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/hardhat-ethers@npm:3.0.9":
-  version: 3.0.9
-  resolution: "@nomicfoundation/hardhat-ethers@npm:3.0.9"
+"@nomicfoundation/hardhat-ethers@npm:3.1.0":
+  version: 3.1.0
+  resolution: "@nomicfoundation/hardhat-ethers@npm:3.1.0"
   dependencies:
     debug: "npm:^4.1.1"
     lodash.isequal: "npm:^4.5.0"
   peerDependencies:
     ethers: ^6.14.0
-    hardhat: ^2.0.0
-  checksum: 10/68e4864cb0dc1491060a0c00a38d08a039c253efe8a12f070df3db5f4df633240b7657e8678bbbfe724b8915ea9dff2fe9bdb6f07da98af129d911059bf76510
+    hardhat: ^2.26.0
+  checksum: 10/f5eff398b94b89d1f12b5294a9dbf261f6f0b51815abcae921e37ec76d513d988da709cc2f839fcae2f404da4c476cfdc70c92dea19417db6a81b753de4f8acf
   languageName: node
   linkType: hard
 
@@ -4452,7 +4452,7 @@ __metadata:
     "@matterlabs/hardhat-zksync-solc": "npm:1.4.0"
     "@matterlabs/hardhat-zksync-verify": "npm:1.8.1"
     "@nomicfoundation/hardhat-chai-matchers": "npm:2.1.0"
-    "@nomicfoundation/hardhat-ethers": "npm:3.0.9"
+    "@nomicfoundation/hardhat-ethers": "npm:3.1.0"
     "@nomicfoundation/hardhat-ignition": "npm:0.15.13"
     "@nomicfoundation/hardhat-ignition-ethers": "npm:0.15.14"
     "@nomicfoundation/hardhat-network-helpers": "npm:1.1.0"

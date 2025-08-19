@@ -4517,7 +4517,7 @@ __metadata:
     pinst: "npm:3.0.0"
     prettier: "npm:3.6.2"
     prettier-plugin-solidity: "npm:2.1.0"
-    solhint: "npm:5.2.0"
+    solhint: "npm:6.0.0"
     solidity-coverage: "npm:0.8.16"
     solidity-docgen: "npm:0.6.0-beta.36"
     solmate: "npm:6.8.0"
@@ -14999,9 +14999,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solhint@npm:5.2.0":
-  version: 5.2.0
-  resolution: "solhint@npm:5.2.0"
+"solhint@npm:6.0.0":
+  version: 6.0.0
+  resolution: "solhint@npm:6.0.0"
   dependencies:
     "@solidity-parser/parser": "npm:^0.20.0"
     ajv: "npm:^6.12.6"
@@ -15030,7 +15030,7 @@ __metadata:
       optional: true
   bin:
     solhint: solhint.js
-  checksum: 10/ccccfe72390989fe4e4827e9635ef41605f966a1efb835bb9c231b5e4b9edcd0ccd60602668aba3365c385e89f8ca383e32570cf1148f7a81e8bb44d69b5ddf7
+  checksum: 10/27b139b3f52190a30a2234443591772a844c77394005b5afff7814931ff6598191c1ab51052657854b3848051c780cff38f7b88771ed6dc84bba541f4590f620
   languageName: node
   linkType: hard
 

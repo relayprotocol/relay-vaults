@@ -3574,12 +3574,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/slang@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@nomicfoundation/slang@npm:1.1.0"
+"@nomicfoundation/slang@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@nomicfoundation/slang@npm:1.2.0"
   dependencies:
     "@bytecodealliance/preview2-shim": "npm:0.17.2"
-  checksum: 10/7f4f24a03aec625813c6eb87390406869534896e5be90b2473b8b55abadfd48537958345629c75c4896dd38e4ad7aaaeff151be752a9ab468a6290a55e999e34
+  checksum: 10/694f67c16192ca0c8d8e76026722fdd192420746f654bd4789951a56d14df9dd4e1986b35223c32ce1e62f05023e9216cc692278b36d6cc2eb18bf059ad49429
   languageName: node
   linkType: hard
 
@@ -4558,7 +4558,7 @@ __metadata:
     husky: "npm:9.1.7"
     pinst: "npm:3.0.0"
     prettier: "npm:3.6.2"
-    prettier-plugin-solidity: "npm:2.0.0"
+    prettier-plugin-solidity: "npm:2.1.0"
     solhint: "npm:5.2.0"
     solidity-coverage: "npm:0.8.16"
     solidity-docgen: "npm:0.6.0-beta.36"
@@ -13742,16 +13742,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-solidity@npm:2.0.0":
-  version: 2.0.0
-  resolution: "prettier-plugin-solidity@npm:2.0.0"
+"prettier-plugin-solidity@npm:2.1.0":
+  version: 2.1.0
+  resolution: "prettier-plugin-solidity@npm:2.1.0"
   dependencies:
-    "@nomicfoundation/slang": "npm:1.1.0"
+    "@nomicfoundation/slang": "npm:1.2.0"
     "@solidity-parser/parser": "npm:^0.20.1"
-    semver: "npm:^7.7.1"
+    semver: "npm:^7.7.2"
   peerDependencies:
     prettier: ">=3.0.0"
-  checksum: 10/b5ef1d64902b181478e3bd557a37d11c5437e9353402e43c1ef0909e596d76f1e72b0fd59726a381564d303a6bcb4f0b6b9a9310caf942b27236dc6913819de1
+  checksum: 10/35ae366b7cbb434c31d33f793d13839e136eeb778cb74bc4ffa0eb65a6a3eace34b1b3158a02daf42072c8a120991fcf86842b67c51341b2fa8287747b71ae41
   languageName: node
   linkType: hard
 
@@ -14866,6 +14866,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10/4cfa1eb91ef3751e20fc52e47a935a0118d56d6f15a837ab814da0c150778ba2ca4f1a4d9068b33070ea4273629e615066664c2cfcd7c272caf7a8a0f6518b2c
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.7.2":
+  version: 7.7.2
+  resolution: "semver@npm:7.7.2"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/7a24cffcaa13f53c09ce55e05efe25cd41328730b2308678624f8b9f5fc3093fc4d189f47950f0b811ff8f3c3039c24a2c36717ba7961615c682045bf03e1dda
   languageName: node
   linkType: hard
 

@@ -20,12 +20,13 @@ const deployedAddresses = getAddresses()
 const getConnectionString = async () => {
   const databaseUrl = new URL(process.env.DATABASE_URL!)
   if (databaseUrl.password === undefined || databaseUrl.password === '') {
-    databaseUrl.password = await getIamToken({
+    const password = await getIamToken({
       hostname: databaseUrl.hostname,
       port: Number(databaseUrl.port),
       region: process.env.AWS_REGION,
       username: databaseUrl.username,
     })
+    databaseUrl.password = encodeURIComponent(password)
   }
   return databaseUrl.toString()
 }

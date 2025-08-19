@@ -4457,7 +4457,7 @@ __metadata:
     "@relay-vaults/helpers": "workspace:*"
     "@safe-global/api-kit": "npm:4.0.0"
     "@safe-global/protocol-kit": "npm:6.1.0"
-    "@safe-global/types-kit": "npm:2.0.1"
+    "@safe-global/types-kit": "npm:3.0.0"
     "@typechain/ethers-v6": "npm:0.5.1"
     "@typechain/hardhat": "npm:9.1.0"
     "@types/chai": "npm:5.2.2"
@@ -5120,16 +5120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@safe-global/types-kit@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@safe-global/types-kit@npm:2.0.1"
-  dependencies:
-    abitype: "npm:^1.0.2"
-  checksum: 10/6a8dc0a15805550df2d780c54e4916f105d08daa710e2e04f50f5929e6fa7fd580fad5557a814fa8629d5c4b298209a5e1e0593b821016ebae75aabfcf891f62
-  languageName: node
-  linkType: hard
-
-"@safe-global/types-kit@npm:^3.0.0":
+"@safe-global/types-kit@npm:3.0.0, @safe-global/types-kit@npm:^3.0.0":
   version: 3.0.0
   resolution: "@safe-global/types-kit@npm:3.0.0"
   dependencies:

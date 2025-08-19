@@ -46,7 +46,7 @@
     "@relay-vaults/helpers": "workspace:*",
     "@safe-global/api-kit": "4.0.0",
     "@safe-global/protocol-kit": "6.1.0",
-    "@safe-global/types-kit": "2.0.1",
+    "@safe-global/types-kit": "3.0.0",
     "@typechain/ethers-v6": "0.5.1",
     "@typechain/hardhat": "9.1.0",
     "@types/chai": "5.2.2",

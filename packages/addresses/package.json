@@ -28,8 +28,8 @@
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
     "@types/node": "24.3.0",
-    "eslint": "9.31.0",
+    "eslint": "9.33.0",
     "tsup": "8.5.0",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   }
 }

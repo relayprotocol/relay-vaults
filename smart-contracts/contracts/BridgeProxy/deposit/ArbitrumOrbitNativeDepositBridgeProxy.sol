@@ -18,16 +18,19 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
 
   IInbox public immutable INBOX;
   IL1GatewayRouter public immutable ROUTER;
+  address public immutable ERC20_GATEWAY;
 
   constructor(
     address l1GatewayRouter,
     address inbox,
+    address l1ERC20Gateway,
     uint256 relayPoolChainId,
     address relayPool,
     address l2BridgeProxy
   ) BridgeProxy(relayPoolChainId, relayPool, l2BridgeProxy) {
     ROUTER = IL1GatewayRouter(l1GatewayRouter);
     INBOX = IInbox(inbox);
+    ERC20_GATEWAY = l1ERC20Gateway;
   }
 
     struct GasEstimate {
@@ -68,7 +71,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
       }
 
       IERC20(l1Currency).approve(
-        address(0xB2535b988dcE19f9D71dfB22dB6da744aCac21bf),
+        ERC20_GATEWAY,
         amount
       );
 

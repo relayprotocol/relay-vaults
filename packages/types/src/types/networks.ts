@@ -32,6 +32,7 @@ export interface OriginNetworkConfig extends NetworkConfig {
       child: {
         inbox: string
         routerGateway: string
+        erc20Gateway: string
       }
       parent: {
         routerGateway: string

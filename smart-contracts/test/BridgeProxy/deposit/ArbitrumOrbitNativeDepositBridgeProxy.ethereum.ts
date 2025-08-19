@@ -17,9 +17,9 @@ const originChainId = 1
 const destinationChainId = 42161 // arb one
 // const chainId = 42170 // TODO: Arbitrum Nova mainnet
 
-const { routerGateway, inbox } = (
-  networks[destinationChainId] as OriginNetworkConfig
-).bridges.arbitrum!.parent
+const { routerGateway, inbox, erc20Gateway } = (
+  networks[originChainId] as OriginNetworkConfig
+).bridges.arbitrumDeposit!.child
 
 const {
   assets: { udt: UDT_ETHEREUM },
@@ -43,6 +43,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
     // deploy using ignition
     const parameters = {
       ArbitrumOrbitNativeDepositBridgeProxy: {
+        erc20Gateway,
         inbox,
         l1BridgeProxy,
         relayPool,

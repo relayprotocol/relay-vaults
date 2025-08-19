@@ -25,7 +25,7 @@
     "postpack": "pinst --enable"
   },
   "dependencies": {
-    "@eslint/js": "9.28.0",
+    "@eslint/js": "9.33.0",
     "@eth-optimism/contracts-bedrock": "0.17.3",
     "@hyperlane-xyz/registry": "13.16.1",
     "@matterlabs/hardhat-zksync-deploy": "1.8.0",
@@ -57,7 +57,7 @@
     "@uniswap/v3-periphery": "1.4.4",
     "chai": "5.3.1",
     "enquirer": "2.4.1",
-    "eslint": "9.28.0",
+    "eslint": "9.33.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-evm-address-to-checksummed": "0.0.6",
     "eslint-plugin-json": "4.0.1",

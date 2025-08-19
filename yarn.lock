@@ -4473,7 +4473,7 @@ __metadata:
     tsup: "npm:8.5.0"
     typescript: "npm:5.8.3"
     vitest: "npm:3.2.4"
-    zksync-ethers: "npm:6.19.0"
+    zksync-ethers: "npm:6.20.1"
   languageName: unknown
   linkType: soft
 
@@ -4569,7 +4569,7 @@ __metadata:
     typechain: "npm:8.3.2"
     typescript: "npm:5.8.3"
     typescript-eslint: "npm:8.40.0"
-    zksync-ethers: "npm:6.15.0"
+    zksync-ethers: "npm:6.20.1"
   languageName: unknown
   linkType: soft
 
@@ -17458,21 +17458,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zksync-ethers@npm:6.15.0":
-  version: 6.15.0
-  resolution: "zksync-ethers@npm:6.15.0"
+"zksync-ethers@npm:6.20.1":
+  version: 6.20.1
+  resolution: "zksync-ethers@npm:6.20.1"
   peerDependencies:
     ethers: ^6.7.1
-  checksum: 10/6e56c8a7306841b76ce1168fdc9601813d74f21c576af7db6166d21bead42d6313b15ee85c1c4edb93bdb7c0a618936065acec268c0093a86e377cfab0bbceb1
-  languageName: node
-  linkType: hard
-
-"zksync-ethers@npm:6.19.0":
-  version: 6.19.0
-  resolution: "zksync-ethers@npm:6.19.0"
-  peerDependencies:
-    ethers: ^6.7.1
-  checksum: 10/a736dff2bf5f75faea6e6de9aa670f7b6eee85aa65ea4fadfe2e61fa3913d5f6ac69ebad7fa38f0f5dc7b2e440d663297cae19bb07004bf445d5ef116dc0b278
+  checksum: 10/ad7297ae31b5a24a9cd63478f9d770d4f8a8879e997e974c6faeb0f0d477544f6a10aabec08e1a05e107484293f3cd96a677009cc6473c8d2abb001b76fb9cdc
   languageName: node
   linkType: hard
 

@@ -25,7 +25,7 @@
     "@relay-vaults/eslint-config": "workspace:^",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "eslint": "9.31.0",
+    "eslint": "9.33.0",
     "fs-extra": "11.3.1",
     "tsup": "8.5.0",
     "tsx": "4.20.4",

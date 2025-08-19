@@ -11,6 +11,7 @@ const config: VaultNetworkConfig & OriginNetworkConfig = {
     arbitrumDeposit: {
       child: {
         // Ethereum addresses
+        erc20Gateway: '0xB2535b988dcE19f9D71dfB22dB6da744aCac21bf',
         inbox: '0xc4448b71118c9071Bcb9734A0EAc55D18A153949',
         routerGateway: '0xC840838Bc438d73C16c2f8b22D2Ce3669963cD48',
       },

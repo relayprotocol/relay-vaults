@@ -450,6 +450,18 @@ export class RelayVaultService {
       )
     }
 
+    // for remaining pools, filter origin that are active
+    const pools = res.data.relayPools?.items ?? []
+    for (const pool of pools) {
+      if (pool.origins?.items) {
+        pool.origins.items = (pool.origins.items ?? [])
+          .filter((origin: any) => {
+            return BigInt(origin.maxDebt) > BigInt(0)
+          })
+          .slice(0, originLimit)
+      }
+    }
+
     return res
   }
 

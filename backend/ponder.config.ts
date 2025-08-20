@@ -13,8 +13,23 @@ import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-vaults/addresses'
 import networks from '@relay-vaults/networks'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
+import { getIamToken } from './src/utils/aws.js'
 
 const deployedAddresses = getAddresses()
+
+const getConnectionString = async () => {
+  const databaseUrl = new URL(process.env.DATABASE_URL!)
+  if (databaseUrl.password === undefined || databaseUrl.password === '') {
+    const password = await getIamToken({
+      hostname: databaseUrl.hostname,
+      port: Number(databaseUrl.port),
+      region: process.env.AWS_REGION,
+      username: databaseUrl.username,
+    })
+    databaseUrl.password = encodeURIComponent(password)
+  }
+  return databaseUrl.toString()
+}
 
 // Importing the RelayBridgeFactory ABI to use in the config
 // RPC configurations with fallback transport
@@ -305,7 +320,7 @@ export default createConfig({
     },
   },
   database: {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: await getConnectionString(),
     kind: 'postgres',
   },
   ordering: 'multichain', // or "omnichain" — see below

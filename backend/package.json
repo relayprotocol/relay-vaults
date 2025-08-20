@@ -18,6 +18,8 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
+    "@aws-sdk/credential-providers": "3.864.0",
+    "@aws-sdk/rds-signer": "3.864.0",
     "@relay-vaults/abis": "workspace:*",
     "@relay-vaults/addresses": "workspace:*",
     "dd-trace": "5.63.0",

@@ -247,6 +247,8 @@ task(
 
       const parameters = {
         ArbitrumOrbitNativeDepositBridgeProxy: {
+          erc20Gateway:
+            originNetworkConfig.bridges.arbitrumDeposit!.child.erc20Gateway,
           inbox: originNetworkConfig.bridges.arbitrumDeposit!.child.inbox,
           l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
           relayPool: defaultProxyModuleArguments.relayPool,
@@ -257,6 +259,7 @@ task(
       constructorArguments = [
         routerGateway,
         originNetworkConfig.bridges.arbitrumDeposit!.child.inbox,
+        originNetworkConfig.bridges.arbitrumDeposit!.child.erc20Gateway,
       ]
       ;({ bridge: proxyBridge } = await ignition.deploy(
         ArbitrumOrbitNativeDepositBridgeProxyModule,

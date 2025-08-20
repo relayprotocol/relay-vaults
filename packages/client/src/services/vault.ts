@@ -412,7 +412,7 @@ export class RelayVaultService {
   }
 
   /**
-   * Get origin bridge address with sufficient available debt
+   * Get origin bridge address with available debt
    * for a specific pool and origin chain
    *
    * @param chainId - The chain ID where the pool is deployed
@@ -448,21 +448,6 @@ export class RelayVaultService {
           )
         }
       )
-    }
-
-    // for remaining pools, filter origin that have enough available debt
-    const pools = res.data.relayPools?.items ?? []
-    for (const pool of pools) {
-      if (pool.origins?.items) {
-        pool.origins.items = (pool.origins.items ?? [])
-          .filter((origin: any) => {
-            return (
-              BigInt(origin.maxDebt) >
-              amount + BigInt(origin.currentOutstandingDebt)
-            )
-          })
-          .slice(0, originLimit)
-      }
     }
 
     return res

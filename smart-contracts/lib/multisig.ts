@@ -44,15 +44,19 @@ export const executeThruTimelock = async (
   const PROPOSER_ROLE = await timelock.PROPOSER_ROLE()
   const isProposer = await timelock.hasRole(PROPOSER_ROLE, userAddress)
 
-  const useMultisig = await new Confirm({
-    message: 'Do you want to use a multisig?',
-    name: 'confirm',
-  }).run()
+  let useMultisig
+  if (isProposer) {
+    useMultisig = await new Confirm({
+      message: 'Do you want to use a multisig?',
+      name: 'confirm',
+    }).run()
+  }
 
   if (!isProposer || useMultisig) {
     const { chainId } = await ethers.provider.getNetwork()
 
     const apiKit = new SafeApiKit({
+      apiKey: process.env.SAFE_API_KEY,
       chainId,
     })
 
@@ -166,6 +170,7 @@ const submitTxToSafe = async (
   const userAddress = await user.getAddress()
 
   const apiKit = new SafeApiKit({
+    apiKey: process.env.SAFE_API_KEY,
     chainId,
   })
 
@@ -184,7 +189,7 @@ const submitTxToSafe = async (
     transactions: [
       {
         data: tx.data,
-        to: tx.to,
+        to: ethers.getAddress(tx.to),
         value: tx.value || '0',
       },
     ],

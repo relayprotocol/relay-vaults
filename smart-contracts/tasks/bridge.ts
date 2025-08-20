@@ -1,5 +1,10 @@
-import { getBalance, checkAllowance, getEvent } from '@relay-vaults/helpers'
-import { ABIs } from '@relay-vaults/helpers'
+import {
+  ABIs,
+  estimateNativeBridgeTicketCost,
+  getBalance,
+  checkAllowance,
+  getEvent,
+} from '@relay-vaults/helpers'
 import { Select, Input, Confirm } from 'enquirer'
 import { task } from 'hardhat/config'
 import { networks } from '@relay-vaults/networks'
@@ -27,13 +32,10 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
       const ethers = net.stack === 'zksync' ? zksyncEthers : rawEthers
 
       const [user] = await ethers.getSigners()
-      const userAddress = await user.getAddress()
-
-      if (!net) {
-        throw Error(
-          `Unsupported network ${chainId}. Please add it to networks.ts`
-        )
+      if (!user) {
+        throw Error('Please use a valid signer')
       }
+      const userAddress = await user.getAddress()
 
       if (!asset) {
         const assetName = await new Select({
@@ -106,7 +108,6 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
 
       const poolNetwork = networks[poolChainId]
       const provider = new rawEthers.JsonRpcProvider(poolNetwork.rpc[0])
-
       const pool = new rawEthers.Contract(
         poolAddress,
         (await ethers.getContractAt('RelayPool', ethers.ZeroAddress)).interface,
@@ -211,7 +212,7 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         (l1Gas * 11n) / 10n // add 10%
       )
 
-      const value =
+      let value =
         assetAddress === rawEthers.ZeroAddress
           ? BigInt(amount) + hyperlaneFee
           : hyperlaneFee
@@ -234,12 +235,53 @@ task('bridge:send', 'Send tokens to a pool across a relay bridge')
         throw Error('Not implemented yet')
       }
 
-      const tx = await bridge.bridge(amount, recipient, l1Asset, l1Gas, '0x', {
-        value,
-      })
+      // if we are doing a deposit to Arbitrum, pass gas params
+      // using the extraData field
+      let data = '0x'
+      if (chainId === 1n && poolNetwork.stack === 'arbitrum') {
+        const gasEstimate = await estimateNativeBridgeTicketCost({
+          amount,
+          bridgeAddress,
+          destProxyBridgeAddress: l1BridgeProxyAddress,
+          destinationChainId: poolChainId,
+          from: userAddress,
+          originChainId: chainId,
+        })
+        const abiCoder = new AbiCoder()
+        const encodedGasEstimate = abiCoder.encode(
+          ['tuple(uint,uint,uint,uint)', 'bytes'],
+          [
+            [
+              gasEstimate.maxFeePerGas,
+              gasEstimate.gasLimit,
+              gasEstimate.maxSubmissionCost,
+              gasEstimate.deposit,
+            ],
+            '0x',
+          ]
+        )
+        data = encodedGasEstimate
+
+        // value should account for the cost of Arb retryable ticket
+        value = gasEstimate.deposit + hyperlaneFee
+      }
+
+      const tx = await bridge.bridge.populateTransaction(
+        amount,
+        recipient,
+        l1Asset,
+        l1Gas,
+        data,
+        {
+          value,
+        }
+      )
+
+      console.log(tx)
+      const sentTx = await user.sendTransaction(tx)
 
       // TODO: parse tx results
-      const receipt = await tx.wait()
+      const receipt = await sentTx.wait()
 
       const event = await getEvent(
         receipt!,

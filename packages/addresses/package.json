@@ -21,15 +21,15 @@
   "dependencies": {
     "graphql": "16.11.0",
     "graphql-request": "7.2.0",
-    "tsx": "4.20.3"
+    "tsx": "4.20.4"
   },
   "devDependencies": {
     "@relay-vaults/eslint-config": "workspace:^",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "@types/node": "24.1.0",
-    "eslint": "9.31.0",
+    "@types/node": "24.3.0",
+    "eslint": "9.33.0",
     "tsup": "8.5.0",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   }
 }

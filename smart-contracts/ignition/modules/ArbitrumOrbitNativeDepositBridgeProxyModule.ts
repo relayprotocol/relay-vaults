@@ -3,6 +3,7 @@ import { buildModule } from '@nomicfoundation/hardhat-ignition/modules'
 export default buildModule('ArbitrumOrbitNativeDepositBridgeProxy', (m) => {
   // l1GatewayRouter / parent.routerGateway
   const routerGateway = m.getParameter('routerGateway')
+  const erc20Gateway = m.getParameter('erc20Gateway')
   const inbox = m.getParameter('inbox')
   const relayPoolChainId = m.getParameter('relayPoolChainId')
   const relayPool = m.getParameter('relayPool')
@@ -10,6 +11,7 @@ export default buildModule('ArbitrumOrbitNativeDepositBridgeProxy', (m) => {
   const bridge = m.contract('ArbitrumOrbitNativeDepositBridgeProxy', [
     routerGateway,
     inbox,
+    erc20Gateway,
     relayPoolChainId,
     relayPool,
     l1BridgeProxy,

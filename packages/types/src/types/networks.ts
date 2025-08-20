@@ -32,6 +32,7 @@ export interface OriginNetworkConfig extends NetworkConfig {
       child: {
         inbox: string
         routerGateway: string
+        erc20Gateway: string
       }
       parent: {
         routerGateway: string
@@ -73,6 +74,11 @@ export interface OriginNetworkConfig extends NetworkConfig {
         l1Messenger: string
         sharedDefaultBridge: string
       }
+    }
+    everclear?: {
+      domainId: number
+      spoke: string
+      feeAdapter: string
     }
   }
 }

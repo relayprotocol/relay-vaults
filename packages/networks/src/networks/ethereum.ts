@@ -11,6 +11,7 @@ const config: VaultNetworkConfig & OriginNetworkConfig = {
     arbitrumDeposit: {
       child: {
         // Ethereum addresses
+        erc20Gateway: '0xB2535b988dcE19f9D71dfB22dB6da744aCac21bf',
         inbox: '0xc4448b71118c9071Bcb9734A0EAc55D18A153949',
         routerGateway: '0xC840838Bc438d73C16c2f8b22D2Ce3669963cD48',
       },
@@ -18,6 +19,11 @@ const config: VaultNetworkConfig & OriginNetworkConfig = {
         // Arbitrum One
         routerGateway: '0x5288c571Fd7aD117beA99bF60FE0846C4E84F933',
       },
+    },
+    everclear: {
+      domainId: 1,
+      feeAdapter: '0x15a7cA97D1ed168fB34a4055CEFa2E2f9Bdb6C75',
+      spoke: '0xa05A3380889115bf313f1Db9d5f335157Be4D816',
     },
   },
   chainId: 1,

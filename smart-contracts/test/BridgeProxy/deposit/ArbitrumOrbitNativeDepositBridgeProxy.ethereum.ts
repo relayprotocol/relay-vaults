@@ -192,7 +192,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
       // Send message to the bridge
       const tx = await bridge
         .connect(recipient)
-        .bridge(...bridgeParams, { value: amount + gasEstimate.depositFee })
+        .bridge(...bridgeParams, { value: amount })
 
       receipt = await tx.wait()
     })

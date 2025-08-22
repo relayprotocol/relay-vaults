@@ -99,7 +99,7 @@ describe('RelayBridge > ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
             gasEstimate.maxFeePerGas,
             gasEstimate.gasLimit,
             gasEstimate.maxSubmissionCost,
-            gasEstimate.despositFee,
+            gasEstimate.depositFee,
           ],
           '0x',
         ]

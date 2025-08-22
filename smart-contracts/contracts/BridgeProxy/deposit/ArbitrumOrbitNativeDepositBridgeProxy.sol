@@ -36,7 +36,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
       uint256 maxFeePerGas;
       uint256 gasLimit;
       uint256 maxSubmissionCost;
-      uint256 despositFee;
+      uint256 depositFee;
     }
 
   function bridge(
@@ -55,7 +55,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // to
-        amount - gasEstimate.despositFee, // l2CallValue
+        amount - gasEstimate.depositFee, // l2CallValue
         gasEstimate.maxSubmissionCost, // maxSubmissionCost
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY, // receives msg.value on l2
@@ -74,13 +74,13 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         amount
       );
 
-      ROUTER.outboundTransferCustomRefund{value: gasEstimate.despositFee}(
+      ROUTER.outboundTransferCustomRefund{value: gasEstimate.depositFee}(
         l1Currency, // L1 erc20 address
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY, // receives token on L2
-        amount - gasEstimate.despositFee, // token amount
+        amount - gasEstimate.depositFee, // token amount
         gasEstimate.gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
         gasEstimate.maxFeePerGas, // Gas price bid for L2 execution
         abi.encode(gasEstimate.maxSubmissionCost, moreData)

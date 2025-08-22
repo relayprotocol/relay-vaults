@@ -80,7 +80,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // receives excess gas refund on L2
         L1_BRIDGE_PROXY, // receives token on L2
-        amount - gasEstimate.depositFee, // token amount
+        amount, // token amount
         gasEstimate.gasLimit, // Max gas deducted from user's L2 balance to cover L2 execution
         gasEstimate.maxFeePerGas, // Gas price bid for L2 execution
         abi.encode(gasEstimate.maxSubmissionCost, moreData)

@@ -109,10 +109,10 @@ export const estimateNativeBridgeTicketCost = async ({
   )
 
   // compute deposit (sum of all costs, plus l2CallValue)
-  const deposit = gasLimit * maxFeePerGas! + maxSubmissionCost + amount
+  const despositFee = gasLimit * maxFeePerGas! + maxSubmissionCost
 
   return {
-    deposit,
+    despositFee,
     gasLimit,
     maxFeePerGas,
     maxSubmissionCost,

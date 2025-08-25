@@ -61,7 +61,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         L1_BRIDGE_PROXY, // receives msg.value on l2
         gasEstimate.gasLimit, // gasLimit
         gasEstimate.maxFeePerGas, // maxFeePerGas
-        extraData // data
+        moreData // data
       );
     } else {
       address l2token = ROUTER.calculateL2TokenAddress(l1Currency);

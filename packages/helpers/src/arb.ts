@@ -37,9 +37,10 @@ export const estimateRetryableFee = async (
   } else {
     callDataSize = hexDataLength(data)
   }
+
   // get current L2 gas price
-  const blockDest = await destProvider.getBlock('latest')
-  const maxFeePerGas = blockDest!.baseFeePerGas
+  const destDeeData = await destProvider.getFeeData()
+  const { maxFeePerGas } = destDeeData
 
   // estimate the submission fee for calldata size
   const block = await srcProvider.getBlock('latest')

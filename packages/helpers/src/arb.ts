@@ -40,7 +40,7 @@ export const estimateRetryableFee = async (
 
   // get current L2 gas price
   const destDeeData = await destProvider.getFeeData()
-  const {maxFeePerGas} = destDeeData
+  const { maxFeePerGas } = destDeeData
 
   // estimate the submission fee for calldata size
   const block = await srcProvider.getBlock('latest')

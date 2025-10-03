@@ -4861,7 +4861,7 @@ __metadata:
     eslint-config-ponder: "npm:0.12.12"
     eslint-config-prettier: "npm:10.1.8"
     eslint-plugin-prettier: "npm:5.5.4"
-    hono: "npm:4.9.2"
+    hono: "npm:4.9.7"
     husky: "npm:9.1.7"
     jsonc-eslint-parser: "npm:2.4.0"
     lint-staged: "npm:16.1.5"
@@ -11548,10 +11548,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:4.9.2":
-  version: 4.9.2
-  resolution: "hono@npm:4.9.2"
-  checksum: 10/a884948391811bf3835eaf6d699f1a0ce46fe92e3a9c60dc6def725cf1ca89a52d7d6ddd2407d496d7e04d12a4cb50f9daf7e11cad8c8d9d14240a113fa616a1
+"hono@npm:4.9.7":
+  version: 4.9.7
+  resolution: "hono@npm:4.9.7"
+  checksum: 10/e1fb57658396a530520583cd4feed160263c828461c532cfa907e7aedd2af0cc48fbfc349f01d6058bf4e3ebf6c601925e2c39400ae25cd4feed948c7ba873b3
   languageName: node
   linkType: hard
 

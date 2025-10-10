@@ -11,13 +11,17 @@ import { logger } from './src/logger'
 
 const run = async () => {
   const { vaultService } = await start()
-  await checkOutstandingDebts({ vaultService })
-  await checkPendingBridges({ vaultService })
+  await heartbeat()
+
+  // process transactions
   await proveTransactions({ vaultService })
   await finalizeWithdrawals({ vaultService })
   await claimTransactions({ vaultService })
+
+  // Check statuses
+  await checkPendingBridges({ vaultService })
   await checkL2Chains()
-  await heartbeat()
+  await checkOutstandingDebts({ vaultService })
   await stop()
 }
 

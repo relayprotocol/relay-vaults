@@ -5,7 +5,6 @@ import {BridgeProxy} from "../BridgeProxy.sol";
 import {IL1GatewayRouter} from "../../interfaces/arb/IArbL1GatewayRouter.sol";
 import {IInbox} from "../../interfaces/arb/IInbox.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 /**
  * @title ArbitrumOrbitNativeDepositBridgeProxy
  * This contract is used to deposit native and ERC20 tokens from an L1 origin chain to an Arbitrum destination chain.
@@ -37,7 +36,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
       uint256 maxFeePerGas;
       uint256 gasLimit;
       uint256 maxSubmissionCost;
-      uint256 deposit;
+      uint256 depositFee;
     }
 
   function bridge(
@@ -52,17 +51,17 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
     if (l1Currency == address(0)) {
       // simple deposit wont work as it deposits to an alias by default
       // we have to create a retryable ticket to deposit to the L1 bridge proxy
-      INBOX.createRetryableTicket{value: gasEstimate.deposit}(
+      INBOX.createRetryableTicket{value: amount}(
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1
         L1_BRIDGE_PROXY, // to
-        amount, // l2CallValue
+        amount - gasEstimate.depositFee, // l2CallValue
         gasEstimate.maxSubmissionCost, // maxSubmissionCost
-        address(this), // excessFeeRefundAddress
-        address(this), // callValueRefundAddress (receives msg.value on l2)
+        L1_BRIDGE_PROXY, // receives excess gas refund on L2
+        L1_BRIDGE_PROXY, // receives msg.value on l2
         gasEstimate.gasLimit, // gasLimit
         gasEstimate.maxFeePerGas, // maxFeePerGas
-        extraData // data
+        moreData // data
       );
     } else {
       address l2token = ROUTER.calculateL2TokenAddress(l1Currency);
@@ -75,7 +74,7 @@ contract ArbitrumOrbitNativeDepositBridgeProxy is BridgeProxy {
         amount
       );
 
-      ROUTER.outboundTransferCustomRefund{value: gasEstimate.deposit}(
+      ROUTER.outboundTransferCustomRefund{value: gasEstimate.depositFee}(
         l1Currency, // L1 erc20 address
         // NB: the L1_BRIDGE_PROXY is the address of the destination bridge proxy
         // on the vault chain - it is not necessarily on an L1

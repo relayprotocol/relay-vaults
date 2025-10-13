@@ -37,9 +37,10 @@ export const estimateRetryableFee = async (
   } else {
     callDataSize = hexDataLength(data)
   }
+
   // get current L2 gas price
-  const blockDest = await destProvider.getBlock('latest')
-  const maxFeePerGas = blockDest!.baseFeePerGas
+  const destDeeData = await destProvider.getFeeData()
+  const { maxFeePerGas } = destDeeData
 
   // estimate the submission fee for calldata size
   const block = await srcProvider.getBlock('latest')
@@ -109,10 +110,10 @@ export const estimateNativeBridgeTicketCost = async ({
   )
 
   // compute deposit (sum of all costs, plus l2CallValue)
-  const deposit = gasLimit * maxFeePerGas! + maxSubmissionCost + amount
+  const depositFee = gasLimit * maxFeePerGas! + maxSubmissionCost
 
   return {
-    deposit,
+    depositFee,
     gasLimit,
     maxFeePerGas,
     maxSubmissionCost,

@@ -78,7 +78,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
           gasEstimate.maxFeePerGas,
           gasEstimate.gasLimit,
           gasEstimate.maxSubmissionCost,
-          gasEstimate.deposit,
+          gasEstimate.depositFee,
         ],
         '0x',
       ]
@@ -87,7 +87,6 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
 
   describe('sending ERC20', () => {
     let balanceBefore: bigint
-    const amount = parseUnits('0.1', 18)
     let receipt: TransactionReceipt | null
 
     before(async () => {
@@ -124,7 +123,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
         '0x', // empty hyperlane gas data
         extraData, // extraData
         {
-          value: gasEstimate.deposit,
+          value: gasEstimate.depositFee,
         }
       )
 
@@ -193,7 +192,7 @@ describe('ArbitrumOrbitNativeBridgeProxy (deposit)', function () {
       // Send message to the bridge
       const tx = await bridge
         .connect(recipient)
-        .bridge(...bridgeParams, { value: gasEstimate.deposit })
+        .bridge(...bridgeParams, { value: amount })
 
       receipt = await tx.wait()
     })

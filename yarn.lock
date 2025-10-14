@@ -4887,6 +4887,7 @@ __metadata:
     "@types/node": "npm:24.3.0"
     eslint: "npm:9.33.0"
     ethers: "npm:6.15.0"
+    hot-shots: "npm:11.2.0"
     tsx: "npm:4.20.4"
     typescript: "npm:5.9.2"
     winston: "npm:3.17.0"
@@ -7811,6 +7812,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bindings@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: "npm:1.0.0"
+  checksum: 10/593d5ae975ffba15fbbb4788fe5abd1e125afbab849ab967ab43691d27d6483751805d98cb92f7ac24a2439a8a8678cd0131c535d5d63de84e383b0ce2786133
+  languageName: node
+  linkType: hard
+
 "bintrees@npm:1.0.2":
   version: 1.0.2
   resolution: "bintrees@npm:1.0.2"
@@ -10571,6 +10581,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: 10/b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
+  languageName: node
+  linkType: hard
+
 "fill-keys@npm:^1.0.2":
   version: 1.0.2
   resolution: "fill-keys@npm:1.0.2"
@@ -11552,6 +11569,18 @@ __metadata:
   version: 4.9.2
   resolution: "hono@npm:4.9.2"
   checksum: 10/a884948391811bf3835eaf6d699f1a0ce46fe92e3a9c60dc6def725cf1ca89a52d7d6ddd2407d496d7e04d12a4cb50f9daf7e11cad8c8d9d14240a113fa616a1
+  languageName: node
+  linkType: hard
+
+"hot-shots@npm:11.2.0":
+  version: 11.2.0
+  resolution: "hot-shots@npm:11.2.0"
+  dependencies:
+    unix-dgram: "npm:2.x"
+  dependenciesMeta:
+    unix-dgram:
+      optional: true
+  checksum: 10/7fcd3c160e2ba012c4dd6c36c603ad3f419e572707ff5324be955ddccf436537a79244a5f45b3d5a49f91f93e88db729561521365aceb5c0a0f8cfc59c50a675
   languageName: node
   linkType: hard
 
@@ -17295,6 +17324,17 @@ __metadata:
   version: 2.0.1
   resolution: "universalify@npm:2.0.1"
   checksum: 10/ecd8469fe0db28e7de9e5289d32bd1b6ba8f7183db34f3bfc4ca53c49891c2d6aa05f3fb3936a81285a905cc509fb641a0c3fc131ec786167eff41236ae32e60
+  languageName: node
+  linkType: hard
+
+"unix-dgram@npm:2.x":
+  version: 2.0.7
+  resolution: "unix-dgram@npm:2.0.7"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    nan: "npm:^2.20.0"
+    node-gyp: "npm:latest"
+  checksum: 10/a171f3079d27f244dfb7ff3feef2717c3f44756640532d92015e0fc2918153994070e02d652af402b269c95aae59eeb82c1792d614df00493724addbce468327
   languageName: node
   linkType: hard
 

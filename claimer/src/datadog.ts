@@ -22,7 +22,7 @@ export const start = () => {
       port: parseInt(url.port || '8125', 10),
     })
 
-    statsd.increment('vaults_claimer.heartbeat', 1)
+    statsd.increment('vaults-claimer.heartbeat', 1)
     logger.info('Heartbeat sent to datadog')
   }
 }

@@ -4863,7 +4863,7 @@ __metadata:
     eslint-plugin-prettier: "npm:5.5.4"
     hono: "npm:4.9.2"
     husky: "npm:9.1.7"
-    jsonc-eslint-parser: "npm:2.4.0"
+    jsonc-eslint-parser: "npm:2.4.2"
     lint-staged: "npm:16.1.5"
     ponder: "npm:0.12.7"
     prettier: "npm:3.6.2"
@@ -12357,15 +12357,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonc-eslint-parser@npm:2.4.0":
-  version: 2.4.0
-  resolution: "jsonc-eslint-parser@npm:2.4.0"
+"jsonc-eslint-parser@npm:2.4.2":
+  version: 2.4.2
+  resolution: "jsonc-eslint-parser@npm:2.4.2"
   dependencies:
     acorn: "npm:^8.5.0"
     eslint-visitor-keys: "npm:^3.0.0"
     espree: "npm:^9.0.0"
     semver: "npm:^7.3.5"
-  checksum: 10/bd1d41c852c3488414605a1754617aa7c240ed6730a25a7fd7fb76473e92efdc5ba1728ad3f08f8069de3a19abf1fd275c2b145eb51e2f7f6ca293c8105e1ffe
+  checksum: 10/4010e0724c78b6ff9c6576cf3c96b6352c43b5e5cbb4e364c44ec1983fd111c0a1673622bfe225345eafbafca04e9151aade417e3e4d94c84cf0938189def974
   languageName: node
   linkType: hard
 

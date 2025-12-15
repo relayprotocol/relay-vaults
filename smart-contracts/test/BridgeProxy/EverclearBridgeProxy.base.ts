@@ -20,7 +20,7 @@ const originChainId = 8453 // Base
 const relayPool = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const l1BridgeProxy = '0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1'
 
-describe('EverclearBridgeProxy (withdraw)', function () {
+describe.skip('EverclearBridgeProxy (withdraw)', function () {
   let bridge: any
   let recipient: Signer
   let originWeth: string

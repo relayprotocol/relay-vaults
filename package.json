@@ -36,7 +36,7 @@
     "claimer:start": "yarn workspace @relay-vaults/claimer start"
   },
   "engines": {
-    "node": "22"
+    "node": "24"
   },
   "packageManager": "yarn@4.9.2",
   "dependencies": {

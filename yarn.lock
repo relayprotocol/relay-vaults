@@ -4835,7 +4835,7 @@ __metadata:
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:24.3.0"
+    "@types/node": "npm:24.10.4"
     eslint: "npm:9.33.0"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.2.0"
@@ -4853,7 +4853,7 @@ __metadata:
     "@aws-sdk/rds-signer": "npm:3.864.0"
     "@relay-vaults/abis": "workspace:*"
     "@relay-vaults/addresses": "workspace:*"
-    "@types/node": "npm:24.3.0"
+    "@types/node": "npm:24.10.4"
     "@typescript-eslint/eslint-plugin": "npm:8.40.0"
     "@typescript-eslint/parser": "npm:8.40.0"
     dd-trace: "npm:5.63.0"
@@ -4884,7 +4884,7 @@ __metadata:
     "@relay-vaults/networks": "workspace:*"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:24.3.0"
+    "@types/node": "npm:24.10.4"
     eslint: "npm:9.33.0"
     ethers: "npm:6.15.0"
     hot-shots: "npm:11.2.0"
@@ -4906,7 +4906,7 @@ __metadata:
     "@relay-vaults/eslint-config": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig"
     "@relay-vaults/types": "workspace:./packages/types"
-    "@types/node": "npm:24.3.0"
+    "@types/node": "npm:24.10.4"
     eslint: "npm:9.33.0"
     graphql: "npm:16.11.0"
     graphql-request: "npm:7.2.0"
@@ -5014,7 +5014,7 @@ __metadata:
     "@types/chai": "npm:5.2.2"
     "@types/fs-extra": "npm:11.0.4"
     "@types/mocha": "npm:10.0.10"
-    "@types/node": "npm:22.17.2"
+    "@types/node": "npm:24.10.4"
     "@types/semver": "npm:7"
     "@uniswap/v3-periphery": "npm:1.4.4"
     chai: "npm:5.3.1"
@@ -6745,15 +6745,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.17.2":
-  version: 22.17.2
-  resolution: "@types/node@npm:22.17.2"
-  dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/b830746c65e014d7d47102ab2f24ec74bdb60156b9b75af42e75d81375f211904347125c00543b5fd7119223b3157726bc9814619205571c0a0afd6ce3c43abb
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:22.7.5":
   version: 22.7.5
   resolution: "@types/node@npm:22.7.5"
@@ -6763,12 +6754,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.3.0":
-  version: 24.3.0
-  resolution: "@types/node@npm:24.3.0"
+"@types/node@npm:24.10.4":
+  version: 24.10.4
+  resolution: "@types/node@npm:24.10.4"
   dependencies:
-    undici-types: "npm:~7.10.0"
-  checksum: 10/1331c2d0e9a512ac27a016b4df3eff92317e4603dbbbab31731275dff14d3a04847a50c5776cbf94f99ff4dedac0ba5f721dce8cea020d8eea5e21711fd964b0
+    undici-types: "npm:~7.16.0"
+  checksum: 10/a0b318b99a97103d151589a10e20d7d3ce93188a0e6466040eb2ce5fae33ca6785306737b4006560fe3152073cbb2b14747b854fa303296275c22afc8a37da2a
   languageName: node
   linkType: hard
 
@@ -17258,17 +17249,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10/ec8f41aa4359d50f9b59fa61fe3efce3477cc681908c8f84354d8567bb3701fafdddf36ef6bff307024d3feb42c837cf6f670314ba37fc8145e219560e473d14
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~7.10.0":
-  version: 7.10.0
-  resolution: "undici-types@npm:7.10.0"
-  checksum: 10/1f3fe777937690ab8a7a7bccabc8fdf4b3171f4899b5a384fb5f3d6b56c4b5fec2a51fbf345c9dd002ff6716fd440a37fa8fdb0e13af8eca8889f25445875ba3
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10/db43439f69c2d94cc29f75cbfe9de86df87061d6b0c577ebe9bb3255f49b22c50162a7d7eb413b0458b6510b8ca299ac7cff38c3a29fbd31af9f504bcf7fbc0d
   languageName: node
   linkType: hard
 

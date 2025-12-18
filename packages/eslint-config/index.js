@@ -77,13 +77,6 @@ module.exports = [
       },
     },
   },
-  // {
-  //   files: ['**/*.json'],
-  //   ...jsonPlugin.configs.recommended,
-  //   rules: {
-  //     'json/json': ['error', { allowComments: true }],
-  //   },
-  // },
   {
     files: ["**/*.json"],
     languageOptions: {

@@ -15,11 +15,11 @@ export const getIamToken = async ({
   region = 'us-east-1',
 }: GetIamTokenParams) => {
   const signer = new Signer({
+    credentials: fromNodeProviderChain(),
     hostname,
     port,
-    username,
     region,
-    credentials: fromNodeProviderChain(),
+    username,
   })
 
   return signer.getAuthToken()

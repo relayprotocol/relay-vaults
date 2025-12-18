@@ -6,7 +6,9 @@ const mochaPlugin = require('eslint-plugin-mocha')
 const typescriptEslint = require('typescript-eslint')
 const evmAddressPlugin = require('eslint-plugin-evm-address-to-checksummed')
 const jsonPlugin = require('eslint-plugin-json')
+const jsonc = require("eslint-plugin-jsonc");
 const sortKeysFix = require('eslint-plugin-sort-keys-fix')
+const jsonParser = require("jsonc-eslint-parser");
 
 
 /**
@@ -75,11 +77,22 @@ module.exports = [
       },
     },
   },
+  // {
+  //   files: ['**/*.json'],
+  //   ...jsonPlugin.configs.recommended,
+  //   rules: {
+  //     'json/json': ['error', { allowComments: true }],
+  //   },
+  // },
   {
-    files: ['**/*.json'],
-    ...jsonPlugin.configs.recommended,
+    files: ["**/*.json"],
+    languageOptions: {
+      parser: jsonParser,
+    },
+    plugins: { jsonc },
     rules: {
-      'json/json': ['error', { allowComments: true }],
+      ...jsonc.configs["recommended-with-json"].rules,
+      "jsonc/no-comments": "off",
     },
   },
   {
@@ -96,5 +109,24 @@ module.exports = [
       'cache',
       'typechain-types',
     ],
+  },
+  {
+    files: ["**/package.json"],
+    languageOptions: { parser: jsonParser },
+    plugins: {
+      "unevenlabs-policy": {
+        rules: {
+          "pinned-deps": require("./rules/pinned-deps.cjs"),
+        },
+      },
+    },
+    rules: {
+      "unevenlabs-policy/pinned-deps": ["error", {
+        internalScopes: ["@relay-vaults/"],
+        allowProtocols: ["workspace:", "^workspace:"],
+        allowProtocolsOnlyForInternal: true,
+        allowExactPrerelease: true,
+      }],
+    },
   },
 ]

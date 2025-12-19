@@ -55,6 +55,7 @@ module.exports = {
         additionalProperties: false,
         properties: {
           depFields: { type: "array", items: { type: "string" } },
+          excludeList: { type: "array", items: { type: "string" } },
           internalScopes: { type: "array", items: { type: "string" } },
           allowProtocols: { type: "array", items: { type: "string" } },
           allowProtocolsOnlyForInternal: { type: "boolean" },
@@ -67,6 +68,7 @@ module.exports = {
   create(context) {
     const opt = context.options[0] || {};
     const depFields = opt.depFields || DEFAULT_DEP_FIELDS;
+    const excludeList = opt.excludeList || [];
     const internalScopes = opt.internalScopes || [];
     const allowProtocols = opt.allowProtocols || ["workspace:", "file:", "link:"];
     const allowProtocolsOnlyForInternal = opt.allowProtocolsOnlyForInternal !== false; // default true
@@ -76,6 +78,10 @@ module.exports = {
       allowExactPrerelease
         ? /^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/
         : /^[0-9]+\.[0-9]+\.[0-9]+$/;
+
+    function shouldExclude(name) {
+      return excludeList.some((p) => name.startsWith(p));
+    }
 
     function isInternal(name) {
       return internalScopes.some((p) => name.startsWith(p));
@@ -116,6 +122,10 @@ module.exports = {
             const depName = getPropKeyString(p);
             const version = getLiteralString(p.value);
             if (!depName || version == null) continue;
+
+            if (shouldExclude(depName)) {
+              continue;
+            }
 
             // allow protocols
             if (isAllowedProtocol(version)) {

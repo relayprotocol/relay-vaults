@@ -74,10 +74,9 @@ module.exports = {
     const allowProtocolsOnlyForInternal = opt.allowProtocolsOnlyForInternal !== false; // default true
     const allowExactPrerelease = !!opt.allowExactPrerelease;
 
-    const exact =
-      allowExactPrerelease
-        ? /^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/
-        : /^[0-9]+\.[0-9]+\.[0-9]+$/;
+    const exact = allowExactPrerelease
+      ? /^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/
+      : /^[0-9]+\.[0-9]+\.[0-9]+$/;
 
     function shouldExclude(name) {
       return excludeList.some((p) => name.startsWith(p));
@@ -97,9 +96,7 @@ module.exports = {
         message:
           `Dependency "${depName}" in "${field}" must be pinned to an exact version (x.y.z). ` +
           `Got "${version}".` +
-          (internalScopes.length
-            ? ` Internal scopes: ${internalScopes.join(", ")}.`
-            : "") +
+          (internalScopes.length ? ` Internal scopes: ${internalScopes.join(", ")}.` : "") +
           (allowProtocols.length
             ? ` Allowed protocols: ${allowProtocols.join(", ")}.` +
               (allowProtocolsOnlyForInternal ? " (internal only)" : "")

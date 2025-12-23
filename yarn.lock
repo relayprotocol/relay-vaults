@@ -4956,8 +4956,8 @@ __metadata:
     "@bgd-labs/aave-address-book": "npm:4.27.0"
     "@relay-vaults/networks": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:^"
-    "@types/copyfiles": "npm:2"
-    "@types/fs-extra": "npm:11"
+    "@types/copyfiles": "npm:2.4.4"
+    "@types/fs-extra": "npm:11.0.4"
     copyfiles: "npm:2.4.1"
     eslint: "npm:9.33.0"
     ethers: "npm:6.15.0"
@@ -5034,7 +5034,7 @@ __metadata:
     "@types/fs-extra": "npm:11.0.4"
     "@types/mocha": "npm:10.0.10"
     "@types/node": "npm:22.17.2"
-    "@types/semver": "npm:7"
+    "@types/semver": "npm:7.7.0"
     "@uniswap/v3-periphery": "npm:1.4.4"
     chai: "npm:5.3.1"
     enquirer: "npm:2.4.1"
@@ -6640,7 +6640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/copyfiles@npm:2":
+"@types/copyfiles@npm:2.4.4":
   version: 2.4.4
   resolution: "@types/copyfiles@npm:2.4.4"
   checksum: 10/0513199240828feda5f6ed04c69d6a642c47e6ab66b81214716807f948ed3e865e9b3d2b69f75cbcc6fbe2154630755c47ca473b3913f0a831179366c709a8cc
@@ -6675,7 +6675,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:11, @types/fs-extra@npm:11.0.4":
+"@types/fs-extra@npm:11.0.4":
   version: 11.0.4
   resolution: "@types/fs-extra@npm:11.0.4"
   dependencies:
@@ -6847,7 +6847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:7":
+"@types/semver@npm:7.7.0":
   version: 7.7.0
   resolution: "@types/semver@npm:7.7.0"
   checksum: 10/ee4514c6c852b1c38f951239db02f9edeea39f5310fad9396a00b51efa2a2d96b3dfca1ae84c88181ea5b7157c57d32d7ef94edacee36fbf975546396b85ba5b

@@ -1,4 +1,3 @@
-/* eslint-disable */
 // This file is generated, please don't edit directly
 // Refer to 'yarn build:index' for more
 

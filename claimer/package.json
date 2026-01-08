@@ -16,7 +16,7 @@
     "@relay-vaults/types": "workspace:./packages/types",
     "@types/node": "24.3.0",
     "eslint": "9.33.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "ethers": "6.15.0",

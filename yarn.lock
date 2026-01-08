@@ -1223,12 +1223,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bgd-labs/aave-address-book@npm:4.27.0":
-  version: 4.27.0
-  resolution: "@bgd-labs/aave-address-book@npm:4.27.0"
+"@bgd-labs/aave-address-book@npm:4.38.0":
+  version: 4.38.0
+  resolution: "@bgd-labs/aave-address-book@npm:4.38.0"
   peerDependencies:
     viem: ^2.23.5
-  checksum: 10/85afcaf8bba7289a8dfb016c4164f8e19f8b700015d841930f38925fdbcfa6d3013390399f387a53311c673d46a8ddcaea1ebd8b2da0bfcea2c5af1a7d2f6a61
+  checksum: 10/3214d795db8d6ba82542cc0c709b2995da0c904c763edef375d2767e3ad806079b2dc80b08c1a4f1fee665cf7e834006d43bdb0cdcbae0330439e5a801e78337
   languageName: node
   linkType: hard
 
@@ -4953,7 +4953,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@relay-vaults/helpers@workspace:packages/helpers"
   dependencies:
-    "@bgd-labs/aave-address-book": "npm:4.27.0"
+    "@bgd-labs/aave-address-book": "npm:4.38.0"
     "@relay-vaults/networks": "workspace:^"
     "@relay-vaults/tsconfig": "workspace:^"
     "@types/copyfiles": "npm:2.4.4"

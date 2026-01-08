@@ -4965,7 +4965,7 @@ __metadata:
     tsup: "npm:8.5.0"
     typescript: "npm:5.9.2"
     vitest: "npm:3.2.4"
-    zksync-ethers: "npm:6.20.1"
+    zksync-ethers: "npm:6.21.0"
   languageName: unknown
   linkType: soft
 
@@ -5061,7 +5061,7 @@ __metadata:
     typechain: "npm:8.3.2"
     typescript: "npm:5.9.2"
     typescript-eslint: "npm:8.40.0"
-    zksync-ethers: "npm:6.20.1"
+    zksync-ethers: "npm:6.21.0"
   languageName: unknown
   linkType: soft
 
@@ -18524,12 +18524,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zksync-ethers@npm:6.20.1":
-  version: 6.20.1
-  resolution: "zksync-ethers@npm:6.20.1"
+"zksync-ethers@npm:6.21.0":
+  version: 6.21.0
+  resolution: "zksync-ethers@npm:6.21.0"
   peerDependencies:
     ethers: ^6.7.1
-  checksum: 10/ad7297ae31b5a24a9cd63478f9d770d4f8a8879e997e974c6faeb0f0d477544f6a10aabec08e1a05e107484293f3cd96a677009cc6473c8d2abb001b76fb9cdc
+  checksum: 10/acd7eb588e251be2a0eeb91c2b277b649298bfb9e1777536eaa0bf185a406e29eb6065c287d7898eb0dedd00a0836c7525e52c17b0d5c23dcc38d1e9f63a19ff
   languageName: node
   linkType: hard
 

@@ -11,19 +11,27 @@ const walk = async (dirPath: string) =>
     )
   )
 
-export const parseExports = async (folderName: string, destFolder: string) => {
+export const parseExports = async (
+  folderName: string,
+  destFolder: string,
+  isJSON = false
+) => {
   const files = await walk(path.resolve('src', folderName))
 
   const exportsList = files!
     .flat(Infinity)
-    .filter((f: string) => f.includes('.json'))
+    .filter((f: string) =>
+      isJSON
+        ? f.includes('.json')
+        : f.includes('.ts') && !f.includes('index.ts')
+    )
     .map((f: string) => {
       // make sure all path exists
       fs.pathExistsSync(path.resolve(f))
       // get contractName
       const contractName = path.parse(f).name
 
-      const exportPath = `./${path.relative(destFolder, f)}`
+      const exportPath = `./${path.relative(destFolder, f).replace('.ts', '')}`
       return {
         contractName,
         exportPath,
@@ -32,18 +40,34 @@ export const parseExports = async (folderName: string, destFolder: string) => {
   return exportsList
 }
 
-export const createIndexFile = async (
-  srcFolder: string,
-  destFolder: string
+const parseImport = (
+  contractName: string,
+  exportPath: string,
+  isJSON: boolean
 ) => {
+  const namedExport = isJSON ? contractName : `{ ${contractName} }`
+  return `import ${namedExport} from '${exportPath}'`
+}
+export const createIndexFile = async ({
+  srcFolder,
+  destFolder,
+  versioned = [],
+  isJSON = false,
+}: {
+  srcFolder: string
+  destFolder: string
+  versioned?: string[]
+  isJSON?: boolean
+}) => {
   const fileContent = ['/* eslint-disable */']
   fileContent.push("// This file is generated, please don't edit directly")
   fileContent.push("// Refer to 'yarn build:index' for more\n")
 
-  const abiFiles = await parseExports(srcFolder, destFolder)
-
+  const abiFiles = await parseExports(srcFolder, destFolder, isJSON)
   abiFiles.forEach(({ contractName, exportPath }) =>
-    fileContent.push(`import ${contractName} from '${exportPath}'`)
+    versioned.includes(contractName)
+      ? fileContent.push(`import { ${contractName} } from './versions'`)
+      : fileContent.push(parseImport(contractName, exportPath, isJSON))
   )
   fileContent.push('\n// exports')
 

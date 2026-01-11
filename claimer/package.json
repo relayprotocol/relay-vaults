@@ -14,13 +14,14 @@
     "@relay-vaults/networks": "workspace:*",
     "@relay-vaults/tsconfig": "workspace:./packages/tsconfig",
     "@relay-vaults/types": "workspace:./packages/types",
-    "@types/node": "22.15.32",
-    "eslint": "9.28.0",
-    "typescript": "5.8.3"
+    "@types/node": "24.3.0",
+    "eslint": "9.33.0",
+    "typescript": "5.9.2"
   },
   "dependencies": {
-    "ethers": "6.14.3",
-    "tsx": "4.19.4",
+    "ethers": "6.15.0",
+    "hot-shots": "11.2.0",
+    "tsx": "4.20.4",
     "winston": "3.17.0"
   }
 }

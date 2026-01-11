@@ -1,7 +1,11 @@
 import { RelayClient } from '../client'
 import type { DocumentNode } from 'graphql'
 import type { Variables } from 'graphql-request'
-import { RelayPoolFilter, YieldPoolFilter } from '../generated/graphql'
+import {
+  RelayPoolFilter,
+  YieldPoolFilter,
+  PoolOriginFilter,
+} from '../generated/graphql'
 
 /**
  * RelayVaultService provides a high-level interface for interacting with Relay Protocol vaults
@@ -408,7 +412,7 @@ export class RelayVaultService {
   }
 
   /**
-   * Get origin bridge address with sufficient available debt
+   * Get origin bridge address with available debt
    * for a specific pool and origin chain
    *
    * @param chainId - The chain ID where the pool is deployed
@@ -446,21 +450,294 @@ export class RelayVaultService {
       )
     }
 
-    // for remaining pools, filter origin that have enough available debt
+    // for remaining pools, filter origin that are active
     const pools = res.data.relayPools?.items ?? []
     for (const pool of pools) {
       if (pool.origins?.items) {
         pool.origins.items = (pool.origins.items ?? [])
           .filter((origin: any) => {
-            return (
-              BigInt(origin.maxDebt) >
-              amount + BigInt(origin.currentOutstandingDebt)
-            )
+            return BigInt(origin.maxDebt) > BigInt(0)
           })
           .slice(0, originLimit)
       }
     }
 
     return res
+  }
+
+  /**
+   * Get vault snapshots within a specific time interval
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @param options - Query options
+   * @param options.days - Number of days back from now to fetch snapshots (default: 7)
+   * @param options.timestampFrom - Custom start timestamp (overrides days parameter)
+   * @param options.timestampTo - Custom end timestamp (default: current time)
+   * @param options.limit - Maximum number of snapshots to fetch (default: 1000)
+   * @param options.orderBy - Field to order by (default: "timestamp")
+   * @param options.orderDirection - Order direction (default: "asc" for chronological)
+   * @returns Promise containing vault snapshots with APY data and timestamps
+   */
+  async getVaultSnapshots(
+    vaultAddress: string,
+    chainId: number,
+    options: {
+      days?: number
+      timestampFrom?: string | number
+      timestampTo?: string | number
+      limit?: number
+      orderBy?: string
+      orderDirection?: string
+    } = {}
+  ) {
+    const {
+      days = 7,
+      timestampFrom,
+      timestampTo = Math.floor(Date.now() / 1000),
+      limit = 1000,
+      orderBy = 'timestamp',
+      orderDirection = 'asc',
+    } = options
+
+    // Calculate timestampFrom if not provided
+    const calculatedTimestampFrom = timestampFrom
+      ? timestampFrom.toString()
+      : (Number(timestampTo) - days * 24 * 60 * 60).toString()
+
+    return this.client.sdk.GetVaultSnapshots({
+      chainId,
+      limit,
+      orderBy,
+      orderDirection,
+      timestampFrom: calculatedTimestampFrom,
+      timestampTo: timestampTo.toString(),
+      vaultAddress,
+    })
+  }
+
+  /**
+   * Get vault snapshots with intelligent aggregation for chart display
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @param options - Query options
+   * @param options.timeRange - Predefined time range ('7d', '30d', '90d', '1y') or custom days number
+   * @param options.timestampFrom - Custom start timestamp (overrides timeRange)
+   * @param options.timestampTo - Custom end timestamp (default: current time)
+   * @param options.targetHour - Hour of day for daily aggregation (0-23, default: 6 for 6am UTC)
+   * @param options.maxPoints - Maximum data points to return (default: based on timeRange)
+   * @returns Promise containing optimally sampled vault snapshots for chart display
+   */
+  async getVaultSnapshotAggregatedData(
+    vaultAddress: string,
+    chainId: number,
+    options: {
+      timeRange?: '7d' | '30d' | '90d' | '1y' | number
+      timestampFrom?: string | number
+      timestampTo?: string | number
+      targetHour?: number
+      maxPoints?: number
+    } = {}
+  ) {
+    const {
+      timeRange = '7d',
+      timestampFrom,
+      timestampTo = Math.floor(Date.now() / 1000),
+      targetHour = 6,
+      maxPoints,
+    } = options
+
+    let days: number
+    if (typeof timeRange === 'number') {
+      days = timeRange
+    } else {
+      const timeRangeMap = { '1y': 365, '30d': 30, '7d': 7, '90d': 90 }
+      days = timeRangeMap[timeRange]
+    }
+
+    const startTimestamp = timestampFrom
+      ? Number(timestampFrom)
+      : Number(timestampTo) - days * 24 * 60 * 60
+
+    // Determine strategy based on time range
+    if (days <= 7) {
+      return this.getVaultSnapshots(vaultAddress, chainId, {
+        limit: maxPoints || 1000,
+        orderBy: 'timestamp',
+        orderDirection: 'asc',
+        timestampFrom: startTimestamp,
+        timestampTo,
+      })
+    } else {
+      const startDate = new Date(startTimestamp * 1000)
+      const endDate = new Date(Number(timestampTo) * 1000)
+
+      // Get UTC dates for each day
+      const currentDate = new Date(startDate)
+      currentDate.setUTCHours(targetHour, 0, 0, 0)
+
+      if (currentDate <= startDate) {
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+      }
+
+      const targetTimestamps: number[] = []
+      const maxDays = maxPoints || days
+
+      while (currentDate <= endDate && targetTimestamps.length < maxDays) {
+        targetTimestamps.push(Math.floor(currentDate.getTime() / 1000))
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+      }
+
+      const BATCH_SIZE = 6
+      const finalResults: any[] = []
+
+      for (
+        let batchStart = 0;
+        batchStart < targetTimestamps.length;
+        batchStart += BATCH_SIZE
+      ) {
+        const batchEnd = Math.min(
+          batchStart + BATCH_SIZE,
+          targetTimestamps.length
+        )
+        const batchTimestamps = targetTimestamps.slice(batchStart, batchEnd)
+
+        // Create parallel API calls for current batch
+        const batchPromises = batchTimestamps.map(
+          async (targetTimestamp, batchIndex) => {
+            const globalIndex = batchStart + batchIndex
+            try {
+              const windowStart = targetTimestamp - 3 * 60 * 60
+              const windowEnd = targetTimestamp + 3 * 60 * 60
+
+              const response = await this.client.sdk.GetVaultSnapshots({
+                chainId,
+                limit: 20,
+                orderBy: 'timestamp',
+                orderDirection: 'asc',
+                timestampFrom: windowStart.toString(),
+                timestampTo: windowEnd.toString(),
+                vaultAddress,
+              })
+
+              if (response.data?.vaultSnapshots?.items?.length > 0) {
+                const snapshots = response.data.vaultSnapshots.items
+                let closestSnapshot = snapshots[0]
+                let minDiff = Math.abs(
+                  Number(snapshots[0].timestamp) - targetTimestamp
+                )
+
+                for (const snapshot of snapshots) {
+                  const diff = Math.abs(
+                    Number(snapshot.timestamp) - targetTimestamp
+                  )
+                  if (diff < minDiff) {
+                    minDiff = diff
+                    closestSnapshot = snapshot
+                  }
+                }
+
+                return {
+                  index: globalIndex,
+                  snapshot: closestSnapshot,
+                  targetTimestamp,
+                }
+              }
+              return { index: globalIndex, snapshot: null, targetTimestamp }
+            } catch (error) {
+              console.warn(
+                `Failed to fetch snapshot for timestamp ${targetTimestamp}:`,
+                error
+              )
+              return {
+                error,
+                index: globalIndex,
+                snapshot: null,
+                targetTimestamp,
+              }
+            }
+          }
+        )
+
+        // Execute current batch in parallel
+        const batchResults = await Promise.allSettled(batchPromises)
+
+        // Process batch results and maintain order
+        const batchSnapshots: Array<{ index: number; snapshot: any }> = []
+        batchResults.forEach((result) => {
+          if (
+            result.status === 'fulfilled' &&
+            result.value &&
+            result.value.snapshot
+          ) {
+            batchSnapshots.push({
+              index: result.value.index,
+              snapshot: result.value.snapshot,
+            })
+          }
+        })
+
+        // Sort by index to maintain chronological order within batch
+        batchSnapshots.sort((a, b) => a.index - b.index)
+        finalResults.push(...batchSnapshots.map((item) => item.snapshot))
+
+        if (batchEnd < targetTimestamps.length) {
+          await new Promise((resolve) => setTimeout(resolve, 100))
+        }
+      }
+
+      return {
+        data: {
+          vaultSnapshots: {
+            items: finalResults,
+          },
+        },
+      }
+    }
+  }
+
+  /**
+   * Get the oldest vault snapshot for a specific vault
+   *
+   * @param vaultAddress - The vault's contract address
+   * @param chainId - The chain ID where the vault is deployed
+   * @returns Promise containing the oldest vault snapshot data
+   */
+  async getOldestVaultSnapshot(vaultAddress: string, chainId: number) {
+    return this.client.sdk.GetOldestVaultSnapshot({
+      chainId,
+      vaultAddress,
+    })
+  }
+
+  /**
+   * Get all origins for a specific vault with configurable limit and filtering
+   *
+   * @param poolAddress - The pool's contract address
+   * @param chainId - The chain ID where the pool is deployed
+   * @param options - Query options
+   * @param options.limit - Maximum number of origins to fetch (default: 30)
+   * @param options.excludeZeroMaxDebt - Whether to exclude origins with maxDebt <= 0 (default: false)
+   * @returns Promise containing vault origins
+   */
+  async getAllVaultOrigins(
+    poolAddress: string,
+    chainId: number,
+    options: {
+      limit?: number
+      excludeZeroMaxDebt?: boolean
+    } = {}
+  ) {
+    const { limit = 30, excludeZeroMaxDebt = false } = options
+
+    const where = excludeZeroMaxDebt ? { maxDebt_gt: '0' } : null
+
+    return this.client.sdk.GetAllVaultOrigins({
+      chainId,
+      limit,
+      poolAddress,
+      where: where as PoolOriginFilter,
+    })
   }
 }

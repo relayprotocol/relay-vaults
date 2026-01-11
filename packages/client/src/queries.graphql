@@ -432,6 +432,48 @@ query GetAllPoolsBridgeTransactions(
   }
 }
 
+# Get vault snapshots for a specific time range
+query GetVaultSnapshots(
+  $vaultAddress: String!
+  $chainId: Int!
+  $timestampFrom: BigInt!
+  $timestampTo: BigInt!
+  $limit: Int
+  $orderBy: String
+  $orderDirection: String
+) {
+  vaultSnapshots(
+    where: {
+      vault: $vaultAddress
+      chainId: $chainId
+      timestamp_gte: $timestampFrom
+      timestamp_lte: $timestampTo
+    }
+    limit: $limit
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    items {
+      timestamp
+      vaultApy
+      yieldPoolApy
+      sharePrice
+      yieldPoolSharePrice
+      blockNumber
+      chainId
+      vault
+      yieldPool
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
 # Get bridge address for a specific origin
 query GetOriginBridge(
   $poolChainId: Int!
@@ -464,6 +506,50 @@ query GetOriginBridge(
           maxDebt
           chainId
         }
+      }
+    }
+  }
+}
+
+# Get the oldest vault snapshot for a specific vault
+query GetOldestVaultSnapshot($vaultAddress: String!, $chainId: Int!) {
+  vaultSnapshots(
+    where: { vault: $vaultAddress, chainId: $chainId }
+    limit: 1
+    orderBy: "timestamp"
+    orderDirection: "asc"
+  ) {
+    items {
+      timestamp
+      vaultApy
+      yieldPoolApy
+      sharePrice
+      yieldPoolSharePrice
+      blockNumber
+      chainId
+      vault
+      yieldPool
+    }
+  }
+}
+
+# Get all origins for a specific vault
+query GetAllVaultOrigins($poolAddress: String!, $chainId: Float!, $limit: Int, $where: poolOriginFilter) {
+  relayPool(contractAddress: $poolAddress, chainId: $chainId) {
+    contractAddress
+    chainId
+    origins(limit: $limit, where: $where) {
+      totalCount
+      items {
+        bridgeFee
+        chainId
+        coolDown
+        curator
+        currentOutstandingDebt
+        maxDebt
+        originBridge
+        originChainId
+        proxyBridge
       }
     }
   }

@@ -1,4 +1,4 @@
-import { JsonRpcProvider, Contract, EventLog } from 'ethers'
+import { JsonRpcProvider, Contract, EventLog, TopicFilter } from 'ethers'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 import { L2Status } from './types'
 import networks from '@relay-vaults/networks'
@@ -11,15 +11,23 @@ export async function checkArbitrumStatus(
     throw new Error('Rollup address not configured')
   }
 
-  // TODO: use AssertionConfirmed ?
   const arbitrumRollupAbi = [
     'event AssertionConfirmed(bytes32 indexed assertionHash, bytes32 blockHash, bytes32 sendRoot)',
+    'event NodeConfirmed(uint64 indexed nodeNum, bytes32 blockHash, bytes32 sendRoot)',
   ]
+
   // Get L1 provider for checking proofs
   const l1Provider = new JsonRpcProvider(networks[chain.parentChainId].rpc[0])
-
   const contract = new Contract(rollupAddress, arbitrumRollupAbi, l1Provider)
-  const filter = contract.filters.AssertionConfirmed
+  const filterNodeConfirmed = await contract.filters
+    .NodeConfirmed()
+    .getTopicFilter()
+  const filterAssertionConfirmed = await contract.filters
+    .AssertionConfirmed()
+    .getTopicFilter()
+  const filter = [
+    filterNodeConfirmed.concat(filterAssertionConfirmed),
+  ] as TopicFilter
 
   // look back in blocks
   const events = await contract.queryFilter(

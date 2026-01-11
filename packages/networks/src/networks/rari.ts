@@ -13,7 +13,7 @@ const config: OriginNetworkConfig = {
         routerGateway: '0x9a2859B2a83148b8DE25d26643B5407555D219E1',
       },
       parent: {
-        maxBlocksWithoutProof: 500,
+        maxBlocksWithoutProof: 9999,
         outbox: '0x91591BB66075BCfF94AA128B003134165C3Ab83a',
         rollup: '0x2e988Ea0873C9d712628F0bf38DAFdE754927C89',
         routerGateway: '0x2623C144B4d167f70893f6A8968B98c89a6C5F97',

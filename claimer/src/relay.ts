@@ -84,6 +84,7 @@ export const finalizeWithdrawal = async (
     currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
     needsProving: false,
     originChainId: bridgeTransaction.originChainId,
+    proveTxHash: bridgeTransaction.opProofTxHash,
     stack: stack,
     txHash: bridgeTransaction.originTxHash,
   })

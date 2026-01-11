@@ -1,4 +1,3 @@
-import { heartbeat } from './src/tracer'
 import { start, stop } from './src/runner'
 import { proveTransactions } from './src/prove-transactions'
 import { claimTransactions } from './src/claim-withdrawals'
@@ -11,13 +10,16 @@ import { logger } from './src/logger'
 
 const run = async () => {
   const { vaultService } = await start()
-  await checkOutstandingDebts({ vaultService })
-  await checkPendingBridges({ vaultService })
+
+  // process transactions
   await proveTransactions({ vaultService })
   await finalizeWithdrawals({ vaultService })
   await claimTransactions({ vaultService })
+
+  // Check statuses
+  await checkPendingBridges({ vaultService })
   await checkL2Chains()
-  await heartbeat()
+  await checkOutstandingDebts({ vaultService })
   await stop()
 }
 

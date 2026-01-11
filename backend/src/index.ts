@@ -119,12 +119,38 @@ logEvent(ponder, 'RelayPool:OutstandingDebtChanged', OutstandingDebtChanged)
 /**
  * Handles proven withdrawals from the OP portal
  */
-logEvent(ponder, 'OPPortal:WithdrawalProven', WithdrawalProven)
+logEvent(
+  ponder,
+  'OPPortal:WithdrawalProven(bytes32 indexed withdrawalHash, address indexed from, address indexed to)',
+  WithdrawalProven
+)
 
 /**
- * Handles finalzied withdrawals from the OP portal
+ * Handles proven withdrawals from the OP portal for Blast
  */
-logEvent(ponder, 'OPPortal:WithdrawalFinalized', WithdrawalFinalized)
+logEvent(
+  ponder,
+  'OPPortal:WithdrawalProven(bytes32 indexed withdrawalHash, address indexed from, address indexed to, uint256 requestId)',
+  WithdrawalProven
+)
+
+/**
+ * Handles finalized withdrawals from the OP portal
+ */
+logEvent(
+  ponder,
+  'OPPortal:WithdrawalFinalized(bytes32 indexed withdrawalHash, bool success)',
+  WithdrawalFinalized
+)
+
+/**
+ * Handles finalized withdrawals from the OP portal for Blast
+ */
+logEvent(
+  ponder,
+  'OPPortal:WithdrawalFinalized(bytes32 indexed withdrawalHash, uint256 indexed hintId, bool success)',
+  WithdrawalFinalized
+)
 
 /**
  * Handles completed withdrawals from the Orbit Outbox

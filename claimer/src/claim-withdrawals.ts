@@ -1,3 +1,4 @@
+import { domainIdForChainId } from '@relay-vaults/helpers'
 import { RelayVaultService } from '@relay-vaults/client'
 import { gql } from 'graphql-request'
 import networks from '@relay-vaults/networks'
@@ -58,13 +59,14 @@ export const claimTransactions = async ({
       )
 
       if (balance >= 0 && BigInt(origin.currentOutstandingDebt) > 0) {
+        const domainId = domainIdForChainId(origin.originChainId)
         logger.info(
           `Claim funds (${BigInt(origin.currentOutstandingDebt)}) for ${relayPool.contractAddress} on ${origin.proxyBridge} from ${origin.originChainId} ${origin.originBridge}`
         )
         await claimFunds(
           relayPool.chainId,
           relayPool.contractAddress,
-          origin.originChainId,
+          domainId,
           origin.originBridge
         )
       }

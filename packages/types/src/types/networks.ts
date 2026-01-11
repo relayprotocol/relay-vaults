@@ -28,11 +28,22 @@ export interface OriginNetworkConfig extends NetworkConfig {
         messagePasser: string
       }
     }
+    arbitrumDeposit?: {
+      child: {
+        inbox: string
+        routerGateway: string
+        erc20Gateway: string
+      }
+      parent: {
+        routerGateway: string
+      }
+    }
     arbitrum?: {
       parent: {
         outbox: string
         rollup: string
         routerGateway: string
+        inbox: string
         maxBlocksWithoutProof: number // number of L1 blocks before a chain is deemed halted/inactive
       }
       child: {
@@ -63,6 +74,11 @@ export interface OriginNetworkConfig extends NetworkConfig {
         l1Messenger: string
         sharedDefaultBridge: string
       }
+    }
+    everclear?: {
+      domainId: number
+      spoke: string
+      feeAdapter: string
     }
   }
 }

@@ -4856,7 +4856,7 @@ __metadata:
     "@types/node": "npm:24.3.0"
     eslint: "npm:9.33.0"
     graphql: "npm:16.11.0"
-    graphql-request: "npm:7.2.0"
+    graphql-request: "npm:7.4.0"
     tsup: "npm:8.5.0"
     tsx: "npm:4.20.4"
     typescript: "npm:5.9.2"
@@ -4927,7 +4927,7 @@ __metadata:
     "@types/node": "npm:24.3.0"
     eslint: "npm:9.33.0"
     graphql: "npm:16.11.0"
-    graphql-request: "npm:7.2.0"
+    graphql-request: "npm:7.4.0"
     graphql-tag: "npm:2.12.6"
     tsup: "npm:8.5.0"
     typescript: "npm:5.9.2"
@@ -11273,14 +11273,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:7.2.0":
-  version: 7.2.0
-  resolution: "graphql-request@npm:7.2.0"
+"graphql-request@npm:7.4.0":
+  version: 7.4.0
+  resolution: "graphql-request@npm:7.4.0"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.2.0"
   peerDependencies:
     graphql: 14 - 16
-  checksum: 10/532e3e094cac2ce7cc4e104e92c33dd53e9ef77a1c6ee6977545f0f8aca1098a28ce0873c7fe50c2e9a5460ace351060603a98021ef96107512b458a13e42994
+  checksum: 10/bdf657ffd2017a4c404f2b18fc21dabb7094866059e80312632c38c21f3936cd790c1c635de5dba568f90c096725eaf50d6ec98db75229f260a5b9d6717744c5
   languageName: node
   linkType: hard
 

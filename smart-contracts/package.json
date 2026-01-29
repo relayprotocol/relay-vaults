@@ -35,7 +35,7 @@
     "@matterlabs/hardhat-zksync-verify": "1.9.0",
     "@nomicfoundation/hardhat-chai-matchers": "2.1.0",
     "@nomicfoundation/hardhat-ethers": "3.1.0",
-    "@nomicfoundation/hardhat-ignition": "0.15.13",
+    "@nomicfoundation/hardhat-ignition": "3.0.6",
     "@nomicfoundation/hardhat-ignition-ethers": "0.15.14",
     "@nomicfoundation/hardhat-network-helpers": "3.0.0",
     "@nomicfoundation/hardhat-toolbox": "6.1.0",

@@ -1,13 +1,12 @@
 import { ABIs } from '@relay-vaults/helpers'
-import { RelayBridge, RelayPool } from '@relay-vaults/abis'
+import { RelayPool } from '@relay-vaults/abis'
 import { task } from 'hardhat/config'
 import { networks } from '@relay-vaults/networks'
 import { AbiCoder, Contract } from 'ethers'
-import SafeApiKit from '@safe-global/api-kit'
-import { Select } from 'enquirer'
-import { submitBatchedScheduleTransactionsViaMultisig } from '../lib/multisig'
-
-const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
+import {
+  MAINNET_SAFE_ADDRESS,
+  submitBatchedScheduleTransactionsViaMultisig,
+} from '../lib/multisig'
 
 const ZERO_NETWORK_CHAIN_ID = 543210
 const ZERO_NETWORK_BRIDGE_ADDRESS = '0xb17F41bCb06Bf95805932a7881Bb37f1D43e3dAC'
@@ -108,11 +107,6 @@ task(
               console.log(`  DispatchId: ${dispatchId}`)
             } else if (parsed && parsed.name === 'Dispatch') {
               dispatchMessage = parsed.args.message
-              if (dispatchMessage) {
-                console.log(
-                  `  Dispatch message length: ${ethers.getBytes(dispatchMessage).length} bytes`
-                )
-              }
             }
           } catch (e) {
             // Not a Mailbox event
@@ -132,34 +126,25 @@ task(
         // Decode HyperlaneMessage from dispatchMessage
         // From RelayBridge: abi.encode(nonce, recipient, amount, block.timestamp)
         const abiCoder = new AbiCoder()
-        const messageBytes = ethers.getBytes(dispatchMessage)
-        const expectedBodyLength = 128 // 4 * 32 bytes for (uint256, address, uint256, uint256)
-
-        let messageBody: string
-        let message: ReturnType<typeof abiCoder.decode>
 
         // Extract the last 128 bytes which contain the ABI-encoded HyperlaneMessage
-        if (messageBytes.length >= expectedBodyLength) {
-          const hexLength = expectedBodyLength * 2 // 2 hex chars per byte
-          messageBody = '0x' + dispatchMessage.slice(-hexLength)
+        // 4 * 32 bytes for (uint256, address, uint256, uint256)
+        const expectedBodyLength = 128
+        let message: ReturnType<typeof abiCoder.decode>
 
-          try {
-            message = abiCoder.decode(
-              ['uint256', 'address', 'uint256', 'uint256'],
-              messageBody
-            )
-          } catch (error: unknown) {
-            const errorMessage =
-              error instanceof Error ? error.message : String(error)
-            console.error(`  ❌ Failed to decode message body: ${errorMessage}`)
-            console.error(`  Message body: ${messageBody}`)
-            continue
-          }
-        } else {
-          console.error(
-            `  ❌ Message too short: ${messageBytes.length} bytes, expected at least ${expectedBodyLength} bytes`
+        const hexLength = expectedBodyLength * 2 // 2 hex chars per byte
+        const messageBody = '0x' + dispatchMessage.slice(-hexLength)
+
+        try {
+          message = abiCoder.decode(
+            ['uint256', 'address', 'uint256', 'uint256'],
+            messageBody
           )
-          console.error(`  Message: ${dispatchMessage}`)
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error)
+          console.error(`  ❌ Failed to decode message body: ${errorMessage}`)
+          console.error(`  Message body: ${messageBody}`)
           continue
         }
 
@@ -198,9 +183,6 @@ task(
     console.log(
       `Total amount sent from Zero: ${ethers.formatEther(totalAmountSent)} ETH`
     )
-    console.log(
-      `Total amount received on ETH Mainnet: ${ethers.formatEther(totalAmount)} ETH`
-    )
     console.log(`\nPrepared ${calls.length} processFailedHandler calls`)
     console.log(
       `Total amount prepared for processFailedHandler: ${ethers.formatEther(totalAmount)} ETH`
@@ -211,22 +193,11 @@ task(
     }
 
     const poolNetwork = networks[POOL_CHAIN_ID.toString()]
-    if (!poolNetwork) {
-      throw new Error(
-        `Pool network configuration not found for chain ${POOL_CHAIN_ID}`
-      )
-    }
-
-    console.log(
-      `\nDestination pool chain: ${poolNetwork.name} (${POOL_CHAIN_ID})`
-    )
     console.log(`Pool address: ${POOL_ADDRESS}`)
 
     // Get timelock address from pool owner
     console.log('\n=== Getting timelock address ===')
-    const mainnetProvider = new ethers.JsonRpcProvider(
-      networks[POOL_CHAIN_ID.toString()].rpc[0]
-    )
+    const mainnetProvider = new ethers.JsonRpcProvider(poolNetwork.rpc[0])
     const mainnetSignerForRead = new ethers.Wallet(
       ethers.Wallet.createRandom().privateKey,
       mainnetProvider
@@ -240,10 +211,7 @@ task(
       `\n=== Preparing processFailedHandler calls for pool ${POOL_ADDRESS} ===`
     )
 
-    // Get RelayPool contract interface
     const relayPoolInterface = new ethers.Interface(RelayPool)
-
-    // Encode all processFailedHandler calls and generate salts
     const transactionsToSubmit = calls.map((call, index) => {
       // Encode processFailedHandler call
       const payload = relayPoolInterface.encodeFunctionData(
@@ -251,7 +219,7 @@ task(
         [call.chainId, call.bridge, call.data]
       )
 
-      // Generate unique salt for each call
+      // Generate unique salt for timelock calls
       const salt = ethers.id(
         `processFailedHandler_${call.dispatchId}_${index}_${Date.now()}`
       )
@@ -272,45 +240,7 @@ task(
     console.log('\n=== Submitting batched transactions through timelock ===')
 
     // Get Safe address
-    const [user] = await ethers.getSigners()
-    const userAddress = await user.getAddress()
-    let safe = safeAddress
-
-    if (!safe) {
-      const apiKit = new SafeApiKit({
-        apiKey: process.env.SAFE_API_KEY,
-        chainId: 1n,
-      })
-
-      const { safes: userSafes } = await apiKit.getSafesByOwner(userAddress)
-      const safes = userSafes.includes(MAINNET_SAFE_ADDRESS)
-        ? [...userSafes]
-        : [...userSafes, MAINNET_SAFE_ADDRESS]
-
-      if (safes.length === 0) {
-        throw new Error('No Safe addresses found for user')
-      }
-
-      if (safes.length === 1) {
-        safe = safes[0]
-      } else {
-        const selectedSafe = await new Select({
-          choices: safes.map((s) => {
-            return {
-              message:
-                s === MAINNET_SAFE_ADDRESS
-                  ? `Relay Vault Team Safe ${MAINNET_SAFE_ADDRESS}`
-                  : s,
-              value: s,
-            }
-          }),
-          message: 'Please choose the SAFE address:',
-          name: 'safeAddress',
-        }).run()
-        safe = selectedSafe
-      }
-    }
-
+    const safe = MAINNET_SAFE_ADDRESS
     console.log(`Using Safe: ${safe}`)
 
     // Submit all schedule transactions as a single multicall

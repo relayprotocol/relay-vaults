@@ -5,7 +5,7 @@ import { Confirm, Select } from 'enquirer'
 import { TimelockControllerUpgradeable } from '@relay-vaults/abis'
 import { ethers } from 'ethers'
 
-const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
+export const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
 
 export const executeThruTimelock = async (
   ethers: any,

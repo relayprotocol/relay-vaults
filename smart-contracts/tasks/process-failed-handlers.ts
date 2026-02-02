@@ -10,6 +10,8 @@ import { submitBatchedScheduleTransactionsViaMultisig } from '../lib/multisig'
 const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
 
 const ZERO_NETWORK_CHAIN_ID = 543210
+const ZERO_NETWORK_BRIDGE_ADDRESS = '0xb17F41bCb06Bf95805932a7881Bb37f1D43e3dAC'
+
 const HYPERLANE_MAILBOX_ADDRESS = '0xd7b351D2dE3495eA259DD10ab4b9300A378Afbf3'
 const POOL_ADDRESS = '0x57B68c4EA221ee8Da6eb14ebdfcCEE5177567771'
 const POOL_CHAIN_ID = 1 // Ethereum mainnet
@@ -81,37 +83,6 @@ task(
         const txValue = tx.value
         totalAmountSent += txValue
         console.log(`  Value: ${ethers.formatEther(txValue)} ETH`)
-
-        // Find BridgeInitiated event to get bridge address
-        // The event is emitted from the RelayBridge contract (which is the transaction's to address)
-        let bridgeAddress: string | null = null
-        const bridgeInterface = new ethers.Interface(RelayBridge)
-        for (const log of receipt.logs) {
-          try {
-            const parsed = bridgeInterface.parseLog({
-              data: log.data,
-              topics: log.topics,
-            })
-            if (parsed && parsed.name === 'BridgeInitiated') {
-              bridgeAddress = log.address
-              console.log(`  Bridge: ${bridgeAddress}`)
-              break
-            }
-          } catch (e) {
-            // Not a BridgeInitiated event
-          }
-        }
-
-        // Fallback: if no event found, use tx.to as bridge address
-        if (!bridgeAddress && tx.to) {
-          bridgeAddress = tx.to
-          console.log(`  Bridge (from tx.to): ${bridgeAddress}`)
-        }
-
-        if (!bridgeAddress) {
-          console.error('  ❌ BridgeInitiated event not found')
-          continue
-        }
 
         // Find DispatchId and Dispatch events from Hyperlane Mailbox
         let dispatchId: string | null = null
@@ -206,7 +177,7 @@ task(
         // This is the ABI-encoded HyperlaneMessage struct that processFailedHandler expects
         calls.push({
           amount: msg[2],
-          bridge: bridgeAddress,
+          bridge: ZERO_NETWORK_BRIDGE_ADDRESS,
           chainId: ZERO_NETWORK_CHAIN_ID,
           data: messageBody, // ABI-encoded (uint256, address, uint256, uint256)
           dispatchId,
@@ -231,9 +202,8 @@ task(
       `Total amount received on ETH Mainnet: ${ethers.formatEther(totalAmount)} ETH`
     )
     console.log(`\nPrepared ${calls.length} processFailedHandler calls`)
-
     console.log(
-      `Total amount prepared for processFailedHandler: ${ethers.formatEther(totalAmountSent)} ETH`
+      `Total amount prepared for processFailedHandler: ${ethers.formatEther(totalAmount)} ETH`
     )
     if (calls.length === 0) {
       console.error('No valid calls to process. Exiting.')
@@ -261,7 +231,6 @@ task(
       ethers.Wallet.createRandom().privateKey,
       mainnetProvider
     )
-    // Use Contract with ABI directly instead of getContractAt (which requires Hardhat artifacts)
     const pool = new Contract(POOL_ADDRESS, RelayPool, mainnetSignerForRead)
     const timelockAddress = await pool.owner()
     console.log(`Timelock address: ${timelockAddress}`)

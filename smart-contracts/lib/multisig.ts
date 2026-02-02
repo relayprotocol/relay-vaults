@@ -2,6 +2,8 @@ import networks from '@relay-vaults/networks'
 import SafeApiKit from '@safe-global/api-kit'
 import Safe from '@safe-global/protocol-kit'
 import { Confirm, Select } from 'enquirer'
+import { TimelockControllerUpgradeable } from '@relay-vaults/abis'
+import { ethers } from 'ethers'
 
 const MAINNET_SAFE_ADDRESS = '0x1f06b7dd281Ca4D19d3E0f74281dAfDeC3D43963'
 
@@ -208,6 +210,53 @@ const submitTxToSafe = async (
   return nonce + nonceOffset
 }
 
+const submitBatchedTxsToSafe = async (
+  ethers: any,
+  safeAddress: string,
+  txs: Array<{ data: string; to: string; value: string }>,
+  nonceOffset: number
+) => {
+  const [user] = await ethers.getSigners()
+  const { chainId } = await ethers.provider.getNetwork()
+  const userAddress = await user.getAddress()
+
+  const apiKit = new SafeApiKit({
+    apiKey: process.env.SAFE_API_KEY,
+    chainId,
+  })
+
+  const safe = await Safe.init({
+    provider: networks[chainId].rpc[0],
+    safeAddress,
+    signer: process.env.DEPLOYER_PRIVATE_KEY,
+  })
+  const nonce = await safe.getNonce()
+
+  // Create a Safe transaction with multiple calls (multicall)
+  const safeTransaction = await safe.createTransaction({
+    options: {
+      nonce: nonce + nonceOffset,
+    },
+    transactions: txs.map((tx) => ({
+      data: tx.data,
+      to: ethers.getAddress(tx.to),
+      value: tx.value || '0',
+    })),
+  })
+  const safeTxHash = await safe.getTransactionHash(safeTransaction)
+  const signature = await safe.signHash(safeTxHash)
+
+  // Propose transaction to the service
+  await apiKit.proposeTransaction({
+    safeAddress,
+    safeTransactionData: safeTransaction.data,
+    safeTxHash,
+    senderAddress: userAddress,
+    senderSignature: signature.data,
+  })
+  return nonce + nonceOffset
+}
+
 export const submitTransactionsViaMultisig = async (
   ethers: any,
   timelockAddress: string,
@@ -266,5 +315,97 @@ export const submitTransactionsViaMultisig = async (
   const executeTxNonce = await submitTxToSafe(ethers, safeAddress, executeTx, 1)
   console.info(
     `Submitted execution transaction to multisig ${safeAddress} as tx #${executeTxNonce}. This will become executable after the timelock delay, once the scheduling tx is executed!`
+  )
+}
+
+export const submitBatchedScheduleTransactionsViaMultisig = async (
+  provider: any,
+  timelockAddress: string,
+  safeAddress: string,
+  transactions: Array<{
+    payload: string
+    target: string
+    value: bigint
+    salt: string
+  }>
+) => {
+  const timelock = new ethers.Contract(
+    timelockAddress,
+    TimelockControllerUpgradeable,
+    provider
+  )
+
+  const PROPOSER_ROLE = await timelock.PROPOSER_ROLE()
+  const isProposer = await timelock.hasRole(PROPOSER_ROLE, safeAddress)
+  if (!isProposer) {
+    throw Error(`Multisig ${safeAddress} is not a proposer on the timelock!`)
+  }
+
+  const delay = await timelock.getMinDelay()
+  const predecessor = ethers.ZeroHash
+
+  // Prepare all schedule transactions
+  const scheduleTxs = await Promise.all(
+    transactions.map(async (tx) => {
+      const scheduleTx = await timelock.schedule.populateTransaction(
+        tx.target,
+        tx.value,
+        tx.payload,
+        predecessor,
+        tx.salt,
+        delay
+      )
+      return {
+        data: scheduleTx.data || '0x',
+        to: ethers.getAddress(timelockAddress),
+        value: '0',
+      }
+    })
+  )
+
+  // Submit all schedule transactions as a single multicall
+  const scheduleTxNonce = await submitBatchedTxsToSafe(
+    ethers,
+    safeAddress,
+    scheduleTxs,
+    0
+  )
+  console.info(
+    `Submitted ${scheduleTxs.length} scheduling transactions to multisig ${safeAddress} as a single multicall (tx #${scheduleTxNonce}).`
+  )
+
+  const EXECUTOR_ROLE = await timelock.EXECUTOR_ROLE()
+  const isExecutor = await timelock.hasRole(EXECUTOR_ROLE, safeAddress)
+  if (!isExecutor) {
+    throw Error(`Multisig ${safeAddress} is not an executor on the timelock!`)
+  }
+
+  // Prepare all execute transactions (these can only be executed after the delay)
+  const executeTxs = await Promise.all(
+    transactions.map(async (tx) => {
+      const executeTx = await timelock.execute.populateTransaction(
+        tx.target,
+        tx.value,
+        tx.payload,
+        predecessor,
+        tx.salt
+      )
+      return {
+        data: executeTx.data || '0x',
+        to: ethers.getAddress(timelockAddress),
+        value: '0',
+      }
+    })
+  )
+
+  // Submit all execute transactions as a single multicall
+  const executeTxNonce = await submitBatchedTxsToSafe(
+    ethers,
+    safeAddress,
+    executeTxs,
+    1
+  )
+  console.info(
+    `Submitted ${executeTxs.length} execution transactions to multisig ${safeAddress} as a single multicall (tx #${executeTxNonce}). These will become executable after the timelock delay (${delay} seconds), once the scheduling tx is executed!`
   )
 }

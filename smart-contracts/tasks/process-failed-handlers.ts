@@ -1,9 +1,5 @@
 import { ABIs } from '@relay-vaults/helpers'
-import {
-  RelayBridge,
-  RelayPool,
-  TimelockControllerUpgradeable,
-} from '@relay-vaults/abis'
+import { RelayBridge, RelayPool } from '@relay-vaults/abis'
 import { task } from 'hardhat/config'
 import { networks } from '@relay-vaults/networks'
 import { AbiCoder, Contract } from 'ethers'
@@ -270,64 +266,37 @@ task(
     const timelockAddress = await pool.owner()
     console.log(`Timelock address: ${timelockAddress}`)
 
-    // Get timelock contract to check delay
-    // Use Contract with ABI directly instead of getContractAt (which requires Hardhat artifacts)
-    const timelock = new Contract(
-      timelockAddress,
-      TimelockControllerUpgradeable,
-      mainnetSignerForRead
-    )
-    const delay = await timelock.getMinDelay()
+    // Prepare processFailedHandler payloads
     console.log(
-      `Timelock delay: ${delay} seconds (${Number(delay) / 3600} hours)`
-    )
-
-    // Prepare multicall transaction through timelock
-    console.log(
-      `\n=== Preparing timelock schedule transactions for pool ${POOL_ADDRESS} ===`
+      `\n=== Preparing processFailedHandler calls for pool ${POOL_ADDRESS} ===`
     )
 
     // Get RelayPool contract interface
     const relayPoolInterface = new ethers.Interface(RelayPool)
 
-    // Prepare all processFailedHandler calls (these will be scheduled through timelock)
-    // Using the same pattern as executeThruTimelock/submitTransactionsViaMultisig
-    const scheduleTransactions = await Promise.all(
-      calls.map(async (call, index) => {
-        // Encode processFailedHandler call
-        const payload = relayPoolInterface.encodeFunctionData(
-          'processFailedHandler',
-          [call.chainId, call.bridge, call.data]
-        )
+    // Encode all processFailedHandler calls and generate salts
+    const transactionsToSubmit = calls.map((call, index) => {
+      // Encode processFailedHandler call
+      const payload = relayPoolInterface.encodeFunctionData(
+        'processFailedHandler',
+        [call.chainId, call.bridge, call.data]
+      )
 
-        // Prepare schedule transaction using the same pattern as submitTransactionsViaMultisig
-        const predecessor = ethers.ZeroHash
-        const salt = ethers.id(
-          `processFailedHandler_${call.dispatchId}_${index}_${Date.now()}`
-        )
+      // Generate unique salt for each call
+      const salt = ethers.id(
+        `processFailedHandler_${call.dispatchId}_${index}_${Date.now()}`
+      )
 
-        const scheduleTx = await timelock.schedule.populateTransaction(
-          POOL_ADDRESS, // target
-          0n, // value
-          payload, // data
-          predecessor,
-          salt,
-          delay
-        )
-
-        return {
-          data: scheduleTx.data || '0x',
-          payload,
-          salt,
-          target: POOL_ADDRESS,
-          to: ethers.getAddress(timelockAddress),
-          value: '0',
-        }
-      })
-    )
+      return {
+        payload,
+        salt,
+        target: POOL_ADDRESS,
+        value: 0n,
+      }
+    })
 
     console.log(
-      `Prepared ${scheduleTransactions.length} timelock.schedule() transactions for multicall`
+      `Prepared ${transactionsToSubmit.length} processFailedHandler calls for batched submission`
     )
 
     // Submit all transactions as a batched multicall through Safe
@@ -374,14 +343,6 @@ task(
     }
 
     console.log(`Using Safe: ${safe}`)
-
-    // Prepare transactions for batched submission
-    const transactionsToSubmit = scheduleTransactions.map((tx) => ({
-      payload: tx.payload,
-      salt: tx.salt,
-      target: tx.target,
-      value: 0n,
-    }))
 
     // Submit all schedule transactions as a single multicall
     await submitBatchedScheduleTransactionsViaMultisig(

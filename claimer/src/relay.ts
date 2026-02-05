@@ -3,8 +3,9 @@ import networks from '@relay-vaults/networks'
 import { OriginNetworkConfig } from '@relay-vaults/types'
 import { logger } from './logger'
 
-const ENDPOINT = 'https://api.relay.link'
-const TESTNETS_ENDPOINT = 'https://api.testnets.relay.link'
+if (!process.env.RELAY_API_ENDPOINT) {
+  throw new Error('RELAY_API_ENDPOINT environment variable is not set')
+}
 
 interface BridgeTransaction {
   amount: string
@@ -55,16 +56,17 @@ export const submitProof = async (bridgeTransaction: BridgeTransaction) => {
   logger.info(
     `Submitting proof after ${after(bridgeTransaction.originTimestamp)} for ${bridgeTransaction.originTxHash} on ${originNetwork.name}`
   )
-  const network = networks[bridgeTransaction.destinationPoolChainId]
-  const endpoint = network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT
-  await sendRequest(`${endpoint}/admin/execute-withdrawal`, {
-    amount: bridgeTransaction.amount,
-    currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
-    needsProving: true,
-    originChainId: bridgeTransaction.originChainId,
-    stack: originNetwork.stack,
-    txHash: bridgeTransaction.originTxHash,
-  })
+  await sendRequest(
+    `${process.env.RELAY_API_ENDPOINT}/admin/execute-withdrawal`,
+    {
+      amount: bridgeTransaction.amount,
+      currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
+      needsProving: true,
+      originChainId: bridgeTransaction.originChainId,
+      stack: originNetwork.stack,
+      txHash: bridgeTransaction.originTxHash,
+    }
+  )
 }
 
 // Finalize the withdrawal (after 7 days)
@@ -77,17 +79,18 @@ export const finalizeWithdrawal = async (
   logger.info(
     `Finalizing ${bridgeTransaction.originTxHash} on ${stack} after ${after(bridgeTransaction.originTimestamp)}`
   )
-  const network = networks[bridgeTransaction.destinationPoolChainId]
-  const endpoint = network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT
-  await sendRequest(`${endpoint}/admin/execute-withdrawal`, {
-    amount: bridgeTransaction.amount,
-    currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
-    needsProving: false,
-    originChainId: bridgeTransaction.originChainId,
-    proveTxHash: bridgeTransaction.opProofTxHash,
-    stack: stack,
-    txHash: bridgeTransaction.originTxHash,
-  })
+  await sendRequest(
+    `${process.env.RELAY_API_ENDPOINT}/admin/execute-withdrawal`,
+    {
+      amount: bridgeTransaction.amount,
+      currencyId: bridgeTransaction.asset === ZeroAddress ? 'eth' : 'erc20',
+      needsProving: false,
+      originChainId: bridgeTransaction.originChainId,
+      proveTxHash: bridgeTransaction.opProofTxHash,
+      stack: stack,
+      txHash: bridgeTransaction.originTxHash,
+    }
+  )
 }
 
 export const claimFunds = async (
@@ -96,9 +99,7 @@ export const claimFunds = async (
   originChainId: number,
   originBridgeAddress: string
 ) => {
-  const network = networks[chainId]
-  const endpoint = network.isTestnet ? TESTNETS_ENDPOINT : ENDPOINT
-  await sendRequest(`${endpoint}/admin/vault-claim`, {
+  await sendRequest(`${process.env.RELAY_API_ENDPOINT}/admin/vault-claim`, {
     chainId,
     originBridgeAddress,
     originChainId,

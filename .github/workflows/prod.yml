@@ -72,6 +72,16 @@ jobs:
         username: ${{ secrets.DEVOPSBOT_LOGIN }}
         password: ${{ secrets.DEVOPSBOT_TOKEN }}
     steps:
+      - name: Deploy to staging
+        run: |
+          bash -c "/app/deploy.sh"
+        shell: bash
+        env:
+          ENVIRONMENT: 'stag'
+          SERVICE: 'relay-vaults'
+          GITHUB_SHA: '${{ needs.build-docker-image.outputs.latest-release }}'
+          GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
+          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}
       - name: Deploy to production
         run: |
           bash -c "/app/deploy.sh"

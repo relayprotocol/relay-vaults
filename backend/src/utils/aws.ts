@@ -11,15 +11,15 @@ interface GetIamTokenParams {
 export const getIamToken = async ({
   hostname,
   port = 5432,
-  username,
   region = 'us-east-1',
+  username,
 }: GetIamTokenParams) => {
   const signer = new Signer({
+    credentials: fromNodeProviderChain(),
     hostname,
     port,
-    username,
     region,
-    credentials: fromNodeProviderChain(),
+    username,
   })
 
   return signer.getAuthToken()

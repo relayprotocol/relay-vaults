@@ -196,3 +196,108 @@ describe('RelayPool: when a message was never received from Hyperlane', () => {
       .withArgs(amount / 2n, amount)
   })
 })
+
+describe('RelayPool: processFailedHandler with non-zero bridge fee', () => {
+  let relayPool: RelayPool
+  let myToken: MyToken
+  let thirdPartyPool: MyYieldPool
+  let myWeth: MyWeth
+  let bridgeProxy: OPStackNativeBridgeProxy
+
+  // 1% fee (same scale as fees.hardhat.ts)
+  const bridgeFee = BigInt(1_000_000_000)
+
+  before(async () => {
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    myToken = await ethers.deployContract('MyToken', ['My Token', 'TOKEN'])
+    myWeth = await ethers.deployContract('MyWeth')
+    thirdPartyPool = await ethers.deployContract('MyYieldPool', [
+      await myToken.getAddress(),
+      'My Yield Pool',
+      'YIELD',
+    ])
+
+    ;({ relayPool } = await ignition.deploy(RelayPoolModule, {
+      parameters: {
+        RelayPool: {
+          asset: await myToken.getAddress(),
+          curator: userAddress,
+          hyperlaneMailbox: userAddress,
+          name: 'ERC20 RELAY POOL (fee)',
+          symbol: 'ERC20-REL-FEE',
+          thirdPartyPool: await thirdPartyPool.getAddress(),
+          weth: await myWeth.getAddress(),
+        },
+      },
+    }))
+
+    const { bridge } = await ignition.deploy(OPStackNativeBridgeProxyModule, {
+      parameters: {
+        OPStackNativeBridgeProxy: {
+          l1BridgeProxy: ethers.ZeroAddress,
+          portalProxy,
+          relayPool: await relayPool.getAddress(),
+          relayPoolChainId: 31337,
+        },
+      },
+    })
+    bridgeProxy = bridge
+
+    await relayPool.addOrigin({
+      bridge: relayBridgeOptimism,
+      bridgeFee,
+      chainId: 10,
+      coolDown: 10,
+      curator: userAddress,
+      maxDebt: ethers.parseEther('10'),
+      proxyBridge: await bridgeProxy.getAddress(),
+    })
+
+    const liquidity = ethers.parseUnits('100', 18)
+    await myToken.connect(user).mint(liquidity)
+    await myToken.connect(user).approve(await relayPool.getAddress(), liquidity)
+    await relayPool.connect(user).deposit(liquidity, userAddress)
+  })
+
+  it('should not underflow pendingBridgeFees when bridgeFee > 0 (regression)', async () => {
+    // Before the fix, claim() unconditionally subtracted feeAmount from
+    // pendingBridgeFees. processFailedHandler never called handle() first,
+    // so pendingBridgeFees was 0 and the subtraction caused an underflow revert.
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const amount = ethers.parseUnits('1')
+
+    await myToken.connect(user).transfer(await bridgeProxy.getAddress(), amount)
+
+    expect(await relayPool.pendingBridgeFees()).to.equal(0)
+
+    // Would revert with arithmetic underflow before the fix
+    await expect(
+      relayPool.processFailedHandler(
+        10,
+        relayBridgeOptimism,
+        encodeData(10n, userAddress, amount)
+      )
+    ).to.not.be.reverted
+
+    // Net effect on pendingBridgeFees must be zero: pre-credit and claim() cancel out
+    expect(await relayPool.pendingBridgeFees()).to.equal(0)
+  })
+
+  it('should send the full amount to the recipient with no fee deducted', async () => {
+    const [user] = await ethers.getSigners()
+    const amount = ethers.parseUnits('1')
+    const recipient = ethers.Wallet.createRandom().address
+
+    await myToken.connect(user).transfer(await bridgeProxy.getAddress(), amount)
+
+    await relayPool.processFailedHandler(
+      10,
+      relayBridgeOptimism,
+      encodeData(11n, recipient, amount)
+    )
+
+    expect(await myToken.balanceOf(recipient)).to.equal(amount)
+  })
+})

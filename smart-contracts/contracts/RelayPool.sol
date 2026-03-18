@@ -791,6 +791,12 @@ contract RelayPool is ERC4626, Ownable {
 
     // Increase the outstanding debt with the amount
     increaseOutstandingDebt(message.amount, origin);
+    // Pre-credit pendingBridgeFees so that claim()'s unconditional subtraction does not underflow.
+    // processFailedHandler intentionally skips the normal handle() fee-accumulation step, so we
+    // balance the books here before claim() removes the fee. Net effect on pendingBridgeFees is zero.
+    uint256 feeAmount = (message.amount * origin.bridgeFee) /
+      FRACTIONAL_BPS_DENOMINATOR;
+    pendingBridgeFees += feeAmount;
     // And immediately claim from the bridge to get the funds (and decrease the outstanding debt!)
     uint256 amount = claim(chainId, bridge);
     if (amount < message.amount) {

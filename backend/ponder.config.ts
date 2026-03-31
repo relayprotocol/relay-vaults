@@ -16,19 +16,21 @@ import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 import { getIamToken } from './src/utils/aws.js'
 
 const deployedAddresses = getAddresses()
-
-const getConnectionString = async () => {
-  const databaseUrl = new URL(process.env.DATABASE_URL!)
-  if (databaseUrl.password === undefined || databaseUrl.password === '') {
-    const password = await getIamToken({
-      hostname: databaseUrl.hostname,
-      port: Number(databaseUrl.port),
-      region: process.env.AWS_REGION,
-      username: databaseUrl.username,
-    })
-    databaseUrl.password = encodeURIComponent(password)
+const databaseUrl = new URL(process.env.DATABASE_URL!)
+const getPoolConfig = () => {
+  if (databaseUrl.password !== '') {
+    return undefined
   }
-  return databaseUrl.toString()
+
+  return {
+    password: async () =>
+      getIamToken({
+        hostname: databaseUrl.hostname,
+        port: databaseUrl.port ? Number(databaseUrl.port) : 5432,
+        region: process.env.AWS_REGION,
+        username: databaseUrl.username,
+      }),
+  }
 }
 
 // Importing the RelayBridgeFactory ABI to use in the config
@@ -320,8 +322,9 @@ export default createConfig({
     },
   },
   database: {
-    connectionString: await getConnectionString(),
+    connectionString: process.env.DATABASE_URL!,
     kind: 'postgres',
+    poolConfig: getPoolConfig(),
   },
   ordering: 'multichain', // or "omnichain" — see below
 })

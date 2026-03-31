@@ -1,9 +1,15 @@
 name: Production Branch
 
 on:
-  push:
-    branches:
-      - production
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to redeploy'
+        required: true
+        type: string
 
 jobs:
   build-docker-image:
@@ -12,18 +18,28 @@ jobs:
     timeout-minutes: 15
     if: github.repository == 'relayprotocol/relay-vaults'
     outputs:
-      latest-release: ${{ steps.get-latest-release.outputs.tag }}
+      release-tag: ${{ steps.release.outputs.tag }}
     permissions:
       contents: read
       packages: write
     steps:
+      - name: Resolve release tag
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ inputs.release_tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: ${{ steps.release.outputs.tag }}
 
-      - name: Get latest release
-        id: get-latest-release
-        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+      - name: Resolve release commit
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Docker meta
         id: meta
@@ -34,10 +50,8 @@ jobs:
             ghcr.io/relayprotocol/relay-vaults
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ github.ref_name }}-${{ github.sha }}
-            type=raw,value=${{ steps.get-latest-release.outputs.tag }}
-            type=raw,value=${{ github.sha }}
-            type=sha
+            type=raw,value=${{ steps.release.outputs.tag }}
+            type=raw,value=${{ steps.commit.outputs.sha }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -57,13 +71,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            TAG=${{ github.ref_name }}
+            TAG=${{ steps.release.outputs.tag }}
 
   deploy-prod:
     name: Deploy to production
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    if: github.repository == 'relayprotocol/relay-vaults' && github.ref == 'refs/heads/production'
+    if: github.repository == 'relayprotocol/relay-vaults'
     needs: [build-docker-image]
     environment: prod
     container:
@@ -72,6 +86,16 @@ jobs:
         username: ${{ secrets.DEVOPSBOT_LOGIN }}
         password: ${{ secrets.DEVOPSBOT_TOKEN }}
     steps:
+      - name: Deploy to staging
+        run: |
+          bash -c "/app/deploy.sh"
+        shell: bash
+        env:
+          ENVIRONMENT: 'stag'
+          SERVICE: 'relay-vaults'
+          GITHUB_SHA: '${{ needs.build-docker-image.outputs.release-tag }}'
+          GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
+          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}
       - name: Deploy to production
         run: |
           bash -c "/app/deploy.sh"
@@ -79,6 +103,6 @@ jobs:
         env:
           ENVIRONMENT: 'prod'
           SERVICE: 'relay-vaults'
-          GITHUB_SHA: '${{ needs.build-docker-image.outputs.latest-release }}'
+          GITHUB_SHA: '${{ needs.build-docker-image.outputs.release-tag }}'
           GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
           DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}

@@ -3,7 +3,36 @@ import { eq, and } from 'ponder'
 import { ABIs } from '@relay-vaults/helpers'
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction } from 'ponder:schema'
-import { decodeFunctionData, keccak256 } from 'viem'
+import { decodeFunctionData, Hex, keccak256 } from 'viem'
+
+/**
+ * Extract the L2-to-L1 message from the finalization tx input.
+ *
+ * Supports both the legacy flat-args `finalizeWithdrawal` and the newer
+ * struct-based `finalizeDeposit` (FinalizeL1DepositParams) entry points
+ * on the L1Nullifier / shared bridge.
+ */
+function extractMessage(
+  txInput: Hex
+): Hex | undefined {
+  const { functionName, args } = decodeFunctionData({
+    abi: ABIs.L1Nullifier,
+    data: txInput,
+  })
+
+  if (functionName === 'finalizeWithdrawal') {
+    // Legacy flat args: (_chainId, _l2BatchNumber, _l2MessageIndex, _l2TxNumberInBatch, _message, _merkleProof)
+    return args![4] as Hex
+  }
+
+  if (functionName === 'finalizeDeposit') {
+    // Newer struct: FinalizeL1DepositParams { chainId, l2BatchNumber, l2MessageIndex, l2Sender, l2TxNumberInBatch, message, merkleProof }
+    const params = args![0] as { message: Hex }
+    return params.message
+  }
+
+  return undefined
+}
 
 export default async function ({
   event,
@@ -14,19 +43,13 @@ export default async function ({
 }) {
   const originNetwork = networks[event.args.chainId]
   if (originNetwork?.bridges?.zksync?.parent.sharedDefaultBridge) {
-    // If it was sent to the sharedDefaultBridge
     if (
       event.transaction.to.toLowerCase() ==
       originNetwork?.bridges?.zksync?.parent.sharedDefaultBridge.toLowerCase()
     ) {
-      // decode finalizeWithdrawal function data
-      const { functionName, args } = decodeFunctionData({
-        abi: ABIs.L1Nullifier,
-        data: event.transaction.input,
-      })
-      if (functionName == 'finalizeWithdrawal') {
-        // get _message param and compute the key
-        const expectedKey = keccak256(args![4])
+      const message = extractMessage(event.transaction.input)
+      if (message) {
+        const expectedKey = keccak256(message)
         await context.db.sql
           .update(bridgeTransaction)
           .set({

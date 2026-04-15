@@ -128,6 +128,16 @@ contract RelayPool is ERC4626, Ownable {
   /// @param maxPrice The maximum acceptable share price
   error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
 
+  /// @notice Error when attempting to change bridgeFee while outstanding debt exists
+  /// @param chainId The chain ID of the origin
+  /// @param bridge The bridge address of the origin
+  /// @param outstandingDebt The current outstanding debt for this origin
+  error BridgeFeeChangeWithOutstandingDebt(
+    uint32 chainId,
+    address bridge,
+    uint256 outstandingDebt
+  );
+
   /// @notice The address of the Hyperlane mailbox
   /// @dev Used to receive cross-chain messages
   address public immutable HYPERLANE_MAILBOX;
@@ -363,6 +373,17 @@ contract RelayPool is ERC4626, Ownable {
   /// @param origin The origin parameters including chain ID, addresses, and limits
   function addOrigin(OriginParam memory origin) public onlyOwner {
     OriginSettings memory oldOrigin = authorizedOrigins[origin.chainId][origin.bridge];
+    // Prevent bridgeFee changes while debt is outstanding to avoid pendingBridgeFees accounting corruption
+    if (
+      oldOrigin.outstandingDebt > 0 &&
+      origin.bridgeFee != oldOrigin.bridgeFee
+    ) {
+      revert BridgeFeeChangeWithOutstandingDebt(
+        origin.chainId,
+        origin.bridge,
+        oldOrigin.outstandingDebt
+      );
+    }
     authorizedOrigins[origin.chainId][origin.bridge] = OriginSettings({
       chainId: origin.chainId,
       bridge: origin.bridge,

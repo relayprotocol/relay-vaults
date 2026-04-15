@@ -82,13 +82,97 @@ describe('RelayPool: curator', () => {
         ).maxDebt
       ).to.be.equal(0)
 
-      // adg same origin again (debt still unchanged)
+      // add same origin again (debt still unchanged)
       await relayPool.addOrigin(newOrigin)
       expect(await relayPool.outstandingDebt()).to.be.equal(bridgedAmount)
       expect(
         (await relayPool.authorizedOrigins(newOrigin.chainId, newOrigin.bridge))
           .maxDebt
       ).to.be.equal(newOrigin.maxDebt)
+    })
+
+    it('should revert when changing bridgeFee while debt is outstanding', async () => {
+      const newOrigin = {
+        bridge: ethers.Wallet.createRandom().address,
+        bridgeFee: 5,
+        chainId: 10,
+        coolDown: 0,
+        curator: userAddress,
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await relayPool.addOrigin(newOrigin)
+
+      // Create outstanding debt via handle()
+      const bridgedAmount = ethers.parseEther('0.2')
+      await relayPool.handle(
+        newOrigin.chainId,
+        ethers.zeroPadValue(newOrigin.bridge, 32),
+        encodeData(6n, userAddress, bridgedAmount)
+      )
+      expect(await relayPool.outstandingDebt()).to.be.greaterThan(0)
+
+      // Attempt to change bridgeFee while debt is outstanding
+      const updatedOrigin = { ...newOrigin, bridgeFee: 100 }
+      await expect(relayPool.addOrigin(updatedOrigin))
+        .to.be.revertedWithCustomError(
+          relayPool,
+          'BridgeFeeChangeWithOutstandingDebt'
+        )
+        .withArgs(newOrigin.chainId, newOrigin.bridge, bridgedAmount)
+    })
+
+    it('should allow changing bridgeFee when there is no outstanding debt', async () => {
+      const newOrigin = {
+        bridge: ethers.Wallet.createRandom().address,
+        bridgeFee: 5,
+        chainId: 10,
+        coolDown: 0,
+        curator: userAddress,
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await relayPool.addOrigin(newOrigin)
+
+      // Change bridgeFee with no outstanding debt — should succeed
+      const updatedOrigin = { ...newOrigin, bridgeFee: 100 }
+      await relayPool.addOrigin(updatedOrigin)
+      expect(
+        (await relayPool.authorizedOrigins(newOrigin.chainId, newOrigin.bridge))
+          .bridgeFee
+      ).to.be.equal(100)
+    })
+
+    it('should allow re-adding origin with same bridgeFee while debt is outstanding', async () => {
+      const newOrigin = {
+        bridge: ethers.Wallet.createRandom().address,
+        bridgeFee: 5,
+        chainId: 10,
+        coolDown: 0,
+        curator: userAddress,
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await relayPool.addOrigin(newOrigin)
+
+      // Create outstanding debt
+      const bridgedAmount = ethers.parseEther('0.2')
+      await relayPool.handle(
+        newOrigin.chainId,
+        ethers.zeroPadValue(newOrigin.bridge, 32),
+        encodeData(6n, userAddress, bridgedAmount)
+      )
+
+      // Re-add with same bridgeFee but different maxDebt — should succeed
+      const updatedOrigin = {
+        ...newOrigin,
+        maxDebt: ethers.parseEther('20'),
+      }
+      await relayPool.addOrigin(updatedOrigin)
+      expect(
+        (await relayPool.authorizedOrigins(newOrigin.chainId, newOrigin.bridge))
+          .maxDebt
+      ).to.be.equal(ethers.parseEther('20'))
     })
   })
 })

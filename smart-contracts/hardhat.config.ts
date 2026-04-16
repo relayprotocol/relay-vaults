@@ -110,19 +110,9 @@ const etherscan = {
     sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
     swellchain: 'default-api-key',
     xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    zero: 'default-api-key',
     zora: 'default-api-key',
   },
-  customChains: [
-    {
-      chainId: 543210,
-      network: 'zero',
-      urls: {
-        apiURL: 'https://zero-network.calderaexplorer.xyz/api',
-        browserURL: 'https://zero-network.calderaexplorer.xyz',
-      },
-    },
-  ],
+  customChains: [],
 }
 
 Object.values(registry).forEach((v) => {

@@ -13,9 +13,15 @@ import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-vaults/addresses'
 import networks from '@relay-vaults/networks'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
-import { buildDatabaseConfig } from './src/utils/database.js'
+import {
+  buildDatabaseConfig,
+  prepareDatabaseEnvForPonder,
+} from './src/utils/database.js'
 
 const deployedAddresses = getAddresses()
+const databaseUrl = process.env.DATABASE_URL!
+
+prepareDatabaseEnvForPonder(databaseUrl)
 
 // Importing the RelayBridgeFactory ABI to use in the config
 // RPC configurations with fallback transport
@@ -309,7 +315,7 @@ export default createConfig({
     kind: 'postgres',
     ...buildDatabaseConfig({
       awsRegion: process.env.AWS_REGION,
-      databaseUrl: process.env.DATABASE_URL!,
+      databaseUrl,
     }),
   },
   ordering: 'multichain', // or "omnichain" — see below

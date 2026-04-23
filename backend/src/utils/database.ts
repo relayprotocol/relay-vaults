@@ -45,6 +45,18 @@ export const parseDatabaseUrl = (databaseUrl: string): DatabaseUrlParts => {
   }
 }
 
+export const shouldUseIamDatabaseConfig = (databaseUrl: string) =>
+  parseDatabaseUrl(databaseUrl).password === ''
+
+export const prepareDatabaseEnvForPonder = (databaseUrl: string) => {
+  if (!shouldUseIamDatabaseConfig(databaseUrl)) {
+    return
+  }
+
+  delete process.env.DATABASE_PRIVATE_URL
+  delete process.env.DATABASE_URL
+}
+
 const getSslConfigForDatabaseUrl = (databaseUrl: string) => {
   const parsedDatabaseUrl = new URL(databaseUrl)
 
@@ -61,7 +73,7 @@ export const buildDatabaseConfig = ({
   const parsedDatabaseUrl = parseDatabaseUrl(databaseUrl)
   const ssl = getSslConfigForDatabaseUrl(databaseUrl)
 
-  if (parsedDatabaseUrl.password !== '') {
+  if (!shouldUseIamDatabaseConfig(databaseUrl)) {
     return {
       connectionString: databaseUrl,
     }

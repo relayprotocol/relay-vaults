@@ -4,14 +4,22 @@ vi.mock('../src/utils/aws.js', () => ({
   getIamToken: vi.fn(async () => 'iam-token'),
 }))
 
-const { buildDatabaseConfig, getSslConfig, parseDatabaseUrl } = await import(
-  '../src/utils/database.js'
-)
+const {
+  buildDatabaseConfig,
+  getSslConfig,
+  parseDatabaseUrl,
+  prepareDatabaseEnvForPonder,
+  shouldUseIamDatabaseConfig,
+} = await import('../src/utils/database.js')
 const { getIamToken } = await import('../src/utils/aws.js')
+const originalDatabaseUrl = process.env.DATABASE_URL
+const originalDatabasePrivateUrl = process.env.DATABASE_PRIVATE_URL
 
 describe('buildDatabaseConfig', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    process.env.DATABASE_URL = originalDatabaseUrl
+    process.env.DATABASE_PRIVATE_URL = originalDatabasePrivateUrl
   })
 
   it('keeps the connection string path when the database url already has a password', () => {
@@ -66,6 +74,31 @@ describe('buildDatabaseConfig', () => {
     expect(getSslConfig('no-verify')).toEqual({
       rejectUnauthorized: false,
     })
+  })
+
+  it('identifies when the IAM config path should be used', () => {
+    expect(
+      shouldUseIamDatabaseConfig(
+        'postgresql://relay@db.example.com:5433/app?sslmode=require'
+      )
+    ).toBe(true)
+    expect(
+      shouldUseIamDatabaseConfig(
+        'postgresql://relay:static-password@db.example.com:5433/app'
+      )
+    ).toBe(false)
+  })
+
+  it('clears database env vars for the IAM path so ponder cannot inject a connection string', () => {
+    process.env.DATABASE_URL =
+      'postgresql://relay@db.example.com:5433/app?sslmode=require'
+    process.env.DATABASE_PRIVATE_URL =
+      'postgresql://relay@private-db.example.com:5433/app?sslmode=require'
+
+    prepareDatabaseEnvForPonder(process.env.DATABASE_URL)
+
+    expect(process.env.DATABASE_URL).toBeUndefined()
+    expect(process.env.DATABASE_PRIVATE_URL).toBeUndefined()
   })
 
   it('parses the database url into discrete pg fields', () => {

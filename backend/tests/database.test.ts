@@ -1,37 +1,47 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('../src/utils/aws.js', () => ({
   getIamToken: vi.fn(async () => 'iam-token'),
 }))
 
-const { buildDatabasePoolConfig, getSslConfigFromEnv } = await import(
+const { buildDatabaseConfig, getSslConfig, parseDatabaseUrl } = await import(
   '../src/utils/database.js'
 )
 const { getIamToken } = await import('../src/utils/aws.js')
-const originalSslMode = process.env.PGSSLMODE
 
-describe('buildDatabasePoolConfig', () => {
+describe('buildDatabaseConfig', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-  it('returns undefined when the database url already has a password', () => {
+  it('keeps the connection string path when the database url already has a password', () => {
     expect(
-      buildDatabasePoolConfig({
+      buildDatabaseConfig({
         awsRegion: 'us-east-1',
         databaseUrl: 'postgresql://relay:static-password@db.example.com/app',
       })
-    ).toBeUndefined()
+    ).toEqual({
+      connectionString: 'postgresql://relay:static-password@db.example.com/app',
+    })
   })
 
-  it('adds IAM auth with ssl when PGSSLMODE requires it', async () => {
-    process.env.PGSSLMODE = 'require'
-
-    const poolConfig = buildDatabasePoolConfig({
+  it('builds a discrete IAM pool config when the database url has no password', async () => {
+    const config = buildDatabaseConfig({
       awsRegion: 'us-east-1',
-      databaseUrl: 'postgresql://relay@db.example.com:5433/app',
+      databaseUrl: 'postgresql://relay@db.example.com:5433/app?sslmode=require',
     })
 
-    expect(poolConfig).toBeDefined()
-    expect(poolConfig?.ssl).toBe(true)
-    await expect(poolConfig?.password()).resolves.toBe('iam-token')
+    expect(config).toEqual({
+      poolConfig: {
+        database: 'app',
+        host: 'db.example.com',
+        password: expect.any(Function),
+        port: 5433,
+        ssl: true,
+        user: 'relay',
+      },
+    })
+    await expect(config.poolConfig?.password()).resolves.toBe('iam-token')
     expect(getIamToken).toHaveBeenCalledWith({
       hostname: 'db.example.com',
       port: 5433,
@@ -40,23 +50,35 @@ describe('buildDatabasePoolConfig', () => {
     })
   })
 
-  it('supports PGSSLMODE=no-verify', () => {
-    expect(getSslConfigFromEnv('no-verify')).toEqual({
+  it('caches the IAM token', async () => {
+    const config = buildDatabaseConfig({
+      awsRegion: 'us-east-1',
+      databaseUrl: 'postgresql://relay@db.example.com:5433/app?sslmode=require',
+    })
+
+    await expect(config.poolConfig?.password()).resolves.toBe('iam-token')
+    await expect(config.poolConfig?.password()).resolves.toBe('iam-token')
+
+    expect(getIamToken).toHaveBeenCalledTimes(1)
+  })
+
+  it('supports sslmode=no-verify', () => {
+    expect(getSslConfig('no-verify')).toEqual({
       rejectUnauthorized: false,
     })
   })
 
-  it('does not force ssl when PGSSLMODE is unset', () => {
-    delete process.env.PGSSLMODE
-
-    const poolConfig = buildDatabasePoolConfig({
-      awsRegion: 'us-east-1',
-      databaseUrl: 'postgresql://relay@db.example.com/app',
+  it('parses the database url into discrete pg fields', () => {
+    expect(
+      parseDatabaseUrl(
+        'postgresql://relay:static-password@db.example.com:5433/app?sslmode=require'
+      )
+    ).toEqual({
+      database: 'app',
+      host: 'db.example.com',
+      password: 'static-password',
+      port: 5433,
+      user: 'relay',
     })
-
-    expect(poolConfig).toBeDefined()
-    expect(poolConfig?.ssl).toBeUndefined()
   })
 })
-
-process.env.PGSSLMODE = originalSslMode

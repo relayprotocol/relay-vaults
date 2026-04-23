@@ -2,13 +2,23 @@ import { getIamToken } from './aws.js'
 
 type SslConfig = true | { rejectUnauthorized: false }
 
-type BuildDatabasePoolConfigParams = {
+type DatabaseUrlParts = {
+  database: string
+  host: string
+  password: string
+  port: number
+  user: string
+}
+
+type BuildDatabaseConfigParams = {
   awsRegion?: string
   databaseUrl: string
 }
 
-export const getSslConfigFromEnv = (
-  sslMode = process.env.PGSSLMODE
+const TOKEN_CACHE_TTL_MS = 10 * 60 * 1000
+
+export const getSslConfig = (
+  sslMode?: string | null
 ): SslConfig | undefined => {
   switch (sslMode) {
     case 'prefer':
@@ -23,26 +33,67 @@ export const getSslConfigFromEnv = (
   }
 }
 
-export const buildDatabasePoolConfig = ({
-  awsRegion,
-  databaseUrl,
-}: BuildDatabasePoolConfigParams) => {
+export const parseDatabaseUrl = (databaseUrl: string): DatabaseUrlParts => {
   const parsedDatabaseUrl = new URL(databaseUrl)
 
+  return {
+    database: parsedDatabaseUrl.pathname.replace(/^\//, ''),
+    host: parsedDatabaseUrl.hostname,
+    password: parsedDatabaseUrl.password,
+    port: parsedDatabaseUrl.port ? Number(parsedDatabaseUrl.port) : 5432,
+    user: parsedDatabaseUrl.username,
+  }
+}
+
+const getSslConfigForDatabaseUrl = (databaseUrl: string) => {
+  const parsedDatabaseUrl = new URL(databaseUrl)
+
+  return (
+    getSslConfig(parsedDatabaseUrl.searchParams.get('sslmode')) ??
+    getSslConfig(process.env.PGSSLMODE)
+  )
+}
+
+export const buildDatabaseConfig = ({
+  awsRegion,
+  databaseUrl,
+}: BuildDatabaseConfigParams) => {
+  const parsedDatabaseUrl = parseDatabaseUrl(databaseUrl)
+  const ssl = getSslConfigForDatabaseUrl(databaseUrl)
+
   if (parsedDatabaseUrl.password !== '') {
-    return undefined
+    return {
+      connectionString: databaseUrl,
+    }
   }
 
-  const ssl = getSslConfigFromEnv()
+  let cachedToken: string | null = null
+  let cachedAt = 0
 
   return {
-    ...(ssl ? { ssl } : {}),
-    password: async () =>
-      getIamToken({
-        hostname: parsedDatabaseUrl.hostname,
-        port: parsedDatabaseUrl.port ? Number(parsedDatabaseUrl.port) : 5432,
-        region: awsRegion,
-        username: parsedDatabaseUrl.username,
-      }),
+    poolConfig: {
+      database: parsedDatabaseUrl.database,
+      host: parsedDatabaseUrl.host,
+      password: async () => {
+        const now = Date.now()
+
+        if (cachedToken && now - cachedAt < TOKEN_CACHE_TTL_MS) {
+          return cachedToken
+        }
+
+        cachedToken = await getIamToken({
+          hostname: parsedDatabaseUrl.host,
+          port: parsedDatabaseUrl.port,
+          region: awsRegion,
+          username: parsedDatabaseUrl.user,
+        })
+        cachedAt = now
+
+        return cachedToken
+      },
+      port: parsedDatabaseUrl.port,
+      ...(ssl ? { ssl } : {}),
+      user: parsedDatabaseUrl.user,
+    },
   }
 }

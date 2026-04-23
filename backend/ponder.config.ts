@@ -13,7 +13,7 @@ import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-vaults/addresses'
 import networks from '@relay-vaults/networks'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
-import { buildDatabasePoolConfig } from './src/utils/database.js'
+import { buildDatabaseConfig } from './src/utils/database.js'
 
 const deployedAddresses = getAddresses()
 
@@ -306,9 +306,8 @@ export default createConfig({
     },
   },
   database: {
-    connectionString: process.env.DATABASE_URL!,
     kind: 'postgres',
-    poolConfig: buildDatabasePoolConfig({
+    ...buildDatabaseConfig({
       awsRegion: process.env.AWS_REGION,
       databaseUrl: process.env.DATABASE_URL!,
     }),

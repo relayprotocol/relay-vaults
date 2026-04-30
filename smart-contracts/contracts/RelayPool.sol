@@ -174,6 +174,15 @@ contract RelayPool is ERC4626, Ownable {
   /// @dev Fees are held in the yield pool until they finish streaming
   uint256 public pendingBridgeFees = 0;
 
+  /// @notice Per-origin accumulated bridge fees not yet claimed
+  /// @dev Required because per-message integer truncation in handle() can sum
+  ///      to less than the batch fee computed at claim time
+  ///      (floor(A) + floor(B) <= floor(A+B)). Bounding the claim-time
+  ///      subtraction by this value prevents pendingBridgeFees underflow.
+  /// @dev [chainId][bridgeAddress] => accumulated per-message fees
+  mapping(uint32 => mapping(address => uint256))
+    public accumulatedFeesByOrigin;
+
   /// @notice All incoming assets are streamed (even though they are instantly deposited in the yield pool)
   /// @dev Total amount of assets currently being streamed
   uint256 public totalAssetsToStream = 0;
@@ -586,9 +595,13 @@ contract RelayPool is ERC4626, Ownable {
     // Mark as processed if not
     messages[chainId][bridge][message.nonce] = data;
 
-    // Calculate fee using fractional basis points
+    // Calculate fee using fractional basis points. Per-message division
+    // truncates: many small messages can each produce feeAmount = 0 while
+    // the equivalent batch fee at claim time is non-zero. Track the
+    // truncated total per-origin so claim() can bound its subtraction.
     uint256 feeAmount = (message.amount * origin.bridgeFee) /
       FRACTIONAL_BPS_DENOMINATOR;
+    accumulatedFeesByOrigin[chainId][bridge] += feeAmount;
     pendingBridgeFees += feeAmount;
 
     // Check if origin settings are respected
@@ -702,9 +715,14 @@ contract RelayPool is ERC4626, Ownable {
 
     uint256 feeAmount = 0;
     if (chargeFee) {
-      // The amount is the amount that was loaned + the fees
-      feeAmount = (amount * origin.bridgeFee) /
+      // The amount is the amount that was loaned + the fees. Bound the
+      // subtraction by the per-origin fees actually accrued in handle(),
+      // since the batch fee here can exceed the sum of truncated per-message
+      // fees and would otherwise underflow pendingBridgeFees.
+      uint256 batchFee = (amount * origin.bridgeFee) /
         FRACTIONAL_BPS_DENOMINATOR;
+      feeAmount = Math.min(accumulatedFeesByOrigin[chainId][bridge], batchFee);
+      accumulatedFeesByOrigin[chainId][bridge] -= feeAmount;
       pendingBridgeFees -= feeAmount;
       // We need to account for it in a streaming fashion
       addToStreamingAssets(feeAmount);

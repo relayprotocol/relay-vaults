@@ -108,9 +108,9 @@ describe('RelayPool: per-message fee truncation does not brick claim', () => {
   })
 
   it('per-message fees are truncated to zero for dust amounts', async () => {
-    expect((PER_MESSAGE_AMOUNT * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR).to.equal(
-      0n
-    )
+    expect(
+      (PER_MESSAGE_AMOUNT * bridgeFee) / FRACTIONAL_BPS_DENOMINATOR
+    ).to.equal(0n)
   })
 
   it('handles many dust messages and claim does not underflow', async () => {

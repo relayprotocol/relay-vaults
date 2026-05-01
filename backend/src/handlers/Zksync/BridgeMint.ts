@@ -1,9 +1,10 @@
 import networks from '@relay-vaults/networks'
-import { eq, and } from 'ponder'
+import { eq } from 'ponder'
 import { ABIs } from '@relay-vaults/helpers'
 import { Context, Event } from 'ponder:registry'
 import { bridgeTransaction } from 'ponder:schema'
 import { decodeFunctionData, Hex, keccak256 } from 'viem'
+import { computeNativeBridgeStatus } from '../../utils/nativeBridgeStatus.js'
 
 /**
  * Extract the L2-to-L1 message from the finalization tx input.
@@ -50,15 +51,35 @@ export default async function ({
       const message = extractMessage(event.transaction.input)
       if (message) {
         const expectedKey = keccak256(message)
+        const finalizationTimestamp = event.block.timestamp
+        const nativeBridgeFinalizedTxHash = event.transaction.hash
+
+        const [existing] = await context.db.sql
+          .select()
+          .from(bridgeTransaction)
+          .where(eq(bridgeTransaction.zksyncWithdrawalHash, expectedKey))
+          .limit(1)
+
+        if (!existing) {
+          return
+        }
+
+        const nativeBridgeStatus = computeNativeBridgeStatus({
+          finalizationTimestamp,
+          loanEmittedTxHash: existing.loanEmittedTxHash,
+          nativeBridgeFinalizedTxHash,
+          opProofTxHash: existing.opProofTxHash,
+        })
+
         await context.db.sql
           .update(bridgeTransaction)
           .set({
-            finalizationTimestamp: event.block.timestamp,
-            nativeBridgeFinalizedTxHash: event.transaction.hash,
-            nativeBridgeStatus: 'FINALIZED',
+            finalizationTimestamp,
+            nativeBridgeFinalizedTxHash,
+            nativeBridgeStatus,
             updatedAt: new Date(),
           })
-          .where(and(eq(bridgeTransaction.zksyncWithdrawalHash, expectedKey)))
+          .where(eq(bridgeTransaction.zksyncWithdrawalHash, expectedKey))
       }
     }
   }

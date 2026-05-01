@@ -14,6 +14,7 @@ import { bridgeTransaction, relayPool, poolOrigin } from 'ponder:schema'
 import { BPS_DIVISOR } from '../../constants.js'
 import { logger } from '../../logger.js'
 import { chainIdFromDomainId } from '@relay-vaults/helpers'
+import { computeNativeBridgeStatus } from '../../utils/nativeBridgeStatus.js'
 
 export default async function ({
   event,
@@ -26,22 +27,37 @@ export default async function ({
   const { bridge, chainId: domainId } = origin
 
   const originChainId = chainIdFromDomainId(domainId)
-  // Update the corresponding bridgeTransaction record with loanEmittedTxHash
-  // We use upsert (insert with onConflictDoUpdate) here because the record may not exist yet if the L2 indexing is slower.
+  const loanEmittedTxHash = event.transaction.hash
+
+  // The record may not exist yet if L2 indexing is slower than L1, hence the upsert.
+  // Status is derived from the union of existing on-chain evidence and the new loan hash,
+  // so a late-arriving Hyperlane handle can never regress a row that was already PROVEN/FINALIZED.
+  const existing = await context.db.find(bridgeTransaction, {
+    nonce,
+    originBridgeAddress: bridge,
+    originChainId,
+  })
+  const nativeBridgeStatus = computeNativeBridgeStatus({
+    finalizationTimestamp: existing?.finalizationTimestamp,
+    loanEmittedTxHash,
+    nativeBridgeFinalizedTxHash: existing?.nativeBridgeFinalizedTxHash,
+    opProofTxHash: existing?.opProofTxHash,
+  })
+
   await context.db
     .insert(bridgeTransaction)
     .values({
       createdAt: new Date(),
-      loanEmittedTxHash: event.transaction.hash,
-      nativeBridgeStatus: 'HANDLED',
+      loanEmittedTxHash,
+      nativeBridgeStatus,
       nonce,
       originBridgeAddress: bridge,
       originChainId,
       updatedAt: new Date(),
     })
     .onConflictDoUpdate({
-      loanEmittedTxHash: event.transaction.hash,
-      nativeBridgeStatus: 'HANDLED',
+      loanEmittedTxHash,
+      nativeBridgeStatus,
       updatedAt: new Date(),
     })
 

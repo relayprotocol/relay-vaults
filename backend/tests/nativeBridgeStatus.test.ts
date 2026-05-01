@@ -35,6 +35,14 @@ describe('computeNativeBridgeStatus', () => {
     )
   })
 
+  // Guards against truthiness-based checks: a hypothetical 0n timestamp must
+  // still count as evidence that finalization fired.
+  it('returns FINALIZED for a 0n finalizationTimestamp', () => {
+    expect(computeNativeBridgeStatus({ finalizationTimestamp: 0n })).toBe(
+      'FINALIZED'
+    )
+  })
+
   it('PROVEN beats HANDLED — both hashes set', () => {
     expect(
       computeNativeBridgeStatus({

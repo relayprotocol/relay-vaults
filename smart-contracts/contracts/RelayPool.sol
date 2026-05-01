@@ -128,6 +128,16 @@ contract RelayPool is ERC4626, Ownable {
   /// @param maxPrice The maximum acceptable share price
   error SharePriceTooHigh(uint256 actualPrice, uint256 maxPrice);
 
+  /// @notice Error when attempting to change bridgeFee while outstanding debt exists
+  /// @param chainId The chain ID of the origin
+  /// @param bridge The bridge address of the origin
+  /// @param outstandingDebt The current outstanding debt for this origin
+  error BridgeFeeChangeWithOutstandingDebt(
+    uint32 chainId,
+    address bridge,
+    uint256 outstandingDebt
+  );
+
   /// @notice The address of the Hyperlane mailbox
   /// @dev Used to receive cross-chain messages
   address public immutable HYPERLANE_MAILBOX;
@@ -363,6 +373,17 @@ contract RelayPool is ERC4626, Ownable {
   /// @param origin The origin parameters including chain ID, addresses, and limits
   function addOrigin(OriginParam memory origin) public onlyOwner {
     OriginSettings memory oldOrigin = authorizedOrigins[origin.chainId][origin.bridge];
+    // Prevent bridgeFee changes while debt is outstanding to avoid pendingBridgeFees accounting corruption
+    if (
+      oldOrigin.outstandingDebt > 0 &&
+      origin.bridgeFee != oldOrigin.bridgeFee
+    ) {
+      revert BridgeFeeChangeWithOutstandingDebt(
+        origin.chainId,
+        origin.bridge,
+        oldOrigin.outstandingDebt
+      );
+    }
     authorizedOrigins[origin.chainId][origin.bridge] = OriginSettings({
       chainId: origin.chainId,
       bridge: origin.bridge,
@@ -650,6 +671,19 @@ contract RelayPool is ERC4626, Ownable {
     uint32 chainId,
     address bridge
   ) public returns (uint256 amount) {
+    return _claim(chainId, bridge, true);
+  }
+
+  /// @notice Internal claim logic with optional fee processing
+  /// @param chainId The origin chain ID
+  /// @param bridge The origin bridge address
+  /// @param chargeFee Whether to process bridge fees
+  /// @return amount The amount of assets claimed
+  function _claim(
+    uint32 chainId,
+    address bridge,
+    bool chargeFee
+  ) internal returns (uint256 amount) {
     OriginSettings storage origin = authorizedOrigins[chainId][bridge];
     if (origin.proxyBridge == address(0)) {
       revert UnauthorizedOrigin(chainId, bridge);
@@ -666,12 +700,15 @@ contract RelayPool is ERC4626, Ownable {
     // and we should deposit these funds into the yield pool
     depositAssetsInYieldPool(amount);
 
-    // The amount is the amount that was loaned + the fees
-    uint256 feeAmount = (amount * origin.bridgeFee) /
-      FRACTIONAL_BPS_DENOMINATOR;
-    pendingBridgeFees -= feeAmount;
-    // We need to account for it in a streaming fashion
-    addToStreamingAssets(feeAmount);
+    uint256 feeAmount = 0;
+    if (chargeFee) {
+      // The amount is the amount that was loaned + the fees
+      feeAmount = (amount * origin.bridgeFee) /
+        FRACTIONAL_BPS_DENOMINATOR;
+      pendingBridgeFees -= feeAmount;
+      // We need to account for it in a streaming fashion
+      addToStreamingAssets(feeAmount);
+    }
 
     emit BridgeCompleted(chainId, bridge, amount, feeAmount);
   }
@@ -792,7 +829,8 @@ contract RelayPool is ERC4626, Ownable {
     // Increase the outstanding debt with the amount
     increaseOutstandingDebt(message.amount, origin);
     // And immediately claim from the bridge to get the funds (and decrease the outstanding debt!)
-    uint256 amount = claim(chainId, bridge);
+    // Skip fee processing since this is a rescue operation (fees were never added to pendingBridgeFees)
+    uint256 amount = _claim(chainId, bridge, false);
     if (amount < message.amount) {
       revert InsufficientFunds(amount, message.amount);
     }

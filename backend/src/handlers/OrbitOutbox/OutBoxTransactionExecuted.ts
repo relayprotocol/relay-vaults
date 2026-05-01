@@ -13,23 +13,11 @@ export default async function ({
   const finalizationTimestamp = event.block.timestamp
   const nativeBridgeFinalizedTxHash = event.transaction.hash
 
-  const [existing] = await context.db.sql
-    .select()
-    .from(bridgeTransaction)
-    .where(
-      eq(bridgeTransaction.arbTransactionIndex, event.args.transactionIndex)
-    )
-    .limit(1)
-
-  if (!existing) {
-    return
-  }
-
+  // FINALIZED is terminal: the helper resolves it from the finalization evidence alone,
+  // so the SELECT of the existing row is unnecessary here.
   const nativeBridgeStatus = computeNativeBridgeStatus({
     finalizationTimestamp,
-    loanEmittedTxHash: existing.loanEmittedTxHash,
     nativeBridgeFinalizedTxHash,
-    opProofTxHash: existing.opProofTxHash,
   })
 
   await context.db.sql

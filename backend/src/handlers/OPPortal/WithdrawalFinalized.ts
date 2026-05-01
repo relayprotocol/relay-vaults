@@ -13,23 +13,12 @@ export default async function ({
   const finalizationTimestamp = event.block.timestamp
   const nativeBridgeFinalizedTxHash = event.transaction.hash
 
-  // Finalize is terminal so the helper always returns FINALIZED here, but routing every
-  // handler through computeNativeBridgeStatus keeps the write rule uniform across the codebase.
-  const [existing] = await context.db.sql
-    .select()
-    .from(bridgeTransaction)
-    .where(eq(bridgeTransaction.opWithdrawalHash, event.args.withdrawalHash))
-    .limit(1)
-
-  if (!existing) {
-    return
-  }
-
+  // FINALIZED is terminal: the helper resolves it from the finalization evidence alone,
+  // so we can skip a SELECT of the existing row. Going through the helper keeps the
+  // mapping from evidence to status in one place.
   const nativeBridgeStatus = computeNativeBridgeStatus({
     finalizationTimestamp,
-    loanEmittedTxHash: existing.loanEmittedTxHash,
     nativeBridgeFinalizedTxHash,
-    opProofTxHash: existing.opProofTxHash,
   })
 
   await context.db.sql

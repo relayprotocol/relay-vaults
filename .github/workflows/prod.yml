@@ -32,40 +32,34 @@ jobs:
             echo "tag=${{ inputs.release_tag }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ steps.release.outputs.tag }}
 
-      - name: Resolve release commit
-        id: commit
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6.0.0
         with:
-          # Docker image to use as base name for tags
           images: |
             ghcr.io/relayprotocol/relay-vaults
           tags: |
             type=raw,value=latest
             type=raw,value=${{ steps.release.outputs.tag }}
-            type=raw,value=${{ steps.commit.outputs.sha }}
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4.0.0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4.1.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7.1.0
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -74,37 +68,35 @@ jobs:
             TAG=${{ steps.release.outputs.tag }}
 
   deploy-prod:
-    name: Deploy to production
+    name: Deploy to Production
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     if: github.repository == 'relayprotocol/relay-vaults'
     needs: [build-docker-image]
     environment: prod
-    container:
-      image: ghcr.io/unevenlabs/infrastructure/deployer:1.0.3
-      credentials:
-        username: ${{ secrets.DEVOPSBOT_LOGIN }}
-        password: ${{ secrets.DEVOPSBOT_TOKEN }}
     steps:
-      - name: Deploy to staging
-        run: |
-          rm -rf /app/k8s-configs
-          bash -c "/app/deploy.sh"
-        shell: bash
+      - name: Trigger deploy
         env:
-          ENVIRONMENT: 'stag'
-          SERVICE: 'relay-vaults'
-          GITHUB_SHA: '${{ needs.build-docker-image.outputs.release-tag }}'
-          GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
-          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}
-      - name: Deploy to production
+          GH_TOKEN: ${{ secrets.DEVOPSBOT_TOKEN }}
+          VERSION: ${{ needs.build-docker-image.outputs.release-tag }}
         run: |
-          rm -rf /app/k8s-configs
-          bash -c "/app/deploy.sh"
-        shell: bash
-        env:
-          ENVIRONMENT: 'prod'
-          SERVICE: 'relay-vaults'
-          GITHUB_SHA: '${{ needs.build-docker-image.outputs.release-tag }}'
-          GITHUB_TOKEN: '${{ secrets.DEVOPSBOT_TOKEN }}'
-          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}
+          payload=$(printf '{"event_type":"deploy","client_payload":{"app":"relay-vaults","version":"%s","environment":"stag+prod","actor":"%s"}}' "$VERSION" "${{ github.actor }}")
+          gh api repos/unevenlabs/k8s-configs/dispatches --method POST --input - <<< "$payload"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            if [ "${{ job.status }}" = "success" ]; then
+              echo "### Deploy ✅"
+            else
+              echo "### Deploy ❌"
+            fi
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| **App** | \`relay-vaults\` |"
+            echo "| **Version** | \`${{ needs.build-docker-image.outputs.release-tag }}\` |"
+            echo "| **Environment** | \`stag+prod\` |"
+            echo "| **Triggered by** | @${{ github.actor }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

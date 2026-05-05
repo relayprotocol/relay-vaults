@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ethers, ignition } from 'hardhat'
+import { ethers, ignition, network } from 'hardhat'
 import { networks } from '@relay-vaults/networks'
 import { IUSDC, ERC4626, RelayPool } from '../../typechain-types'
 import { mintUSDC } from '../utils/hardhat'
@@ -11,6 +11,11 @@ const {
 } = networks[1]
 
 const USDC_MORPHO_POOL = '0xd63070114470f685b75B74D60EEc7c1113d33a3D'
+
+// Pin the fork to a block where the Morpho USDC vault accepts deposits;
+// running against `latest` makes these tests flaky when the vault's supply
+// cap is reached (deposit reverts with 0xded0652d).
+const FORK_BLOCK_NUMBER = 25_000_000
 
 // deposit txs, for reference
 // const WETH_MORPHO_POOL = '0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0'
@@ -24,6 +29,22 @@ describe('RelayBridge: use Morpho yield pool (WETH)', () => {
   let userAddress: string
 
   before(async () => {
+    await network.provider.request({
+      method: 'hardhat_reset',
+      params: [
+        {
+          forking: {
+            blockNumber: FORK_BLOCK_NUMBER,
+            jsonRpcUrl: process.env.RPC_URL,
+          },
+        },
+      ],
+    })
+    // After reset the next block's baseFeePerGas inherits from the pinned
+    // block and can exceed ethers' cached fee estimate, causing impersonated
+    // txs to fail with "maxFeePerGas too low". Force it low.
+    await network.provider.send('hardhat_setNextBlockBaseFeePerGas', ['0x1'])
+
     const { chainId } = await ethers.provider.getNetwork()
     const [user] = await ethers.getSigners()
     userAddress = await user.getAddress()
@@ -50,6 +71,14 @@ describe('RelayBridge: use Morpho yield pool (WETH)', () => {
       deploymentId: `RelayPool-${parameters.RelayPool.symbol}-${chainId.toString()}`,
       parameters,
     }))
+  })
+
+  after(async () => {
+    // Restore the fork to latest so other suites in the same run aren't pinned.
+    await network.provider.request({
+      method: 'hardhat_reset',
+      params: [{ forking: { jsonRpcUrl: process.env.RPC_URL } }],
+    })
   })
 
   it('should have correct asset', async () => {

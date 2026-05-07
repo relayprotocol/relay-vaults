@@ -174,6 +174,13 @@ contract RelayPool is ERC4626, Ownable {
   /// @dev Fees are held in the yield pool until they finish streaming
   uint256 public pendingBridgeFees = 0;
 
+  /// @notice Per-origin accumulated bridge fees not yet claimed
+  /// @dev Bounds the claim-time fee deduction. Per-message fees in handle() are
+  ///      floored, and floor(A) + floor(B) <= floor(A+B), so the batch fee at
+  ///      claim time can exceed the actually-accrued total without this cap.
+  mapping(uint32 => mapping(address => uint256))
+    public accumulatedFeesByOrigin;
+
   /// @notice All incoming assets are streamed (even though they are instantly deposited in the yield pool)
   /// @dev Total amount of assets currently being streamed
   uint256 public totalAssetsToStream = 0;
@@ -589,6 +596,7 @@ contract RelayPool is ERC4626, Ownable {
     // Calculate fee using fractional basis points
     uint256 feeAmount = (message.amount * origin.bridgeFee) /
       FRACTIONAL_BPS_DENOMINATOR;
+    accumulatedFeesByOrigin[chainId][bridge] += feeAmount;
     pendingBridgeFees += feeAmount;
 
     // Check if origin settings are respected
@@ -702,9 +710,10 @@ contract RelayPool is ERC4626, Ownable {
 
     uint256 feeAmount = 0;
     if (chargeFee) {
-      // The amount is the amount that was loaned + the fees
-      feeAmount = (amount * origin.bridgeFee) /
+      uint256 batchFee = (amount * origin.bridgeFee) /
         FRACTIONAL_BPS_DENOMINATOR;
+      feeAmount = Math.min(accumulatedFeesByOrigin[chainId][bridge], batchFee);
+      accumulatedFeesByOrigin[chainId][bridge] -= feeAmount;
       pendingBridgeFees -= feeAmount;
       // We need to account for it in a streaming fashion
       addToStreamingAssets(feeAmount);

@@ -4741,7 +4741,7 @@ __metadata:
     "@relay-vaults/types": "workspace:./packages/types"
     "@types/node": "npm:24.3.0"
     eslint: "npm:9.33.0"
-    graphql: "npm:16.11.0"
+    graphql: "npm:16.14.0"
     graphql-request: "npm:7.2.0"
     tsup: "npm:8.5.0"
     tsx: "npm:4.20.4"
@@ -4812,7 +4812,7 @@ __metadata:
     "@relay-vaults/types": "workspace:./packages/types"
     "@types/node": "npm:24.3.0"
     eslint: "npm:9.33.0"
-    graphql: "npm:16.11.0"
+    graphql: "npm:16.14.0"
     graphql-request: "npm:7.2.0"
     graphql-tag: "npm:2.12.6"
     tsup: "npm:8.5.0"
@@ -11203,10 +11203,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:16.11.0":
-  version: 16.11.0
-  resolution: "graphql@npm:16.11.0"
-  checksum: 10/e3e1633d0b464bbb3fa41283fae938bd3bac801c350555b3f1a129d99fb3cfe157fa69c1389229dba902731942eb08bdea4b29f1271965feee8779576b26ef01
+"graphql@npm:16.14.0":
+  version: 16.14.0
+  resolution: "graphql@npm:16.14.0"
+  checksum: 10/019bed00a1d62c90d38bd8971f827af9be479bd1935ac990b62edce8dbe5d9e1d93cae72e986199fdeb7108ee83e3f73c7492989ec08fcaf446b6bd79d533741
   languageName: node
   linkType: hard
 

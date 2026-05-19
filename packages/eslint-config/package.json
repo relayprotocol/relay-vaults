@@ -10,6 +10,6 @@
     "eslint-plugin-jsonc": "2.21.0",
     "eslint-plugin-mocha": "11.1.0",
     "eslint-plugin-prettier": "5.5.4",
-    "typescript-eslint": "8.40.0"
+    "typescript-eslint": "8.59.3"
   }
 }

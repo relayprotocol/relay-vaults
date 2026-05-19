@@ -16,7 +16,7 @@ jobs:
     name: 'Build/push Docker image'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    if: github.repository == 'relayprotocol/relay-vaults'
+    if: github.repository == 'unevenlabs/relay-vaults'
     outputs:
       release-tag: ${{ steps.release.outputs.tag }}
     permissions:
@@ -42,7 +42,7 @@ jobs:
         uses: docker/metadata-action@v6.0.0
         with:
           images: |
-            ghcr.io/relayprotocol/relay-vaults
+            ghcr.io/unevenlabs/relay-vaults
           tags: |
             type=raw,value=latest
             type=raw,value=${{ steps.release.outputs.tag }}
@@ -71,7 +71,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    if: github.repository == 'relayprotocol/relay-vaults'
+    if: github.repository == 'unevenlabs/relay-vaults'
     needs: [build-docker-image]
     environment: prod
     steps:

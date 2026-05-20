@@ -3452,24 +3452,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:1.9.6":
-  version: 1.9.6
-  resolution: "@noble/curves@npm:1.9.6"
-  dependencies:
-    "@noble/hashes": "npm:1.8.0"
-  checksum: 10/74b603bbf95cab1b6eb147d02febe55bc19cf57c324bf2ff04b44ff9be3f88affc1a57da0805c74803e27c25687079251f9c788f93f0e6fd1c5d02163996460c
-  languageName: node
-  linkType: hard
-
-"@noble/curves@npm:^1.9.1":
-  version: 1.9.4
-  resolution: "@noble/curves@npm:1.9.4"
-  dependencies:
-    "@noble/hashes": "npm:1.8.0"
-  checksum: 10/e8e9a05f27dc79e8f67001ddf81b69c527e3879085841647a07e150fc1c28fd5b576cce1f411daaa0cae40f8c65b2fd6c457f4165b2c4c9fbe327173ba1d8845
-  languageName: node
-  linkType: hard
-
 "@noble/curves@npm:~1.9.0":
   version: 1.9.2
   resolution: "@noble/curves@npm:1.9.2"
@@ -4772,7 +4754,7 @@ __metadata:
     ponder: "npm:0.16.3"
     prettier: "npm:3.6.2"
     typescript: "npm:5.9.2"
-    viem: "npm:2.34.0"
+    viem: "npm:2.48.11"
     vitest: "npm:3.2.4"
     winston: "npm:3.17.0"
   languageName: unknown
@@ -7190,7 +7172,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abitype@npm:1.0.8, abitype@npm:^1.0.2, abitype@npm:^1.0.6, abitype@npm:^1.0.8":
+"abitype@npm:1.0.8, abitype@npm:^1.0.2, abitype@npm:^1.0.6":
   version: 1.0.8
   resolution: "abitype@npm:1.0.8"
   peerDependencies:
@@ -7202,6 +7184,21 @@ __metadata:
     zod:
       optional: true
   checksum: 10/878e74fbac6a971953649b6216950437aa5834a604e9fa833a5b275a6967cff59857c7e43594ae906387d2fb7cad9370138dec4298eb8814815a3ffb6365902c
+  languageName: node
+  linkType: hard
+
+"abitype@npm:1.2.3":
+  version: 1.2.3
+  resolution: "abitype@npm:1.2.3"
+  peerDependencies:
+    typescript: ">=5.0.4"
+    zod: ^3.22.0 || ^4.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    zod:
+      optional: true
+  checksum: 10/94e744c2fc301b1cff59163a21b499aae0ddecdf4d3bef1579ff16b705e6f5738fd314125d791ed142487db2473d4fadcdbabb1e05e4b5d35715bc4ef35e400a
   languageName: node
   linkType: hard
 
@@ -7217,6 +7214,21 @@ __metadata:
     zod:
       optional: true
   checksum: 10/6eefcd8a63e2ecfaa9089125734d4542e8094160b43b38469eba3dfece167947ef8754c895be1a6b312088012fdc1740f7e338918e7ec7775a62807daec33ef5
+  languageName: node
+  linkType: hard
+
+"abitype@npm:^1.2.3":
+  version: 1.2.4
+  resolution: "abitype@npm:1.2.4"
+  peerDependencies:
+    typescript: ">=5.0.4"
+    zod: ^3.22.0 || ^4.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    zod:
+      optional: true
+  checksum: 10/500b317a53b34cb6ffe3e4f090e135972b43cd2fbdfebe64fc497dfd8515d9117919e5f88f0aaede332d29a21c1826be64a3ffa620b0b91c16e8b560b6635714
   languageName: node
   linkType: hard
 
@@ -13683,6 +13695,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ox@npm:0.14.20":
+  version: 0.14.20
+  resolution: "ox@npm:0.14.20"
+  dependencies:
+    "@adraffy/ens-normalize": "npm:^1.11.0"
+    "@noble/ciphers": "npm:^1.3.0"
+    "@noble/curves": "npm:1.9.1"
+    "@noble/hashes": "npm:^1.8.0"
+    "@scure/bip32": "npm:^1.7.0"
+    "@scure/bip39": "npm:^1.6.0"
+    abitype: "npm:^1.2.3"
+    eventemitter3: "npm:5.0.1"
+  peerDependencies:
+    typescript: ">=5.4.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/96526073193f3a6dd2ccd21bcc255e82c7226d6de63fa17a2021c75232fdc9bc969e75e2cbc0c8d5163d88c575e08dc4c75dec7333b1727f080585f07fc6c1ed
+  languageName: node
+  linkType: hard
+
 "ox@npm:0.6.9":
   version: 0.6.9
   resolution: "ox@npm:0.6.9"
@@ -13721,27 +13754,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/761e941b6ca6d3a84235bb19a7e1f282e54a8cbc1374aaf4ce0232de50d42cd351074ef3e83d09af71f7522b085cfa92168adb19744dac2556fe83b3bba46f71
-  languageName: node
-  linkType: hard
-
-"ox@npm:0.8.7":
-  version: 0.8.7
-  resolution: "ox@npm:0.8.7"
-  dependencies:
-    "@adraffy/ens-normalize": "npm:^1.11.0"
-    "@noble/ciphers": "npm:^1.3.0"
-    "@noble/curves": "npm:^1.9.1"
-    "@noble/hashes": "npm:^1.8.0"
-    "@scure/bip32": "npm:^1.7.0"
-    "@scure/bip39": "npm:^1.6.0"
-    abitype: "npm:^1.0.8"
-    eventemitter3: "npm:5.0.1"
-  peerDependencies:
-    typescript: ">=5.4.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10/f85e98394e681aa82012e3be0f9122e7f1ed3b83cf7415af14d2afe42ed967121ed42def6534d9c0fe753515ed0958b752801bba6aa0a93b30cabc4fa735cadf
   languageName: node
   linkType: hard
 
@@ -17435,24 +17447,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:2.34.0":
-  version: 2.34.0
-  resolution: "viem@npm:2.34.0"
+"viem@npm:2.48.11":
+  version: 2.48.11
+  resolution: "viem@npm:2.48.11"
   dependencies:
-    "@noble/curves": "npm:1.9.6"
+    "@noble/curves": "npm:1.9.1"
     "@noble/hashes": "npm:1.8.0"
     "@scure/bip32": "npm:1.7.0"
     "@scure/bip39": "npm:1.6.0"
-    abitype: "npm:1.0.8"
+    abitype: "npm:1.2.3"
     isows: "npm:1.0.7"
-    ox: "npm:0.8.7"
+    ox: "npm:0.14.20"
     ws: "npm:8.18.3"
   peerDependencies:
     typescript: ">=5.0.4"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/6a0d4b43e4e4f0dcd6046d7408b1354d661bdc39d005acb1ec2f39efac911f36e81fd327d5c67b407fb179ff4d7cb01b7ee2a6ac010e6df0a1557575ad42f624
+  checksum: 10/7235d6aab130ba63b0b0d1874086c1875824748e27e4b0d4b165950eba550dad6796347345ee6e71d1d7e7ae59731bd03b4e7f404d4c5a67a0e51f8a8d2fd16e
   languageName: node
   linkType: hard
 

@@ -31,11 +31,6 @@ export interface OriginNetworkConfig extends NetworkConfig {
     arbitrumDeposit?: {
       child: {
         inbox: string
-        routerGateway: string
-        erc20Gateway: string
-      }
-      parent: {
-        routerGateway: string
       }
     }
     arbitrum?: {

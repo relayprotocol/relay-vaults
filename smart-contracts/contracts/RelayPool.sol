@@ -138,6 +138,16 @@ contract RelayPool is ERC4626, Ownable {
     uint256 outstandingDebt
   );
 
+  /// @notice Error when attempting to change proxyBridge while outstanding debt exists
+  /// @param chainId The chain ID of the origin
+  /// @param bridge The bridge address of the origin
+  /// @param outstandingDebt The current outstanding debt for this origin
+  error ProxyBridgeChangeWithOutstandingDebt(
+    uint32 chainId,
+    address bridge,
+    uint256 outstandingDebt
+  );
+
   /// @notice The address of the Hyperlane mailbox
   /// @dev Used to receive cross-chain messages
   address public immutable HYPERLANE_MAILBOX;
@@ -386,6 +396,16 @@ contract RelayPool is ERC4626, Ownable {
       origin.bridgeFee != oldOrigin.bridgeFee
     ) {
       revert BridgeFeeChangeWithOutstandingDebt(
+        origin.chainId,
+        origin.bridge,
+        oldOrigin.outstandingDebt
+      );
+    }
+    if (
+      oldOrigin.outstandingDebt > 0 &&
+      origin.proxyBridge != oldOrigin.proxyBridge
+    ) {
+      revert ProxyBridgeChangeWithOutstandingDebt(
         origin.chainId,
         origin.bridge,
         oldOrigin.outstandingDebt

@@ -143,6 +143,66 @@ describe('RelayPool: curator', () => {
       ).to.be.equal(100)
     })
 
+    it('should revert when changing proxyBridge while debt is outstanding', async () => {
+      const newOrigin = {
+        bridge: ethers.Wallet.createRandom().address,
+        bridgeFee: 5,
+        chainId: 10,
+        coolDown: 0,
+        curator: userAddress,
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await relayPool.addOrigin(newOrigin)
+
+      const bridgedAmount = ethers.parseEther('0.2')
+      await relayPool.handle(
+        newOrigin.chainId,
+        ethers.zeroPadValue(newOrigin.bridge, 32),
+        encodeData(6n, userAddress, bridgedAmount)
+      )
+      expect(await relayPool.outstandingDebt()).to.be.greaterThan(0)
+
+      const updatedOrigin = {
+        ...newOrigin,
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await expect(relayPool.addOrigin(updatedOrigin))
+        .to.be.revertedWithCustomError(
+          relayPool,
+          'ProxyBridgeChangeWithOutstandingDebt'
+        )
+        .withArgs(newOrigin.chainId, newOrigin.bridge, bridgedAmount)
+
+      expect(
+        (await relayPool.authorizedOrigins(newOrigin.chainId, newOrigin.bridge))
+          .proxyBridge
+      ).to.equal(newOrigin.proxyBridge)
+    })
+
+    it('should allow changing proxyBridge when there is no outstanding debt', async () => {
+      const newOrigin = {
+        bridge: ethers.Wallet.createRandom().address,
+        bridgeFee: 5,
+        chainId: 10,
+        coolDown: 0,
+        curator: userAddress,
+        maxDebt: ethers.parseEther('10'),
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await relayPool.addOrigin(newOrigin)
+
+      const updatedOrigin = {
+        ...newOrigin,
+        proxyBridge: ethers.Wallet.createRandom().address,
+      }
+      await relayPool.addOrigin(updatedOrigin)
+      expect(
+        (await relayPool.authorizedOrigins(newOrigin.chainId, newOrigin.bridge))
+          .proxyBridge
+      ).to.equal(updatedOrigin.proxyBridge)
+    })
+
     it('should allow re-adding origin with same bridgeFee while debt is outstanding', async () => {
       const newOrigin = {
         bridge: ethers.Wallet.createRandom().address,

@@ -19,6 +19,8 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 1923,
+  // Deactivated 2026-06-05: sequencer halted + eth_getLogs failing. Remove to re-enable.
+  deactivated: true,
   hyperlaneMailbox: '0x3a464f746D23Ab22155710f44dB16dcA53e0775E',
   isTestnet: false,
   name: 'Swellchain',

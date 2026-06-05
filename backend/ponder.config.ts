@@ -11,7 +11,7 @@ import {
 } from '@relay-vaults/abis'
 import { Abi, AbiEvent } from 'viem'
 import { getAddresses } from '@relay-vaults/addresses'
-import networks from '@relay-vaults/networks'
+import allNetworks from '@relay-vaults/networks'
 import { VaultNetworkConfig, OriginNetworkConfig } from '@relay-vaults/types'
 import {
   buildDatabaseConfig,
@@ -22,6 +22,11 @@ const deployedAddresses = getAddresses()
 const databaseUrl = process.env.DATABASE_URL!
 
 prepareDatabaseEnvForPonder(databaseUrl)
+
+// Skip deactivated networks: one unreachable chain wedges ponder's startup.
+const networks = Object.fromEntries(
+  Object.entries(allNetworks).filter(([, network]) => !network.deactivated)
+) as typeof allNetworks
 
 // Importing the RelayBridgeFactory ABI to use in the config
 // RPC configurations with fallback transport

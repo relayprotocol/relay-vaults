@@ -19,6 +19,10 @@ const config: OriginNetworkConfig = {
     },
   },
   chainId: 888888888,
+  // Deactivated 2026-06-26: Conduit-hosted RPC (rpc.ancient8.gg) key unauthorized
+  // and scan.ancient8.gg down — provider infra appears sunset. Route is unused
+  // (0 fills in 7d, liquidity withdrawn, origin debt settled). Remove to re-enable.
+  deactivated: true,
   hyperlaneMailbox: '0x2f2aFaE1139Ce54feFC03593FeE8AB2aDF4a85A7',
   isTestnet: false,
   name: 'Ancient8',

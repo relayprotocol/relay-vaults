@@ -20,4 +20,10 @@ contract MyToken is ERC20, ERC20Permit {
   function mintFor(uint256 amount, address recipient) external {
     _mint(recipient, amount);
   }
+
+  // Simulate a principal loss (depeg, bad debt, slashing) by destroying tokens
+  // held by an address - used to test yield pool impairment scenarios.
+  function burnFor(uint256 amount, address from) external {
+    _burn(from, amount);
+  }
 }

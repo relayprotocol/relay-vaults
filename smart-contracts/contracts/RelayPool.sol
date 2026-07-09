@@ -306,7 +306,7 @@ contract RelayPool is ERC4626, Ownable {
     address baseYieldPool,
     address weth,
     address curator
-  ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
+  ) ERC4626(asset, name, symbol) Ownable(curator) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
 
@@ -315,9 +315,6 @@ contract RelayPool is ERC4626, Ownable {
 
     // set weth
     WETH = weth;
-
-    // Change the owner to the curator
-    transferOwnership(curator);
   }
 
   /// @notice Updates the streaming period for fee accrual
@@ -540,11 +537,18 @@ contract RelayPool is ERC4626, Ownable {
     // Pending bridge fees are still in the yield pool!
     // So we need to extract them from this pool's asset until
     // The bridge is claimed!
-    return
-      yieldPoolBalance +
-      outstandingDebt -
-      pendingBridgeFees -
-      remainsToStream();
+    // The pool is designed so that yieldPoolBalance + outstandingDebt always
+    // covers the reserved amounts (pending fees and un-streamed yield, both
+    // physically held in the yield pool). A severe yield pool principal loss
+    // (depeg, bad debt, slashing) can push yieldPoolBalance below the reserves;
+    // without this guard the checked subtraction would underflow and permanently
+    // revert, bricking every ERC4626 entry point with no on-chain recovery path.
+    // Clamping to 0 signals an impaired vault instead.
+    uint256 gross = yieldPoolBalance + outstandingDebt;
+    uint256 reserved = pendingBridgeFees + remainsToStream();
+    unchecked {
+      return gross > reserved ? gross - reserved : 0;
+    }
   }
 
   /// @notice Deposits assets into the yield pool

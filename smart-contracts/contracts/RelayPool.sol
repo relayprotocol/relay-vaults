@@ -756,16 +756,27 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   /// @notice Sends funds to a recipient
-  /// @dev Handles both ERC20 and native currency transfers
+  /// @dev Handles both ERC20 and native currency transfers. If the recipient
+  ///      rejects the native currency transfer, funds are delivered as WETH
+  ///      instead so the message can still be processed (otherwise the
+  ///      bridged funds would be permanently stuck, since the nonce would
+  ///      never be marked as processed and the debt never increased).
   /// @param amount The amount to send
   /// @param recipient The address to receive the funds
   function sendFunds(uint256 amount, address recipient) internal {
     if (address(asset) == WETH) {
       withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
-      (bool success, ) = recipient.call{value: amount}("");
+      bool success;
+      // Equivalent to recipient.call{value: amount}("") but without copying
+      // return data (also keeps RelayPoolFactory below the EIP-170 size limit)
+      // solhint-disable-next-line no-inline-assembly
+      assembly {
+        success := call(gas(), recipient, amount, 0, 0, 0, 0)
+      }
       if (!success) {
-        revert FailedTransfer(recipient, amount);
+        IWETH(WETH).deposit{value: amount}();
+        SafeERC20.safeTransfer(IERC20(WETH), recipient, amount);
       }
     } else {
       withdrawAssetsFromYieldPool(amount, recipient);

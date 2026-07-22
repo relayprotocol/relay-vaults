@@ -401,6 +401,44 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
     expect(userWethBalanceAfter).to.equal(userWethBalanceBefore)
   })
 
+  it('should transfer WETH to the recipient if the recipient rejects ETH', async () => {
+    const [hyperlane] = await ethers.getSigners()
+    const ethRejector = await ethers.deployContract('EthRejector')
+    const recipientAddress = await ethRejector.getAddress()
+    const amount = ethers.parseUnits('0.1')
+    const recipientBalanceBefore = await getBalance(
+      recipientAddress,
+      ethers.provider
+    )
+    const recipientWethBalanceBefore = await getBalance(
+      recipientAddress,
+      await myWeth.getAddress(),
+      ethers.provider
+    )
+    await relayPool
+      .connect(hyperlane)
+      .handle(
+        10,
+        ethers.zeroPadValue(relayBridgeOptimism, 32),
+        encodeData(103n, recipientAddress, amount)
+      )
+
+    const recipientBalanceAfter = await getBalance(
+      recipientAddress,
+      ethers.provider
+    )
+    const recipientWethBalanceAfter = await getBalance(
+      recipientAddress,
+      await myWeth.getAddress(),
+      ethers.provider
+    )
+
+    expect(recipientBalanceAfter).to.equal(recipientBalanceBefore)
+    expect(recipientWethBalanceAfter).to.equal(
+      recipientWethBalanceBefore + amount
+    )
+  })
+
   it('should keep track of the outstanding debt', async () => {
     const [hyperlane, anotherUser] = await ethers.getSigners()
     const userAddress = await anotherUser.getAddress()

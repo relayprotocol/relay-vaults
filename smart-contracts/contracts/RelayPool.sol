@@ -148,6 +148,11 @@ contract RelayPool is ERC4626, Ownable {
     uint256 outstandingDebt
   );
 
+  /// @notice Error when attempting to set a zero streaming period
+  /// @dev A zero period collapses endOfStream onto lastAssetsCollectedAt,
+  ///      which would make the streaming math ill-defined
+  error StreamingPeriodMustBePositive();
+
   /// @notice The address of the Hyperlane mailbox
   /// @dev Used to receive cross-chain messages
   address public immutable HYPERLANE_MAILBOX;
@@ -321,6 +326,9 @@ contract RelayPool is ERC4626, Ownable {
   /// @dev Updates streamed assets before changing the period
   /// @param newPeriod The new streaming period in seconds
   function updateStreamingPeriod(uint256 newPeriod) public onlyOwner {
+    if (newPeriod == 0) {
+      revert StreamingPeriodMustBePositive();
+    }
     updateStreamedAssets();
     uint256 oldPeriod = streamingPeriod;
     streamingPeriod = newPeriod;
@@ -655,8 +663,9 @@ contract RelayPool is ERC4626, Ownable {
   /// @dev Returns zero if streaming period has ended
   /// @return The amount of assets remaining to be streamed
   function remainsToStream() internal view returns (uint256) {
-    if (block.timestamp > endOfStream) {
-      return 0; // Nothing left to stream
+    if (block.timestamp >= endOfStream) {
+      return 0; // Nothing left to stream (also avoids a zero denominator below
+      // when endOfStream == lastAssetsCollectedAt == block.timestamp)
     } else {
       return
         totalAssetsToStream - // total assets to stream

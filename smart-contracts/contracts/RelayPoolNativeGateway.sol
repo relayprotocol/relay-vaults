@@ -58,7 +58,7 @@ contract RelayPoolNativeGateway {
   }
 
   /// @notice Mints pool shares by depositing native ETH
-  /// @dev Wraps ETH, calculates shares, then mints with slippage protection
+  /// @dev Wraps ETH, deposits the full WETH amount, then enforces slippage protection
   /// @param pool The address of the ERC4626 pool to mint shares from
   /// @param receiver The address that will receive the pool shares
   /// @param minSharesOut Minimum amount of shares to receive (slippage protection)
@@ -73,14 +73,12 @@ contract RelayPoolNativeGateway {
     SafeERC20.safeIncreaseAllowance(IERC20(address(WETH)), pool, msg.value);
 
     // do the deposit
-    shares = IERC4626(pool).convertToShares(msg.value);
+    shares = IERC4626(pool).deposit(msg.value, receiver);
 
     // Enforce slippage protection
     if (shares < minSharesOut) {
       revert SlippageExceeded();
     }
-
-    IERC4626(pool).mint(shares, receiver);
   }
 
   /// @notice Withdraws a specific amount of native ETH from a WETH-based pool

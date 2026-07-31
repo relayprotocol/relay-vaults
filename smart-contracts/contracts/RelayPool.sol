@@ -608,7 +608,10 @@ contract RelayPool is ERC4626, Ownable {
     HyperlaneMessage memory message = abi.decode(data, (HyperlaneMessage));
 
     // if the message is too recent, we reject it
-    if (block.timestamp - message.timestamp < origin.coolDown) {
+    // Compare with an addition (not a subtraction) because the origin
+    // chain's clock can be slightly ahead of this chain's, which would
+    // make `block.timestamp - message.timestamp` underflow
+    if (block.timestamp < message.timestamp + origin.coolDown) {
       revert MessageTooRecent(
         chainId,
         bridge,

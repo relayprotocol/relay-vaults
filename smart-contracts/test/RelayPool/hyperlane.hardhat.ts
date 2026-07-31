@@ -318,6 +318,30 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
         (await relayPool.authorizedOrigins(10, relayBridgeOptimism)).coolDown
       )
   })
+
+  it('should reject an event whose timestamp is in the future (origin chain clock drift)', async () => {
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const blockTimestamp = (await ethers.provider.getBlock('latest'))!.timestamp
+    const futureTimestamp = blockTimestamp + 60
+    await expect(
+      relayPool
+        .connect(user)
+        .handle(
+          10,
+          ethers.zeroPadValue(relayBridgeOptimism, 32),
+          encodeData(10n, userAddress, ethers.parseUnits('1'), futureTimestamp)
+        )
+    )
+      .to.be.revertedWithCustomError(relayPool, 'MessageTooRecent')
+      .withArgs(
+        10,
+        relayBridgeOptimism,
+        10n,
+        futureTimestamp,
+        (await relayPool.authorizedOrigins(10, relayBridgeOptimism)).coolDown
+      )
+  })
 })
 
 describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox', () => {

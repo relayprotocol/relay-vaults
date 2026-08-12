@@ -12,8 +12,10 @@ const config: OriginNetworkConfig = {
         messagePasser: '0x4200000000000000000000000000000000000016',
       },
       parent: {
-        maxBlocksWithoutProof: 300,
-        outputOracle: '0xa669A743b065828682eE16109273F5CFeF5e676d',
+        // Cyber migrated to fault proofs (OptimismPortal2 v3.10.0): the legacy
+        // L2OutputOracle no longer receives proposals.
+        gameFactory: '0xaCc66304d26a01A9bd60d0584dCEdbaCeC8e10e0',
+        maxTimeWithoutProof: 21600,
         portalProxy: '0x1d59bc9fcE6B8E2B1bf86D4777289FFd83D24C99',
       },
     },
@@ -24,7 +26,7 @@ const config: OriginNetworkConfig = {
   name: 'Cyber',
   parentChainId: 1,
   rpc: createRpcConfig(7560, ['https://cyber.rpc.thirdweb.com']),
-  stack: 'optimism-alt',
+  stack: 'optimism',
 }
 
 export default config

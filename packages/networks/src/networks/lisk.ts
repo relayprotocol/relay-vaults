@@ -15,7 +15,8 @@ const config: OriginNetworkConfig = {
         // Lisk migrated to fault proofs (OptimismPortal2 v3.10.0): the legacy
         // L2OutputOracle no longer receives proposals.
         gameFactory: '0x0CF7D3706a27CCE2017aEB11E8a9c8b5388c282C',
-        maxTimeWithoutProof: 7200,
+        // Lisk proposes dispute games roughly every 4h
+        maxTimeWithoutProof: 21600,
         portalProxy: '0x26dB93F8b8b4f7016240af62F7730979d353f9A7',
       },
     },

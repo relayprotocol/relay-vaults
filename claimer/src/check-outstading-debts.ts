@@ -8,7 +8,8 @@ const GET_OUTSTANDING_DEBTS = gql`
         chainId
         contractAddress
         outstandingDebt
-        origins(where: { maxDebt_gt: "0" }) {
+        # include disabled origins (maxDebt = 0): they still carry debt until claimed
+        origins {
           items {
             currentOutstandingDebt
           }

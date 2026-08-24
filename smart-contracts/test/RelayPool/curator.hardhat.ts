@@ -103,6 +103,11 @@ describe('RelayPool: curator', () => {
       expect(oldPoolTokenBalanceAfter).to.be.equal(0)
       const newPoolTokenBalanceAfter = await myToken.balanceOf(newPoolAddress)
       expect(newPoolTokenBalanceAfter).to.be.greaterThan(yieldPoolDeposit)
+
+      // no residual allowance should remain for the new pool after migration
+      expect(
+        await myToken.allowance(await relayPool.getAddress(), newPoolAddress)
+      ).to.be.equal(0)
       const { event } = await getEvent(
         receipt!,
         'YieldPoolChanged',

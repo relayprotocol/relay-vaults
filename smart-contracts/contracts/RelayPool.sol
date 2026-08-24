@@ -380,11 +380,7 @@ contract RelayPool is ERC4626, Ownable {
     }
 
     // Deposit all assets into the new pool
-    SafeERC20.safeIncreaseAllowance(
-      IERC20(address(asset)),
-      newPool,
-      withdrawnAssets
-    );
+    // (depositAssetsInYieldPool grants the required allowance)
     depositAssetsInYieldPool(withdrawnAssets);
 
     emit YieldPoolChanged(oldPool, newPool);

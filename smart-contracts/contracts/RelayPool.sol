@@ -496,14 +496,32 @@ contract RelayPool is ERC4626, Ownable {
     return ERC4626(yieldPool).maxDeposit(address(this));
   }
 
+  /// @notice Returns the current value of the pool's yield pool position
+  /// @dev The portion of the pool's assets actually held in the yield pool;
+  ///      the rest of totalAssets is outstanding bridge debt
+  /// @return The redeemable value of the pool's yield pool shares
+  function yieldPoolBalance() internal view returns (uint256) {
+    uint256 balanceOfYieldPoolTokens = ERC20(yieldPool).balanceOf(
+      address(this)
+    );
+    return ERC4626(yieldPool).previewRedeem(balanceOfYieldPoolTokens);
+  }
+
   /// @notice Returns the maximum assets that can be withdrawn by an owner
-  /// @dev Limited to the owner's share balance converted to assets
+  /// @dev Limited by the owner's share balance and the assets actually held
+  ///      in the yield pool: assets backed by outstanding bridge debt are not
+  ///      withdrawable until claimed, and ERC4626 requires this value to
+  ///      never exceed an amount for which withdraw would revert
   /// @param owner The address to check withdrawal capacity for
   /// @return maxAssets The maximum amount of assets that can be withdrawn
   function maxWithdraw(
     address owner
   ) public view override returns (uint256 maxAssets) {
-    return convertToAssets(this.balanceOf(owner));
+    maxAssets = convertToAssets(balanceOf[owner]);
+    uint256 liquidAssets = yieldPoolBalance();
+    if (liquidAssets < maxAssets) {
+      maxAssets = liquidAssets;
+    }
   }
 
   /// @notice Returns the maximum shares that can be minted
@@ -518,26 +536,33 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   /// @notice Returns the maximum shares that can be redeemed by an owner
-  /// @dev Limited by the owner's share balance and yield pool's withdrawal capacity
+  /// @dev Limited by the owner's share balance and the assets actually held
+  ///      in the yield pool: shares backed by outstanding bridge debt cannot
+  ///      be redeemed until the debt is claimed
   /// @param owner The address to check redemption capacity for
   /// @return maxShares The maximum amount of shares that can be redeemed
   function maxRedeem(
     address owner
   ) public view override returns (uint256 maxShares) {
-    uint256 maxWithdrawInYieldPool = maxWithdraw(owner);
-    return ERC4626.previewWithdraw(maxWithdrawInYieldPool);
+    maxShares = balanceOf[owner];
+    uint256 ownerAssets = convertToAssets(maxShares);
+    if (ownerAssets == 0) {
+      // Nothing redeemable (empty balance or impaired vault): redeem would
+      // revert with ZERO_ASSETS
+      return 0;
+    }
+    uint256 liquidAssets = yieldPoolBalance();
+    if (ownerAssets > liquidAssets) {
+      // Only reachable when totalAssets() > liquidAssets, so the conversion
+      // cannot divide by zero
+      maxShares = convertToShares(liquidAssets);
+    }
   }
 
   /// @notice Returns the total assets controlled by the pool
   /// @dev Includes yield pool balance, outstanding debt, minus pending fees and streaming assets
   /// @return The total assets under management
   function totalAssets() public view override returns (uint256) {
-    uint256 balanceOfYieldPoolTokens = ERC20(yieldPool).balanceOf(
-      address(this)
-    );
-    uint256 yieldPoolBalance = ERC4626(yieldPool).previewRedeem(
-      balanceOfYieldPoolTokens
-    );
     // Pending bridge fees are still in the yield pool!
     // So we need to extract them from this pool's asset until
     // The bridge is claimed!
@@ -548,7 +573,7 @@ contract RelayPool is ERC4626, Ownable {
     // without this guard the checked subtraction would underflow and permanently
     // revert, bricking every ERC4626 entry point with no on-chain recovery path.
     // Clamping to 0 signals an impaired vault instead.
-    uint256 gross = yieldPoolBalance + outstandingDebt;
+    uint256 gross = yieldPoolBalance() + outstandingDebt;
     uint256 reserved = pendingBridgeFees + remainsToStream();
     unchecked {
       return gross > reserved ? gross - reserved : 0;

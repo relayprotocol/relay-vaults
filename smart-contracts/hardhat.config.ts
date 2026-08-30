@@ -15,7 +15,7 @@ import { networks as nets } from '@relay-vaults/networks'
 import registry from '@hyperlane-xyz/registry'
 import 'solidity-docgen'
 
-// Interracting
+// Interaction tasks
 import './tasks/pool'
 import './tasks/bridge'
 import './tasks/origins/add'
@@ -90,27 +90,31 @@ if (forkUrl) {
   }
 }
 
+const explorerApiKey = (network: string): string =>
+  process.env[`EXPLORER_API_KEY_${network.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}`] ??
+  'default-api-key'
+
 const etherscan = {
   apiKey: {
-    abstract: 'UU3TIIASIBJ6GZ5NIHG2T5QDY2PVUGTCMI',
-    arbitrum: 'KXH3DFHJP9T71ZZXVHKB33IMFKISQ5NIN1',
-    arbitrumSepolia: 'W5XNFPZS8D6JZ5AXVWD4XCG8B5ZH5JCD4Y',
-    avalanche: 'N4AF8AYN8PXY2MFPUT8PAFSZNVJX5Q814X',
-    base: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-    baseSepolia: 'F9E5R4E8HIJQZMRE9U9IZMP7NVZ2IAXNB8',
-    bsc: '6YUDRP3TFPQNRGGZQNYAEI1UI17NK96XGK',
-    ethereum: 'C1KDFD2PHN7FXXXT1AW5PG27I5JB23J41D',
-    'ethereum sepolia': 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-    gnosis: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    mainnet: 'C1KDFD2PHN7FXXXT1AW5PG27I5JB23J41D',
-    optimisticEthereum: 'V51DWC44XURIGPP49X85VZQGH1DCBAW5EC',
-    polygon: 'W9TVEYKW2CDTQ94T3A2V93IX6U3IHQN5Y3',
-    polygonZkEVM: '8H4ZB9SQBMQ7WA1TCIXFQVCHTVX8DXTY9Y',
-    rari: 'default-api-key',
-    sepolia: 'HPSH1KQDPJTNAPU3335G931SC6Y3ZYK3BF',
-    swellchain: 'default-api-key',
-    xdai: 'BSW3C3NDUUBWSQZJ5FUXBNXVYX92HZDDCV',
-    zora: 'default-api-key',
+    abstract: explorerApiKey('abstract'),
+    arbitrum: explorerApiKey('arbitrum'),
+    arbitrumSepolia: explorerApiKey('arbitrum_sepolia'),
+    avalanche: explorerApiKey('avalanche'),
+    base: explorerApiKey('base'),
+    baseSepolia: explorerApiKey('base_sepolia'),
+    bsc: explorerApiKey('bsc'),
+    ethereum: explorerApiKey('ethereum'),
+    'ethereum sepolia': explorerApiKey('ethereum_sepolia'),
+    gnosis: explorerApiKey('gnosis'),
+    mainnet: explorerApiKey('mainnet'),
+    optimisticEthereum: explorerApiKey('optimistic_ethereum'),
+    polygon: explorerApiKey('polygon'),
+    polygonZkEVM: explorerApiKey('polygon_zk_evm'),
+    rari: explorerApiKey('rari'),
+    sepolia: explorerApiKey('sepolia'),
+    swellchain: explorerApiKey('swellchain'),
+    xdai: explorerApiKey('xdai'),
+    zora: explorerApiKey('zora'),
   },
   customChains: [],
 }

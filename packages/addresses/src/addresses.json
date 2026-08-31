@@ -4,9 +4,6 @@
     "RelayPoolFactory": "0x7098c1873A6d6788726381E3a0855Da91331ff73",
     "RelayPoolNativeGateway": "0xED8a2a23bf9D6818651527daaF3bf4FfEB53945F"
   },
-  "7560": {
-    "RelayBridgeFactory": "0x857955aF88037B757e8c113Be40104530bA194d8"
-  },
   "42161": {
     "RelayPoolFactory": "0x857955aF88037B757e8c113Be40104530bA194d8",
     "RelayPoolNativeGateway": "0x67DEfE8d90c8cD013fD527669e76e0bE420F1208"

@@ -17,27 +17,29 @@ get_level_label() {
     esac
 }
 
-while IFS=$'\n' read -r line; do
-    
+while IFS= read -r line; do
+
     # If not valid JSON, output as is
-    if ! echo "$line" | jq empty 2>/dev/null; then
+    if ! printf '%s' "$line" | jq empty 2>/dev/null; then
         echo "$line"
         continue
     fi
-    
+
     # if log already has a 'dd' field, output as is
-    if $(echo $line | jq 'has("dd")'); then
-        echo $line
-        continue    
+    if [ "$(printf '%s' "$line" | jq 'has("dd")')" = "true" ]; then
+        echo "$line"
+        continue
     fi
 
     # if no 'dd' field is present, replace ponder 'service' field
-    if $(echo $line | jq 'has("service")'); then
+    if [ "$(printf '%s' "$line" | jq 'has("service")')" = "true" ]; then
         service="$LOG_PREFIX"
-        internal_service="$(echo $line | jq -r '.service')"
+        internal_service="$(printf '%s' "$line" | jq -r '.service')"
         # pino logger uses numeric level, so we need to convert it to a label
-        level_numeric_value="$(echo $line | jq -r '.level')"
+        level_numeric_value="$(printf '%s' "$line" | jq -r '.level')"
         level_label=$(get_level_label "$level_numeric_value")
-        echo $line | jq -r --arg a "$service" --arg b "$internal_service" --arg c "$level_label" '.service = ($a) | .internal_service = ($b) | .level = ($c) | tostring'
+        printf '%s' "$line" | jq -r --arg a "$service" --arg b "$internal_service" --arg c "$level_label" '.service = ($a) | .internal_service = ($b) | .level = ($c) | tostring'
+    else
+        echo "$line"
     fi
 done

@@ -1,5 +1,6 @@
 import { task } from 'hardhat/config'
 import networks from '@relay-vaults/networks'
+
 task(
   'deploy:verify',
   'Verifies a contract utility, includes retries and wait times'
@@ -19,15 +20,19 @@ task(
     default:
       etherscanNetworkName = network.name.toLowerCase()
   }
-  if (!config.etherscan.apiKey[etherscanNetworkName]) {
+
+  const apiKey = config.etherscan.apiKey[etherscanNetworkName]
+  const expectedEnvVarName = `EXPLORER_API_KEY_${etherscanNetworkName.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}`
+
+  if (!apiKey || apiKey === 'default-api-key') {
     console.error(
-      `No Etherscan API key found for '${etherscanNetworkName}'. Please add one to hardhat.config.ts`
+      `❌ No valid Etherscan API key found for '${etherscanNetworkName}'. Please set the '${expectedEnvVarName}' environment variable properly in hardhat.config.ts`
     )
-    return
+    throw new Error(`Missing or placeholder API key for network: ${etherscanNetworkName}`)
   }
 
   if (chainId === 31337n) {
-    // Not verifying on hardhat
+    // Not verifying on hardhat local network
     return
   }
 

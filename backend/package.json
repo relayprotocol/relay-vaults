@@ -22,11 +22,11 @@
     "@aws-sdk/rds-signer": "3.864.0",
     "@relay-vaults/abis": "workspace:*",
     "@relay-vaults/addresses": "workspace:*",
-    "dd-trace": "5.63.0",
-    "hono": "4.9.2",
+    "dd-trace": "5.125.0",
+    "hono": "4.13.7",
     "ponder": "0.16.3",
     "viem": "2.34.0",
-    "vitest": "3.2.4",
+    "vitest": "3.2.7",
     "winston": "3.17.0"
   },
   "devDependencies": {

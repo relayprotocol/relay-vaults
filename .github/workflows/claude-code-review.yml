@@ -15,7 +15,7 @@ jobs:
   claude-review:
     uses: relayprotocol/agents-config/.github/workflows/reusable-code-review.yml@main
     with:
-      runner: blacksmith-4vcpu-ubuntu-2404
+      runner: ubuntu-latest
       review_guidelines: |
         - New code files must start with a 2-line `// ABOUTME:` comment.
         - No mock modes or fake data -- real APIs and data only.

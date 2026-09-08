@@ -318,6 +318,30 @@ describe('ERC20 RelayBridge: when receiving a message from the Hyperlane Mailbox
         (await relayPool.authorizedOrigins(10, relayBridgeOptimism)).coolDown
       )
   })
+
+  it('should reject an event whose timestamp is in the future (origin chain clock drift)', async () => {
+    const [user] = await ethers.getSigners()
+    const userAddress = await user.getAddress()
+    const blockTimestamp = (await ethers.provider.getBlock('latest'))!.timestamp
+    const futureTimestamp = blockTimestamp + 60
+    await expect(
+      relayPool
+        .connect(user)
+        .handle(
+          10,
+          ethers.zeroPadValue(relayBridgeOptimism, 32),
+          encodeData(10n, userAddress, ethers.parseUnits('1'), futureTimestamp)
+        )
+    )
+      .to.be.revertedWithCustomError(relayPool, 'MessageTooRecent')
+      .withArgs(
+        10,
+        relayBridgeOptimism,
+        10n,
+        futureTimestamp,
+        (await relayPool.authorizedOrigins(10, relayBridgeOptimism)).coolDown
+      )
+  })
 })
 
 describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox', () => {
@@ -399,6 +423,44 @@ describe('WETH RelayBridge: when receiving a message from the Hyperlane Mailbox'
 
     expect(userBalanceAfter).to.equal(userBalanceBefore + amount)
     expect(userWethBalanceAfter).to.equal(userWethBalanceBefore)
+  })
+
+  it('should transfer WETH to the recipient if the recipient rejects ETH', async () => {
+    const [hyperlane] = await ethers.getSigners()
+    const ethRejector = await ethers.deployContract('EthRejector')
+    const recipientAddress = await ethRejector.getAddress()
+    const amount = ethers.parseUnits('0.1')
+    const recipientBalanceBefore = await getBalance(
+      recipientAddress,
+      ethers.provider
+    )
+    const recipientWethBalanceBefore = await getBalance(
+      recipientAddress,
+      await myWeth.getAddress(),
+      ethers.provider
+    )
+    await relayPool
+      .connect(hyperlane)
+      .handle(
+        10,
+        ethers.zeroPadValue(relayBridgeOptimism, 32),
+        encodeData(103n, recipientAddress, amount)
+      )
+
+    const recipientBalanceAfter = await getBalance(
+      recipientAddress,
+      ethers.provider
+    )
+    const recipientWethBalanceAfter = await getBalance(
+      recipientAddress,
+      await myWeth.getAddress(),
+      ethers.provider
+    )
+
+    expect(recipientBalanceAfter).to.equal(recipientBalanceBefore)
+    expect(recipientWethBalanceAfter).to.equal(
+      recipientWethBalanceBefore + amount
+    )
   })
 
   it('should keep track of the outstanding debt', async () => {

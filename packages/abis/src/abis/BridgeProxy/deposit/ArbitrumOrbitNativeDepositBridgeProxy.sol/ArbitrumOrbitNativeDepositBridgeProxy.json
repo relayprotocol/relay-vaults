@@ -3,11 +3,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "l1GatewayRouter",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "inbox",
         "type": "address"
       },
@@ -29,22 +24,6 @@
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "expected",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "actual",
-        "type": "address"
-      }
-    ],
-    "name": "AssetMismatch",
-    "type": "error"
   },
   {
     "inputs": [],
@@ -169,28 +148,15 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "ROUTER",
-    "outputs": [
-      {
-        "internalType": "contract IL1GatewayRouter",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "asset",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "l1Currency",
+        "name": "",
         "type": "address"
       },
       {
@@ -200,7 +166,7 @@
       },
       {
         "internalType": "bytes",
-        "name": "gasParams",
+        "name": "",
         "type": "bytes"
       },
       {

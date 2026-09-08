@@ -86,14 +86,14 @@ describe('RelayPool: inflation attack', () => {
     )
 
     // First, add a small amount of liquidity to the pool
-    myToken.approve(await relayPool.getAddress(), 1)
+    await myToken.approve(await relayPool.getAddress(), 1)
     await relayPool.mint(1, attackerAddress)
     const sharesOfAttacker = await relayPool.balanceOf(attackerAddress)
     expect(sharesOfAttacker).to.equal(1)
 
     // Then send a LARGE amount of tokens to the third party pool
     const attackAmount = ethers.parseUnits('100', await myToken.decimals())
-    myToken.connect(attacker).mint(attackAmount)
+    await myToken.connect(attacker).mint(attackAmount)
     await myToken
       .connect(attacker)
       .approve(await thirdPartyPool.getAddress(), attackAmount)
@@ -114,7 +114,7 @@ describe('RelayPool: inflation attack', () => {
     await myToken.connect(victim).mint(victimDepositAmount)
 
     // Deposit in the relay pool
-    myToken
+    await myToken
       .connect(victim)
       .approve(await relayPool.getAddress(), victimDepositAmount)
     await relayPool.connect(victim).deposit(victimDepositAmount, victimAddress)

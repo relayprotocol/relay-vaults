@@ -31,11 +31,6 @@ export interface OriginNetworkConfig extends NetworkConfig {
     arbitrumDeposit?: {
       child: {
         inbox: string
-        routerGateway: string
-        erc20Gateway: string
-      }
-      parent: {
-        routerGateway: string
       }
     }
     arbitrum?: {
@@ -86,6 +81,8 @@ export interface NetworkConfig {
   hyperlaneMailbox: string
   hyperlaneHook?: string // TODO: combine with mailbox in hyperlane: {mailbox, hook}
   isTestnet: boolean
+  // When true, skip this network (e.g. halted sequencer / unhealthy RPC).
+  deactivated?: boolean
   assets: NetworkAssets
   rpc: [string, ...string[]]
 }

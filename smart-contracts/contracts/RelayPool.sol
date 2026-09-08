@@ -138,6 +138,21 @@ contract RelayPool is ERC4626, Ownable {
     uint256 outstandingDebt
   );
 
+  /// @notice Error when attempting to change proxyBridge while outstanding debt exists
+  /// @param chainId The chain ID of the origin
+  /// @param bridge The bridge address of the origin
+  /// @param outstandingDebt The current outstanding debt for this origin
+  error ProxyBridgeChangeWithOutstandingDebt(
+    uint32 chainId,
+    address bridge,
+    uint256 outstandingDebt
+  );
+
+  /// @notice Error when attempting to set a zero streaming period
+  /// @dev A zero period collapses endOfStream onto lastAssetsCollectedAt,
+  ///      which would make the streaming math ill-defined
+  error StreamingPeriodMustBePositive();
+
   /// @notice The address of the Hyperlane mailbox
   /// @dev Used to receive cross-chain messages
   address public immutable HYPERLANE_MAILBOX;
@@ -296,7 +311,7 @@ contract RelayPool is ERC4626, Ownable {
     address baseYieldPool,
     address weth,
     address curator
-  ) ERC4626(asset, name, symbol) Ownable(msg.sender) {
+  ) ERC4626(asset, name, symbol) Ownable(curator) {
     // Set the Hyperlane mailbox
     HYPERLANE_MAILBOX = hyperlaneMailbox;
 
@@ -305,15 +320,15 @@ contract RelayPool is ERC4626, Ownable {
 
     // set weth
     WETH = weth;
-
-    // Change the owner to the curator
-    transferOwnership(curator);
   }
 
   /// @notice Updates the streaming period for fee accrual
   /// @dev Updates streamed assets before changing the period
   /// @param newPeriod The new streaming period in seconds
   function updateStreamingPeriod(uint256 newPeriod) public onlyOwner {
+    if (newPeriod == 0) {
+      revert StreamingPeriodMustBePositive();
+    }
     updateStreamedAssets();
     uint256 oldPeriod = streamingPeriod;
     streamingPeriod = newPeriod;
@@ -365,11 +380,7 @@ contract RelayPool is ERC4626, Ownable {
     }
 
     // Deposit all assets into the new pool
-    SafeERC20.safeIncreaseAllowance(
-      IERC20(address(asset)),
-      newPool,
-      withdrawnAssets
-    );
+    // (depositAssetsInYieldPool grants the required allowance)
     depositAssetsInYieldPool(withdrawnAssets);
 
     emit YieldPoolChanged(oldPool, newPool);
@@ -386,6 +397,16 @@ contract RelayPool is ERC4626, Ownable {
       origin.bridgeFee != oldOrigin.bridgeFee
     ) {
       revert BridgeFeeChangeWithOutstandingDebt(
+        origin.chainId,
+        origin.bridge,
+        oldOrigin.outstandingDebt
+      );
+    }
+    if (
+      oldOrigin.outstandingDebt > 0 &&
+      origin.proxyBridge != oldOrigin.proxyBridge
+    ) {
+      revert ProxyBridgeChangeWithOutstandingDebt(
         origin.chainId,
         origin.bridge,
         oldOrigin.outstandingDebt
@@ -475,14 +496,32 @@ contract RelayPool is ERC4626, Ownable {
     return ERC4626(yieldPool).maxDeposit(address(this));
   }
 
+  /// @notice Returns the current value of the pool's yield pool position
+  /// @dev The portion of the pool's assets actually held in the yield pool;
+  ///      the rest of totalAssets is outstanding bridge debt
+  /// @return The redeemable value of the pool's yield pool shares
+  function yieldPoolBalance() internal view returns (uint256) {
+    uint256 balanceOfYieldPoolTokens = ERC20(yieldPool).balanceOf(
+      address(this)
+    );
+    return ERC4626(yieldPool).previewRedeem(balanceOfYieldPoolTokens);
+  }
+
   /// @notice Returns the maximum assets that can be withdrawn by an owner
-  /// @dev Limited to the owner's share balance converted to assets
+  /// @dev Limited by the owner's share balance and the assets actually held
+  ///      in the yield pool: assets backed by outstanding bridge debt are not
+  ///      withdrawable until claimed, and ERC4626 requires this value to
+  ///      never exceed an amount for which withdraw would revert
   /// @param owner The address to check withdrawal capacity for
   /// @return maxAssets The maximum amount of assets that can be withdrawn
   function maxWithdraw(
     address owner
   ) public view override returns (uint256 maxAssets) {
-    return convertToAssets(this.balanceOf(owner));
+    maxAssets = convertToAssets(balanceOf[owner]);
+    uint256 liquidAssets = yieldPoolBalance();
+    if (liquidAssets < maxAssets) {
+      maxAssets = liquidAssets;
+    }
   }
 
   /// @notice Returns the maximum shares that can be minted
@@ -497,34 +536,48 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   /// @notice Returns the maximum shares that can be redeemed by an owner
-  /// @dev Limited by the owner's share balance and yield pool's withdrawal capacity
+  /// @dev Limited by the owner's share balance and the assets actually held
+  ///      in the yield pool: shares backed by outstanding bridge debt cannot
+  ///      be redeemed until the debt is claimed
   /// @param owner The address to check redemption capacity for
   /// @return maxShares The maximum amount of shares that can be redeemed
   function maxRedeem(
     address owner
   ) public view override returns (uint256 maxShares) {
-    uint256 maxWithdrawInYieldPool = maxWithdraw(owner);
-    return ERC4626.previewWithdraw(maxWithdrawInYieldPool);
+    maxShares = balanceOf[owner];
+    uint256 ownerAssets = convertToAssets(maxShares);
+    if (ownerAssets == 0) {
+      // Nothing redeemable (empty balance or impaired vault): redeem would
+      // revert with ZERO_ASSETS
+      return 0;
+    }
+    uint256 liquidAssets = yieldPoolBalance();
+    if (ownerAssets > liquidAssets) {
+      // Only reachable when totalAssets() > liquidAssets, so the conversion
+      // cannot divide by zero
+      maxShares = convertToShares(liquidAssets);
+    }
   }
 
   /// @notice Returns the total assets controlled by the pool
   /// @dev Includes yield pool balance, outstanding debt, minus pending fees and streaming assets
   /// @return The total assets under management
   function totalAssets() public view override returns (uint256) {
-    uint256 balanceOfYieldPoolTokens = ERC20(yieldPool).balanceOf(
-      address(this)
-    );
-    uint256 yieldPoolBalance = ERC4626(yieldPool).previewRedeem(
-      balanceOfYieldPoolTokens
-    );
     // Pending bridge fees are still in the yield pool!
     // So we need to extract them from this pool's asset until
     // The bridge is claimed!
-    return
-      yieldPoolBalance +
-      outstandingDebt -
-      pendingBridgeFees -
-      remainsToStream();
+    // The pool is designed so that yieldPoolBalance + outstandingDebt always
+    // covers the reserved amounts (pending fees and un-streamed yield, both
+    // physically held in the yield pool). A severe yield pool principal loss
+    // (depeg, bad debt, slashing) can push yieldPoolBalance below the reserves;
+    // without this guard the checked subtraction would underflow and permanently
+    // revert, bricking every ERC4626 entry point with no on-chain recovery path.
+    // Clamping to 0 signals an impaired vault instead.
+    uint256 gross = yieldPoolBalance() + outstandingDebt;
+    uint256 reserved = pendingBridgeFees + remainsToStream();
+    unchecked {
+      return gross > reserved ? gross - reserved : 0;
+    }
   }
 
   /// @notice Deposits assets into the yield pool
@@ -576,7 +629,10 @@ contract RelayPool is ERC4626, Ownable {
     HyperlaneMessage memory message = abi.decode(data, (HyperlaneMessage));
 
     // if the message is too recent, we reject it
-    if (block.timestamp - message.timestamp < origin.coolDown) {
+    // Compare with an addition (not a subtraction) because the origin
+    // chain's clock can be slightly ahead of this chain's, which would
+    // make `block.timestamp - message.timestamp` underflow
+    if (block.timestamp < message.timestamp + origin.coolDown) {
       revert MessageTooRecent(
         chainId,
         bridge,
@@ -631,8 +687,9 @@ contract RelayPool is ERC4626, Ownable {
   /// @dev Returns zero if streaming period has ended
   /// @return The amount of assets remaining to be streamed
   function remainsToStream() internal view returns (uint256) {
-    if (block.timestamp > endOfStream) {
-      return 0; // Nothing left to stream
+    if (block.timestamp >= endOfStream) {
+      return 0; // Nothing left to stream (also avoids a zero denominator below
+      // when endOfStream == lastAssetsCollectedAt == block.timestamp)
     } else {
       return
         totalAssetsToStream - // total assets to stream
@@ -723,16 +780,27 @@ contract RelayPool is ERC4626, Ownable {
   }
 
   /// @notice Sends funds to a recipient
-  /// @dev Handles both ERC20 and native currency transfers
+  /// @dev Handles both ERC20 and native currency transfers. If the recipient
+  ///      rejects the native currency transfer, funds are delivered as WETH
+  ///      instead so the message can still be processed (otherwise the
+  ///      bridged funds would be permanently stuck, since the nonce would
+  ///      never be marked as processed and the debt never increased).
   /// @param amount The amount to send
   /// @param recipient The address to receive the funds
   function sendFunds(uint256 amount, address recipient) internal {
     if (address(asset) == WETH) {
       withdrawAssetsFromYieldPool(amount, address(this));
       IWETH(WETH).withdraw(amount);
-      (bool success, ) = recipient.call{value: amount}("");
+      bool success;
+      // Equivalent to recipient.call{value: amount}("") but without copying
+      // return data (also keeps RelayPoolFactory below the EIP-170 size limit)
+      // solhint-disable-next-line no-inline-assembly
+      assembly {
+        success := call(gas(), recipient, amount, 0, 0, 0, 0)
+      }
       if (!success) {
-        revert FailedTransfer(recipient, amount);
+        IWETH(WETH).deposit{value: amount}();
+        SafeERC20.safeTransfer(IERC20(WETH), recipient, amount);
       }
     } else {
       withdrawAssetsFromYieldPool(amount, recipient);

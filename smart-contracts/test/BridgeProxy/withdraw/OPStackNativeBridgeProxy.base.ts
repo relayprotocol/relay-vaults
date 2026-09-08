@@ -64,6 +64,17 @@ describe('OPStackNativeBridgeProxy:Base', function () {
 
     expect(receipt.logs.length).to.equal(5)
 
+    // The withdrawal gasLimit is derived on-chain via baseGas, whose
+    // constants change across OP-stack upgrades, so compute it from the
+    // forked messenger rather than hardcoding it.
+    const expectedGasLimit = await crossDomainMessenger.baseGas(
+      new ethers.Interface(ABIs.L2StandardBridge).encodeFunctionData(
+        'finalizeBridgeETH',
+        [bridgeAddress, l1BridgeProxy, amount, '0x']
+      ),
+      200000
+    )
+
     receipt.logs.forEach((log: Log) => {
       expect(log.address).to.be.oneOf([
         '0x4200000000000000000000000000000000000016',
@@ -88,7 +99,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
         // value
         expect(event.args[3]).to.equal(amount)
         // gasLimit
-        expect(event.args[4]).to.equal(490798)
+        expect(event.args[4]).to.equal(expectedGasLimit)
         // data
         const [nonce, sender, target, value, minGasLimit, message] =
           new ethers.Interface(ABIs.L2CrossDomainMessenger).decodeFunctionData(
@@ -239,6 +250,27 @@ describe('OPStackNativeBridgeProxy:Base', function () {
     const receipt = await tx.wait()
 
     expect(receipt.logs.length).to.equal(7)
+
+    const crossDomainMessenger = new ethers.Contract(
+      '0x4200000000000000000000000000000000000007',
+      ABIs.L2CrossDomainMessenger,
+      ethers.provider
+    )
+    const expectedGasLimit = await crossDomainMessenger.baseGas(
+      new ethers.Interface(ABIs.L2StandardBridge).encodeFunctionData(
+        'finalizeBridgeERC20',
+        [
+          ethereumAssets.udt,
+          baseAssets.udt,
+          bridgeAddress,
+          l1BridgeProxy,
+          amount,
+          '0x',
+        ]
+      ),
+      200000
+    )
+
     receipt.logs.forEach((log: Log) => {
       expect(log.address).to.be.oneOf([
         baseAssets.udt,
@@ -266,7 +298,7 @@ describe('OPStackNativeBridgeProxy:Base', function () {
         // value
         expect(event.args[3]).to.equal(0n)
         // gasLimit
-        expect(event.args[4]).to.equal(491822n)
+        expect(event.args[4]).to.equal(expectedGasLimit)
         // data TODO: parse
         // expect(event.args[5]).to.equal(
         //   "0xd764ad0b000100000000000000000000000000000000000000000000000000000000583100000000000000000000000067ad6ea566ba6b0fc52e97bc25ce46120fdac04c00000000000000000000000099c9fc46f92e8a1c0dec1b1747d010903e884be10000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000000000000030d4000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000a41635f5fd000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"

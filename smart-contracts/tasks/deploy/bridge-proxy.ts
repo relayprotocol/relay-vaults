@@ -241,26 +241,17 @@ task(
 
       console.log(`✅ Zksync bridge deployed at: ${proxyBridgeAddress}`)
     } else if (type === 'arbitrumDeposit') {
-      const routerGateway = onOriginChain
-        ? originNetworkConfig.bridges.arbitrumDeposit!.child.routerGateway
-        : originNetworkConfig.bridges.arbitrumDeposit!.parent.routerGateway
+      const inbox = originNetworkConfig.bridges.arbitrumDeposit!.child.inbox
 
       const parameters = {
         ArbitrumOrbitNativeDepositBridgeProxy: {
-          erc20Gateway:
-            originNetworkConfig.bridges.arbitrumDeposit!.child.erc20Gateway,
-          inbox: originNetworkConfig.bridges.arbitrumDeposit!.child.inbox,
+          inbox,
           l1BridgeProxy: defaultProxyModuleArguments.parentBridgeProxy,
           relayPool: defaultProxyModuleArguments.relayPool,
           relayPoolChainId: defaultProxyModuleArguments.relayPoolChainId,
-          routerGateway,
         },
       }
-      constructorArguments = [
-        routerGateway,
-        originNetworkConfig.bridges.arbitrumDeposit!.child.inbox,
-        originNetworkConfig.bridges.arbitrumDeposit!.child.erc20Gateway,
-      ]
+      constructorArguments = [inbox]
       ;({ bridge: proxyBridge } = await ignition.deploy(
         ArbitrumOrbitNativeDepositBridgeProxyModule,
         {

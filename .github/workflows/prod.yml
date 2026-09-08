@@ -80,7 +80,7 @@ jobs:
           GH_TOKEN: ${{ secrets.DEVOPSBOT_TOKEN }}
           VERSION: ${{ needs.build-docker-image.outputs.release-tag }}
         run: |
-          payload=$(printf '{"event_type":"deploy","client_payload":{"app":"relay-vaults","version":"%s","environment":"stag+prod","actor":"%s"}}' "$VERSION" "${{ github.actor }}")
+          payload=$(printf '{"event_type":"deploy","client_payload":{"app":"relay-vaults","version":"%s","environment":"stag","actor":"%s"}}' "$VERSION" "${{ github.actor }}")
           gh api repos/unevenlabs/k8s-configs/dispatches --method POST --input - <<< "$payload"
 
       - name: Summary
@@ -97,6 +97,6 @@ jobs:
             echo "|---|---|"
             echo "| **App** | \`relay-vaults\` |"
             echo "| **Version** | \`${{ needs.build-docker-image.outputs.release-tag }}\` |"
-            echo "| **Environment** | \`stag+prod\` |"
+            echo "| **Environment** | \`stag\` |"
             echo "| **Triggered by** | @${{ github.actor }} |"
           } >> "$GITHUB_STEP_SUMMARY"

@@ -1,5 +1,7 @@
 # Relay Protocol
 
+> **This repository is archived (September 2026).** Relay Vaults has been wound down and no longer accepts new bridge transfers. The code is published for reference only: it is not maintained, and issues and pull requests are closed.
+
 A cross-chain liquidity protocol that enables fast bridging of assets across multiple blockchain networks. This monorepo includes smart contracts, backend indexer, claimer service, and shared packages.
 
 Created by the Unlock Labs team, creators of the [Unlock Protocol](https://unlock-protocol.com/) for the Reservoir team, creators of [Relay.link](https://relay.link/).
